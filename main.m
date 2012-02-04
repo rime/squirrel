@@ -41,6 +41,9 @@ int main(int argc, char *argv[])
   squirrel_traits.distribution_name = "鼠鬚管";
   squirrel_traits.distribution_version = "0.9";
   RimeInitialize(&squirrel_traits);
+  NSLog(@"Initializing la rime...");
+  // TODO:
+  RimeDeployInitialize(&squirrel_traits);
   NSLog(@"Squirrel reporting!");
   
   // finally run everything
