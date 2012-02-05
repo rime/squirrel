@@ -4,6 +4,7 @@ libboost_filesystem.a
 libboost_regex.a
 libboost_signals.a
 libboost_system.a
+libboost_thread-mt.a
 libkyotocabinet.a
 libopencc.a
 libyaml-cpp.a

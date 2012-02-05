@@ -8,8 +8,8 @@
 const NSString *kConnectionName = @"Squirrel_1_Connection";
 
 //let this be a global so our application controller delegate can access it easily
-IMKServer*			g_server;
-IMKCandidates*		g_candidates = nil;
+IMKServer* g_server;
+IMKCandidates* g_candidates = nil;
 
 
 int main(int argc, char *argv[])
@@ -40,10 +40,8 @@ int main(int argc, char *argv[])
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
   squirrel_traits.distribution_version = "0.9";
-  RimeInitialize(&squirrel_traits);
   NSLog(@"Initializing la rime...");
-  // TODO:
-  RimeDeployInitialize(&squirrel_traits);
+  RimeInitialize(&squirrel_traits);
   NSLog(@"Squirrel reporting!");
   
   // finally run everything

@@ -28,7 +28,10 @@
 
   NSLog(@"handleEvent:client:");
   
-  if (!_session) return NO;
+  if (!_session) {
+    [self createSession];
+    if (!_session) return NO;
+  }
   
   _currentClient = sender;
   BOOL handled = NO;
