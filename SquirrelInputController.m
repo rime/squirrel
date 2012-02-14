@@ -119,7 +119,7 @@
 -(void)deactivateServer:(id)sender
 {
   NSLog(@"deactivateServer:");
-  //[[[NSApp delegate] candiWin] hideCandidates];
+  [[[NSApp delegate] panel] hide];
 }
 
 /*!
@@ -167,23 +167,23 @@
   [_preeditString release];
   _preeditString = nil;
   
-  // hide UI
+  [[[NSApp delegate] panel] hide];
 }
 
--(void)showPreeditString:(NSString*)string
+-(void)showPreeditString:(NSString*)preedit
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos
 {
   NSLog(@"showPreeditString:");
-  // cache the preedit string
+  [preedit retain];
   [_preeditString release];
-  _preeditString = [string retain];
+  _preeditString = preedit;
   
   NSDictionary*       attrs;
   NSAttributedString* attrString;
   
   attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:range];
-  attrString = [[NSAttributedString alloc] initWithString:string attributes:attrs];
+  attrString = [[NSAttributedString alloc] initWithString:preedit attributes:attrs];
   
   [_currentClient setMarkedText:attrString
                  selectionRange:NSMakeRange(pos, 0) 
@@ -192,21 +192,17 @@
   [attrString release];
 }
 
--(void)showCandidates:(NSArray*)candidates
+-(void)showCandidates:(NSArray*)candidates highlighted:(NSUInteger)index
 {
   NSLog(@"showCandidates:");
+  [candidates retain];
   [_candidates release];
-  _candidates = [candidates retain];
-  
-  extern IMKCandidates* g_candidates;
-  if (!g_candidates) return;
-  if ([candidates count] > 0) {
-    [g_candidates updateCandidates];
-    [g_candidates show:kIMKLocateCandidatesBelowHint];
-  }
-  else {
-    [g_candidates hide];
-  }
+  _candidates = candidates;
+  NSRect caretPos;
+  [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&caretPos];
+  SquirrelPanel* panel = [[NSApp delegate] panel];
+  [panel updatePosition:caretPos];
+  [panel updateCandidates:candidates highlighted: index];
 }
 
 -(void)rimeUpdate
@@ -242,7 +238,7 @@
     for (i = 0; i < ctx.menu.num_candidates; ++i) {
       [candidates addObject:[NSString stringWithUTF8String:ctx.menu.candidates[i]]];
     }
-    [self showCandidates:candidates];
+    [self showCandidates:candidates highlighted:ctx.menu.highlighted_candidate_index];
   }
 
 }

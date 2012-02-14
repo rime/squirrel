@@ -16,7 +16,8 @@
 -(void)showPreeditString:(NSString*)string
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos;
--(void)showCandidates:(NSArray*)candidates;
+-(void)showCandidates:(NSArray*)candidates
+          highlighted:(NSUInteger)index;
 -(void)rimeUpdate;
 
 @end

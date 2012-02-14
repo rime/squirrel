@@ -3,10 +3,14 @@
 
 @implementation SquirrelApplicationDelegate
 
-//this method is added so that our controllers can access the shared NSMenu.
 -(NSMenu*)menu
 {
-    return _menu;
+  return _menu;
+}
+
+-(SquirrelPanel*)panel
+{
+  return _panel;
 }
 
 //add an awakeFromNib item so that we can set the action method.  Note that 

@@ -9,8 +9,6 @@ const NSString *kConnectionName = @"Squirrel_1_Connection";
 
 //let this be a global so our application controller delegate can access it easily
 IMKServer* g_server;
-IMKCandidates* g_candidates = nil;
-
 
 int main(int argc, char *argv[])
 {
@@ -24,15 +22,6 @@ int main(int argc, char *argv[])
   // background only application
   [NSBundle loadNibNamed: @"MainMenu" owner: [NSApplication sharedApplication]];
   
-  //create the candidate window 
-  g_candidates = [[IMKCandidates alloc] initWithServer:g_server
-                                             panelType:kIMKSingleColumnScrollingCandidatePanel];
-  NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-                              IMKCandidatesSendServerKeyEventFirst, [NSNumber numberWithBool:YES],
-                              nil];
-  [g_candidates setAttributes:attributes];
-  [g_candidates setDismissesAutomatically:NO];
-
   // start Rime
   RimeTraits squirrel_traits;
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
@@ -50,7 +39,6 @@ int main(int argc, char *argv[])
   RimeFinalize();
   
   [g_server release];
-  [g_candidates release];
   [pool release];
   return 0;
 }

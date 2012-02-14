@@ -12,29 +12,24 @@
 		44ABBE7114DD5A2700B8A82D /* essay.kct in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
 		44ABBE7214DD5A4000B8A82D /* cangjie5.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
 		44ABBE7314DD5A4000B8A82D /* cangjie5.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */; };
-		44ABBE7414DD5A4000B8A82D /* double_pinyin.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2B14DD596700C1ED3B /* double_pinyin.schema.yaml */; };
 		44ABBE7514DD5A4000B8A82D /* luna_pinyin.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2C14DD596700C1ED3B /* luna_pinyin.dict.yaml */; };
 		44ABBE7614DD5A4000B8A82D /* luna_pinyin.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2D14DD596700C1ED3B /* luna_pinyin.schema.yaml */; };
 		44ABBE7714DD5A4000B8A82D /* luna_pinyin_fluency.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */; };
 		44ABBE7814DD5A4000B8A82D /* luna_pinyin_simp.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */; };
 		44ABBE7914DD5A4000B8A82D /* luna_pinyin_tw.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */; };
-		44ABBE7A14DD5A4000B8A82D /* wubi86.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A3114DD596700C1ED3B /* wubi86.dict.yaml */; };
-		44ABBE7B14DD5A4000B8A82D /* wubi86.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A3214DD596700C1ED3B /* wubi86.schema.yaml */; };
 		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
 		44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95191430CF6000C888FB /* SquirrelInputController.m */; };
 		44AC951E1430CF7D00C888FB /* rime.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44AC951D1430CF7D00C888FB /* rime.icns */; };
 		44DA7A3314DD596700C1ED3B /* essay.kct in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
 		44DA7A3414DD596700C1ED3B /* cangjie5.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
 		44DA7A3514DD596700C1ED3B /* cangjie5.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */; };
-		44DA7A3614DD596700C1ED3B /* double_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2B14DD596700C1ED3B /* double_pinyin.schema.yaml */; };
 		44DA7A3714DD596700C1ED3B /* luna_pinyin.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2C14DD596700C1ED3B /* luna_pinyin.dict.yaml */; };
 		44DA7A3814DD596700C1ED3B /* luna_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2D14DD596700C1ED3B /* luna_pinyin.schema.yaml */; };
 		44DA7A3914DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */; };
 		44DA7A3A14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */; };
 		44DA7A3B14DD596700C1ED3B /* luna_pinyin_tw.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */; };
-		44DA7A3C14DD596700C1ED3B /* wubi86.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A3114DD596700C1ED3B /* wubi86.dict.yaml */; };
-		44DA7A3D14DD596700C1ED3B /* wubi86.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A3214DD596700C1ED3B /* wubi86.schema.yaml */; };
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
+		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -56,14 +51,11 @@
 				44ABBE7114DD5A2700B8A82D /* essay.kct in CopyFiles */,
 				44ABBE7214DD5A4000B8A82D /* cangjie5.dict.yaml in CopyFiles */,
 				44ABBE7314DD5A4000B8A82D /* cangjie5.schema.yaml in CopyFiles */,
-				44ABBE7414DD5A4000B8A82D /* double_pinyin.schema.yaml in CopyFiles */,
 				44ABBE7514DD5A4000B8A82D /* luna_pinyin.dict.yaml in CopyFiles */,
 				44ABBE7614DD5A4000B8A82D /* luna_pinyin.schema.yaml in CopyFiles */,
 				44ABBE7714DD5A4000B8A82D /* luna_pinyin_fluency.schema.yaml in CopyFiles */,
 				44ABBE7814DD5A4000B8A82D /* luna_pinyin_simp.schema.yaml in CopyFiles */,
 				44ABBE7914DD5A4000B8A82D /* luna_pinyin_tw.schema.yaml in CopyFiles */,
-				44ABBE7A14DD5A4000B8A82D /* wubi86.dict.yaml in CopyFiles */,
-				44ABBE7B14DD5A4000B8A82D /* wubi86.schema.yaml in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -95,20 +87,19 @@
 		44DA7A2714DD596700C1ED3B /* essay.kct */ = {isa = PBXFileReference; lastKnownFileType = file; name = essay.kct; path = ../brise/essay.kct; sourceTree = SOURCE_ROOT; };
 		44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cangjie5.dict.yaml; sourceTree = "<group>"; };
 		44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cangjie5.schema.yaml; sourceTree = "<group>"; };
-		44DA7A2B14DD596700C1ED3B /* double_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = double_pinyin.schema.yaml; sourceTree = "<group>"; };
 		44DA7A2C14DD596700C1ED3B /* luna_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin.dict.yaml; sourceTree = "<group>"; };
 		44DA7A2D14DD596700C1ED3B /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin.schema.yaml; sourceTree = "<group>"; };
 		44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
 		44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
 		44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
-		44DA7A3114DD596700C1ED3B /* wubi86.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.dict.yaml; sourceTree = "<group>"; };
-		44DA7A3214DD596700C1ED3B /* wubi86.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.schema.yaml; sourceTree = "<group>"; };
 		44E98EA514AE16DD00847AD6 /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checked.h; sourceTree = "<group>"; };
 		44E98EA614AE16DD00847AD6 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
 		44E98EA714AE16DD00847AD6 /* unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unchecked.h; sourceTree = "<group>"; };
 		44E98EC114AE1AC900847AD6 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
 		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
+		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
@@ -146,6 +137,8 @@
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				44E98EC114AE1AC900847AD6 /* utf8.h */,
 				44E98EC214AE1AC900847AD6 /* utf8.cpp */,
+				44F84AD514E94C490005D70B /* SquirrelPanel.h */,
+				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -215,14 +208,11 @@
 			children = (
 				44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */,
 				44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */,
-				44DA7A2B14DD596700C1ED3B /* double_pinyin.schema.yaml */,
 				44DA7A2C14DD596700C1ED3B /* luna_pinyin.dict.yaml */,
 				44DA7A2D14DD596700C1ED3B /* luna_pinyin.schema.yaml */,
 				44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */,
 				44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */,
 				44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */,
-				44DA7A3114DD596700C1ED3B /* wubi86.dict.yaml */,
-				44DA7A3214DD596700C1ED3B /* wubi86.schema.yaml */,
 			);
 			name = preset;
 			path = ../brise/preset;
@@ -308,14 +298,11 @@
 				44DA7A3314DD596700C1ED3B /* essay.kct in Resources */,
 				44DA7A3414DD596700C1ED3B /* cangjie5.dict.yaml in Resources */,
 				44DA7A3514DD596700C1ED3B /* cangjie5.schema.yaml in Resources */,
-				44DA7A3614DD596700C1ED3B /* double_pinyin.schema.yaml in Resources */,
 				44DA7A3714DD596700C1ED3B /* luna_pinyin.dict.yaml in Resources */,
 				44DA7A3814DD596700C1ED3B /* luna_pinyin.schema.yaml in Resources */,
 				44DA7A3914DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml in Resources */,
 				44DA7A3A14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml in Resources */,
 				44DA7A3B14DD596700C1ED3B /* luna_pinyin_tw.schema.yaml in Resources */,
-				44DA7A3C14DD596700C1ED3B /* wubi86.dict.yaml in Resources */,
-				44DA7A3D14DD596700C1ED3B /* wubi86.schema.yaml in Resources */,
 				44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -332,6 +319,7 @@
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
 				44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */,
+				44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -391,10 +379,10 @@
 					"-lopencc",
 					"-lkyotocabinet",
 					"-lyaml-cpp",
-					"-lboost_filesystem",
-					"-lboost_regex",
-					"-lboost_signals",
-					"-lboost_system",
+					"-lboost_filesystem-mt",
+					"-lboost_regex-mt",
+					"-lboost_signals-mt",
+					"-lboost_system-mt",
 					"-lboost_thread-mt",
 					"-lz",
 					"-lstdc++",
@@ -430,10 +418,10 @@
 					"-lopencc",
 					"-lkyotocabinet",
 					"-lyaml-cpp",
-					"-lboost_filesystem",
-					"-lboost_regex",
-					"-lboost_signals",
-					"-lboost_system",
+					"-lboost_filesystem-mt",
+					"-lboost_regex-mt",
+					"-lboost_signals-mt",
+					"-lboost_system-mt",
 					"-lboost_thread-mt",
 					"-lz",
 					"-lstdc++",
