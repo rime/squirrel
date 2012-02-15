@@ -76,7 +76,9 @@
       NSString* keyChars = [event characters];
       NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]", 
             self, sender, modifiers, keyCode, keyChars);
-      
+      // ignore Command+X hotkeys.
+      if (modifiers & OSX_COMMAND_MASK)
+        break;
       // translate osx keyevents to rime keyevents
       int rime_keycode = osx_keycode_to_rime_keycode(keyCode, [keyChars UTF8String][0]);
       if (rime_keycode)
