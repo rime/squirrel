@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4407F3A314EC071E001329FE /* to_tw_variants.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
+		4407F3A414EC071E001329FE /* trad_to_simp_characters.ocd in Resources */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
+		4407F3A514EC071E001329FE /* trad_to_simp_phrases.ocd in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
+		4407F3A614EC071E001329FE /* zht2zhs.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
+		4407F3A714EC071E001329FE /* zht2zhtw_v.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
+		4407F3B014EC078F001329FE /* to_tw_variants.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
+		4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
+		4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
+		4407F3B314EC078F001329FE /* zht2zhs.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
+		4407F3B414EC078F001329FE /* zht2zhtw_v.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
 		44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7014DD5A2100B8A82D /* default.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7114DD5A2700B8A82D /* essay.kct in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
@@ -41,6 +51,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		4407F3CA14EC079A001329FE /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = opencc;
+			dstSubfolderSpec = 12;
+			files = (
+				4407F3B014EC078F001329FE /* to_tw_variants.txt in CopyFiles */,
+				4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in CopyFiles */,
+				4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in CopyFiles */,
+				4407F3B314EC078F001329FE /* zht2zhs.ini in CopyFiles */,
+				4407F3B414EC078F001329FE /* zht2zhtw_v.ini in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		44DA7A1614DD581B00C1ED3B /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -78,6 +102,11 @@
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
+		4407F39E14EC071E001329FE /* to_tw_variants.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = to_tw_variants.txt; sourceTree = "<group>"; };
+		4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = trad_to_simp_characters.ocd; sourceTree = "<group>"; };
+		4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = trad_to_simp_phrases.ocd; sourceTree = "<group>"; };
+		4407F3A114EC071E001329FE /* zht2zhs.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zht2zhs.ini; sourceTree = "<group>"; };
+		4407F3A214EC071E001329FE /* zht2zhtw_v.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zht2zhtw_v.ini; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = ../brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -203,6 +232,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4407F39D14EC071E001329FE /* opencc */ = {
+			isa = PBXGroup;
+			children = (
+				4407F39E14EC071E001329FE /* to_tw_variants.txt */,
+				4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */,
+				4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */,
+				4407F3A114EC071E001329FE /* zht2zhs.ini */,
+				4407F3A214EC071E001329FE /* zht2zhtw_v.ini */,
+			);
+			name = opencc;
+			path = data/opencc;
+			sourceTree = "<group>";
+		};
 		44DA7A2814DD596700C1ED3B /* preset */ = {
 			isa = PBXGroup;
 			children = (
@@ -221,6 +263,7 @@
 		44DA7A4214DD598900C1ED3B /* SharedSupport */ = {
 			isa = PBXGroup;
 			children = (
+				4407F39D14EC071E001329FE /* opencc */,
 				44ABBE6314DD59EA00B8A82D /* default.yaml */,
 				44DA7A2714DD596700C1ED3B /* essay.kct */,
 				44DA7A2814DD596700C1ED3B /* preset */,
@@ -250,6 +293,7 @@
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
 				44DA7A1614DD581B00C1ED3B /* CopyFiles */,
+				4407F3CA14EC079A001329FE /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -304,6 +348,11 @@
 				44DA7A3A14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml in Resources */,
 				44DA7A3B14DD596700C1ED3B /* luna_pinyin_tw.schema.yaml in Resources */,
 				44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */,
+				4407F3A314EC071E001329FE /* to_tw_variants.txt in Resources */,
+				4407F3A414EC071E001329FE /* trad_to_simp_characters.ocd in Resources */,
+				4407F3A514EC071E001329FE /* trad_to_simp_phrases.ocd in Resources */,
+				4407F3A614EC071E001329FE /* zht2zhs.ini in Resources */,
+				4407F3A714EC071E001329FE /* zht2zhtw_v.ini in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

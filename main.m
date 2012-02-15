@@ -22,6 +22,9 @@ int main(int argc, char *argv[])
   // background only application
   [NSBundle loadNibNamed: @"MainMenu" owner: [NSApplication sharedApplication]];
   
+  // opencc will be configured with relative dictionary paths
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[[NSBundle mainBundle] sharedSupportPath]];
+  
   // start Rime
   RimeTraits squirrel_traits;
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
