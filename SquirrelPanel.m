@@ -12,7 +12,7 @@ static const int kBorderHeight = 10;
 static const int kBorderWidth = 10;
 static const int kOffsetHeight = 5;
 static const int kFontSize = 24;
-static const double kAlpha = 0.9;
+static const double kAlpha = 1.0;
 
 @interface SquirrelView : NSView
 {
