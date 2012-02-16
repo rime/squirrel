@@ -40,7 +40,7 @@
 
 
 int osx_modifiers_to_rime_modifiers(unsigned modifiers);
-int osx_keycode_to_rime_keycode(int keycode, int keychar);
+int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift);
 
 
 #endif /* _MACOS_KEYCODE_H_ */

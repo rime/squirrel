@@ -39,6 +39,7 @@ int main(int argc, char *argv[])
   // finally run everything
   [[NSApplication sharedApplication] run];
   
+  NSLog(@"Squirrel quitting...");
   RimeFinalize();
   
   [g_server release];

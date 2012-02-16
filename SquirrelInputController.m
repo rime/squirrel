@@ -26,7 +26,7 @@
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
-  NSLog(@"handleEvent:client:");
+  //NSLog(@"handleEvent:client:");
   
   if (!_session) {
     [self createSession];
@@ -39,10 +39,10 @@
   NSUInteger modifiers = [event modifierFlags];  
   switch ([event type]) {
     case NSFlagsChanged:
-      if (_lastEventType == NSFlagsChanged && _lastModifier == modifiers)
-        return YES;
-      if (_lastEventType == NSFlagsChanged)
       {
+        if (_lastModifier == modifiers)
+          return YES;
+        //NSLog(@"FLAGSCHANGED self: 0x%x, client: 0x%x, modifiers: 0x%x", self, sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
         int changes = _lastModifier ^ modifiers;
@@ -68,19 +68,20 @@
         }
         [self rimeUpdate];
       }
-      NSLog(@"FLAGSCHANGED self: 0x%x, client: 0x%x, modifiers: 0x%x", self, sender, modifiers);
       break;
     case NSKeyDown:
     {
       NSInteger keyCode = [event keyCode];
       NSString* keyChars = [event characters];
-      NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]", 
-            self, sender, modifiers, keyCode, keyChars);
+      //NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]", 
+      //      self, sender, modifiers, keyCode, keyChars);
       // ignore Command+X hotkeys.
       if (modifiers & OSX_COMMAND_MASK)
         break;
       // translate osx keyevents to rime keyevents
-      int rime_keycode = osx_keycode_to_rime_keycode(keyCode, [keyChars UTF8String][0]);
+      int rime_keycode = osx_keycode_to_rime_keycode(keyCode,
+                                                     [keyChars UTF8String][0],
+                                                     modifiers & OSX_SHIFT_MASK);
       if (rime_keycode)
       {
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
@@ -100,18 +101,18 @@
 
 -(NSUInteger)recognizedEvents:(id)sender
 {
-  NSLog(@"recognizedEvents:");
+  //NSLog(@"recognizedEvents:");
   return NSKeyDownMask | NSFlagsChangedMask;
 }
 
 -(void)activateServer:(id)sender
 {
-  NSLog(@"activateServer:");
+  //NSLog(@"activateServer:");
 }
 
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
-  NSLog(@"initWithServer:delegate:client:");
+  //NSLog(@"initWithServer:delegate:client:");
   if (self = [super initWithServer:server delegate:delegate client:inputClient])
     [self createSession];
   
@@ -120,7 +121,7 @@
 
 -(void)deactivateServer:(id)sender
 {
-  NSLog(@"deactivateServer:");
+  //NSLog(@"deactivateServer:");
   [[[NSApp delegate] panel] hide];
 }
 
@@ -137,7 +138,7 @@
 
 -(void)commitComposition:(id)sender 
 {
-  NSLog(@"commitComposition:");
+  //NSLog(@"commitComposition:");
   // FIXME: chrome's address bar issues this callback when showing suggestions. 
   if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return;
@@ -162,7 +163,7 @@
 
 -(void)commitString:(NSString*)string
 {
-  NSLog(@"commitString:");
+  //NSLog(@"commitString:");
   [_currentClient insertText:string 
             replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
   
@@ -176,7 +177,7 @@
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos
 {
-  NSLog(@"showPreeditString:");
+  //NSLog(@"showPreeditString:");
   [preedit retain];
   [_preeditString release];
   _preeditString = preedit;
@@ -196,7 +197,7 @@
 
 -(void)showCandidates:(NSArray*)candidates highlighted:(NSUInteger)index
 {
-  NSLog(@"showCandidates:");
+  //NSLog(@"showCandidates:");
   [candidates retain];
   [_candidates release];
   _candidates = candidates;
@@ -209,7 +210,7 @@
 
 -(void)rimeUpdate
 {
-  NSLog(@"update");
+  //NSLog(@"update");
   
   RimeCommit commit;
   if (RimeGetCommit(_session, &commit)) {
@@ -253,13 +254,13 @@
 
 -(void)createSession
 {
-  NSLog(@"createSession:");
+  //NSLog(@"createSession:");
   _session = RimeCreateSession();
 }
 
 -(void)destroySession
 {
-  NSLog(@"destroySession:");
+  //NSLog(@"destroySession:");
   if (_session) {
     RimeDestroySession(_session);
     _session = 0;
