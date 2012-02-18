@@ -107,6 +107,8 @@
 		4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = trad_to_simp_phrases.ocd; sourceTree = "<group>"; };
 		4407F3A114EC071E001329FE /* zht2zhs.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zht2zhs.ini; sourceTree = "<group>"; };
 		4407F3A214EC071E001329FE /* zht2zhtw_v.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zht2zhtw_v.ini; sourceTree = "<group>"; };
+		446D18E014F0191200EC3116 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		446D18E114F0193100EC3116 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = ../brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -320,6 +322,7 @@
 				French,
 				German,
 				zh_CN,
+				zh_TW,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Squirrel */;
 			projectDirPath = "";
@@ -379,6 +382,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				089C165DFE840E0CC02AAC07 /* English */,
+				446D18E014F0191200EC3116 /* zh_CN */,
+				446D18E114F0193100EC3116 /* zh_TW */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
