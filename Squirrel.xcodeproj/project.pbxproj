@@ -17,6 +17,24 @@
 		4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
 		4407F3B314EC078F001329FE /* zht2zhs.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
 		4407F3B414EC078F001329FE /* zht2zhtw_v.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
+		44935C0B14F052EC00346874 /* double_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0214F052EC00346874 /* double_pinyin.schema.yaml */; };
+		44935C0C14F052EC00346874 /* jyutping.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0314F052EC00346874 /* jyutping.dict.yaml */; };
+		44935C0D14F052EC00346874 /* jyutping.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
+		44935C0E14F052EC00346874 /* wubi86.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0514F052EC00346874 /* wubi86.dict.yaml */; };
+		44935C0F14F052EC00346874 /* wubi86.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0614F052EC00346874 /* wubi86.schema.yaml */; };
+		44935C1014F052EC00346874 /* wugniu.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0714F052EC00346874 /* wugniu.dict.yaml */; };
+		44935C1114F052EC00346874 /* wugniu.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0814F052EC00346874 /* wugniu.schema.yaml */; };
+		44935C1214F052EC00346874 /* wugniu_lopha.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
+		44935C1314F052EC00346874 /* wugniu_lopha.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
+		44935C1614F0531D00346874 /* double_pinyin.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0214F052EC00346874 /* double_pinyin.schema.yaml */; };
+		44935C1714F0531D00346874 /* jyutping.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0314F052EC00346874 /* jyutping.dict.yaml */; };
+		44935C1814F0531D00346874 /* jyutping.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
+		44935C1914F0531D00346874 /* wubi86.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0514F052EC00346874 /* wubi86.dict.yaml */; };
+		44935C1A14F0531D00346874 /* wubi86.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0614F052EC00346874 /* wubi86.schema.yaml */; };
+		44935C1B14F0531D00346874 /* wugniu.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0714F052EC00346874 /* wugniu.dict.yaml */; };
+		44935C1C14F0531D00346874 /* wugniu.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0814F052EC00346874 /* wugniu.schema.yaml */; };
+		44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
+		44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
 		44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7014DD5A2100B8A82D /* default.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7114DD5A2700B8A82D /* essay.kct in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
@@ -80,6 +98,15 @@
 				44ABBE7714DD5A4000B8A82D /* luna_pinyin_fluency.schema.yaml in CopyFiles */,
 				44ABBE7814DD5A4000B8A82D /* luna_pinyin_simp.schema.yaml in CopyFiles */,
 				44ABBE7914DD5A4000B8A82D /* luna_pinyin_tw.schema.yaml in CopyFiles */,
+				44935C1614F0531D00346874 /* double_pinyin.schema.yaml in CopyFiles */,
+				44935C1714F0531D00346874 /* jyutping.dict.yaml in CopyFiles */,
+				44935C1814F0531D00346874 /* jyutping.schema.yaml in CopyFiles */,
+				44935C1914F0531D00346874 /* wubi86.dict.yaml in CopyFiles */,
+				44935C1A14F0531D00346874 /* wubi86.schema.yaml in CopyFiles */,
+				44935C1B14F0531D00346874 /* wugniu.dict.yaml in CopyFiles */,
+				44935C1C14F0531D00346874 /* wugniu.schema.yaml in CopyFiles */,
+				44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in CopyFiles */,
+				44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -109,6 +136,15 @@
 		4407F3A214EC071E001329FE /* zht2zhtw_v.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zht2zhtw_v.ini; sourceTree = "<group>"; };
 		446D18E014F0191200EC3116 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		446D18E114F0193100EC3116 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		44935C0214F052EC00346874 /* double_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = double_pinyin.schema.yaml; sourceTree = "<group>"; };
+		44935C0314F052EC00346874 /* jyutping.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jyutping.dict.yaml; sourceTree = "<group>"; };
+		44935C0414F052EC00346874 /* jyutping.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jyutping.schema.yaml; sourceTree = "<group>"; };
+		44935C0514F052EC00346874 /* wubi86.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.dict.yaml; sourceTree = "<group>"; };
+		44935C0614F052EC00346874 /* wubi86.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.schema.yaml; sourceTree = "<group>"; };
+		44935C0714F052EC00346874 /* wugniu.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu.dict.yaml; sourceTree = "<group>"; };
+		44935C0814F052EC00346874 /* wugniu.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu.schema.yaml; sourceTree = "<group>"; };
+		44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.dict.yaml; sourceTree = "<group>"; };
+		44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.schema.yaml; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = ../brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -247,6 +283,23 @@
 			path = data/opencc;
 			sourceTree = "<group>";
 		};
+		44935C0114F052EC00346874 /* supplement */ = {
+			isa = PBXGroup;
+			children = (
+				44935C0214F052EC00346874 /* double_pinyin.schema.yaml */,
+				44935C0314F052EC00346874 /* jyutping.dict.yaml */,
+				44935C0414F052EC00346874 /* jyutping.schema.yaml */,
+				44935C0514F052EC00346874 /* wubi86.dict.yaml */,
+				44935C0614F052EC00346874 /* wubi86.schema.yaml */,
+				44935C0714F052EC00346874 /* wugniu.dict.yaml */,
+				44935C0814F052EC00346874 /* wugniu.schema.yaml */,
+				44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */,
+				44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */,
+			);
+			name = supplement;
+			path = ../brise/supplement;
+			sourceTree = SOURCE_ROOT;
+		};
 		44DA7A2814DD596700C1ED3B /* preset */ = {
 			isa = PBXGroup;
 			children = (
@@ -269,6 +322,7 @@
 				44ABBE6314DD59EA00B8A82D /* default.yaml */,
 				44DA7A2714DD596700C1ED3B /* essay.kct */,
 				44DA7A2814DD596700C1ED3B /* preset */,
+				44935C0114F052EC00346874 /* supplement */,
 			);
 			name = SharedSupport;
 			sourceTree = "<group>";
@@ -356,6 +410,15 @@
 				4407F3A514EC071E001329FE /* trad_to_simp_phrases.ocd in Resources */,
 				4407F3A614EC071E001329FE /* zht2zhs.ini in Resources */,
 				4407F3A714EC071E001329FE /* zht2zhtw_v.ini in Resources */,
+				44935C0B14F052EC00346874 /* double_pinyin.schema.yaml in Resources */,
+				44935C0C14F052EC00346874 /* jyutping.dict.yaml in Resources */,
+				44935C0D14F052EC00346874 /* jyutping.schema.yaml in Resources */,
+				44935C0E14F052EC00346874 /* wubi86.dict.yaml in Resources */,
+				44935C0F14F052EC00346874 /* wubi86.schema.yaml in Resources */,
+				44935C1014F052EC00346874 /* wugniu.dict.yaml in Resources */,
+				44935C1114F052EC00346874 /* wugniu.schema.yaml in Resources */,
+				44935C1214F052EC00346874 /* wugniu_lopha.dict.yaml in Resources */,
+				44935C1314F052EC00346874 /* wugniu_lopha.schema.yaml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
