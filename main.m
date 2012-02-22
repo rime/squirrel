@@ -34,6 +34,9 @@ int main(int argc, char *argv[])
   squirrel_traits.distribution_version = "0.9";
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
+  if (RimeStartMaintenanceOnWorkspaceChange()) {
+    // TODO: notification...
+  }
   NSLog(@"Squirrel reporting!");
   
   // finally run everything
