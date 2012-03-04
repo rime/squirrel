@@ -120,7 +120,9 @@ static const double kAlpha = 1.0;
   _position = caretPos;
 }
 
--(void)updateCandidates:(NSArray*)candidates highlighted:(NSUInteger)index
+-(void)updateCandidates:(NSArray*)candidates
+             withLabels:(NSString*)labels
+            highlighted:(NSUInteger)index
 {
   if ([candidates count] == 0) {
     [self hide];
@@ -129,7 +131,13 @@ static const double kAlpha = 1.0;
   NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
-    NSString* str = [NSString stringWithFormat:@"%d. %@ ", i + 1, [candidates objectAtIndex:i]];
+    NSString* str;
+    if (i < [labels length]) {
+      str = [NSString stringWithFormat:@"%c. %@ ", [labels characterAtIndex:i], [candidates objectAtIndex:i]];
+    }
+    else {
+      str = [NSString stringWithFormat:@"%d. %@ ", i + 1, [candidates objectAtIndex:i]];
+    }
     NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
     if (i == index) {
       NSRange whole_line = NSMakeRange(0, [line length]);

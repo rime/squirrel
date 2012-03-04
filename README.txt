@@ -1,7 +1,7 @@
 # 說明書
 
 ----------------------------------------------------------
-【鼠鬚管】輸入法 0.9
+【鼠鬚管】輸入法 0.9.1
 
 基於 中州韻輸入法引擎／Rime Input Method Engine 及開源技術
 式恕堂 版權所無 Copyleft 2012
@@ -40,6 +40,9 @@ http://code.google.com/p/rimeime/w/list
 ----------------------------------------------------------
 更新日誌
 
+鼠鬚管 0.9.1
+  * 新增備選輸入方案【注音】、【地球拼音】
+
 鼠鬚管 0.9
   * 初試鋒芒
 
@@ -51,13 +54,15 @@ http://code.google.com/p/rimeime/w/list
 
 輸入方案設計：
   * 【朙月拼音】系列
-    感謝 CEDICT、Android 拼音、新酷音、opencc 等開源項目
+    感謝 CC-CEDICT、Android 拼音、新酷音、opencc 等開源項目
   * 【倉頡五代】
     發明人 朱邦復先生
     碼表源自 www.chinesecj.com
   * 【五笔86】
     發明人 王永民先生
     碼表源自 ibus-table
+  * 【注音／地球拼音】
+    作者 佛振
   * 【粵拼】
     採用《香港語言學學會粵語拼音方案》
     http://www.lshk.org/cantonese.php

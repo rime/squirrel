@@ -19,6 +19,8 @@
 -(void)show;
 -(void)hide;
 -(void)updatePosition:(NSRect)caretPos;
--(void)updateCandidates:(NSArray*)candidates highlighted:(NSUInteger)index;
+-(void)updateCandidates:(NSArray*)candidates
+             withLabels:(NSString*)labels
+            highlighted:(NSUInteger)index;
 
 @end

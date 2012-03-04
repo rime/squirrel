@@ -195,7 +195,9 @@
   [attrString release];
 }
 
--(void)showCandidates:(NSArray*)candidates highlighted:(NSUInteger)index
+-(void)showCandidates:(NSArray*)candidates
+           withLabels:(NSString*)labels
+          highlighted:(NSUInteger)index
 {
   //NSLog(@"showCandidates:");
   [candidates retain];
@@ -205,7 +207,7 @@
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&caretPos];
   SquirrelPanel* panel = [[NSApp delegate] panel];
   [panel updatePosition:caretPos];
-  [panel updateCandidates:candidates highlighted: index];
+  [panel updateCandidates:candidates withLabels:labels highlighted:index];
 }
 
 -(void)rimeUpdate
@@ -241,7 +243,10 @@
     for (i = 0; i < ctx.menu.num_candidates; ++i) {
       [candidates addObject:[NSString stringWithUTF8String:ctx.menu.candidates[i]]];
     }
-    [self showCandidates:candidates highlighted:ctx.menu.highlighted_candidate_index];
+    NSString *labels = [NSString stringWithUTF8String:ctx.menu.select_keys];
+    [self showCandidates:candidates
+              withLabels:labels
+             highlighted:ctx.menu.highlighted_candidate_index];
   }
 
 }
