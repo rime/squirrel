@@ -1,6 +1,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
+#import <string.h>
 #import <rime_api.h>
 
 // Each input method needs a unique connection name.
@@ -12,6 +13,12 @@ IMKServer* g_server;
 
 int main(int argc, char *argv[])
 {
+  if (argc > 1 && !strcmp("--build", argv[1])) {
+    // build all schemas in current directory
+    RimeDeployerInitialize(NULL);
+    return RimePrebuildAllSchemas() ? 0 : 1;
+  }
+  
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   
   // find the bundle identifier and then initialize the input method server

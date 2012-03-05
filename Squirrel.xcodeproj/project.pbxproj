@@ -365,6 +365,7 @@
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
 				44DA7A1614DD581B00C1ED3B /* CopyFiles */,
 				4407F3CA14EC079A001329FE /* CopyFiles */,
+				442B2D97150530F0002B1F81 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -441,6 +442,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		442B2D97150530F0002B1F81 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 12;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "echo \"prebuilding schemas...\"\nset PREBUILD_SCHEMA_PATH=\"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH\"\n(cd \"$PREBUILD_SCHEMA_PATH\"; \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\" --build && if [ -e rime.log ]; then rm rime.log; fi)";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
