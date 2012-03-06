@@ -7,31 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4407F3A314EC071E001329FE /* to_tw_variants.txt in Resources */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
-		4407F3A414EC071E001329FE /* trad_to_simp_characters.ocd in Resources */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
-		4407F3A514EC071E001329FE /* trad_to_simp_phrases.ocd in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
-		4407F3A614EC071E001329FE /* zht2zhs.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
-		4407F3A714EC071E001329FE /* zht2zhtw_v.ini in Resources */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
 		4407F3B014EC078F001329FE /* to_tw_variants.txt in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
 		4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
 		4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
 		4407F3B314EC078F001329FE /* zht2zhs.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
 		4407F3B414EC078F001329FE /* zht2zhtw_v.ini in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
-		4426D34715028210009100C7 /* bopomofo.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 4426D34415028210009100C7 /* bopomofo.schema.yaml */; };
-		4426D34815028210009100C7 /* terra_pinyin.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 4426D34515028210009100C7 /* terra_pinyin.dict.yaml */; };
-		4426D34915028210009100C7 /* terra_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 4426D34615028210009100C7 /* terra_pinyin.schema.yaml */; };
 		4426D35E150290C3009100C7 /* terra_pinyin.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4426D34515028210009100C7 /* terra_pinyin.dict.yaml */; };
 		4426D35F150290C3009100C7 /* terra_pinyin.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4426D34615028210009100C7 /* terra_pinyin.schema.yaml */; };
 		4426D360150290CF009100C7 /* bopomofo.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 4426D34415028210009100C7 /* bopomofo.schema.yaml */; };
-		44935C0B14F052EC00346874 /* double_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0214F052EC00346874 /* double_pinyin.schema.yaml */; };
-		44935C0C14F052EC00346874 /* jyutping.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0314F052EC00346874 /* jyutping.dict.yaml */; };
-		44935C0D14F052EC00346874 /* jyutping.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
-		44935C0E14F052EC00346874 /* wubi86.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0514F052EC00346874 /* wubi86.dict.yaml */; };
-		44935C0F14F052EC00346874 /* wubi86.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0614F052EC00346874 /* wubi86.schema.yaml */; };
-		44935C1014F052EC00346874 /* wugniu.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0714F052EC00346874 /* wugniu.dict.yaml */; };
-		44935C1114F052EC00346874 /* wugniu.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0814F052EC00346874 /* wugniu.schema.yaml */; };
-		44935C1214F052EC00346874 /* wugniu_lopha.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
-		44935C1314F052EC00346874 /* wugniu_lopha.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
 		44935C1614F0531D00346874 /* double_pinyin.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0214F052EC00346874 /* double_pinyin.schema.yaml */; };
 		44935C1714F0531D00346874 /* jyutping.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0314F052EC00346874 /* jyutping.dict.yaml */; };
 		44935C1814F0531D00346874 /* jyutping.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
@@ -41,7 +24,7 @@
 		44935C1C14F0531D00346874 /* wugniu.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0814F052EC00346874 /* wugniu.schema.yaml */; };
 		44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
 		44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
-		44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
+		44943BB815066A540005EE85 /* postflight in Resources */ = {isa = PBXBuildFile; fileRef = 44943BB715066A540005EE85 /* postflight */; };
 		44ABBE7014DD5A2100B8A82D /* default.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7114DD5A2700B8A82D /* essay.kct in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
 		44ABBE7214DD5A4000B8A82D /* cangjie5.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
@@ -54,14 +37,6 @@
 		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
 		44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95191430CF6000C888FB /* SquirrelInputController.m */; };
 		44AC951E1430CF7D00C888FB /* rime.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44AC951D1430CF7D00C888FB /* rime.icns */; };
-		44DA7A3314DD596700C1ED3B /* essay.kct in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
-		44DA7A3414DD596700C1ED3B /* cangjie5.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
-		44DA7A3514DD596700C1ED3B /* cangjie5.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */; };
-		44DA7A3714DD596700C1ED3B /* luna_pinyin.dict.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2C14DD596700C1ED3B /* luna_pinyin.dict.yaml */; };
-		44DA7A3814DD596700C1ED3B /* luna_pinyin.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2D14DD596700C1ED3B /* luna_pinyin.schema.yaml */; };
-		44DA7A3914DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */; };
-		44DA7A3A14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */; };
-		44DA7A3B14DD596700C1ED3B /* luna_pinyin_tw.schema.yaml in Resources */ = {isa = PBXBuildFile; fileRef = 44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */; };
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
@@ -157,6 +132,7 @@
 		44935C0814F052EC00346874 /* wugniu.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu.schema.yaml; sourceTree = "<group>"; };
 		44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.dict.yaml; sourceTree = "<group>"; };
 		44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.schema.yaml; sourceTree = "<group>"; };
+		44943BB715066A540005EE85 /* postflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = postflight; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = ../brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -264,6 +240,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44943BB715066A540005EE85 /* postflight */,
 				44AC951D1430CF7D00C888FB /* rime.icns */,
 				A4FC48C90F6530EF0069BE81 /* Localizable.strings */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -365,7 +342,6 @@
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
 				44DA7A1614DD581B00C1ED3B /* CopyFiles */,
 				4407F3CA14EC079A001329FE /* CopyFiles */,
-				442B2D97150530F0002B1F81 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -412,52 +388,11 @@
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44AC951E1430CF7D00C888FB /* rime.icns in Resources */,
-				44DA7A3314DD596700C1ED3B /* essay.kct in Resources */,
-				44DA7A3414DD596700C1ED3B /* cangjie5.dict.yaml in Resources */,
-				44DA7A3514DD596700C1ED3B /* cangjie5.schema.yaml in Resources */,
-				44DA7A3714DD596700C1ED3B /* luna_pinyin.dict.yaml in Resources */,
-				44DA7A3814DD596700C1ED3B /* luna_pinyin.schema.yaml in Resources */,
-				44DA7A3914DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml in Resources */,
-				44DA7A3A14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml in Resources */,
-				44DA7A3B14DD596700C1ED3B /* luna_pinyin_tw.schema.yaml in Resources */,
-				44ABBE6414DD59EA00B8A82D /* default.yaml in Resources */,
-				4407F3A314EC071E001329FE /* to_tw_variants.txt in Resources */,
-				4407F3A414EC071E001329FE /* trad_to_simp_characters.ocd in Resources */,
-				4407F3A514EC071E001329FE /* trad_to_simp_phrases.ocd in Resources */,
-				4407F3A614EC071E001329FE /* zht2zhs.ini in Resources */,
-				4407F3A714EC071E001329FE /* zht2zhtw_v.ini in Resources */,
-				44935C0B14F052EC00346874 /* double_pinyin.schema.yaml in Resources */,
-				44935C0C14F052EC00346874 /* jyutping.dict.yaml in Resources */,
-				44935C0D14F052EC00346874 /* jyutping.schema.yaml in Resources */,
-				44935C0E14F052EC00346874 /* wubi86.dict.yaml in Resources */,
-				44935C0F14F052EC00346874 /* wubi86.schema.yaml in Resources */,
-				44935C1014F052EC00346874 /* wugniu.dict.yaml in Resources */,
-				44935C1114F052EC00346874 /* wugniu.schema.yaml in Resources */,
-				44935C1214F052EC00346874 /* wugniu_lopha.dict.yaml in Resources */,
-				44935C1314F052EC00346874 /* wugniu_lopha.schema.yaml in Resources */,
-				4426D34715028210009100C7 /* bopomofo.schema.yaml in Resources */,
-				4426D34815028210009100C7 /* terra_pinyin.dict.yaml in Resources */,
-				4426D34915028210009100C7 /* terra_pinyin.schema.yaml in Resources */,
+				44943BB815066A540005EE85 /* postflight in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		442B2D97150530F0002B1F81 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 12;
-			files = (
-			);
-			inputPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "echo \"precompiling schemas...\"\nset PREBUILD_SCHEMA_PATH=\"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH\"\n(cd \"$PREBUILD_SCHEMA_PATH\"; \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\" --build && if [ -e rime.log ]; then rm rime.log; fi)";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {

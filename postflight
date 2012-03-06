@@ -1,0 +1,4 @@
+#!/bin/bash
+RIME_SHARED_DATA_PATH="/Library/Input Methods/Squirrel.app/Contents/SharedSupport"
+say "precompiling Rime schemas. patience..."
+(cd "$RIME_SHARED_DATA_PATH"; ../MacOS/Squirrel --build && if [ -e rime.log ]; then rm rime.log; fi)

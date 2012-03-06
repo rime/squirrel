@@ -2,3 +2,4 @@ Squirrel.xcodeproj/*.mode1v3
 Squirrel.xcodeproj/*.pbxuser
 build
 lib/*.a
+package
