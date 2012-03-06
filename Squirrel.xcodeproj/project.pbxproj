@@ -455,7 +455,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "echo \"prebuilding schemas...\"\nset PREBUILD_SCHEMA_PATH=\"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH\"\n(cd \"$PREBUILD_SCHEMA_PATH\"; \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\" --build && if [ -e rime.log ]; then rm rime.log; fi)";
+			shellScript = "echo \"precompiling schemas...\"\nset PREBUILD_SCHEMA_PATH=\"$TARGET_BUILD_DIR/$SHARED_SUPPORT_FOLDER_PATH\"\n(cd \"$PREBUILD_SCHEMA_PATH\"; \"$TARGET_BUILD_DIR/$EXECUTABLE_PATH\" --build && if [ -e rime.log ]; then rm rime.log; fi)";
 		};
 /* End PBXShellScriptBuildPhase section */
 
