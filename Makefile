@@ -23,10 +23,12 @@ debug:
 install:
 	rm -rf "/Library/Input Methods/Squirrel.app"
 	cp -R build/Debug/Squirrel.app "/Library/Input Methods"
+	./postflight
 
 install-release:
 	rm -rf "/Library/Input Methods/Squirrel.app"
 	cp -R build/Release/Squirrel.app "/Library/Input Methods"
+	./postflight
 
 clean:
 	rm -rf build

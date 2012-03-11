@@ -20,7 +20,6 @@
 		44935C1814F0531D00346874 /* jyutping.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
 		44935C1914F0531D00346874 /* wubi86.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0514F052EC00346874 /* wubi86.dict.yaml */; };
 		44935C1A14F0531D00346874 /* wubi86.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0614F052EC00346874 /* wubi86.schema.yaml */; };
-		44935C1B14F0531D00346874 /* wugniu.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0714F052EC00346874 /* wugniu.dict.yaml */; };
 		44935C1C14F0531D00346874 /* wugniu.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0814F052EC00346874 /* wugniu.schema.yaml */; };
 		44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
 		44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
@@ -87,7 +86,6 @@
 				44935C1814F0531D00346874 /* jyutping.schema.yaml in CopyFiles */,
 				44935C1914F0531D00346874 /* wubi86.dict.yaml in CopyFiles */,
 				44935C1A14F0531D00346874 /* wubi86.schema.yaml in CopyFiles */,
-				44935C1B14F0531D00346874 /* wugniu.dict.yaml in CopyFiles */,
 				44935C1C14F0531D00346874 /* wugniu.schema.yaml in CopyFiles */,
 				44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in CopyFiles */,
 				44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in CopyFiles */,
@@ -128,7 +126,6 @@
 		44935C0414F052EC00346874 /* jyutping.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jyutping.schema.yaml; sourceTree = "<group>"; };
 		44935C0514F052EC00346874 /* wubi86.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.dict.yaml; sourceTree = "<group>"; };
 		44935C0614F052EC00346874 /* wubi86.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi86.schema.yaml; sourceTree = "<group>"; };
-		44935C0714F052EC00346874 /* wugniu.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu.dict.yaml; sourceTree = "<group>"; };
 		44935C0814F052EC00346874 /* wugniu.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu.schema.yaml; sourceTree = "<group>"; };
 		44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.dict.yaml; sourceTree = "<group>"; };
 		44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.schema.yaml; sourceTree = "<group>"; };
@@ -280,7 +277,6 @@
 				44935C0414F052EC00346874 /* jyutping.schema.yaml */,
 				44935C0514F052EC00346874 /* wubi86.dict.yaml */,
 				44935C0614F052EC00346874 /* wubi86.schema.yaml */,
-				44935C0714F052EC00346874 /* wugniu.dict.yaml */,
 				44935C0814F052EC00346874 /* wugniu.schema.yaml */,
 				44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */,
 				44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */,
