@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // build all schemas in current directory
     RimeDeployerInitialize(NULL);
-    return RimePrebuildAllSchemas() ? 0 : 1;
+    return RimeDeployWorkspace() ? 0 : 1;
   }
   
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
   squirrel_traits.user_data_dir = [[@"~/Library/Rime" stringByStandardizingPath] UTF8String];
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
-  squirrel_traits.distribution_version = "0.9";
+  squirrel_traits.distribution_version = "0.9.3";
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
   if (RimeStartMaintenanceOnWorkspaceChange()) {

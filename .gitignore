@@ -3,3 +3,5 @@ Squirrel.xcodeproj/*.pbxuser
 build
 lib/*.a
 package
+*~
+.*.swp
