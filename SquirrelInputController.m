@@ -76,7 +76,7 @@
       //NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]", 
       //      self, sender, modifiers, keyCode, keyChars);
       // ignore Command+X hotkeys.
-      if (modifiers & OSX_COMMAND_MASK)
+      if (modifiers & OSX_CAPITAL_MASK || modifiers & OSX_COMMAND_MASK)
         break;
       // translate osx keyevents to rime keyevents
       int rime_keycode = osx_keycode_to_rime_keycode(keyCode,

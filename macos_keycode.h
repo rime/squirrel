@@ -4,6 +4,7 @@
 
 /* get the definitions from <AppKit/NSEvent.h> and <Carbon/Events.h> */
 
+#define OSX_CAPITAL_MASK      1 << 16
 #define OSX_SHIFT_MASK        1 << 17
 #define OSX_CTRL_MASK         1 << 18
 #define OSX_ALT_MASK          1 << 19
