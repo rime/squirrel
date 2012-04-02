@@ -90,6 +90,15 @@ static const double kAlpha = 1.0;
   window_rect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(window_rect);
   // fit in current screen
   NSRect screen_rect = [[NSScreen mainScreen] frame];
+  NSArray* screens = [NSScreen screens];
+  NSUInteger i;
+  for (i = 0; i < [screens count]; ++i) {
+    NSRect rect = [[screens objectAtIndex:i] frame];
+    if (NSPointInRect(_position.origin, rect)) {
+      screen_rect = rect;
+      break;
+    }
+  }
   if (NSMaxX(window_rect) > NSMaxX(screen_rect)) {
     window_rect.origin.x = NSMaxX(screen_rect) - NSWidth(window_rect);
   }
