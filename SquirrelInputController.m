@@ -179,6 +179,9 @@
                 caretPos:(NSUInteger)pos
 {
   //NSLog(@"showPreeditString:");
+  if ([_preeditString isEqual:preedit])
+    return;
+
   [preedit retain];
   [_preeditString release];
   _preeditString = preedit;
