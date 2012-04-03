@@ -27,27 +27,6 @@ int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift)
     case OSX_VK_SPACE:
       ret = XK_space;
       break;
-    case OSX_VK_MINUS:
-      ret = shift ? XK_underscore : XK_minus;
-      break;
-    case OSX_VK_EQUALS:
-      ret = shift ? XK_plus : XK_equal;
-      break;
-    case OSX_VK_COMMA:
-      ret = shift ? XK_less : XK_comma;
-      break;
-    case OSX_VK_PERIOD:
-      ret = shift ? XK_greater : XK_period;
-      break;
-    case OSX_VK_OPEN_BRACKET:
-      ret = shift ? XK_braceleft : XK_bracketleft;
-      break;
-    case OSX_VK_CLOSE_BRACKET:
-      ret = shift ? XK_braceright : XK_bracketright;
-      break;
-    case OSX_VK_BACK_QUOTE:
-      ret = shift ? XK_asciitilde : XK_grave;
-      break;
     case OSX_VK_TAB:
       ret = XK_Tab;
       break;
