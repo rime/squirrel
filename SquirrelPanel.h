@@ -12,6 +12,7 @@ typedef struct {
   bool horizontal;
   NSString* fontName;
   int fontSize;
+  double alpha;
 } SquirrelUIStyle;
 
 @interface SquirrelPanel : NSObject {

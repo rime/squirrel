@@ -183,6 +183,7 @@ static const double kAlpha = 1.0;
   else {  // default font
     [_attrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
   }
+  [_window setAlphaValue:style->alpha];
 }
 
 @end

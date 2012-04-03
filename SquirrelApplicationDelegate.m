@@ -33,7 +33,7 @@
     _useUSKeyboardLayout = (BOOL)value;
   }
   
-  SquirrelUIStyle style = { FALSE, nil, 0 };
+  SquirrelUIStyle style = { FALSE, nil, 0, 1.0 };
   if (RimeConfigGetBool(&config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
@@ -42,6 +42,11 @@
     style.fontName = [[NSString alloc] initWithUTF8String:font_face];
   }
   RimeConfigGetInt(&config, "style/font_point", &style.fontSize);
+  RimeConfigGetDouble(&config, "style/alpha", &style.alpha);
+  if (style.alpha > 1.0)
+    style.alpha = 1.0;
+  else if (style.alpha < 0.1)
+    style.alpha = 0.1;
   RimeConfigClose(&config);
   
   [_panel updateUIStyle:&style];
