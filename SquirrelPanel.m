@@ -59,6 +59,7 @@ static const double kAlpha = 1.0;
 
 -(id)init
 {
+  NSLog(@"SqurrelPanel init");
   _position = NSMakeRect(0, 0, 0, 0);
   _window = [[NSWindow alloc] initWithContentRect:_position
                                         styleMask:NSBorderlessWindowMask
@@ -73,8 +74,9 @@ static const double kAlpha = 1.0;
   
   _attrs = [[NSMutableDictionary alloc] init];
   [_attrs setObject:[NSColor textColor] forKey:NSForegroundColorAttributeName];
-  [_attrs setObject:[NSFont systemFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_attrs setObject:[NSFont userFixedPitchFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
+  _horizontal = FALSE;
   return self;
 }
 
@@ -167,6 +169,20 @@ static const double kAlpha = 1.0;
   [(SquirrelView*)_view setContent:text];
   [text release];
   [self show];
+}
+
+-(void)updateUIStyle:(SquirrelUIStyle *)style
+{
+  _horizontal = style->horizontal;
+  if (style->fontSize == 0) {  // default size
+    style->fontSize = kFontSize;
+  }
+  if (style->fontName != nil) {
+    [_attrs setObject:[NSFont fontWithName:style->fontName size:style->fontSize] forKey:NSFontAttributeName];
+  }
+  else {  // default font
+    [_attrs setObject:[NSFont userFixedPitchFontOfSize:style->fontSize] forKey:NSFontAttributeName];
+  }
 }
 
 @end

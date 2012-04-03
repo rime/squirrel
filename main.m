@@ -45,11 +45,13 @@ int main(int argc, char *argv[])
     // TODO: notification...
   }
   NSLog(@"Squirrel reporting!");
+  // load Squirrel specific config
+  [[NSApp delegate] loadConfig];
   
   // finally run everything
   [[NSApplication sharedApplication] run];
   
-  NSLog(@"Squirrel quitting...");
+  NSLog(@"Squirrel is quitting...");
   RimeFinalize();
   
   [g_server release];

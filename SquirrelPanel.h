@@ -8,12 +8,18 @@
 
 #import <Cocoa/Cocoa.h>
 
+typedef struct {
+  bool horizontal;
+  NSString* fontName;
+  int fontSize;
+} SquirrelUIStyle;
 
 @interface SquirrelPanel : NSObject {
   NSRect _position;
   NSWindow* _window;
   NSView* _view;
   NSMutableDictionary* _attrs;
+  bool _horizontal;
 }
 
 -(void)show;
@@ -22,5 +28,6 @@
 -(void)updateCandidates:(NSArray*)candidates
              withLabels:(NSString*)labels
             highlighted:(NSUInteger)index;
+-(void)updateUIStyle:(SquirrelUIStyle*)style;
 
 @end

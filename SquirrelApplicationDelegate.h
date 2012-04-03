@@ -7,9 +7,14 @@
 {
   IBOutlet NSMenu* _menu;
   IBOutlet SquirrelPanel* _panel;
+  // global options
+  bool _useUSKeyboardLayout;
 }
 
 -(NSMenu*)menu;
 -(SquirrelPanel*)panel;
+-(bool)useUSKeyboardLayout;
+
+-(void)loadConfig;
 
 @end

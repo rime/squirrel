@@ -108,7 +108,9 @@
 -(void)activateServer:(id)sender
 {
   //NSLog(@"activateServer:");
-  [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
+  if ([[NSApp delegate] useUSKeyboardLayout]) {
+    [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
+  }
 }
 
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
