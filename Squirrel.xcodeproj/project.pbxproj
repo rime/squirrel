@@ -155,6 +155,8 @@
 		44AC95181430CF6000C888FB /* SquirrelInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelInputController.h; sourceTree = "<group>"; };
 		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
 		44AC951D1430CF7D00C888FB /* rime.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rime.icns; sourceTree = "<group>"; };
+		44DA191A152B8CB600FB8EF0 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_CN; path = zh_CN.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		44DA191B152B8CBC00FB8EF0 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_TW; path = zh_TW.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44DA7A2714DD596700C1ED3B /* essay.kct */ = {isa = PBXFileReference; lastKnownFileType = file; name = essay.kct; path = ../brise/essay.kct; sourceTree = SOURCE_ROOT; };
 		44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cangjie5.dict.yaml; sourceTree = "<group>"; };
 		44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cangjie5.schema.yaml; sourceTree = "<group>"; };
@@ -461,6 +463,8 @@
 			isa = PBXVariantGroup;
 			children = (
 				A485E5BB0DD28B8D00E472E5 /* English */,
+				44DA191A152B8CB600FB8EF0 /* zh_CN */,
+				44DA191B152B8CBC00FB8EF0 /* zh_TW */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
