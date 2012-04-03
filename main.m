@@ -1,4 +1,5 @@
 
+#import "SquirrelApplicationDelegate.h"
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <string.h>
@@ -32,21 +33,9 @@ int main(int argc, char *argv[])
   // opencc will be configured with relative dictionary paths
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[[NSBundle mainBundle] sharedSupportPath]];
   
-  // start Rime
-  RimeTraits squirrel_traits;
-  squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
-  squirrel_traits.user_data_dir = [[@"~/Library/Rime" stringByStandardizingPath] UTF8String];
-  squirrel_traits.distribution_code_name = "Squirrel";
-  squirrel_traits.distribution_name = "鼠鬚管";
-  squirrel_traits.distribution_version = "0.9.3";
-  NSLog(@"Initializing la rime...");
-  RimeInitialize(&squirrel_traits);
-  if (RimeStartMaintenanceOnWorkspaceChange()) {
-    // TODO: notification...
-  }
+  [[NSApp delegate] startRimeWithFullCheck:FALSE];
+  [[NSApp delegate] loadSquirrelConfig];
   NSLog(@"Squirrel reporting!");
-  // load Squirrel specific config
-  [[NSApp delegate] loadConfig];
   
   // finally run everything
   [[NSApplication sharedApplication] run];

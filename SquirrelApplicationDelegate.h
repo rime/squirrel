@@ -7,14 +7,19 @@
 {
   IBOutlet NSMenu* _menu;
   IBOutlet SquirrelPanel* _panel;
+  IBOutlet id _updater;
+
   // global options
-  bool _useUSKeyboardLayout;
+  BOOL _useUSKeyboardLayout;
 }
 
 -(NSMenu*)menu;
 -(SquirrelPanel*)panel;
--(bool)useUSKeyboardLayout;
+-(id)updater;
+-(BOOL)useUSKeyboardLayout;
 
--(void)loadConfig;
+-(IBAction)deploy:(id)sender;
+-(void)startRimeWithFullCheck:(BOOL)fullCheck;
+-(void)loadSquirrelConfig;
 
 @end

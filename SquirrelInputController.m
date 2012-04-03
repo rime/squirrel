@@ -28,7 +28,7 @@
 
   //NSLog(@"handleEvent:client:");
   
-  if (!_session) {
+  if (!_session || !RimeFindSession(_session)) {
     [self createSession];
     if (!_session) return NO;
   }
@@ -146,6 +146,20 @@
   if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return;
   // TODO: force committing existing Rime composition
+}
+
+// a piece of comment from SunPinyin's macos wrapper says:
+// > though we specified the showPrefPanel: in SunPinyinApplicationDelegate as the
+// > action receiver, the IMKInputController will actually receive the event.
+// so here we deliver messages to our responsible SquirrelApplicationDelegate
+-(void)deploy:(id)sender
+{
+  [[NSApp delegate] deploy:sender];
+}
+
+-(void)checkForUpdates:(id)sender
+{
+  [[[NSApp delegate] updater] performSelector:@selector(checkForUpdates:) withObject:sender];
 }
 
 -(NSMenu*)menu

@@ -15,18 +15,54 @@
   return _panel;
 }
 
--(bool)useUSKeyboardLayout
+-(id)updater
+{
+  return _updater;
+}
+
+-(BOOL)useUSKeyboardLayout
 {
   return _useUSKeyboardLayout;
 }
 
--(void)loadConfig
+-(IBAction)deploy:(id)sender
+{
+  NSLog(@"Start maintenace...");
+  RimeConfig config;
+  RimeConfigOpen("default.custom", &config);
+  // schedule a workspace update
+  RimeConfigUpdateSignature(&config, "Squirrel");
+  RimeConfigClose(&config);
+  // restart
+  RimeFinalize();
+  [self startRimeWithFullCheck:TRUE];
+  [self loadSquirrelConfig];
+}
+
+-(void)startRimeWithFullCheck:(BOOL)fullCheck
+{
+  RimeTraits squirrel_traits;
+  squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
+  squirrel_traits.user_data_dir = [[@"~/Library/Rime" stringByStandardizingPath] UTF8String];
+  squirrel_traits.distribution_code_name = "Squirrel";
+  squirrel_traits.distribution_name = "鼠鬚管";
+  squirrel_traits.distribution_version = "0.9.3";
+  NSLog(@"Initializing la rime...");
+  RimeInitialize(&squirrel_traits);
+  if (RimeStartMaintenance((Bool)fullCheck)) {
+    // TODO: notification
+    NSArray* args = [NSArray arrayWithObjects:@"Preparing Rime for updates; patience.", nil];
+    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+  }
+}
+
+-(void)loadSquirrelConfig
 {
   RimeConfig config;
   if (!RimeConfigOpen("squirrel", &config)) {
-    NSLog(@"Error opening squirrel config.");
     return;
   }
+  NSLog(@"Loading squirrel specific config...");
   _useUSKeyboardLayout = FALSE;
   Bool value;
   if (RimeConfigGetBool(&config, "us_keyboard_layout", &value)) {

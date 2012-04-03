@@ -59,7 +59,7 @@ static const double kAlpha = 1.0;
 
 -(id)init
 {
-  NSLog(@"SqurrelPanel init");
+  //NSLog(@"SqurrelPanel init");
   _position = NSMakeRect(0, 0, 0, 0);
   _window = [[NSWindow alloc] initWithContentRect:_position
                                         styleMask:NSBorderlessWindowMask

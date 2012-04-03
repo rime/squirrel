@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Squirrel</string>
 	<key>CFBundleIconFile</key>
-	<string>rime.icns</string>
+	<string>zhung.png</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -27,9 +27,9 @@
 	<key>InputMethodServerDelegateClass</key>
 	<string>SquirrelInputController</string>
 	<key>LSBackgroundOnly</key>
-	<true/>
-	<key>LSUIElement</key>
 	<false/>
+	<key>LSUIElement</key>
+	<true/>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
@@ -41,5 +41,9 @@
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>rime.icns</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+	<key>SUFeedURL</key>
+	<string>http://rimeime.googlecode.com/svn/trunk/squirrel/update/appcast.xml</string>
 </dict>
 </plist>
