@@ -74,7 +74,7 @@ static const double kAlpha = 1.0;
   
   _attrs = [[NSMutableDictionary alloc] init];
   [_attrs setObject:[NSColor textColor] forKey:NSForegroundColorAttributeName];
-  [_attrs setObject:[NSFont userFixedPitchFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
   _horizontal = FALSE;
   return self;
@@ -162,7 +162,7 @@ static const double kAlpha = 1.0;
                    range:whole_line];
     }
     if (i > 0) {
-      [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+      [text appendAttributedString:[[NSAttributedString alloc] initWithString: _horizontal ? @" " : @"\n" attributes:_attrs]];
     }
     [text appendAttributedString:line];
   }
@@ -181,7 +181,7 @@ static const double kAlpha = 1.0;
     [_attrs setObject:[NSFont fontWithName:style->fontName size:style->fontSize] forKey:NSFontAttributeName];
   }
   else {  // default font
-    [_attrs setObject:[NSFont userFixedPitchFontOfSize:style->fontSize] forKey:NSFontAttributeName];
+    [_attrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
   }
 }
 
