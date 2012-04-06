@@ -21,5 +21,6 @@
 -(IBAction)deploy:(id)sender;
 -(void)startRimeWithFullCheck:(BOOL)fullCheck;
 -(void)loadSquirrelConfig;
+-(BOOL)problematicLaunchDetected;
 
 @end

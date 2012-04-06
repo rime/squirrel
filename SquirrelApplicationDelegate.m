@@ -28,11 +28,6 @@
 -(IBAction)deploy:(id)sender
 {
   NSLog(@"Start maintenace...");
-  RimeConfig config;
-  RimeConfigOpen("default.custom", &config);
-  // schedule a workspace update
-  RimeConfigUpdateSignature(&config, "Squirrel");
-  RimeConfigClose(&config);
   // restart
   RimeFinalize();
   [self startRimeWithFullCheck:TRUE];
@@ -87,6 +82,24 @@
   
   [_panel updateUIStyle:&style];
   [style.fontName release];
+}
+
+-(BOOL)problematicLaunchDetected
+{
+  BOOL detected = FALSE;
+  NSString* logfile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"launch.dat"];
+  //NSLog(@"[DEBUG] archive: %@", logfile);
+  NSData* archive = [NSData dataWithContentsOfFile:logfile options:NSDataReadingUncached error:nil];
+  if (archive) {
+    NSDate* previousLaunch = [NSKeyedUnarchiver unarchiveObjectWithData:archive];
+    if (previousLaunch && [previousLaunch timeIntervalSinceNow] >= -2) {
+      detected = TRUE;
+    }
+  }
+  NSDate* now = [NSDate date];
+  NSData* record = [NSKeyedArchiver archivedDataWithRootObject:now];
+  [record writeToFile:logfile atomically:NO];
+  return detected;
 }
 
 //add an awakeFromNib item so that we can set the action method.  Note that 

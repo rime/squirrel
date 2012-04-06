@@ -33,9 +33,18 @@ int main(int argc, char *argv[])
   // opencc will be configured with relative dictionary paths
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[[NSBundle mainBundle] sharedSupportPath]];
   
-  [[NSApp delegate] startRimeWithFullCheck:FALSE];
-  [[NSApp delegate] loadSquirrelConfig];
-  NSLog(@"Squirrel reporting!");
+  if ([[NSApp delegate] problematicLaunchDetected]) {
+    NSLog(@"Problematic launch detected!");
+    NSArray* args = [NSArray arrayWithObjects:@"Problematic launch detected! \
+                     Squirrel may be suffering a crash due to imporper configuration. \
+                     Revert previous modifications to see if the problem recurs.", nil];
+    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+  }
+  else {
+    [[NSApp delegate] startRimeWithFullCheck:FALSE];
+    [[NSApp delegate] loadSquirrelConfig];
+    NSLog(@"Squirrel reporting!");
+  }
   
   // finally run everything
   [[NSApplication sharedApplication] run];
