@@ -162,6 +162,11 @@
   [[[NSApp delegate] updater] performSelector:@selector(checkForUpdates:) withObject:sender];
 }
 
+-(void)openWiki:(id)sender
+{
+  [[NSApp delegate] openWiki:sender];
+}
+
 -(NSMenu*)menu
 {
   return [[NSApp delegate] menu];

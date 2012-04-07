@@ -34,6 +34,11 @@
   [self loadSquirrelConfig];
 }
 
+-(IBAction)openWiki:(id)sender
+{
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://code.google.com/p/rimeime/w/list"]];
+}
+
 -(void)startRimeWithFullCheck:(BOOL)fullCheck
 {
   RimeTraits squirrel_traits;

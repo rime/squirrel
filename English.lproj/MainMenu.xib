@@ -73,6 +73,15 @@
 						<reference key="NSMixedImage" ref="903700867"/>
 						<int key="NSTag">1</int>
 					</object>
+					<object class="NSMenuItem" id="634505591">
+						<reference key="NSMenu" ref="969598147"/>
+						<string key="NSTitle">Rime Wiki...</string>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="850488914"/>
+						<reference key="NSMixedImage" ref="903700867"/>
+						<int key="NSTag">2</int>
+					</object>
 				</object>
 			</object>
 			<object class="NSCustomObject" id="350557130">
@@ -130,6 +139,14 @@
 					</object>
 					<int key="connectionID">796</int>
 				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">openWiki:</string>
+						<reference key="source" ref="57193187"/>
+						<reference key="destination" ref="634505591"/>
+					</object>
+					<int key="connectionID">798</int>
+				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
 				<object class="NSArray" key="orderedObjects">
@@ -183,6 +200,7 @@
 							<bool key="EncodedWithXMLCoder">YES</bool>
 							<reference ref="699038980"/>
 							<reference ref="598822847"/>
+							<reference ref="634505591"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Menu</string>
@@ -195,6 +213,11 @@
 					<object class="IBObjectRecord">
 						<int key="objectID">776</int>
 						<reference key="object" ref="598822847"/>
+						<reference key="parent" ref="969598147"/>
+					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">797</int>
+						<reference key="object" ref="634505591"/>
 						<reference key="parent" ref="969598147"/>
 					</object>
 				</object>
@@ -213,6 +236,7 @@
 					<string>773.IBPluginDependency</string>
 					<string>774.IBPluginDependency</string>
 					<string>776.IBPluginDependency</string>
+					<string>797.IBPluginDependency</string>
 				</object>
 				<object class="NSMutableArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
@@ -222,7 +246,8 @@
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{542, 469}, {190, 43}}</string>
+					<string>{{364, 453}, {190, 63}}</string>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -244,7 +269,7 @@
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">796</int>
+			<int key="maxID">798</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -253,14 +278,35 @@
 					<string key="className">SquirrelApplicationDelegate</string>
 					<string key="superclassName">NSObject</string>
 					<object class="NSMutableDictionary" key="actions">
-						<string key="NS.key.0">deploy:</string>
-						<string key="NS.object.0">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>deploy:</string>
+							<string>openWiki:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+						</object>
 					</object>
 					<object class="NSMutableDictionary" key="actionInfosByName">
-						<string key="NS.key.0">deploy:</string>
-						<object class="IBActionInfo" key="NS.object.0">
-							<string key="name">deploy:</string>
-							<string key="candidateClassName">id</string>
+						<bool key="EncodedWithXMLCoder">YES</bool>
+						<object class="NSArray" key="dict.sortedKeys">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>deploy:</string>
+							<string>openWiki:</string>
+						</object>
+						<object class="NSMutableArray" key="dict.values">
+							<bool key="EncodedWithXMLCoder">YES</bool>
+							<object class="IBActionInfo">
+								<string key="name">deploy:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">openWiki:</string>
+								<string key="candidateClassName">id</string>
+							</object>
 						</object>
 					</object>
 					<object class="NSMutableDictionary" key="outlets">
