@@ -46,7 +46,7 @@
   squirrel_traits.user_data_dir = [[@"~/Library/Rime" stringByStandardizingPath] UTF8String];
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
-  squirrel_traits.distribution_version = "0.9.3";
+  squirrel_traits.distribution_version = "0.9.4";
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
   if (RimeStartMaintenance((Bool)fullCheck)) {

@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.3</string>
+	<string>0.9.4</string>
 	<key>InputMethodConnectionName</key>
 	<string>Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
