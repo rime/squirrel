@@ -2,12 +2,12 @@ all: debug
 
 librime:
 	mkdir -p ../librime/xbuild
-	cd ../librime/xbuild; cmake -G Xcode ..
+	cd ../librime/xbuild; cmake -G Xcode -DBUILD_STATIC=ON ..
 	cd ../librime/xbuild; xcodebuild -project rime.xcodeproj -configuration Debug build
 
 librime-release:
 	mkdir -p ../librime/xbuild
-	cd ../librime/xbuild; cmake -G Xcode ..
+	cd ../librime/xbuild; cmake -G Xcode -DBUILD_STATIC=ON ..
 	cd ../librime/xbuild; xcodebuild -project rime.xcodeproj -configuration Release build
 
 release:
