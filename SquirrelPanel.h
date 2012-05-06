@@ -20,6 +20,8 @@ typedef struct {
   NSWindow* _window;
   NSView* _view;
   NSMutableDictionary* _attrs;
+  NSMutableDictionary* _highlightedAttrs;
+  NSMutableDictionary* _commentAttrs;
   bool _horizontal;
 }
 
@@ -27,6 +29,7 @@ typedef struct {
 -(void)hide;
 -(void)updatePosition:(NSRect)caretPos;
 -(void)updateCandidates:(NSArray*)candidates
+            andComments:(NSArray*)comments
              withLabels:(NSString*)labels
             highlighted:(NSUInteger)index;
 -(void)updateUIStyle:(SquirrelUIStyle*)style;

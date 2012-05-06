@@ -17,6 +17,7 @@
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos;
 -(void)showCandidates:(NSArray*)candidates
+          andComments:(NSArray*)comments
            withLabels:(NSString*)labels
           highlighted:(NSUInteger)index;
 -(void)rimeUpdate;

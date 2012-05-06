@@ -221,6 +221,7 @@
 }
 
 -(void)showCandidates:(NSArray*)candidates
+          andComments:(NSArray*)comments
            withLabels:(NSString*)labels
           highlighted:(NSUInteger)index
 {
@@ -232,24 +233,29 @@
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&caretPos];
   SquirrelPanel* panel = [[NSApp delegate] panel];
   [panel updatePosition:caretPos];
-  [panel updateCandidates:candidates withLabels:labels highlighted:index];
+  [panel updateCandidates:candidates andComments:comments withLabels:labels highlighted:index];
 }
 
 -(void)rimeUpdate
 {
   //NSLog(@"update");
   
-  RimeCommit commit;
+  RimeCommit commit = {0};
   if (RimeGetCommit(_session, &commit)) {
     NSString *commitText = [NSString stringWithUTF8String:commit.text];
     [self commitString: commitText];
+    RimeFreeCommit(&commit);
   }
   
-  RimeContext ctx;
+  RimeContext ctx = {0};
+  RIME_STRUCT_INIT(RimeContext, ctx);
   if (RimeGetContext(_session, &ctx)) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
-    NSString *preeditText = [NSString stringWithUTF8String:preedit];
+    NSString *preeditText = @"";
+    if (preedit) {
+      preeditText = [NSString stringWithUTF8String:preedit];
+    }
     NSUInteger start = 0;
     NSUInteger end = 0;
     NSUInteger caretPos = 0;
@@ -264,16 +270,27 @@
     [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
+    NSMutableArray *comments = [NSMutableArray array];
     NSUInteger i;
     for (i = 0; i < ctx.menu.num_candidates; ++i) {
-      [candidates addObject:[NSString stringWithUTF8String:ctx.menu.candidates[i]]];
+      [candidates addObject:[NSString stringWithUTF8String:ctx.menu.candidates[i].text]];
+      if (ctx.menu.candidates[i].comment) {
+        [comments addObject:[NSString stringWithUTF8String:ctx.menu.candidates[i].comment]];
+      }
+      else {
+        [comments addObject:@""];
+      }
     }
-    NSString *labels = [NSString stringWithUTF8String:ctx.menu.select_keys];
+    NSString* labels = @"";
+    if (ctx.menu.select_keys) {
+      labels = [NSString stringWithUTF8String:ctx.menu.select_keys];
+    }
     [self showCandidates:candidates
+             andComments:comments
               withLabels:labels
              highlighted:ctx.menu.highlighted_candidate_index];
+    RimeFreeContext(&ctx);
   }
-
 }
 
 @end // SquirrelController 

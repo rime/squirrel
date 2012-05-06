@@ -73,8 +73,17 @@ static const double kAlpha = 1.0;
   [_window setContentView:_view];
   
   _attrs = [[NSMutableDictionary alloc] init];
-  [_attrs setObject:[NSColor textColor] forKey:NSForegroundColorAttributeName];
+  [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
   [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  
+  _highlightedAttrs = [[NSMutableDictionary alloc] init];
+  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
+  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  
+  _commentAttrs = [[NSMutableDictionary alloc] init];
+  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
   _horizontal = FALSE;
   return self;
@@ -132,6 +141,7 @@ static const double kAlpha = 1.0;
 }
 
 -(void)updateCandidates:(NSArray*)candidates
+            andComments:(NSArray*)comments
              withLabels:(NSString*)labels
             highlighted:(NSUInteger)index
 {
@@ -152,14 +162,10 @@ static const double kAlpha = 1.0;
     NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
     if (i == index) {
       NSRange whole_line = NSMakeRange(0, [line length]);
-      [line removeAttribute:NSForegroundColorAttributeName
-                      range:whole_line];
-      [line addAttribute:NSForegroundColorAttributeName
-                   value:[NSColor selectedTextColor]
-                   range:whole_line];
-      [line addAttribute:NSBackgroundColorAttributeName
-                   value:[NSColor selectedTextBackgroundColor]
-                   range:whole_line];
+      [line setAttributes:_highlightedAttrs range:whole_line];
+    }
+    if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i] attributes:_commentAttrs]];
     }
     if (i > 0) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString: _horizontal ? @" " : @"\n" attributes:_attrs]];
@@ -179,9 +185,13 @@ static const double kAlpha = 1.0;
   }
   if (style->fontName != nil) {
     [_attrs setObject:[NSFont fontWithName:style->fontName size:style->fontSize] forKey:NSFontAttributeName];
+    [_highlightedAttrs setObject:[NSFont fontWithName:style->fontName size:style->fontSize] forKey:NSFontAttributeName];
+    [_commentAttrs setObject:[NSFont fontWithName:style->fontName size:style->fontSize] forKey:NSFontAttributeName];
   }
   else {  // default font
     [_attrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
+    [_highlightedAttrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
+    [_commentAttrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
   }
   [_window setAlphaValue:style->alpha];
 }
