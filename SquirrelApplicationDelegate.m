@@ -70,7 +70,7 @@
     _useUSKeyboardLayout = (BOOL)value;
   }
   
-  SquirrelUIStyle style = { FALSE, nil, 0, 1.0 };
+  SquirrelUIStyle style = { FALSE, nil, 0, 1.0, 0, 0, 0, 0, 0 };
   if (RimeConfigGetBool(&config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
@@ -80,14 +80,34 @@
   }
   RimeConfigGetInt(&config, "style/font_point", &style.fontSize);
   RimeConfigGetDouble(&config, "style/alpha", &style.alpha);
-  if (style.alpha > 1.0)
+  if (style.alpha > 1.0) {
     style.alpha = 1.0;
-  else if (style.alpha < 0.1)
+  } else if (style.alpha < 0.1) {
     style.alpha = 0.1;
+  }
+  // 0xaabbcc
+  char color[9] = {0};
+  if (RimeConfigGetString(&config, "style/back_color", color, sizeof(color))) {
+    style.backgroundColor = [[NSString alloc] initWithUTF8String:color];
+  }
+  if (RimeConfigGetString(&config, "style/candidate_text_color", color, sizeof(color))) {
+    style.candidateTextColor = [[NSString alloc] initWithUTF8String:color];
+  }
+  if (RimeConfigGetString(&config, "style/hilited_candidate_text_color", color, sizeof(color))) {
+    style.highlightedCandidateTextColor = [[NSString alloc] initWithUTF8String:color];
+  }
+  if (RimeConfigGetString(&config, "style/hilited_candidate_back_color", color, sizeof(color))) {
+    style.highlightedCandidateBackColor = [[NSString alloc] initWithUTF8String:color];
+  }
+  RimeConfigGetDouble(&config, "style/corner_radius", &style.cornerRadius);
   RimeConfigClose(&config);
   
   [_panel updateUIStyle:&style];
   [style.fontName release];
+  [style.backgroundColor release];
+  [style.candidateTextColor release];
+  [style.highlightedCandidateTextColor release];
+  [style.highlightedCandidateBackColor release];
 }
 
 -(BOOL)problematicLaunchDetected
@@ -119,7 +139,7 @@
 -(void)dealloc 
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [super dealloc];
+  [super dealloc];
 }
 
 @end  //SquirrelApplicationDelegate
