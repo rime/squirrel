@@ -12,7 +12,6 @@ typedef struct {
   bool horizontal;
   NSString* fontName;
   int fontSize;
-  double alpha;
   NSString *backgroundColor;
   NSString *candidateTextColor;
   NSString *highlightedCandidateTextColor;

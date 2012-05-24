@@ -12,7 +12,6 @@ static const int kBorderHeight = 10;
 static const int kBorderWidth = 10;
 static const int kOffsetHeight = 5;
 static const int kFontSize = 24;
-static const double kAlpha = 1.0;
 
 @interface SquirrelView : NSView
 {
@@ -82,7 +81,6 @@ static const double kAlpha = 1.0;
                                         styleMask:NSBorderlessWindowMask
                                           backing:NSBackingStoreBuffered
                                             defer:NO];
-  [_window setAlphaValue:kAlpha];
   [_window setLevel:NSScreenSaverWindowLevel + 1];
   [_window setHasShadow:YES];    
   [_window setOpaque:NO];
@@ -201,10 +199,10 @@ static const double kAlpha = 1.0;
         return nil;
     }
     
-    int r, g, b;
-    sscanf([string cStringUsingEncoding:NSUTF8StringEncoding], "0x%02x%02x%02x", &r, &g, &b);
+    int r, g, b, a;
+    sscanf([string cStringUsingEncoding:NSUTF8StringEncoding], "0x%02x%02x%02x%02x", &r, &g, &b, &a);
     
-    return [NSColor colorWithDeviceRed:(float) r / 255.f green:(float) g / 255.f blue:(float) b / 255.f alpha:1];
+    return [NSColor colorWithDeviceRed:(float) r / 255.f green:(float) g / 255.f blue:(float) b / 255.f alpha:(float) a / 255.f];
 }
 
 -(void)updateUIStyle:(SquirrelUIStyle *)style
@@ -240,8 +238,6 @@ static const double kAlpha = 1.0;
   [_highlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
   }
   [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
-
-  [_window setAlphaValue:style->alpha];
 }
 
 @end
