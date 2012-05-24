@@ -13,6 +13,11 @@ typedef struct {
   NSString* fontName;
   int fontSize;
   double alpha;
+  NSString *backgroundColor;
+  NSString *candidateTextColor;
+  NSString *highlightedCandidateTextColor;
+  NSString *highlightedCandidateBackColor;
+  double cornerRadius;
 } SquirrelUIStyle;
 
 @interface SquirrelPanel : NSObject {
