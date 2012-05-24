@@ -70,7 +70,7 @@
     _useUSKeyboardLayout = (BOOL)value;
   }
   
-  SquirrelUIStyle style = { FALSE, nil, 0, 1.0, 0, 0, 0, 0 };
+  SquirrelUIStyle style = { FALSE, nil, 0, 1.0, 0, 0, 0, 0, 0 };
   if (RimeConfigGetBool(&config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
@@ -99,6 +99,7 @@
   if (RimeConfigGetString(&config, "style/hilited_candidate_back_color", color, sizeof(color))) {
     style.highlightedCandidateBackColor = [[NSString alloc] initWithUTF8String:color];
   }
+  RimeConfigGetDouble(&config, "style/corner_radius", &style.cornerRadius);
   RimeConfigClose(&config);
   
   [_panel updateUIStyle:&style];

@@ -17,6 +17,7 @@ typedef struct {
   NSString *candidateTextColor;
   NSString *highlightedCandidateTextColor;
   NSString *highlightedCandidateBackColor;
+  double cornerRadius;
 } SquirrelUIStyle;
 
 @interface SquirrelPanel : NSObject {

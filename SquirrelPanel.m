@@ -20,6 +20,7 @@ static const double kAlpha = 1.0;
 }
 
 @property (nonatomic, retain) NSColor *backgroundColor;
+@property (nonatomic, assign) double cornerRadius;
 
 -(NSSize)contentSize;
 -(void)setContent:(NSAttributedString*)content;
@@ -30,6 +31,7 @@ static const double kAlpha = 1.0;
 @implementation SquirrelView
 
 @synthesize backgroundColor = _backgroundColor;
+@synthesize cornerRadius = _cornerRadius;
 
 -(NSSize)contentSize
 {
@@ -57,7 +59,10 @@ static const double kAlpha = 1.0;
     [[NSColor windowBackgroundColor] set];
   }
 
-  NSRectFill([self bounds]);
+  NSBezierPath * path;
+  path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius];
+  [path fill];
+
   NSPoint point = rect.origin;
   point.x += kBorderWidth;
   point.y += kBorderHeight;
@@ -81,6 +86,7 @@ static const double kAlpha = 1.0;
   [_window setLevel:NSScreenSaverWindowLevel + 1];
   [_window setHasShadow:YES];    
   [_window setOpaque:NO];
+  [_window setBackgroundColor:[NSColor clearColor]];
   _view = [[SquirrelView alloc] initWithFrame:[[_window contentView] frame]];
   [_window setContentView:_view];
   
@@ -233,6 +239,7 @@ static const double kAlpha = 1.0;
     NSColor *color = [self colorFromString:style->highlightedCandidateBackColor];
   [_highlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
   }
+  [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
 
   [_window setAlphaValue:style->alpha];
 }
