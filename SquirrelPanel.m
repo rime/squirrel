@@ -19,6 +19,8 @@ static const double kAlpha = 1.0;
   NSAttributedString* _content;
 }
 
+@property (nonatomic, retain) NSColor *backgroundColor;
+
 -(NSSize)contentSize;
 -(void)setContent:(NSAttributedString*)content;
 
@@ -26,6 +28,8 @@ static const double kAlpha = 1.0;
 
 
 @implementation SquirrelView
+
+@synthesize backgroundColor = _backgroundColor;
 
 -(NSSize)contentSize
 {
@@ -43,8 +47,16 @@ static const double kAlpha = 1.0;
 
 -(void)drawRect:(NSRect)rect
 {
-  if (!_content) return;
-  [[NSColor windowBackgroundColor] set];
+  if (!_content) {
+    return;
+  }
+
+  if (_backgroundColor != nil) {
+    [_backgroundColor set]; 
+  } else {
+    [[NSColor windowBackgroundColor] set];
+  }
+
   NSRectFill([self bounds]);
   NSPoint point = rect.origin;
   point.x += kBorderWidth;
@@ -177,6 +189,18 @@ static const double kAlpha = 1.0;
   [self show];
 }
 
+-(NSColor *)colorFromString:(NSString *)string
+{
+    if (string == nil) {
+        return nil;
+    }
+    
+    int r, g, b;
+    sscanf([string cStringUsingEncoding:NSUTF8StringEncoding], "0x%02x%02x%02x", &r, &g, &b);
+    
+    return [NSColor colorWithDeviceRed:(float) r / 255.f green:(float) g / 255.f blue:(float) b / 255.f alpha:1];
+}
+
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
   _horizontal = style->horizontal;
@@ -193,6 +217,23 @@ static const double kAlpha = 1.0;
     [_highlightedAttrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
     [_commentAttrs setObject:[NSFont userFontOfSize:style->fontSize] forKey:NSFontAttributeName];
   }
+  if (style->backgroundColor != nil) {
+    NSColor *color = [self colorFromString:style->backgroundColor];
+    [(SquirrelView *) _view setBackgroundColor:(color)];
+  }
+  if (style->candidateTextColor != nil) {
+    NSColor *color = [self colorFromString:style->candidateTextColor];
+    [_attrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  if (style->highlightedCandidateTextColor != nil) {
+    NSColor *color = [self colorFromString:style->highlightedCandidateTextColor];
+    [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  if (style->highlightedCandidateBackColor != nil) {
+    NSColor *color = [self colorFromString:style->highlightedCandidateBackColor];
+  [_highlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
+  }
+
   [_window setAlphaValue:style->alpha];
 }
 
