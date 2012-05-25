@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
     [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
   }
   else {
-    [[NSApp delegate] startRimeWithFullCheck:FALSE];
+    [[NSApp delegate] startRimeWithFullCheck:NO];
     [[NSApp delegate] loadSquirrelConfig];
     NSLog(@"Squirrel reporting!");
   }
