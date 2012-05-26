@@ -50,8 +50,10 @@
                                            objectForKey:@"CFBundleVersion"] UTF8String];
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
-  // update squirrel config
-  RimeDeployConfigFile("squirrel.yaml", "config_version");
+  if (fullCheck) {
+    // update squirrel config
+    RimeDeployConfigFile("squirrel.yaml", "config_version");
+  }
   // check for configuration updates
   if (RimeStartMaintenance((Bool)fullCheck)) {
     // TODO: notification
