@@ -9,6 +9,8 @@
 @interface SquirrelInputController(Private)
 -(void)createSession;
 -(void)destroySession;
+-(void)rimeConsumeCommittedText;
+-(void)rimeUpdate;
 @end 
 
 // implementation of the public interface
@@ -126,6 +128,7 @@
 {
   //NSLog(@"deactivateServer:");
   [[[NSApp delegate] panel] hide];
+  [self commitComposition:sender];
 }
 
 /*!
@@ -145,7 +148,10 @@
   // FIXME: chrome's address bar issues this callback when showing suggestions. 
   if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return;
-  // TODO: force committing existing Rime composition
+  // force committing existing Rime composition
+  if (_session && RimeCommitComposition(_session)) {
+    [self rimeConsumeCommittedText];
+  }
 }
 
 // a piece of comment from SunPinyin's macos wrapper says:
@@ -236,16 +242,41 @@
   [panel updateCandidates:candidates andComments:comments withLabels:labels highlighted:index];
 }
 
--(void)rimeUpdate
+@end // SquirrelController 
+
+
+// implementation of private interface
+@implementation SquirrelInputController(Private)
+
+-(void)createSession
 {
-  //NSLog(@"update");
-  
+  //NSLog(@"createSession:");
+  _session = RimeCreateSession();
+}
+
+-(void)destroySession
+{
+  //NSLog(@"destroySession:");
+  if (_session) {
+    RimeDestroySession(_session);
+    _session = 0;
+  }
+}
+
+-(void)rimeConsumeCommittedText
+{
   RimeCommit commit = {0};
   if (RimeGetCommit(_session, &commit)) {
     NSString *commitText = [NSString stringWithUTF8String:commit.text];
     [self commitString: commitText];
     RimeFreeCommit(&commit);
   }
+}
+
+-(void)rimeUpdate
+{
+  //NSLog(@"update");
+  [self rimeConsumeCommittedText];
   
   RimeContext ctx = {0};
   RIME_STRUCT_INIT(RimeContext, ctx);
@@ -290,27 +321,6 @@
               withLabels:labels
              highlighted:ctx.menu.highlighted_candidate_index];
     RimeFreeContext(&ctx);
-  }
-}
-
-@end // SquirrelController 
-
-
-// implementation of private interface
-@implementation SquirrelInputController(Private)
-
--(void)createSession
-{
-  //NSLog(@"createSession:");
-  _session = RimeCreateSession();
-}
-
--(void)destroySession
-{
-  //NSLog(@"destroySession:");
-  if (_session) {
-    RimeDestroySession(_session);
-    _session = 0;
   }
 }
 

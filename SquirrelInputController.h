@@ -20,6 +20,5 @@
           andComments:(NSArray*)comments
            withLabels:(NSString*)labels
           highlighted:(NSUInteger)index;
--(void)rimeUpdate;
 
 @end
