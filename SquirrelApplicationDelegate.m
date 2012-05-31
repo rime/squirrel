@@ -98,7 +98,7 @@
   
   char color_scheme[100] = {0};
   if (RimeConfigGetString(&config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
-    NSMutableString* key = [NSMutableString stringWithString:@"preset_color_schemes/"];
+    NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
     [key appendString:[NSString stringWithUTF8String:color_scheme]];
     NSUInteger prefix_length = [key length];
     // 0xaabbggrr or 0xbbggrr
