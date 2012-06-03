@@ -6,6 +6,16 @@
     <description>鼠鬚管Appcast更新頻道</description>
     <language>zh</language>
     <item>
+      <title>鼠鬚管 0.9.6</title>
+      <sparkle:releaseNotesLink>http://rimeime.googlecode.com/svn/trunk/squirrel/update/release-notes.html</sparkle:releaseNotesLink>
+      <pubDate>Mon, 4 Jun 2012 06:00:00 +0800</pubDate>
+      <enclosure url="http://rimeime.googlecode.com/files/Squirrel-0.9.6.zip"
+                 sparkle:version="0.9.6"
+                 sparkle:dsaSignature="MCwCFBCzA7QvDmks8ID3v4jY1JI6cXKkAhRrPcqNXB+zF/QspEc3jZjWNjL9Zg=="
+                 length="5918477"
+                 type="application/octet-stream"/>
+    </item>
+    <item>
       <title>鼠鬚管 0.9.5</title>
       <sparkle:releaseNotesLink>http://rimeime.googlecode.com/svn/trunk/squirrel/update/release-notes.html</sparkle:releaseNotesLink>
       <pubDate>Sun, 6 May 2012 15:00:00 +0800</pubDate>
@@ -13,16 +23,6 @@
                  sparkle:version="0.9.5"
                  sparkle:dsaSignature="MC0CFGX4ugGpdMutfDOoeLe+DNH45jtkAhUAoDCZ6Btnzyn5wHOKkI4Pgy5Oj18="
                  length="6171083"
-                 type="application/octet-stream"/>
-    </item>
-    <item>
-      <title>鼠鬚管 0.9.4</title>
-      <sparkle:releaseNotesLink>http://rimeime.googlecode.com/svn/trunk/squirrel/update/release-notes.html</sparkle:releaseNotesLink>
-      <pubDate>Sun, 15 Apr 2012 20:30:00 +0800</pubDate>
-      <enclosure url="http://rimeime.googlecode.com/files/Squirrel-0.9.4.zip"
-                 sparkle:version="0.9.4"
-                 sparkle:dsaSignature="MCwCFFyuNnH3hJFmPUGKLLSWVGYBMizWAhRXHZZ6V7LYoQKxyxwFaVTcQIoREQ=="
-                 length="6174228"
                  type="application/octet-stream"/>
     </item>
   </channel>
