@@ -34,6 +34,11 @@
   [self loadSquirrelConfig];
 }
 
+-(IBAction)configure:(id)sender
+{
+  [[NSWorkspace sharedWorkspace] openFile:[@"~/Library/Rime" stringByStandardizingPath]];
+}
+
 -(IBAction)openWiki:(id)sender
 {
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://code.google.com/p/rimeime/w/list"]];

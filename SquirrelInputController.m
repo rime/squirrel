@@ -163,6 +163,11 @@
   [[NSApp delegate] deploy:sender];
 }
 
+-(void)configure:(id)sender
+{
+  [[NSApp delegate] configure:sender];
+}
+
 -(void)checkForUpdates:(id)sender
 {
   [[[NSApp delegate] updater] performSelector:@selector(checkForUpdates:) withObject:sender];
