@@ -113,6 +113,7 @@
   if ([[NSApp delegate] useUSKeyboardLayout]) {
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
+  _preeditString = @"";
 }
 
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
@@ -190,6 +191,8 @@
 
 -(void)dealloc 
 {
+  [_preeditString release];
+  [_candidates release];
   [self destroySession];
   [super dealloc];
 }
@@ -201,7 +204,7 @@
             replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
   
   [_preeditString release];
-  _preeditString = nil;
+  _preeditString = @"";
   
   [[[NSApp delegate] panel] hide];
 }
@@ -210,7 +213,7 @@
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos
 {
-  //NSLog(@"showPreeditString:");
+  //NSLog(@"showPreeditString: '%@'", preedit);
   if ([_preeditString isEqual:preedit])
     return;
 
