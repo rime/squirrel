@@ -2,15 +2,17 @@
 # vim: set sw=2 sts=2 et:
 # encoding: utf-8
 
-config_version: "0.9"
+config_version: "0.10"
 
 us_keyboard_layout: false
 
 style:
   horizontal: false
   #font_face: "儷黑 Pro"
-  #font_point: 20
+  #font_point: 21
   corner_radius: 10
+  border_height: 0
+  border_width: 0
   color_scheme: native
 
 preset_color_schemes:

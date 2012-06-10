@@ -8,8 +8,6 @@
 
 #import "SquirrelPanel.h"
 
-static const int kBorderHeight = 10;
-static const int kBorderWidth = 10;
 static const int kOffsetHeight = 5;
 static const int kFontSize = 24;
 static const double kAlpha = 1.0;
@@ -21,6 +19,8 @@ static const double kAlpha = 1.0;
 
 @property (nonatomic, retain) NSColor *backgroundColor;
 @property (nonatomic, assign) double cornerRadius;
+@property (nonatomic, assign) double borderHeight;
+@property (nonatomic, assign) double borderWidth;
 
 -(NSSize)contentSize;
 -(void)setContent:(NSAttributedString*)content;
@@ -32,6 +32,18 @@ static const double kAlpha = 1.0;
 
 @synthesize backgroundColor = _backgroundColor;
 @synthesize cornerRadius = _cornerRadius;
+@synthesize borderHeight = _borderHeight;
+@synthesize borderWidth = _borderWidth;
+
+-(double)borderHeight
+{
+  return MAX(_borderHeight, _cornerRadius);
+}
+
+-(double)borderWidth
+{
+  return MAX(_borderWidth, _cornerRadius);
+}
 
 -(NSSize)contentSize
 {
@@ -64,8 +76,8 @@ static const double kAlpha = 1.0;
   [path fill];
 
   NSPoint point = rect.origin;
-  point.x += kBorderWidth;
-  point.y += kBorderHeight;
+  point.x += [self borderWidth];
+  point.y += [self borderHeight];
   [_content drawAtPoint:point];
 }
 
@@ -112,8 +124,8 @@ static const double kAlpha = 1.0;
   NSRect window_rect = [_window frame];
   // resize frame
   NSSize content_size = [(SquirrelView*)_view contentSize];
-  window_rect.size.height = content_size.height + kBorderHeight * 2;
-  window_rect.size.width = content_size.width + kBorderWidth * 2;
+  window_rect.size.height = content_size.height + [(SquirrelView*)_view borderHeight] * 2;
+  window_rect.size.width = content_size.width + [(SquirrelView*)_view borderWidth] * 2;
   // reposition window
   window_rect.origin.x = NSMinX(_position);
   window_rect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(window_rect);
@@ -276,6 +288,8 @@ static const double kAlpha = 1.0;
   }
   
   [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
+  [(SquirrelView *) _view setBorderHeight:style->borderHeight];
+  [(SquirrelView *) _view setBorderWidth:style->borderWidth];
 
   [_window setAlphaValue:style->alpha];
 }

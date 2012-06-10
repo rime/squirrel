@@ -14,6 +14,8 @@ typedef struct {
   int fontSize;
   double alpha;
   double cornerRadius;
+  double borderHeight;
+  double borderWidth;
   NSString *backgroundColor;
   NSString *candidateTextColor;
   NSString *highlightedCandidateTextColor;

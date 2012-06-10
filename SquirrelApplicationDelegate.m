@@ -81,7 +81,7 @@
     _useUSKeyboardLayout = (BOOL)value;
   }
   
-  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, nil, nil, nil, nil, nil };
+  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil };
   if (RimeConfigGetBool(&config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
@@ -100,6 +100,8 @@
   }
   
   RimeConfigGetDouble(&config, "style/corner_radius", &style.cornerRadius);
+  RimeConfigGetDouble(&config, "style/border_height", &style.borderHeight);
+  RimeConfigGetDouble(&config, "style/border_width", &style.borderWidth);
   
   char color_scheme[100] = {0};
   if (RimeConfigGetString(&config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
