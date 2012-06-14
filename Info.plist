@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Squirrel</string>
 	<key>CFBundleIconFile</key>
-	<string>zhung.png</string>
+	<string>zhung.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.6.99</string>
+	<string>0.9.7</string>
 	<key>InputMethodConnectionName</key>
 	<string>Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
@@ -44,7 +44,7 @@
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>SUFeedURL</key>
-	<string>file:///Users/lotem/code/squirrel/package/test-appcast.xml</string>
+	<string>http://rimeime.googlecode.com/svn/trunk/squirrel/update/appcast.xml</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 </dict>

@@ -20,6 +20,7 @@
 		444B32CD153A76A000664038 /* pinyin_simp.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 444B32C7153A76A000664038 /* pinyin_simp.schema.yaml */; };
 		444B32CE153A76A000664038 /* stroke_simp.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 444B32C8153A76A000664038 /* stroke_simp.dict.yaml */; };
 		444B32CF153A76A000664038 /* stroke_simp.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 444B32C9153A76A000664038 /* stroke_simp.schema.yaml */; };
+		4493402B158A4ABC0041A35A /* zhung.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4493402A158A4ABC0041A35A /* zhung.icns */; };
 		44935C1614F0531D00346874 /* double_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44935C0214F052EC00346874 /* double_pinyin.schema.yaml */; };
 		44935C1714F0531D00346874 /* jyutping.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44935C0314F052EC00346874 /* jyutping.dict.yaml */; };
 		44935C1814F0531D00346874 /* jyutping.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44935C0414F052EC00346874 /* jyutping.schema.yaml */; };
@@ -44,7 +45,6 @@
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F01493152AF6AF00EFDAC3 /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
-		44F7707A152B312E005CF491 /* zhung.png in Resources */ = {isa = PBXBuildFile; fileRef = 44F77079152B312E005CF491 /* zhung.png */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F771CD152B7BC7005CF491 /* double_pinyin_abc.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44F771C7152B7BC7005CF491 /* double_pinyin_abc.schema.yaml */; };
 		44F771CE152B7BC7005CF491 /* double_pinyin_flypy.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44F771C8152B7BC7005CF491 /* double_pinyin_flypy.schema.yaml */; };
@@ -153,6 +153,7 @@
 		444B32C9153A76A000664038 /* stroke_simp.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stroke_simp.schema.yaml; sourceTree = "<group>"; };
 		446D18E014F0191200EC3116 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		446D18E114F0193100EC3116 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		4493402A158A4ABC0041A35A /* zhung.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = zhung.icns; sourceTree = "<group>"; };
 		44935C0214F052EC00346874 /* double_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = double_pinyin.schema.yaml; sourceTree = "<group>"; };
 		44935C0314F052EC00346874 /* jyutping.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jyutping.dict.yaml; sourceTree = "<group>"; };
 		44935C0414F052EC00346874 /* jyutping.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = jyutping.schema.yaml; sourceTree = "<group>"; };
@@ -185,7 +186,6 @@
 		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
 		44F01492152AF6AF00EFDAC3 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		44F77079152B312E005CF491 /* zhung.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = zhung.png; sourceTree = "<group>"; };
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F771C7152B7BC7005CF491 /* double_pinyin_abc.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = double_pinyin_abc.schema.yaml; sourceTree = "<group>"; };
 		44F771C8152B7BC7005CF491 /* double_pinyin_flypy.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = double_pinyin_flypy.schema.yaml; sourceTree = "<group>"; };
@@ -284,7 +284,7 @@
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
 				44943BB715066A540005EE85 /* postflight */,
 				44AC951D1430CF7D00C888FB /* rime.icns */,
-				44F77079152B312E005CF491 /* zhung.png */,
+				4493402A158A4ABC0041A35A /* zhung.icns */,
 				A4FC48C90F6530EF0069BE81 /* Localizable.strings */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
@@ -441,8 +441,8 @@
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44AC951E1430CF7D00C888FB /* rime.icns in Resources */,
 				44943BB815066A540005EE85 /* postflight in Resources */,
-				44F7707A152B312E005CF491 /* zhung.png in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
+				4493402B158A4ABC0041A35A /* zhung.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
