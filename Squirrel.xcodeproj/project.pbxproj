@@ -42,6 +42,13 @@
 		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
 		44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95191430CF6000C888FB /* SquirrelInputController.m */; };
 		44AC951E1430CF7D00C888FB /* rime.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44AC951D1430CF7D00C888FB /* rime.icns */; };
+		44B4F79A15A929E4009DFF5D /* ipa_xsampa.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */; };
+		44B4F79B15A929E4009DFF5D /* ipa_xsampa.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */; };
+		44B4F79C15A929E4009DFF5D /* triungkox3p.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */; };
+		44B4F79D15A929E4009DFF5D /* triungkox3p.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79615A929E4009DFF5D /* triungkox3p.schema.yaml */; };
+		44B4F79E15A929E4009DFF5D /* wubi_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79715A929E4009DFF5D /* wubi_pinyin.schema.yaml */; };
+		44B4F79F15A929E4009DFF5D /* zyenpheng.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */; };
+		44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */; };
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F01493152AF6AF00EFDAC3 /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
@@ -114,6 +121,13 @@
 				444B32CD153A76A000664038 /* pinyin_simp.schema.yaml in Copy Shared Support Files */,
 				444B32CE153A76A000664038 /* stroke_simp.dict.yaml in Copy Shared Support Files */,
 				444B32CF153A76A000664038 /* stroke_simp.schema.yaml in Copy Shared Support Files */,
+				44B4F79A15A929E4009DFF5D /* ipa_xsampa.dict.yaml in Copy Shared Support Files */,
+				44B4F79B15A929E4009DFF5D /* ipa_xsampa.schema.yaml in Copy Shared Support Files */,
+				44B4F79C15A929E4009DFF5D /* triungkox3p.dict.yaml in Copy Shared Support Files */,
+				44B4F79D15A929E4009DFF5D /* triungkox3p.schema.yaml in Copy Shared Support Files */,
+				44B4F79E15A929E4009DFF5D /* wubi_pinyin.schema.yaml in Copy Shared Support Files */,
+				44B4F79F15A929E4009DFF5D /* zyenpheng.dict.yaml in Copy Shared Support Files */,
+				44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */,
 			);
 			name = "Copy Shared Support Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -169,6 +183,13 @@
 		44AC95181430CF6000C888FB /* SquirrelInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelInputController.h; sourceTree = "<group>"; };
 		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
 		44AC951D1430CF7D00C888FB /* rime.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rime.icns; sourceTree = "<group>"; };
+		44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ipa_xsampa.dict.yaml; sourceTree = "<group>"; };
+		44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ipa_xsampa.schema.yaml; sourceTree = "<group>"; };
+		44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = triungkox3p.dict.yaml; sourceTree = "<group>"; };
+		44B4F79615A929E4009DFF5D /* triungkox3p.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = triungkox3p.schema.yaml; sourceTree = "<group>"; };
+		44B4F79715A929E4009DFF5D /* wubi_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wubi_pinyin.schema.yaml; sourceTree = "<group>"; };
+		44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zyenpheng.dict.yaml; sourceTree = "<group>"; };
+		44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zyenpheng.schema.yaml; sourceTree = "<group>"; };
 		44DA191A152B8CB600FB8EF0 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_CN; path = zh_CN.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44DA191B152B8CBC00FB8EF0 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_TW; path = zh_TW.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44DA7A2714DD596700C1ED3B /* essay.kct */ = {isa = PBXFileReference; lastKnownFileType = file; name = essay.kct; path = ../brise/essay.kct; sourceTree = SOURCE_ROOT; };
@@ -318,6 +339,13 @@
 		44935C0114F052EC00346874 /* supplement */ = {
 			isa = PBXGroup;
 			children = (
+				44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */,
+				44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */,
+				44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */,
+				44B4F79615A929E4009DFF5D /* triungkox3p.schema.yaml */,
+				44B4F79715A929E4009DFF5D /* wubi_pinyin.schema.yaml */,
+				44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */,
+				44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */,
 				44F771C7152B7BC7005CF491 /* double_pinyin_abc.schema.yaml */,
 				44F771C8152B7BC7005CF491 /* double_pinyin_flypy.schema.yaml */,
 				44F771C9152B7BC7005CF491 /* double_pinyin_mspy.schema.yaml */,

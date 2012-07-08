@@ -1,7 +1,7 @@
 # 說明書
 
 ----------------------------------------------------------
-【鼠鬚管】輸入法 0.9.7
+【鼠鬚管】輸入法 0.9.8
 
 基於 中州韻輸入法引擎／Rime Input Method Engine 及開源技術
 式恕堂 版權所無 Copyleft 2012
@@ -40,6 +40,16 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
 
 ----------------------------------------------------------
 更新日誌
+
+鼠鬚管 0.9.8 <2012-07-08>
+  * 新的 Rime logo
+  * 新特性：碼表方案支持與反查碼混合輸入，無需切換或引導鍵
+  * 新特性：碼表方案可在選單中使用字符集過濾開關
+  * 新方案：【五筆86】衍生的【五筆・拼音】混合輸入
+  * 新方案：《廣韻》音系的中古漢語全拼、三拼輸入法
+  * 新方案：X-SAMPA 國際音標輸入法
+  * 更新：【吳語】碼表，審定一些字詞的讀音，統一字形
+  * 更新：【朙月拼音】碼表，修正多音字
 
 鼠鬚管 0.9.7 <2012-06-10>
   * 提供指定候選窗邊界高度、寬度的選項（https://gist.github.com/2290714）
@@ -129,10 +139,20 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
     採用《吳語拉丁式注音法》
     http://input.foruto.com/wu/method.html
     作者 上海閒話abc、吳語越音
+  * 【中古全拼／三拼】
+    採用《廣韻》音系的中古漢語拼音，亦稱「古韻羅馬字」。
+    韻典網・廣韻 http://ytenx.org/kyonh/
+    http://zh.wikipedia.org/wiki/User:Polyhedron/中古漢語拼音
+    作者 Polyhedron
+  * 【X-SAMPA】
+    國際音標輸入法
+    http://zh.wikipedia.org/wiki/X-SAMPA
+    作者 Patrick Tschang、佛振
 
 程序設計：
   * 佛振 <chen.sst@gmail.com>
   * 鄒旭 <zouivex@gmail.com>
+  * BYVoid <byvoid.kcp@gmail.com>
   * waynezhang
 
 感謝以下開源程序庫的強力支持：

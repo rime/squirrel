@@ -1,75 +1,46 @@
 ﻿<h3>【鼠鬚管】更新日誌</h3>
 
-<p>RIME 計劃主頁：<a href="http://code.google.com/p/rimeime/">http://code.google.com/p/rimeime/</a></p>
+<p><strong>鼠鬚管 0.9.8</strong> &lt;2012-07-08&gt;</p>
+
+<ul>
+    <li>
+    <p><strong>新的 Rime logo</strong></p>
+    <p>有用家說，圖標反差太強烈，瞎了……</p>
+    <p>趕忙改。</p>
+    <p><a href="http://rimeime.googlecode.com/svn/trunk/artworks/draft/zhung.png" target="_blank">此圖</a>，亦作注音字母「ㄓ」，亦作正由輸入法編輯的漢字「中」。一些 <a href="http://code.google.com/p/rimeime/source/browse/trunk/artworks/#artworks%2Fdraft" target="_blank">創作稿</a></p>
+    </li>
+    <li>
+    <p><strong>新特性：碼表方案支持與反查碼混合輸入</strong>，無需切換或引導鍵</p>
+    <p>【倉頡五代】已應用此功能，既可輸入倉頡碼、又可直接輸入漢語拼音。
+    以拼音輸入單字時，在該字一旁加註其倉頡打法。</p>
+    <p>拼音輸入限於【朙月拼音】詞典中的單字和固定詞組，重碼時，倉頡碼優先於拼音。</p>
+    </li>
+    <li>
+    <p><strong>新特性：碼表方案可在選單中使用字符集過濾開關</strong></p>
+    <p>如在【倉頡五代】和【五筆86】中，從「方案選單」切換「通用 → 增廣」，即可選用過濾掉 Unicode Ext-A/B/C/D 之後的通用字集，或碼表定義的全集。</p>
+    <p>因爲擴展區的漢字只有少數專業人士需要輸入，且大多數字體不能完全顯示這部分字，給一些用家造成小小的困擾，故默認選中通用字集。</p>
+    </li>
+    <li>
+    <p><strong>新方案：【五筆86】衍生的【五筆・拼音】混合輸入</strong></p>
+    <p>不必先按 z 鍵再打拼音來查五筆碼；直接敲拼音！
+    碼表中 z 鍵所對應的特殊符號也隨 z 鍵的解放而可以使用了。</p>
+    <p>一部分五筆用戶喜歡這個功能，包括小白鼠同學。請記得把【袖珍簡化字拼音】和這個方案一併啓用才可以混合輸入喔。</p>
+    <p>專業的打手，想要純粹的五筆，就繼續用【五筆86】不變。</p>
+    </li>
+    <li>
+    <p><strong>新方案：《廣韻》音系的中古漢語全拼、三拼輸入法</strong></p>
+    <p>這個我不多說了，Polyhedron 兄的神作。</p>
+    <p>想瞭解廣韻的朋友請查<a href="http://ytenx.org/kyonh/" target="_blank">《韻典網》</a>上的資料。除此之外，使用這個輸入法還需要學習下<a href="http://zh.wikipedia.org/wiki/User:Polyhedron/%E4%B8%AD%E5%8F%A4%E6%BC%A2%E8%AA%9E%E6%8B%BC%E9%9F%B3" target="_blank">中古漢語拼音</a>。總之是非常地，學術哇。</p>
+    </li>
+    <li>
+    <p><strong>新方案：X-SAMPA 國際音標輸入法</strong></p>
+    <p>輸入國際音標（IPA）是件煩心事，究竟哪樣工具快速又便利，也沒有公認的說法。既然大家用 Rime 輸入法，而 Rime 輸入法打這些符號亦非難事，那就來一個吧！</p>
+    <p>通過 <a href="http://zh.wikipedia.org/wiki/X-SAMPA" target="_blank">X-SAMPA</a> 表示法，可使用鍵盤上衆多字符及其組合，快速連續輸入國際音標符號。</p>
+    </li>
+    <li><p><strong>更新：【吳語】碼表</strong>，審定一些字詞的讀音，統一字形</p></li>
+    <li><p><strong>更新：【朙月拼音】碼表</strong>，修正多音字</p></li>
+</ul>
 
 <hr/>
 
-<p>鼠鬚管 0.9.7</p>
-<ul>
-  <li>提供指定候選窗邊界高度、寬度的選項（https://gist.github.com/2290714）</li>
-  <li>修復在 M$Office、BBEdit 等軟件中按Cmd鍵會清除選中文字的問題</li>
-  <li>修復以 rime_dict_manager 導入文本碼表不生效的BUG（請升級該工具）；
-    部署時檢查並修復已存在於用戶詞典中的無效條目</li>
-  <li>檢測到用戶詞典文件損壞時重建詞典並從備份中恢復資料</li>
-</ul>
-
-<p>鼠鬚管 0.9.6</p>
-<ul>
-  <li>候選窗圓角效果、自定義色彩，感謝 waynezhang 貢獻代碼</li>
-  <li>提供與【小狼毫】相當的一組配色方案</li>
-  <li>新增「部署」熱鍵 Option+Command+R 、打開設定目錄的菜單項</li>
-  <li>切換其他輸入法時，未完成的輸入立即上屏</li>
-  <li>未經轉換的輸入如網址等不再顯示候選窗</li>
-  <li>可於 default.custom.yaml 中設定全局的頁候選數</li>
-  <li>可於導入【八股文】詞庫時限制詞語的長度、詞頻</li>
-  <li>【倉頡】支持連續輸入多個字的編碼（不會記憶）</li>
-  <li>【注音】改爲語句輸入風格，更接近臺灣用戶的習慣</li>
-  <li>較少用的【筆順五碼】、【速記打字法】不再隨鼠鬚管發行</li>
-  <li>修改BUG：簡拼 zhzh 因切分歧義使部分用戶詞失效</li>
-</ul>
-
-<p>鼠鬚管 0.9.5</p>
-<ul>
-  <li>用 Shift+Del 刪除已記入用戶詞典的詞條，詳見 Issue 117</li>
-  <li>可選用Shift或Control爲中西文切換鍵，詳見 Issue 133</li>
-  <li>數字後的句號鍵識別爲小數點、分號鍵識別爲時分秒分隔符</li>
-  <li>候選字的編碼提示以灰色顯示</li>
-</ul>
-
-<p>鼠鬚管 0.9.4</p>
-<ul>
-  <li>探測失敗的啓動，預防設定不當導致持續崩潰、系統響應緩慢</li>
-  <li>使用 express_editor 的輸入方案中，數字、符號鍵直接上屏</li>
-  <li>輸入簡拼、模糊音時提示正音，【粵拼】【吳語】中默認開啓</li>
-  <li>拼音反查支持預設的多音節詞、形碼反查可開啓編碼補全</li>
-  <li>修復整句模式運用定長編碼頂字功能導致崩潰的問題</li>
-  <li>修復碼表輸入法候選排序問題</li>
-  <li>修復【朙月拼音】lo、yo 等音節的候選錯誤</li>
-  <li>修復【地球拼音】聲調顯示不正確、部分字的註音缺失問題</li>
-  <li>【五笔86】反查引導鍵改爲 z、反查詞典換用簡化字拼音</li>
-  <li>更新【粵拼】詞典，調整常用粵字的排序、增補粵語常用詞</li>
-  <li>新增輸入方案【筆順五碼】</li>
-</ul>
-
-<p>鼠鬚管 0.9.3</p>
-<ul>
-  <li>支持非US鍵盤佈局</li>
-  <li>支持多顯示器</li>
-  <li>支持候選橫排（<a href="https://gist.github.com/2290714">定製模板</a>）</li>
-  <li>支持自訂候選窗字體、字號、透明度</li>
-  <li>通過語言欄菜單執行佈署操作</li>
-  <li>通過Appcast檢查更新</li>
-</ul>
-<ul>
-  <li>記憶繁簡轉換、全／半角符號開關狀態</li>
-  <li>支持定長編碼頂字上屏</li>
-  <li>延遲加載繁簡轉換、編碼反查詞典，降低資源佔用</li>
-  <li>純單字構詞時不調頻</li>
-  <li>新增輸入方案【速成】，速成、倉頡詞句連打</li>
-  <li>新增【智能ABC雙拼】、【速記打字法】</li>
-</ul>
-
-<p>鼠鬚管 0.9</p>
-<ul>
-  <li>初試鋒芒</li>
-</ul>
+<p>RIME 計劃主頁：<a href="http://code.google.com/p/rimeime/" target="_blank">http://code.google.com/p/rimeime/</a></p>
