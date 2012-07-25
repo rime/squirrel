@@ -14,6 +14,8 @@ IMKServer* g_server;
 
 int main(int argc, char *argv[])
 {
+  RimeSetupLogging("rime.squirrel");
+  
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // build all schemas in current directory
     RimeDeployerInitialize(NULL);
