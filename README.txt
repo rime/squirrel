@@ -158,7 +158,7 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
 感謝以下開源程序庫的強力支持：
   * Boost C++ Libraries
   * darts-clone
-  * EzLogger
+  * google-glog
   * Google Test
   * Kyoto Cabinet
   * opencc / 開放中文轉換
