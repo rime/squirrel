@@ -187,7 +187,7 @@ static const double kAlpha = 1.0;
       str = [NSString stringWithFormat:@"%c. %@ ", [labels characterAtIndex:i], [candidates objectAtIndex:i]];
     }
     else {
-      str = [NSString stringWithFormat:@"%d. %@ ", i + 1, [candidates objectAtIndex:i]];
+      str = [NSString stringWithFormat:@"%ld. %@ ", i + 1, [candidates objectAtIndex:i]];
     }
     NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
     if (i == index) {

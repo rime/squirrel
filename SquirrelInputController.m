@@ -2,6 +2,7 @@
 #import "SquirrelInputController.h"
 #import "SquirrelApplicationDelegate.h"
 #import "macos_keycode.h"
+#import "utf8.h"
 #import <rime_api.h>
 #import <rime/key_table.h>
 

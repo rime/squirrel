@@ -7,7 +7,7 @@ librime:
 
 librime-release:
 	mkdir -p ../librime/xbuild
-	cd ../librime/xbuild; cmake -G Xcode -DBUILD_STATIC=ON ..
+	cd ../librime/xbuild; cmake -G Xcode -DBUILD_STATIC=ON -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON ..
 	cd ../librime/xbuild; xcodebuild -project rime.xcodeproj -configuration Release build
 
 release:
