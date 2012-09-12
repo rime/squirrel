@@ -42,6 +42,8 @@
 		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
 		44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95191430CF6000C888FB /* SquirrelInputController.m */; };
 		44AC951E1430CF7D00C888FB /* rime.icns in Resources */ = {isa = PBXBuildFile; fileRef = 44AC951D1430CF7D00C888FB /* rime.icns */; };
+		44B20C981600874800A85924 /* emoji.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B20C94160086F400A85924 /* emoji.dict.yaml */; };
+		44B20C991600874800A85924 /* emoji.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B20C95160086F400A85924 /* emoji.schema.yaml */; };
 		44B4F79A15A929E4009DFF5D /* ipa_xsampa.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */; };
 		44B4F79B15A929E4009DFF5D /* ipa_xsampa.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */; };
 		44B4F79C15A929E4009DFF5D /* triungkox3p.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */; };
@@ -92,6 +94,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				44B20C981600874800A85924 /* emoji.dict.yaml in Copy Shared Support Files */,
+				44B20C991600874800A85924 /* emoji.schema.yaml in Copy Shared Support Files */,
 				442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */,
 				44ABBE7014DD5A2100B8A82D /* default.yaml in Copy Shared Support Files */,
 				44ABBE7114DD5A2700B8A82D /* essay.kct in Copy Shared Support Files */,
@@ -185,6 +189,8 @@
 		44AC95181430CF6000C888FB /* SquirrelInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelInputController.h; sourceTree = "<group>"; };
 		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
 		44AC951D1430CF7D00C888FB /* rime.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = rime.icns; sourceTree = "<group>"; };
+		44B20C94160086F400A85924 /* emoji.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = emoji.dict.yaml; sourceTree = "<group>"; };
+		44B20C95160086F400A85924 /* emoji.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = emoji.schema.yaml; sourceTree = "<group>"; };
 		44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ipa_xsampa.dict.yaml; sourceTree = "<group>"; };
 		44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ipa_xsampa.schema.yaml; sourceTree = "<group>"; };
 		44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = triungkox3p.dict.yaml; sourceTree = "<group>"; };
@@ -343,6 +349,8 @@
 		44935C0114F052EC00346874 /* supplement */ = {
 			isa = PBXGroup;
 			children = (
+				44B20C94160086F400A85924 /* emoji.dict.yaml */,
+				44B20C95160086F400A85924 /* emoji.schema.yaml */,
 				44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */,
 				44B4F79415A929E4009DFF5D /* ipa_xsampa.schema.yaml */,
 				44B4F79515A929E4009DFF5D /* triungkox3p.dict.yaml */,
