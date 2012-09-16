@@ -21,4 +21,6 @@
            withLabels:(NSString*)labels
           highlighted:(NSUInteger)index;
 
+-(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers;
+
 @end

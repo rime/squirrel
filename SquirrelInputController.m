@@ -52,22 +52,22 @@
         if (changes & OSX_SHIFT_MASK)
         {
           release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
-          RimeProcessKey(_session, XK_Shift_L, rime_modifiers | release_mask);
+          [self processKey:XK_Shift_L modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_CTRL_MASK)
         {
           release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask;
-          RimeProcessKey(_session, XK_Control_L, rime_modifiers | release_mask);
+          [self processKey:XK_Control_L modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_ALT_MASK)
         {
           release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
-          RimeProcessKey(_session, XK_Alt_L, rime_modifiers | release_mask);
+          [self processKey:XK_Alt_L modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_COMMAND_MASK)
         {
           release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
-          RimeProcessKey(_session, XK_Super_L, rime_modifiers | release_mask);
+          [self processKey:XK_Super_L modifiers:(rime_modifiers | release_mask)];
           // ignore OSX hotkeys
           break;
         }
@@ -78,7 +78,7 @@
     {
       NSInteger keyCode = [event keyCode];
       NSString* keyChars = [event characters];
-      //NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]", 
+      //NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]",
       //      self, sender, modifiers, keyCode, keyChars);
       // ignore Command+X hotkeys.
       if (modifiers & OSX_CAPITAL_MASK || modifiers & OSX_COMMAND_MASK)
@@ -90,7 +90,7 @@
       if (rime_keycode)
       {
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-        handled = (BOOL)RimeProcessKey(_session, rime_keycode, rime_modifiers);
+        handled = [self processKey: rime_keycode modifiers: rime_modifiers];
         [self rimeUpdate];
       }
     }
@@ -101,6 +101,30 @@
   
   _lastModifier = modifiers;
   _lastEventType = [event type];
+  return handled;
+}
+
+-(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers
+{
+  //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x", rime_keycode, rime_modifiers);
+
+  // TODO add special key event preprocessing here
+  
+  BOOL handled = (BOOL)RimeProcessKey(_session, rime_keycode, rime_modifiers);
+  
+  // TODO add special key event postprocessing here
+
+  {
+    BOOL isVimBackInCommandMode = (!handled && rime_keycode == XK_Escape);
+    if (isVimBackInCommandMode) {
+      NSString* app = [_currentClient bundleIdentifier];
+      if ([app isEqualToString:@"org.vim.MacVim"] && !RimeGetOption(_session, "ascii_mode")) {
+        RimeSetOption(_session, "ascii_mode", True);
+        NSLog(@"disable conversion to Chinese in MacVim's command mode");
+      }
+    }
+  }
+  
   return handled;
 }
 
