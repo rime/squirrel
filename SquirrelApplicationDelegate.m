@@ -25,6 +25,11 @@
   return _useUSKeyboardLayout;
 }
 
+-(NSDictionary*)appOptions
+{
+  return _appOptions;
+}
+
 -(IBAction)deploy:(id)sender
 {
   NSLog(@"Start maintenace...");
@@ -80,63 +85,73 @@
   if (RimeConfigGetBool(&config, "us_keyboard_layout", &value)) {
     _useUSKeyboardLayout = (BOOL)value;
   }
+
+  [self updateUIStyle:&config];
+  [self loadAppOptionsFromConfig:&config];
   
+  RimeConfigClose(&config);
+}
+
+-(void)updateUIStyle:(RimeConfig*)config
+{
   SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil };
-  if (RimeConfigGetBool(&config, "style/horizontal", &value)) {
+  
+  Bool value = False;
+  if (RimeConfigGetBool(config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
   
   char font_face[100] = {0};
-  if (RimeConfigGetString(&config, "style/font_face", font_face, sizeof(font_face))) {
+  if (RimeConfigGetString(config, "style/font_face", font_face, sizeof(font_face))) {
     style.fontName = [[NSString alloc] initWithUTF8String:font_face];
   }
-  RimeConfigGetInt(&config, "style/font_point", &style.fontSize);
+  RimeConfigGetInt(config, "style/font_point", &style.fontSize);
   
-  RimeConfigGetDouble(&config, "style/alpha", &style.alpha);
+  RimeConfigGetDouble(config, "style/alpha", &style.alpha);
   if (style.alpha > 1.0) {
     style.alpha = 1.0;
   } else if (style.alpha < 0.1) {
     style.alpha = 0.1;
   }
   
-  RimeConfigGetDouble(&config, "style/corner_radius", &style.cornerRadius);
-  RimeConfigGetDouble(&config, "style/border_height", &style.borderHeight);
-  RimeConfigGetDouble(&config, "style/border_width", &style.borderWidth);
+  RimeConfigGetDouble(config, "style/corner_radius", &style.cornerRadius);
+  RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
+  RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
   
   char color_scheme[100] = {0};
-  if (RimeConfigGetString(&config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
+  if (RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
     NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
     [key appendString:[NSString stringWithUTF8String:color_scheme]];
     NSUInteger prefix_length = [key length];
     // 0xaabbggrr or 0xbbggrr
     char color[20] = {0};
     [key appendString:@"/back_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.backgroundColor = [[NSString alloc] initWithUTF8String:color];
     }
     NSString* fallback_text_color = nil;
     NSString* fallback_hilited_text_color = nil;
     NSString* fallback_hilited_back_color = nil;
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/text_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       fallback_text_color = [[NSString alloc] initWithUTF8String:color];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_text_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       fallback_hilited_text_color = [[NSString alloc] initWithUTF8String:color];
     }
     else {
       fallback_hilited_text_color = [fallback_text_color retain];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_back_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       fallback_hilited_back_color = [[NSString alloc] initWithUTF8String:color];
     }
     else {
       fallback_hilited_back_color = [style.backgroundColor retain];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_text_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.candidateTextColor = [[NSString alloc] initWithUTF8String:color];
     }
     else {
@@ -146,14 +161,14 @@
       style.candidateTextColor = [fallback_text_color retain];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_text_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.highlightedCandidateTextColor = [[NSString alloc] initWithUTF8String:color];
     }
     else {
       style.highlightedCandidateTextColor = [fallback_hilited_text_color retain];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_back_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.highlightedCandidateBackColor = [[NSString alloc] initWithUTF8String:color];
     }
     else {
@@ -161,7 +176,7 @@
     }
     // new in squirrel
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/comment_text_color"];
-    if (RimeConfigGetString(&config, [key UTF8String], color, sizeof(color))) {
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.commentTextColor = [[NSString alloc] initWithUTF8String:color];
     }
     
@@ -171,15 +186,40 @@
     [fallback_hilited_back_color release];
   }
   
-  RimeConfigClose(&config);
-  
   [_panel updateUIStyle:&style];
+  
   [style.fontName release];
   [style.backgroundColor release];
   [style.candidateTextColor release];
   [style.highlightedCandidateTextColor release];
   [style.highlightedCandidateBackColor release];
   [style.commentTextColor release];
+}
+
+-(void)loadAppOptionsFromConfig:(RimeConfig*)config
+{
+  //NSLog(@"updateAppOptionsFromConfig:");
+  NSMutableDictionary* appOptions = [[NSMutableDictionary alloc] init];
+  [_appOptions release];
+  _appOptions = appOptions;
+  RimeConfigIterator app_iter;
+  RimeConfigIterator option_iter;
+  RimeConfigBeginMap(&app_iter, config, "app_options");
+  while (RimeConfigNext(&app_iter)) {
+    //NSLog(@"DEBUG app[%d]: %s (%s)", app_iter.index, app_iter.key, app_iter.path);
+    NSMutableDictionary* options = [[NSMutableDictionary alloc] init];
+    [appOptions setValue:options forKey:[NSString stringWithUTF8String:app_iter.key]];
+    RimeConfigBeginMap(&option_iter, config, app_iter.path);
+    while (RimeConfigNext(&option_iter)) {
+      //NSLog(@"DEBUG option[%d]: %s (%s)", option_iter.index, option_iter.key, option_iter.path);
+      Bool value = False;
+      if (RimeConfigGetBool(config, option_iter.path, &value)) {
+        [options setValue:[NSNumber numberWithBool:value] forKey:[NSString stringWithUTF8String:option_iter.key]];
+      }
+    }
+    RimeConfigEnd(&option_iter);
+  }
+  RimeConfigEnd(&app_iter);
 }
 
 // prevent freezing the system when squirrel suffers crashes and thus is launched repeatedly by IMK.
@@ -212,6 +252,7 @@
 -(void)dealloc 
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [_appOptions release];
   [super dealloc];
 }
 

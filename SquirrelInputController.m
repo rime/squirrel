@@ -31,12 +31,12 @@
 
   //NSLog(@"handleEvent:client:");
   
+  _currentClient = sender;
   if (!_session || !RimeFindSession(_session)) {
     [self createSession];
     if (!_session) return NO;
   }
   
-  _currentClient = sender;
   BOOL handled = NO;
   
   NSUInteger modifiers = [event modifierFlags];  
@@ -146,8 +146,10 @@
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
   //NSLog(@"initWithServer:delegate:client:");
-  if (self = [super initWithServer:server delegate:delegate client:inputClient])
+  if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
+    _currentClient = inputClient;
     [self createSession];
+  }
   
   return self;
 }
@@ -285,8 +287,22 @@
 
 -(void)createSession
 {
-  //NSLog(@"createSession:");
+  NSString* app = [_currentClient bundleIdentifier];
+  NSLog(@"createSession: %@", app);
   _session = RimeCreateSession();
+  
+  // optionally, set app specific options
+  NSDictionary* appOptions = [[NSApp delegate] appOptions];
+  NSDictionary* options = [appOptions objectForKey:app];
+  if (options) {
+    for (NSString* key in options) {
+      NSNumber* value = [options objectForKey:key];
+      if (value) {
+        NSLog(@"set app option: %@ = %d", key, [value boolValue]);
+        RimeSetOption(_session, [key UTF8String], [value boolValue]);
+      }
+    }
+  }
 }
 
 -(void)destroySession

@@ -11,12 +11,14 @@
 
   // global options
   BOOL _useUSKeyboardLayout;
+  NSDictionary* _appOptions;
 }
 
 -(NSMenu*)menu;
 -(SquirrelPanel*)panel;
 -(id)updater;
 -(BOOL)useUSKeyboardLayout;
+-(NSDictionary*)appOptions;
 
 -(IBAction)deploy:(id)sender;
 -(IBAction)configure:(id)sender;

@@ -2,7 +2,7 @@
 # vim: set sw=2 sts=2 et:
 # encoding: utf-8
 
-config_version: "0.10"
+config_version: "0.11"
 
 us_keyboard_layout: false
 
@@ -78,3 +78,28 @@ preset_color_schemes:
     hilited_candidate_text_color: 0x70ffaf
     hilited_candidate_back_color: 0x00000000
     comment_text_color: 0xfecb96
+
+app_options:
+  com.alfredapp.Alfred:
+    ascii_mode: true
+  com.apple.Terminal:
+    ascii_mode: true
+    soft_cursor: true
+  com.apple.dt.Xcode:
+    ascii_mode: true
+  com.barebones.textwrangler:
+    ascii_mode: true
+  com.blacktree.QuickSilver:
+    ascii_mode: true
+  com.googlecode.iterm2:
+    ascii_mode: true
+  com.macromates.TextMate.preview:
+    ascii_mode: true
+  com.sublimetext.2:
+    ascii_mode: true
+  org.gnu.Aquamacs:
+    ascii_mode: true
+  org.gnu.Emacs:
+    ascii_mode: true
+  org.vim.MacVim:
+    ascii_mode: true
