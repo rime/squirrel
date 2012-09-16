@@ -68,6 +68,8 @@
         {
           release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
           RimeProcessKey(_session, XK_Super_L, rime_modifiers | release_mask);
+          // ignore OSX hotkeys
+          break;
         }
         [self rimeUpdate];
       }
@@ -225,7 +227,7 @@
   NSDictionary*       attrs;
   NSAttributedString* attrString;
   
-  attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:range];
+  attrs = [self markForStyle:kTSMHiliteRawText atRange:range];
   attrString = [[NSAttributedString alloc] initWithString:preedit attributes:attrs];
   
   [_currentClient setMarkedText:attrString
