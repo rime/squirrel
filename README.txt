@@ -1,7 +1,7 @@
 # 說明書
 
 ----------------------------------------------------------
-【鼠鬚管】輸入法 0.9.8
+【鼠鬚管】輸入法 0.9.9
 
 基於 中州韻輸入法引擎／Rime Input Method Engine 及開源技術
 式恕堂 版權所無 Copyleft 2012
@@ -40,6 +40,16 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
 
 ----------------------------------------------------------
 更新日誌
+
+鼠鬚管 0.9.9 <2012-09-17>
+  * 新增：碼表輸入法啓用用戶詞典、字頻調整
+  * 優化：自動編譯輸入方案依賴項，如五筆・拼音的反查詞典
+  * 修改：日誌系統改用glog，輸出到 $TMPDIR/rime.squirrel.*
+  * 新增：針對特定程序禁用漢字輸入，如終端、代碼編輯器等
+  * 優化：改進對 MacVim 命令模式的支持
+  * 優化：適合 Retina 屏的輸入法圖標，感謝 leon.guan 幫忙！
+  * 新增：【emoji表情】輸入方案，用法見 Wiki 《定製指南》
+  * 更新：【明月拼音】【粵拼】【吳語】修正註音錯誤、缺字
 
 鼠鬚管 0.9.8 <2012-07-08>
   * 新的 Rime logo
@@ -148,6 +158,8 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
     國際音標輸入法
     http://zh.wikipedia.org/wiki/X-SAMPA
     作者 Patrick Tschang、佛振
+  * 【emoji表情】
+    作者 StarSasumi
 
 程序設計：
   * 佛振 <chen.sst@gmail.com>
@@ -174,6 +186,7 @@ http://code.google.com/p/rimeime/issues/list
 
 已知問題
   * 不支持在輸入法中定義功能鍵 F1 ~ F12
+  * 不支持數字小鍵盤
   * 尚未完成輸入法設定介面
 
 ----------------------------------------------------------
