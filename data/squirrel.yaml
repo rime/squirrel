@@ -2,7 +2,7 @@
 # vim: set sw=2 sts=2 et:
 # encoding: utf-8
 
-config_version: "0.11"
+config_version: "0.12"
 
 us_keyboard_layout: false
 
@@ -89,7 +89,7 @@ app_options:
     ascii_mode: true
   com.barebones.textwrangler:
     ascii_mode: true
-  com.blacktree.QuickSilver:
+  com.blacktree.Quicksilver:
     ascii_mode: true
   com.googlecode.iterm2:
     ascii_mode: true
