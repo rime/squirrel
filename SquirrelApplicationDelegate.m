@@ -51,9 +51,16 @@
 
 -(void)startRimeWithFullCheck:(BOOL)fullCheck
 {
+  NSString* userDataDir = [@"~/Library/Rime" stringByStandardizingPath];
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  if (![fileManager fileExistsAtPath:userDataDir]) {
+    if (![fileManager createDirectoryAtPath:userDataDir withIntermediateDirectories:YES attributes:nil error:NULL]) {
+      NSLog(@"Error creating user data directory: %@", userDataDir);
+    }
+  }
   RimeTraits squirrel_traits;
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
-  squirrel_traits.user_data_dir = [[@"~/Library/Rime" stringByStandardizingPath] UTF8String];
+  squirrel_traits.user_data_dir = [userDataDir UTF8String];
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
   squirrel_traits.distribution_version = [[[[NSBundle mainBundle] infoDictionary] 
