@@ -248,12 +248,24 @@
   return detected;
 }
 
+-(void)workspaceWillPowerOff:(NSNotification *)aNotification
+{
+  NSLog(@"Finalizing before logging out.");
+  RimeFinalize();
+}
+
 //add an awakeFromNib item so that we can set the action method.  Note that 
 //any menuItems without an action will be disabled when displayed in the Text 
 //Input Menu.
 -(void)awakeFromNib
 {
   //NSLog(@"SquirrelApplicationDelegate awakeFromNib");
+  
+  NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
+  [center addObserver:self
+             selector:@selector(workspaceWillPowerOff:)
+                 name:@"NSWorkspaceWillPowerOffNotification"
+               object:nil];
 }
 
 -(void)dealloc 
