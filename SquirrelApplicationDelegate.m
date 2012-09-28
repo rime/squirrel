@@ -1,4 +1,3 @@
-
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelPanel.h"
 #import <rime_api.h>
@@ -233,7 +232,7 @@
 -(BOOL)problematicLaunchDetected
 {
   BOOL detected = NO;
-  NSString* logfile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"launch.dat"];
+  NSString* logfile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"squirrel_launch.dat"];
   //NSLog(@"[DEBUG] archive: %@", logfile);
   NSData* archive = [NSData dataWithContentsOfFile:logfile options:NSDataReadingUncached error:nil];
   if (archive) {
