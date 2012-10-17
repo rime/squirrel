@@ -30,6 +30,8 @@
 		44935C1D14F0531D00346874 /* wugniu_lopha.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */; };
 		44935C1E14F0531D00346874 /* wugniu_lopha.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */; };
 		44943BB815066A540005EE85 /* postflight in Resources */ = {isa = PBXBuildFile; fileRef = 44943BB715066A540005EE85 /* postflight */; };
+		4495EA3A162E63A600F236CA /* soutzoe.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4495EA36162E637B00F236CA /* soutzoe.dict.yaml */; };
+		4495EA3B162E63A600F236CA /* soutzoe.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4495EA37162E637B00F236CA /* soutzoe.schema.yaml */; };
 		44ABBE7014DD5A2100B8A82D /* default.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7114DD5A2700B8A82D /* essay.kct in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
 		44ABBE7214DD5A4000B8A82D /* cangjie5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
@@ -94,6 +96,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				4495EA3A162E63A600F236CA /* soutzoe.dict.yaml in Copy Shared Support Files */,
+				4495EA3B162E63A600F236CA /* soutzoe.schema.yaml in Copy Shared Support Files */,
 				44B20C981600874800A85924 /* emoji.dict.yaml in Copy Shared Support Files */,
 				44B20C991600874800A85924 /* emoji.schema.yaml in Copy Shared Support Files */,
 				442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */,
@@ -183,6 +187,8 @@
 		44935C0914F052EC00346874 /* wugniu_lopha.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.dict.yaml; sourceTree = "<group>"; };
 		44935C0A14F052EC00346874 /* wugniu_lopha.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wugniu_lopha.schema.yaml; sourceTree = "<group>"; };
 		44943BB715066A540005EE85 /* postflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = postflight; sourceTree = "<group>"; };
+		4495EA36162E637B00F236CA /* soutzoe.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = soutzoe.dict.yaml; path = ../brise/supplement/soutzoe.dict.yaml; sourceTree = "<group>"; };
+		4495EA37162E637B00F236CA /* soutzoe.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = soutzoe.schema.yaml; path = ../brise/supplement/soutzoe.schema.yaml; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = ../brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -401,6 +407,8 @@
 		44DA7A4214DD598900C1ED3B /* SharedSupport */ = {
 			isa = PBXGroup;
 			children = (
+				4495EA36162E637B00F236CA /* soutzoe.dict.yaml */,
+				4495EA37162E637B00F236CA /* soutzoe.schema.yaml */,
 				442B5B871570C37200370DEA /* squirrel.yaml */,
 				4407F39D14EC071E001329FE /* opencc */,
 				44ABBE6314DD59EA00B8A82D /* default.yaml */,
