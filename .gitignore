@@ -3,6 +3,7 @@ Squirrel.xcodeproj/*.pbxuser
 Squirrel.xcodeproj/project.xcworkspace/
 Squirrel.xcodeproj/xcuserdata/
 build
+build.log
 lib/*.a
 package
 *~
