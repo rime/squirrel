@@ -1,4 +1,5 @@
 all: release
+install: install-release
 
 LIBRIME = librime/xbuild/lib/Release/librime.dylib
 
@@ -16,7 +17,8 @@ debug: $(LIBRIME)
 	cd build ; ln -s Debug/Squirrel.app Squirrel.app
 
 install-debug:
-	#rm -rf "/Library/Input Methods/Squirrel.app"
+	rm -rf "/Library/Input Methods/Squirrel.app/Contents/Frameworks"
+	rm -rf "/Library/Input Methods/Squirrel.app/Contents/MacOS"
 	cp -R build/Debug/Squirrel.app "/Library/Input Methods"
 	"/Library/Input Methods/Squirrel.app/Contents/Resources/postflight"
 
