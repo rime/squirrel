@@ -1,31 +1,16 @@
 all: release
 
-debug: librime squirrel-debug
-release: librime squirrel
+LIBRIME = librime/xbuild/lib/Release/librime.dylib
 
-# both Debug and Relase builds of squirrel link to the Release build of librime
-librime: librime-release
-squirrel: squirrel-release
-install: install-release
+$(LIBRIME):
+	cd librime; make -f Makefile.xcode
 
-librime-debug:
-	mkdir -p ../librime/xdebug
-	cd ../librime/xdebug; cmake -G Xcode -DBUILD_STATIC=ON ..
-	cd ../librime/xdebug; xcodebuild -project rime.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
-	@echo 'built librime for testing and debugging with its command line tools.'
-	@echo 'CAVEAT: the Debug build of squirrel does NOT link to this target either.'
-
-librime-release:
-	mkdir -p ../librime/xbuild
-	cd ../librime/xbuild; cmake -G Xcode -DBUILD_STATIC=ON -DCMAKE_BUILD_WITH_INSTALL_RPATH=ON ..
-	cd ../librime/xbuild; xcodebuild -project rime.xcodeproj -configuration Release build | grep -v setenv | tee build.log
-
-squirrel-release:
+release: $(LIBRIME)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Release/Squirrel.app Squirrel.app
 
-squirrel-debug:
+debug: $(LIBRIME)
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Debug/Squirrel.app Squirrel.app
