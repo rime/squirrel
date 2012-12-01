@@ -66,12 +66,10 @@
                                            objectForKey:@"CFBundleVersion"] UTF8String];
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
-  if (fullCheck) {
-    // update squirrel config
-    RimeDeployConfigFile("squirrel.yaml", "config_version");
-  }
   // check for configuration updates
   if (RimeStartMaintenance((Bool)fullCheck)) {
+    // update squirrel config
+    RimeDeployConfigFile("squirrel.yaml", "config_version");
     // TODO: notification
     NSArray* args = [NSArray arrayWithObjects:@"Preparing Rime for updates; patience.", nil];
     [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
