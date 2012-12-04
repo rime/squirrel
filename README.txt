@@ -195,11 +195,12 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
   * BYVoid <byvoid.kcp@gmail.com>
   * waynezhang
 
-感謝以下開源項目：
+感謝以下自由軟件：
   * Boost C++ Libraries
   * darts-clone
   * google-glog
   * Google Test
+  * Growl
   * Kyoto Cabinet
   * opencc / 開放中文轉換
   * Sparkle

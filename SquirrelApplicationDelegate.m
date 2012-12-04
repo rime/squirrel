@@ -1,5 +1,6 @@
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelPanel.h"
+#import <Growl/Growl.h>
 #import <rime_api.h>
 
 @implementation SquirrelApplicationDelegate
@@ -70,9 +71,15 @@
   if (RimeStartMaintenance((Bool)fullCheck)) {
     // update squirrel config
     RimeDeployConfigFile("squirrel.yaml", "config_version");
-    // TODO: notification
-    NSArray* args = [NSArray arrayWithObjects:@"Preparing Rime for updates; patience.", nil];
-    [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+    // notification
+    [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
+                                description:NSLocalizedString(@"Deploying Rime input method engine.", nil)
+                           notificationName:@"Squirrel"
+                                   iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
+                                   priority:0
+                                   isSticky:NO
+                               clickContext:nil
+                                 identifier:@"deploy"];
   }
 }
 
