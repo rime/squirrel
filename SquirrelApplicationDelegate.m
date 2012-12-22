@@ -49,6 +49,62 @@
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://code.google.com/p/rimeime/w/list"]];
 }
 
+void show_message(const char* msg_text, const char* msg_id) {
+  [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
+                              description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
+                         notificationName:@"Squirrel"
+                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
+                                 priority:0
+                                 isSticky:NO
+                             clickContext:nil
+                               identifier:[NSString stringWithUTF8String:msg_id]];
+}
+
+void notification_handler(void* context_object, RimeSessionId session_id,
+                          const char* message_type, const char* message_value) {
+  if (!strcmp(message_type, "deploy")) {
+    if (!strcmp(message_value, "start")) {
+      show_message("deploy_start", message_type);
+    }
+    else if (!strcmp(message_value, "success")) {
+      show_message("deploy_success", message_type);
+    }
+    else if (!strcmp(message_value, "failure")) {
+      show_message("deploy_failure", message_type);
+    }
+    return;
+  }
+  if ([GrowlApplicationBridge isMistEnabled]) {
+    static time_t previous_notify_time = 0;
+    time_t now = time(NULL);
+    bool is_cool = now - previous_notify_time > 5;
+    if (!is_cool)
+      return;  // too soon
+    previous_notify_time = now;
+  }
+  if (!strcmp(message_type, "schema")) {
+    const char* schema_name = strchr(message_value, '/');
+    if (schema_name)
+      show_message(++schema_name, message_type);
+  }
+  else if (!strcmp(message_type, "option")) {
+    if (!strcmp(message_value, "ascii_mode") || !strcmp(message_value, "!ascii_mode")) {
+      static bool was_ascii_mode = false;
+      bool is_ascii_mode = (message_value[0] != '!');
+      if (is_ascii_mode != was_ascii_mode) {
+        was_ascii_mode = is_ascii_mode;
+        show_message(message_value, message_type);
+      }
+    }
+    else if (!strcmp(message_value, "full_shape") || !strcmp(message_value, "!full_shape")) {
+      show_message(message_value, message_type);
+    }
+    else if (!strcmp(message_value, "simplification") || !strcmp(message_value, "!simplification")) {
+      show_message(message_value, message_type);
+    }
+  }
+}
+
 -(void)startRimeWithFullCheck:(BOOL)fullCheck
 {
   NSString* userDataDir = [@"~/Library/Rime" stringByStandardizingPath];
@@ -58,6 +114,7 @@
       NSLog(@"Error creating user data directory: %@", userDataDir);
     }
   }
+  RimeSetNotificationHandler(notification_handler, self);
   RimeTraits squirrel_traits;
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
   squirrel_traits.user_data_dir = [userDataDir UTF8String];
@@ -71,15 +128,6 @@
   if (RimeStartMaintenance((Bool)fullCheck)) {
     // update squirrel config
     RimeDeployConfigFile("squirrel.yaml", "config_version");
-    // notification
-    [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
-                                description:NSLocalizedString(@"Deploying Rime input method engine.", nil)
-                           notificationName:@"Squirrel"
-                                   iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
-                                   priority:0
-                                   isSticky:NO
-                               clickContext:nil
-                                 identifier:@"deploy"];
   }
 }
 

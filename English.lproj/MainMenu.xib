@@ -2,13 +2,13 @@
 <archive type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="7.10">
 	<data>
 		<int key="IBDocument.SystemTarget">1050</int>
-		<string key="IBDocument.SystemVersion">12C54</string>
-		<string key="IBDocument.InterfaceBuilderVersion">2840</string>
+		<string key="IBDocument.SystemVersion">12C60</string>
+		<string key="IBDocument.InterfaceBuilderVersion">2844</string>
 		<string key="IBDocument.AppKitVersion">1187.34</string>
 		<string key="IBDocument.HIToolboxVersion">625.00</string>
 		<object class="NSMutableDictionary" key="IBDocument.PluginVersions">
 			<string key="NS.key.0">com.apple.InterfaceBuilder.CocoaPlugin</string>
-			<string key="NS.object.0">2840</string>
+			<string key="NS.object.0">2844</string>
 		</object>
 		<object class="NSArray" key="IBDocument.IntegratedClassDependencies">
 			<bool key="EncodedWithXMLCoder">YES</bool>
@@ -70,15 +70,6 @@
 						<reference key="NSOnImage" ref="850488914"/>
 						<reference key="NSMixedImage" ref="903700867"/>
 					</object>
-					<object class="NSMenuItem" id="598822847">
-						<reference key="NSMenu" ref="969598147"/>
-						<string key="NSTitle">Check for updates...</string>
-						<string key="NSKeyEquiv"/>
-						<int key="NSMnemonicLoc">2147483647</int>
-						<reference key="NSOnImage" ref="850488914"/>
-						<reference key="NSMixedImage" ref="903700867"/>
-						<int key="NSTag">1</int>
-					</object>
 					<object class="NSMenuItem" id="634505591">
 						<reference key="NSMenu" ref="969598147"/>
 						<string key="NSTitle">Rime Wiki...</string>
@@ -87,6 +78,15 @@
 						<reference key="NSOnImage" ref="850488914"/>
 						<reference key="NSMixedImage" ref="903700867"/>
 						<int key="NSTag">2</int>
+					</object>
+					<object class="NSMenuItem" id="598822847">
+						<reference key="NSMenu" ref="969598147"/>
+						<string key="NSTitle">Check for updates...</string>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="850488914"/>
+						<reference key="NSMixedImage" ref="903700867"/>
+						<int key="NSTag">1</int>
 					</object>
 				</object>
 			</object>
