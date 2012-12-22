@@ -5,6 +5,8 @@
   Created by 弓辰 on 12/12/22.
 
 */
+"Squirrel" = "鼠须管";
+
 "deploy_update" = "更新输入法引擎…";
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";

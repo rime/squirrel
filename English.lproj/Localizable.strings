@@ -1,3 +1,5 @@
+"Squirrel" = "Squirrel";
+
 "deploy_update" = "Deploying Rime for updates.";
 "deploy_start" = "Deploying Rime input method engine.";
 "deploy_success" = "Squirrel is ready.";
