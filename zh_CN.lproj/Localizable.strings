@@ -5,6 +5,7 @@
   Created by 弓辰 on 12/12/22.
 
 */
+"deploy_update" = "更新输入法引擎…";
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";

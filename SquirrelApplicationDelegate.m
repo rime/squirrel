@@ -50,6 +50,7 @@
 }
 
 void show_message(const char* msg_text, const char* msg_id) {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
                               description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
                          notificationName:@"Squirrel"
@@ -58,6 +59,7 @@ void show_message(const char* msg_text, const char* msg_id) {
                                  isSticky:NO
                              clickContext:nil
                                identifier:[NSString stringWithUTF8String:msg_id]];
+  [pool release];
 }
 
 void notification_handler(void* context_object, RimeSessionId session_id,
@@ -74,6 +76,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
     return;
   }
+  if (!strcmp(message_type, "schema")) {
+    const char* schema_name = strchr(message_value, '/');
+    if (schema_name)
+      show_message(++schema_name, message_type);
+    return;
+  }
   if ([GrowlApplicationBridge isMistEnabled]) {
     static time_t previous_notify_time = 0;
     time_t now = time(NULL);
@@ -82,12 +90,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       return;  // too soon
     previous_notify_time = now;
   }
-  if (!strcmp(message_type, "schema")) {
-    const char* schema_name = strchr(message_value, '/');
-    if (schema_name)
-      show_message(++schema_name, message_type);
-  }
-  else if (!strcmp(message_type, "option")) {
+  if (!strcmp(message_type, "option")) {
     if (!strcmp(message_value, "ascii_mode") || !strcmp(message_value, "!ascii_mode")) {
       static bool was_ascii_mode = false;
       bool is_ascii_mode = (message_value[0] != '!');

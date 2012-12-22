@@ -29,3 +29,6 @@
 -(BOOL)problematicLaunchDetected;
 
 @end
+
+// also used in main.m
+void show_message(const char* msg_text, const char* msg_id);

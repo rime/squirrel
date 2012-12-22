@@ -1,7 +1,6 @@
 
 #import "SquirrelApplicationDelegate.h"
 #import <Cocoa/Cocoa.h>
-#import <Growl/Growl.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <string.h>
 #import <rime_api.h>
@@ -19,14 +18,7 @@ int main(int argc, char *argv[])
   
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
-    [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
-                                description:NSLocalizedString(@"Deploying Rime for updates.", nil)
-                           notificationName:@"Squirrel"
-                                   iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
-                                   priority:0
-                                   isSticky:NO
-                               clickContext:nil
-                                 identifier:@"deploy"];
+    show_message("deploy_update", "deploy");
     // build all schemas in current directory
     RimeDeployerInitialize(NULL);
     return RimeDeployWorkspace() ? 0 : 1;
