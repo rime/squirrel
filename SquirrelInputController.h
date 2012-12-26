@@ -6,6 +6,8 @@
 @interface SquirrelInputController : IMKInputController {
   id                          _currentClient;         // the current active client
   NSString                   *_preeditString;         // the cached preedit string
+  NSRange                     _selRange;
+  NSUInteger                  _caretPos;
   NSArray                    *_candidates;
   NSUInteger                  _lastModifier;
   NSEventType                 _lastEventType;

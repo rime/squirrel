@@ -243,19 +243,30 @@
                 caretPos:(NSUInteger)pos
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
-  if ([_preeditString isEqual:preedit])
+
+  if ([_preeditString isEqual:preedit] &&
+      _caretPos == pos && _selRange.location == range.location && _selRange.length == range.length)
     return;
 
   [preedit retain];
   [_preeditString release];
   _preeditString = preedit;
+  _selRange = range;
+  _caretPos = pos;
   
-  NSDictionary*       attrs;
-  NSAttributedString* attrString;
-  
-  attrs = [self markForStyle:kTSMHiliteRawText atRange:range];
-  attrString = [[NSAttributedString alloc] initWithString:preedit attributes:attrs];
-  
+  //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld", range.location, range.length, pos);
+  NSDictionary* attrs;
+  NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:preedit];
+  if (range.location > 0) {
+    NSRange convertedRange = NSMakeRange(0, range.location);
+    attrs = [self markForStyle:kTSMHiliteConvertedText atRange:convertedRange];
+    [attrString setAttributes:attrs range:convertedRange];
+  }
+  {
+    NSRange remainingRange = NSMakeRange(range.location, [preedit length] - range.location);
+    attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:remainingRange];
+    [attrString setAttributes:attrs range:remainingRange];
+  }
   [_currentClient setMarkedText:attrString
                  selectionRange:NSMakeRange(pos, 0) 
                replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
@@ -338,16 +349,9 @@
     if (preedit) {
       preeditText = [NSString stringWithUTF8String:preedit];
     }
-    NSUInteger start = 0;
-    NSUInteger end = 0;
-    NSUInteger caretPos = 0;
-    if (ctx.composition.sel_start < ctx.composition.sel_end) {
-      start = utf8len(preedit, ctx.composition.sel_start);
-      end = utf8len(preedit, ctx.composition.sel_end);
-    }
-    if (ctx.composition.cursor_pos > 0) {
-      caretPos = utf8len(preedit, ctx.composition.cursor_pos);
-    }
+    NSUInteger start = utf8len(preedit, ctx.composition.sel_start);
+    NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
+    NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
     NSRange selRange = NSMakeRange(start, end - start);
     [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
     // update candidates
