@@ -1,9 +1,12 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.14"
+config_version: "0.15"
 
 us_keyboard_layout: false
+
+# options: always | never | appropriate == growl_is_running
+show_notifications_when: growl_is_running
 
 style:
   horizontal: false

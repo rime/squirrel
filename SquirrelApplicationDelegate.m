@@ -25,6 +25,11 @@
   return _useUSKeyboardLayout;
 }
 
+-(BOOL)enableNotifications
+{
+  return _enableNotifications;
+}
+
 -(NSDictionary*)appOptions
 {
   return _appOptions;
@@ -76,12 +81,19 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
     return;
   }
+  // off?
+  id app_delegate = (id)context_object;
+  if (app_delegate && ![app_delegate enableNotifications]) {
+    return;
+  }
+  // schema change
   if (!strcmp(message_type, "schema")) {
     const char* schema_name = strchr(message_value, '/');
     if (schema_name)
       show_message(++schema_name, message_type);
     return;
   }
+  // builtin notifications suck! avoid bubble flood
   if ([GrowlApplicationBridge isMistEnabled]) {
     static time_t previous_notify_time = 0;
     time_t now = time(NULL);
@@ -90,6 +102,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       return;  // too soon
     previous_notify_time = now;
   }
+  // option change
   if (!strcmp(message_type, "option")) {
     if (!strcmp(message_value, "ascii_mode") || !strcmp(message_value, "!ascii_mode")) {
       static bool was_ascii_mode = false;
@@ -147,6 +160,19 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (RimeConfigGetBool(&config, "us_keyboard_layout", &value)) {
     _useUSKeyboardLayout = (BOOL)value;
   }
+  
+  _enableNotifications = YES;
+  _enableBuitinNotifcations = NO;
+  char str[100] = {0};
+  if (RimeConfigGetString(&config, "show_notifications_when", str, sizeof(str))) {
+    if (!strcmp(str, "always")) {
+      _enableNotifications = _enableBuitinNotifcations = YES;
+    }
+    else if (!strcmp(str, "never")) {
+      _enableNotifications = _enableBuitinNotifcations = NO;
+    }
+  }
+  [GrowlApplicationBridge setShouldUseBuiltInNotifications:_enableBuitinNotifcations];
 
   [self updateUIStyle:&config];
   [self loadAppOptionsFromConfig:&config];

@@ -11,6 +11,8 @@
 
   // global options
   BOOL _useUSKeyboardLayout;
+  BOOL _enableNotifications;
+  BOOL _enableBuitinNotifcations;
   NSDictionary* _appOptions;
 }
 
@@ -18,6 +20,7 @@
 -(SquirrelPanel*)panel;
 -(id)updater;
 -(BOOL)useUSKeyboardLayout;
+-(BOOL)enableNotifications;
 -(NSDictionary*)appOptions;
 
 -(IBAction)deploy:(id)sender;
