@@ -10,6 +10,7 @@ show_notifications_when: growl_is_running
 
 style:
   horizontal: false
+  nonumber: false
   #font_face: "儷黑 Pro"
   #font_point: 21
   corner_radius: 10

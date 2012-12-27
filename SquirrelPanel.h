@@ -10,6 +10,7 @@
 
 typedef struct {
   BOOL horizontal;
+  BOOL nonumber;
   NSString* fontName;
   int fontSize;
   double alpha;
@@ -31,6 +32,7 @@ typedef struct {
   NSMutableDictionary* _highlightedAttrs;
   NSMutableDictionary* _commentAttrs;
   BOOL _horizontal;
+  BOOL _nonumber;
 }
 
 -(void)show;
