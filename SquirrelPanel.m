@@ -116,6 +116,7 @@ static const double kAlpha = 1.0;
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
   _horizontal = NO;
+  _nonumber = NO;
   return self;
 }
 
@@ -183,11 +184,16 @@ static const double kAlpha = 1.0;
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
     NSString* str;
-    if (i < [labels length]) {
-      str = [NSString stringWithFormat:@"%c. %@ ", [labels characterAtIndex:i], [candidates objectAtIndex:i]];
+    if (_nonumber) {
+        str = [NSString stringWithFormat:@"%@", [candidates objectAtIndex:i]];
     }
     else {
-      str = [NSString stringWithFormat:@"%ld. %@ ", i + 1, [candidates objectAtIndex:i]];
+        if (i < [labels length]) {
+            str = [NSString stringWithFormat:@"%c. %@ ", [labels characterAtIndex:i], [candidates objectAtIndex:i]];
+        }
+        else {
+            str = [NSString stringWithFormat:@"%ld. %@ ", i + 1, [candidates objectAtIndex:i]];
+        }
     }
     NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
     if (i == index) {
@@ -229,6 +235,7 @@ static const double kAlpha = 1.0;
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
   _horizontal = style->horizontal;
+  _nonumber = style->nonumber;
   
   if (style->fontSize == 0) {  // default size
     style->fontSize = kFontSize;
