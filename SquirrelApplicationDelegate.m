@@ -182,7 +182,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)updateUIStyle:(RimeConfig*)config
 {
-  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil };
+  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil };
   
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
@@ -274,6 +274,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     [fallback_hilited_back_color release];
   }
   
+  char format[100] = {0};
+  if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
+    style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
+  }
+  
   [_panel updateUIStyle:&style];
   
   [style.fontName release];
@@ -282,6 +287,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [style.highlightedCandidateTextColor release];
   [style.highlightedCandidateBackColor release];
   [style.commentTextColor release];
+  [style.candidateFormat release];
 }
 
 -(void)loadAppOptionsFromConfig:(RimeConfig*)config

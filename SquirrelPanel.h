@@ -21,6 +21,7 @@ typedef struct {
   NSString *highlightedCandidateTextColor;
   NSString *highlightedCandidateBackColor;
   NSString *commentTextColor;
+  NSString *candidateFormat;
 } SquirrelUIStyle;
 
 @interface SquirrelPanel : NSObject {
@@ -31,6 +32,7 @@ typedef struct {
   NSMutableDictionary* _highlightedAttrs;
   NSMutableDictionary* _commentAttrs;
   BOOL _horizontal;
+  NSString* _candidateFormat;
 }
 
 -(void)show;

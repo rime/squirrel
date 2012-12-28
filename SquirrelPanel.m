@@ -116,6 +116,7 @@ static const double kAlpha = 1.0;
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
   _horizontal = NO;
+  _candidateFormat = @"%c. %@";
   return self;
 }
 
@@ -183,11 +184,13 @@ static const double kAlpha = 1.0;
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
     NSString* str;
-    if (i < [labels length]) {
-      str = [NSString stringWithFormat:@"%c. %@ ", [labels characterAtIndex:i], [candidates objectAtIndex:i]];
+    if ([_candidateFormat rangeOfString:@"%c"].length > 0) {
+      // default: 1. 2. 3... custom: A. B. C...
+      char label_character = (i < [labels length]) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
+      str = [NSString stringWithFormat:_candidateFormat, label_character, [candidates objectAtIndex:i]];
     }
     else {
-      str = [NSString stringWithFormat:@"%ld. %@ ", i + 1, [candidates objectAtIndex:i]];
+      str = [NSString stringWithFormat:_candidateFormat, [candidates objectAtIndex:i]];
     }
     NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
     if (i == index) {
@@ -292,6 +295,11 @@ static const double kAlpha = 1.0;
   [(SquirrelView *) _view setBorderWidth:style->borderWidth];
 
   [_window setAlphaValue:style->alpha];
+  
+  [style->candidateFormat retain];
+  [_candidateFormat release];
+  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@";
+;
 }
 
 @end
