@@ -62,6 +62,14 @@
 							<string key="NSResourceName">NSMenuMixedState</string>
 						</object>
 					</object>
+					<object class="NSMenuItem" id="8099641">
+						<reference key="NSMenu" ref="969598147"/>
+						<string key="NSTitle">Sync user dictionaries</string>
+						<string key="NSKeyEquiv"/>
+						<int key="NSMnemonicLoc">2147483647</int>
+						<reference key="NSOnImage" ref="850488914"/>
+						<reference key="NSMixedImage" ref="903700867"/>
+					</object>
 					<object class="NSMenuItem" id="574506874">
 						<reference key="NSMenu" ref="969598147"/>
 						<string key="NSTitle">Settings...</string>
@@ -155,6 +163,14 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
+						<string key="label">syncUserDicts:</string>
+						<reference key="source" ref="57193187"/>
+						<reference key="destination" ref="8099641"/>
+					</object>
+					<int key="connectionID">805</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
 						<string key="label">checkForUpdates:</string>
 						<reference key="source" ref="350557130"/>
 						<reference key="destination" ref="598822847"/>
@@ -218,6 +234,7 @@
 							<reference ref="598822847"/>
 							<reference ref="634505591"/>
 							<reference ref="574506874"/>
+							<reference ref="8099641"/>
 						</object>
 						<reference key="parent" ref="0"/>
 						<string key="objectName">Menu</string>
@@ -242,6 +259,11 @@
 						<reference key="object" ref="574506874"/>
 						<reference key="parent" ref="969598147"/>
 					</object>
+					<object class="IBObjectRecord">
+						<int key="objectID">804</int>
+						<reference key="object" ref="8099641"/>
+						<reference key="parent" ref="969598147"/>
+					</object>
 				</object>
 			</object>
 			<object class="NSMutableDictionary" key="flattenedProperties">
@@ -259,9 +281,11 @@
 					<string>776.IBPluginDependency</string>
 					<string>797.IBPluginDependency</string>
 					<string>802.IBPluginDependency</string>
+					<string>804.IBPluginDependency</string>
 				</object>
 				<object class="NSArray" key="dict.values">
 					<bool key="EncodedWithXMLCoder">YES</bool>
+					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
@@ -287,7 +311,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">803</int>
+			<int key="maxID">805</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -332,9 +356,11 @@
 							<string>configure:</string>
 							<string>deploy:</string>
 							<string>openWiki:</string>
+							<string>syncUserDicts:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -347,6 +373,7 @@
 							<string>configure:</string>
 							<string>deploy:</string>
 							<string>openWiki:</string>
+							<string>syncUserDicts:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -360,6 +387,10 @@
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">openWiki:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">syncUserDicts:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>

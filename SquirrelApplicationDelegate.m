@@ -44,6 +44,12 @@
   [self loadSquirrelConfig];
 }
 
+-(IBAction)syncUserDicts:(id)sender
+{
+  NSLog(@"Sync user dicts");
+  RimeSyncUserDict();
+}
+
 -(IBAction)configure:(id)sender
 {
   [[NSWorkspace sharedWorkspace] openFile:[@"~/Library/Rime" stringByStandardizingPath]];
