@@ -44,10 +44,10 @@
   [self loadSquirrelConfig];
 }
 
--(IBAction)syncUserDicts:(id)sender
+-(IBAction)syncUserData:(id)sender
 {
-  NSLog(@"Sync user dicts");
-  RimeSyncUserDict();
+  NSLog(@"Sync user data");
+  RimeSyncUserData();
 }
 
 -(IBAction)configure:(id)sender

@@ -193,9 +193,9 @@
   [[NSApp delegate] deploy:sender];
 }
 
--(void)syncUserDicts:(id)sender
+-(void)syncUserData:(id)sender
 {
-  [[NSApp delegate] syncUserDicts:sender];
+  [[NSApp delegate] syncUserData:sender];
 }
 
 -(void)configure:(id)sender

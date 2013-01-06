@@ -24,7 +24,7 @@
 -(NSDictionary*)appOptions;
 
 -(IBAction)deploy:(id)sender;
--(IBAction)syncUserDicts:(id)sender;
+-(IBAction)syncUserData:(id)sender;
 -(IBAction)configure:(id)sender;
 -(IBAction)openWiki:(id)sender;
 

@@ -64,7 +64,7 @@
 					</object>
 					<object class="NSMenuItem" id="472710207">
 						<reference key="NSMenu" ref="969598147"/>
-						<string key="NSTitle">同步用戶詞典</string>
+						<string key="NSTitle">同步用戶資料</string>
 						<string key="NSKeyEquiv"/>
 						<int key="NSMnemonicLoc">2147483647</int>
 						<reference key="NSOnImage" ref="850488914"/>
@@ -163,11 +163,11 @@
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">syncUserDicts:</string>
+						<string key="label">syncUserData:</string>
 						<reference key="source" ref="57193187"/>
 						<reference key="destination" ref="472710207"/>
 					</object>
-					<int key="connectionID">804</int>
+					<int key="connectionID">805</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
@@ -311,7 +311,7 @@
 				<reference key="dict.values" ref="0"/>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">804</int>
+			<int key="maxID">805</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -356,7 +356,7 @@
 							<string>configure:</string>
 							<string>deploy:</string>
 							<string>openWiki:</string>
-							<string>syncUserDicts:</string>
+							<string>syncUserData:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -373,7 +373,7 @@
 							<string>configure:</string>
 							<string>deploy:</string>
 							<string>openWiki:</string>
-							<string>syncUserDicts:</string>
+							<string>syncUserData:</string>
 						</object>
 						<object class="NSArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
@@ -390,7 +390,7 @@
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
-								<string key="name">syncUserDicts:</string>
+								<string key="name">syncUserData:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 						</object>
