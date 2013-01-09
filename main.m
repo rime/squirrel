@@ -24,6 +24,12 @@ int main(int argc, char *argv[])
     return RimeDeployWorkspace() ? 0 : 1;
   }
   
+  if (argc > 1 && !strcmp("--reload", argv[1])) {
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"SquirrelReloadNotification"
+                                                                   object:nil];
+    return 0;
+  }
+  
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   
   // find the bundle identifier and then initialize the input method server
