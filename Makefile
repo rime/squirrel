@@ -1,9 +1,14 @@
+.PHONY: all install librime release debug clean
+
 all: release
 install: install-release
 
 LIBRIME = librime/xbuild/lib/Release/librime.dylib
 
 $(LIBRIME):
+	cd librime; make -f Makefile.xcode
+
+librime:
 	cd librime; make -f Makefile.xcode
 
 release: $(LIBRIME)
