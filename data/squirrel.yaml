@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.16"
+config_version: "0.17"
 
 us_keyboard_layout: false
 
@@ -10,7 +10,7 @@ show_notifications_when: growl_is_running
 
 style:
   horizontal: false
-  #candidate_format: '%c. %@'
+  #candidate_format: '%c. %@ '
   #font_face: 'Heiti TC'
   #font_point: 21
   corner_radius: 10

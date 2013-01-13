@@ -116,7 +116,7 @@ static const double kAlpha = 1.0;
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
   _horizontal = NO;
-  _candidateFormat = @"%c. %@";
+  _candidateFormat = @"%c. %@ ";
   return self;
 }
 
@@ -298,7 +298,7 @@ static const double kAlpha = 1.0;
   
   [style->candidateFormat retain];
   [_candidateFormat release];
-  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@";
+  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@ ";
 ;
 }
 
