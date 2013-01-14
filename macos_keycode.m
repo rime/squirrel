@@ -7,6 +7,8 @@ int osx_modifiers_to_rime_modifiers(unsigned modifiers)
 {
   int ret = 0;
   
+  if (modifiers & OSX_CAPITAL_MASK)
+    ret |= kLockMask;
   if (modifiers & OSX_SHIFT_MASK)
     ret |= kShiftMask;
   if (modifiers & OSX_CTRL_MASK)
@@ -19,7 +21,7 @@ int osx_modifiers_to_rime_modifiers(unsigned modifiers)
   return ret;
 }
 
-int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift) 
+int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift)
 {
   int ret = 0;
   
@@ -82,6 +84,14 @@ int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift)
       ret = XK_Alt_L;
       break;
     default:
+      /* NOTE:
+       * IBus/Rime use different keycodes for uppercase/lowercase letters.
+       * Without Shift key, we always send lowercase letters to Rime irrespective of Caps Lock status,
+       * since Caps Lock in Chinese IMEs means "ascii mode" instead of "uppercase".
+       */
+      if (shift && keychar >= 'a' && keychar <= 'z') {
+        keychar -= 'a' - 'A';
+      }
       ret = (keychar >= 0x20 && keychar <= 0x7e) ? keychar : 0;
       break;
   }

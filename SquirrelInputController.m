@@ -53,10 +53,18 @@
           handled = YES;
           break;
         }
-        //NSLog(@"FLAGSCHANGED self: 0x%x, client: 0x%x, modifiers: 0x%x", self, sender, modifiers);
+        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
         int changes = _lastModifier ^ modifiers;
+        if (changes & OSX_CAPITAL_MASK)
+        {
+          // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
+          // while NSFlagsChanged event has the flag changed already.
+          // so it is necessary to revert kLockMask.
+          rime_modifiers ^= kLockMask;
+          [self processKey:XK_Caps_Lock modifiers:rime_modifiers];
+        }
         if (changes & OSX_SHIFT_MASK)
         {
           release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
@@ -76,7 +84,7 @@
         {
           release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
           [self processKey:XK_Super_L modifiers:(rime_modifiers | release_mask)];
-          // ignore OSX hotkeys
+          // do not update UI when using Command key
           break;
         }
         [self rimeUpdate];
@@ -84,13 +92,19 @@
       break;
     case NSKeyDown:
     {
-      NSInteger keyCode = [event keyCode];
-      NSString* keyChars = [event characters];
-      //NSLog(@"KEYDOWN self: 0x%x, client: 0x%x, modifiers: 0x%x, keyCode: %d, keyChars: [%@]",
-      //      self, sender, modifiers, keyCode, keyChars);
       // ignore Command+X hotkeys.
-      if (modifiers & OSX_CAPITAL_MASK || modifiers & OSX_COMMAND_MASK)
+      if (modifiers & OSX_COMMAND_MASK)
         break;
+      
+      NSInteger keyCode = [event keyCode];
+      NSString* keyChars = [event charactersIgnoringModifiers];
+      if (!isalpha([keyChars UTF8String][0]))
+      {
+        keyChars = [event characters];
+      }
+      //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars: [%@]",
+      //      sender, modifiers, keyCode, keyChars);
+
       // translate osx keyevents to rime keyevents
       int rime_keycode = osx_keycode_to_rime_keycode(keyCode,
                                                      [keyChars UTF8String][0],
