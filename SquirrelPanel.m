@@ -192,16 +192,19 @@ static const double kAlpha = 1.0;
     else {
       str = [NSString stringWithFormat:_candidateFormat, [candidates objectAtIndex:i]];
     }
-    NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str attributes:_attrs] autorelease];
+    NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str
+                                                                              attributes:_attrs] autorelease];
     if (i == index) {
       NSRange whole_line = NSMakeRange(0, [line length]);
       [line setAttributes:_highlightedAttrs range:whole_line];
     }
     if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
-      [line appendAttributedString:[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i] attributes:_commentAttrs]];
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
+                                                                    attributes:_commentAttrs] autorelease]];
     }
     if (i > 0) {
-      [text appendAttributedString:[[NSAttributedString alloc] initWithString: _horizontal ? @" " : @"\n" attributes:_attrs]];
+      [text appendAttributedString:[[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
+                                                                    attributes:_attrs] autorelease]];
     }
     [text appendAttributedString:line];
   }

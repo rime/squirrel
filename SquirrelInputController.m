@@ -32,19 +32,27 @@
   //NSLog(@"handleEvent:client:");
   
   _currentClient = sender;
+
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  
   if (!_session || !RimeFindSession(_session)) {
     [self createSession];
-    if (!_session) return NO;
+    if (!_session) {
+      [pool release];
+      return NO;
+    }
   }
   
   BOOL handled = NO;
+  NSUInteger modifiers = [event modifierFlags];
   
-  NSUInteger modifiers = [event modifierFlags];  
   switch ([event type]) {
     case NSFlagsChanged:
       {
-        if (_lastModifier == modifiers)
-          return YES;
+        if (_lastModifier == modifiers) {
+          handled = YES;
+          break;
+        }
         //NSLog(@"FLAGSCHANGED self: 0x%x, client: 0x%x, modifiers: 0x%x", self, sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
@@ -99,8 +107,11 @@
       break;
   }
   
+  [pool release];
+  
   _lastModifier = modifiers;
   _lastEventType = [event type];
+  
   return handled;
 }
 
