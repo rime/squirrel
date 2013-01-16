@@ -55,6 +55,8 @@
 		44B4F79F15A929E4009DFF5D /* zyenpheng.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */; };
 		44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */; };
 		44CD640C15E2646B0021234E /* librime.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44CD640915E2633D0021234E /* librime.dylib */; };
+		44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8E16A653E700C2B08F /* rime_deployer */; };
+		44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8F16A653E700C2B08F /* rime_dict_manager */; };
 		44E8CD99166B8542002C8EE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44E8CD98166B8542002C8EE3 /* Growl.framework */; };
 		44E8CD9A166B857F002C8EE3 /* Growl.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44E8CD98166B8542002C8EE3 /* Growl.framework */; };
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
@@ -67,7 +69,6 @@
 		44F771D0152B7BC7005CF491 /* quick5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44F771CA152B7BC7005CF491 /* quick5.dict.yaml */; };
 		44F771D1152B7BC7005CF491 /* quick5.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44F771CB152B7BC7005CF491 /* quick5.schema.yaml */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
-		44FA4D8A1685997300116C1F /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8D1107310486CEB800E47090 /* Info.plist */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -143,6 +144,17 @@
 				44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */,
 			);
 			name = "Copy Shared Support Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		44E21A8D16A653AC00C2B08F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */,
+				44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */,
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		A464E3780F65263000148227 /* Copy 3rd-party Frameworks */ = {
@@ -221,6 +233,8 @@
 		44DA7A2E14DD596700C1ED3B /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
 		44DA7A2F14DD596700C1ED3B /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
 		44DA7A3014DD596700C1ED3B /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
+		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = librime/xbuild/bin/Release/rime_deployer; sourceTree = "<group>"; };
+		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = librime/xbuild/bin/Release/rime_dict_manager; sourceTree = "<group>"; };
 		44E8CD98166B8542002C8EE3 /* Growl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Growl.framework; sourceTree = "<group>"; };
 		44E98EA514AE16DD00847AD6 /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checked.h; sourceTree = "<group>"; };
 		44E98EA614AE16DD00847AD6 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
@@ -317,6 +331,8 @@
 		29B97314FDCFA39411CA2CEA /* Squirrel */ = {
 			isa = PBXGroup;
 			children = (
+				44E21A8E16A653E700C2B08F /* rime_deployer */,
+				44E21A8F16A653E700C2B08F /* rime_dict_manager */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -454,6 +470,7 @@
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
 				44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */,
 				4407F3CA14EC079A001329FE /* Copy opencc Files */,
+				44E21A8D16A653AC00C2B08F /* CopyFiles */,
 			);
 			buildRules = (
 			);
@@ -471,7 +488,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0440;
+				LastUpgradeCheck = 0450;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -507,7 +524,6 @@
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				4493402B158A4ABC0041A35A /* zhung.icns in Resources */,
 				448CCCDD166B2E0500337E78 /* Growl Registration Ticket.growlRegDict in Resources */,
-				44FA4D8A1685997300116C1F /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
