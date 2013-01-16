@@ -231,11 +231,27 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)updateUIStyle:(RimeConfig*)config
 {
-  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil };
+  SquirrelUIStyle style = { NO, nil, 0, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil, nil, nil };
   
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
+  }
+    
+  char label_font_face[100] = {0};
+  if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
+    style.labelFontName = [[NSString alloc] initWithUTF8String:label_font_face];
+  }
+  RimeConfigGetInt(config, "style/label_font_point", &style.labelFontSize);
+  
+  char label_color[20] = {0};
+  style.candidateLabelColor = nil;
+  if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
+    style.candidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
+  }
+  style.highlightedCandidateLabelColor = nil;
+  if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
+    style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
   }
   
   char font_face[100] = {0};
@@ -330,9 +346,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   
   [_panel updateUIStyle:&style];
   
+  [style.labelFontName release];
   [style.fontName release];
   [style.backgroundColor release];
+  [style.candidateLabelColor release];
   [style.candidateTextColor release];
+  [style.highlightedCandidateLabelColor release];
   [style.highlightedCandidateTextColor release];
   [style.highlightedCandidateBackColor release];
   [style.commentTextColor release];
