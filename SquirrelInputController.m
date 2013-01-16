@@ -108,7 +108,8 @@
       // translate osx keyevents to rime keyevents
       int rime_keycode = osx_keycode_to_rime_keycode(keyCode,
                                                      [keyChars UTF8String][0],
-                                                     modifiers & OSX_SHIFT_MASK);
+                                                     modifiers & OSX_SHIFT_MASK,
+                                                     modifiers & OSX_CAPITAL_MASK);
       if (rime_keycode)
       {
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
