@@ -13,6 +13,7 @@
   BOOL _useUSKeyboardLayout;
   BOOL _enableNotifications;
   BOOL _enableBuitinNotifcations;
+  BOOL _preferNotificationCenter;
   NSDictionary* _appOptions;
 }
 
@@ -21,6 +22,7 @@
 -(id)updater;
 -(BOOL)useUSKeyboardLayout;
 -(BOOL)enableNotifications;
+-(BOOL)preferNotificationCenter;
 -(NSDictionary*)appOptions;
 
 -(IBAction)deploy:(id)sender;
@@ -35,4 +37,4 @@
 @end
 
 // also used in main.m
-void show_message(const char* msg_text, const char* msg_id);
+extern void (*show_message)(const char* msg_text, const char* msg_id);
