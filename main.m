@@ -14,6 +14,21 @@ IMKServer* g_server;
 
 int main(int argc, char *argv[])
 {
+  if (argc > 1 && !strcmp("--quit", argv[1])) {
+    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    NSArray* runningSquirrels = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
+    for (NSRunningApplication* squirrelApp in runningSquirrels) {
+      [squirrelApp terminate];
+    }
+    return 0;
+  }
+
+  if (argc > 1 && !strcmp("--reload", argv[1])) {
+    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"SquirrelReloadNotification"
+                                                                   object:nil];
+    return 0;
+  }
+  
   RimeSetupLogging("rime.squirrel");
   
   if (argc > 1 && !strcmp("--build", argv[1])) {
@@ -22,12 +37,6 @@ int main(int argc, char *argv[])
     // build all schemas in current directory
     RimeDeployerInitialize(NULL);
     return RimeDeployWorkspace() ? 0 : 1;
-  }
-  
-  if (argc > 1 && !strcmp("--reload", argv[1])) {
-    [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"SquirrelReloadNotification"
-                                                                   object:nil];
-    return 0;
   }
   
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];

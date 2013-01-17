@@ -503,6 +503,13 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [self deploy:nil];
 }
 
+-(NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
+{
+  NSLog(@"Squirrel is quitting.");
+  RimeCleanupAllSessions();
+  return NSTerminateNow;
+}
+
 //add an awakeFromNib item so that we can set the action method.  Note that 
 //any menuItems without an action will be disabled when displayed in the Text 
 //Input Menu.
