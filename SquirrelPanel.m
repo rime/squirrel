@@ -302,20 +302,13 @@ static const double kAlpha = 1.0;
 {
   _horizontal = style->horizontal;
   
-  if (style->labelFontSize == 0) {
-    style->labelFontSize = kFontSize;
-  }
   if (style->fontSize == 0) {  // default size
     style->fontSize = kFontSize;
   }
+  if (style->labelFontSize == 0) {
+    style->labelFontSize = style->fontSize;
+  }
   
-  NSFont* labelFont = nil;
-  if (style->labelFontName != nil) {
-    labelFont = [NSFont fontWithName:style->labelFontName size:style->labelFontSize];
-  }
-  if (labelFont == nil) {
-    labelFont = [NSFont userFontOfSize:style->labelFontSize];
-  }
   NSFont* font = nil;
   if (style->fontName != nil) {
     font = [NSFont fontWithName:style->fontName size:style->fontSize];
@@ -323,6 +316,13 @@ static const double kAlpha = 1.0;
   if (font == nil) {
     // use default font
     font = [NSFont userFontOfSize:style->fontSize];
+  }
+  NSFont* labelFont = nil;
+  if (style->labelFontName != nil) {
+    labelFont = [NSFont fontWithName:style->labelFontName size:style->labelFontSize];
+  }
+  if (labelFont == nil) {
+    labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
   }
   [_attrs setObject:font forKey:NSFontAttributeName];
   [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
@@ -352,7 +352,7 @@ static const double kAlpha = 1.0;
     [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_labelAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    [_labelAttrs setObject:[_attrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
   }
   
   if (style->highlightedCandidateTextColor != nil) {
@@ -370,13 +370,13 @@ static const double kAlpha = 1.0;
   else {
     [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
   }
-    
+  
   if (style->highlightedCandidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateLabelColor];
     [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_labelHighlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
   }
   [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
