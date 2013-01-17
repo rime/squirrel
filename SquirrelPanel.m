@@ -320,7 +320,7 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
   return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
                                green:blend_value(f.g, b.g)
                                 blue:blend_value(f.b, b.b)
-                               alpha:blend_value(f.a, b.a)];
+                               alpha:f.a];
   #undef blend_value
 }
 
