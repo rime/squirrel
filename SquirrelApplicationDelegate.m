@@ -271,6 +271,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
   RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
   
+  char format[100] = {0};
+  if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
+      style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
+  }
+  
   char color_scheme[100] = {0};
   if (RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
     NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
@@ -333,15 +338,98 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       style.commentTextColor = [[NSString alloc] initWithUTF8String:color];
     }
     
+    // the following per-color-scheme configurations, if exist, will
+    // override configurations with the same name under the global 'style' section
+    {
+      Bool overridden_value;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/horizontal"];
+      if (RimeConfigGetBool(config, [key UTF8String], &overridden_value)) {
+        style.horizontal = (BOOL)overridden_value;
+      }
+      
+      char overridden_label_font_face[100] = {0};
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_face"];
+      if (RimeConfigGetString(config, [key UTF8String], overridden_label_font_face, sizeof(overridden_label_font_face))) {
+        if (style.labelFontName != nil) [style.labelFontName release];
+        style.labelFontName = [[NSString alloc] initWithUTF8String:overridden_label_font_face];
+      }
+      
+      int overridden_label_font_size;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_point"];
+      if (RimeConfigGetInt(config, [key UTF8String], &overridden_label_font_size)) {
+        style.labelFontSize = overridden_label_font_size;
+      }
+      
+      char overridden_label_color[20] = {0};
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_color"];
+      if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
+        if (style.candidateLabelColor != nil) [style.candidateLabelColor release];
+        style.candidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+      }
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_hilited_color"];
+      if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
+        if (style.highlightedCandidateLabelColor != nil) [style.highlightedCandidateLabelColor release];
+        style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+      }
+      else {
+        // 'label_hilited_color' does not quite fit the styles under each color scheme,
+        // but for backward compatibility, 'label_hilited_color' and 'hilited_candidate_label_color' are both
+        // valid
+        [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_label_color"];
+        if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
+          if (style.highlightedCandidateLabelColor != nil) [style.highlightedCandidateLabelColor release];
+          style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+        }
+      }
+      
+      char overridden_font_face[100] = {0};
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_face"];
+      if (RimeConfigGetString(config, [key UTF8String], overridden_font_face, sizeof(overridden_font_face))) {
+        if (style.fontName != nil) [style.fontName release];
+        style.fontName = [[NSString alloc] initWithUTF8String:overridden_font_face];
+      }
+      int overridden_font_size;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_point"];
+      if (RimeConfigGetInt(config, [key UTF8String], &overridden_font_size)) {
+        style.fontSize = overridden_font_size;
+      }
+      
+      double overridden_alpha;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/alpha"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_alpha)) {
+        style.alpha = fmax(fmin(overridden_alpha, 1.0), 0.1);
+      }
+      
+      double overridden_corner_radius;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/corner_radius"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_corner_radius)) {
+        style.cornerRadius = overridden_corner_radius;
+      }
+      
+      double overridden_border_height;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/border_height"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_border_height)) {
+        style.borderHeight = overridden_border_height;
+      }
+      
+      double overridden_border_width;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/border_width"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_border_width)) {
+        style.borderWidth = overridden_border_width;
+      }
+      
+      char overridden_format[100] = {0};
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_format"];
+      if (RimeConfigGetString(config, [key UTF8String], overridden_format, sizeof(overridden_format))) {
+        if (style.candidateFormat != nil) [style.candidateFormat release];
+        style.candidateFormat = [[NSString alloc] initWithUTF8String:overridden_format];
+      }
+    }
+    
     [key release];
     [fallback_text_color release];
     [fallback_hilited_text_color release];
     [fallback_hilited_back_color release];
-  }
-  
-  char format[100] = {0};
-  if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
-    style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
   }
   
   [_panel updateUIStyle:&style];
