@@ -103,6 +103,24 @@ preset_color_schemes:
     hilited_candidate_text_color: 0xFFFFFF #第一候选项
     hilited_candidate_back_color: 0xCE7539 #第一候选项背景
 
+  clean_white:
+    name: 简约白／Clean White
+    author: Chongyu Zhu <lembacon@gmail.com>, based on 搜狗「简约白」
+    horizontal: true
+    candidate_format: '%c %@ '
+    corner_radius: 6
+    border_height: 6
+    border_width: 6
+    font_point: 16
+    label_font_point: 12
+    label_color: 0x888888
+    text_color: 0x000000
+    comment_text_color: 0x808080
+    back_color: 0xeeeeee
+    hilited_candidate_label_color: 0xa0c98915
+    hilited_candidate_text_color: 0xc98915
+    hilited_candidate_back_color: 0xeeeeee
+
 app_options:
   com.alfredapp.Alfred:
     ascii_mode: true

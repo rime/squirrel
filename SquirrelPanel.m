@@ -35,6 +35,15 @@ static const double kAlpha = 1.0;
 @synthesize borderHeight = _borderHeight;
 @synthesize borderWidth = _borderWidth;
 
+-(NSColor *)backgroundColor
+{
+  if (_backgroundColor != nil) {
+    return _backgroundColor;
+  }
+  
+  return [NSColor windowBackgroundColor];
+}
+
 -(double)borderHeight
 {
   return MAX(_borderHeight, _cornerRadius);
@@ -65,15 +74,8 @@ static const double kAlpha = 1.0;
     return;
   }
 
-  if (_backgroundColor != nil) {
-    [_backgroundColor set]; 
-  } else {
-    [[NSColor windowBackgroundColor] set];
-  }
-
-  NSBezierPath * path;
-  path = [NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius];
-  [path fill];
+  [[self backgroundColor] setFill];
+  [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius] fill];
 
   NSPoint point = rect.origin;
   point.x += [self borderWidth];
@@ -298,6 +300,30 @@ static const double kAlpha = 1.0;
   return [NSColor colorWithDeviceRed:(CGFloat)r / 255. green:(CGFloat)g / 255. blue:(CGFloat)b / 255. alpha:(CGFloat)a / 255.];
 }
 
+static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *backgroundColor)
+{
+  struct {
+    CGFloat r, g, b, a;
+  } f, b;
+  
+  [[foregroundColor colorUsingColorSpaceName:NSDeviceRGBColorSpace] getRed:&f.r
+                                                                     green:&f.g
+                                                                      blue:&f.b
+                                                                     alpha:&f.a];
+  
+  [[backgroundColor colorUsingColorSpaceName:NSDeviceRGBColorSpace] getRed:&b.r
+                                                                     green:&b.g
+                                                                      blue:&b.b
+                                                                     alpha:&b.a];
+  
+  #define blend_value(f, b) (((f) * 2.0 + (b)) / 3.0)
+  return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
+                               green:blend_value(f.g, b.g)
+                                blue:blend_value(f.b, b.b)
+                               alpha:blend_value(f.a, b.a)];
+  #undef blend_value
+}
+
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
   _horizontal = style->horizontal;
@@ -352,7 +378,8 @@ static const double kAlpha = 1.0;
     [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_labelAttrs setObject:[_attrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors([_attrs objectForKey:NSForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
+    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   
   if (style->highlightedCandidateTextColor != nil) {
@@ -376,7 +403,9 @@ static const double kAlpha = 1.0;
     [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors([_highlightedAttrs objectForKey:NSForegroundColorAttributeName],
+                                 [_highlightedAttrs objectForKey:NSBackgroundColorAttributeName]);
+    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
