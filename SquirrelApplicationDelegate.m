@@ -229,7 +229,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigClose(&config);
 }
 
-#define FONT_FACE_BUFSIZE (100)
+#define FONT_FACE_BUFSIZE (200)
 #define COLOR_BUFSIZE (20)
 #define COLOR_SCHEME_BUFSIZE (100)
 #define FORMAT_BUFSIZE (100)
