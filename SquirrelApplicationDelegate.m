@@ -229,6 +229,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigClose(&config);
 }
 
+#define FONT_FACE_BUFSIZE (100)
+#define COLOR_BUFSIZE (20)
+#define COLOR_SCHEME_BUFSIZE (100)
+#define FORMAT_BUFSIZE (100)
+
 -(void)updateUIStyle:(RimeConfig*)config
 {
   SquirrelUIStyle style = { NO, nil, 0, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil, nil, nil };
@@ -237,14 +242,14 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
-    
-  char label_font_face[100] = {0};
+  
+  char label_font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
     style.labelFontName = [[NSString alloc] initWithUTF8String:label_font_face];
   }
   RimeConfigGetInt(config, "style/label_font_point", &style.labelFontSize);
   
-  char label_color[20] = {0};
+  char label_color[COLOR_BUFSIZE] = {0};
   style.candidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
     style.candidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
@@ -254,7 +259,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
   }
   
-  char font_face[100] = {0};
+  char font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/font_face", font_face, sizeof(font_face))) {
     style.fontName = [[NSString alloc] initWithUTF8String:font_face];
   }
@@ -271,18 +276,18 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
   RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
   
-  char format[100] = {0};
+  char format[FORMAT_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
       style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
   }
   
-  char color_scheme[100] = {0};
+  char color_scheme[COLOR_SCHEME_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
     NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
     [key appendString:[NSString stringWithUTF8String:color_scheme]];
     NSUInteger prefix_length = [key length];
     // 0xaabbggrr or 0xbbggrr
-    char color[20] = {0};
+    char color[COLOR_BUFSIZE] = {0};
     [key appendString:@"/back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.backgroundColor = [[NSString alloc] initWithUTF8String:color];
@@ -347,7 +352,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         style.horizontal = (BOOL)overridden_value;
       }
       
-      char overridden_label_font_face[100] = {0};
+      char overridden_label_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_font_face, sizeof(overridden_label_font_face))) {
         if (style.labelFontName != nil) [style.labelFontName release];
@@ -360,7 +365,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         style.labelFontSize = overridden_label_font_size;
       }
       
-      char overridden_label_color[20] = {0};
+      char overridden_label_color[COLOR_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_color"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
         if (style.candidateLabelColor != nil) [style.candidateLabelColor release];
@@ -382,7 +387,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         }
       }
       
-      char overridden_font_face[100] = {0};
+      char overridden_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_font_face, sizeof(overridden_font_face))) {
         if (style.fontName != nil) [style.fontName release];
@@ -418,7 +423,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         style.borderWidth = overridden_border_width;
       }
       
-      char overridden_format[100] = {0};
+      char overridden_format[FORMAT_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_format"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_format, sizeof(overridden_format))) {
         if (style.candidateFormat != nil) [style.candidateFormat release];
