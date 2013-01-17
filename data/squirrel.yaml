@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.17"
+config_version: "0.18"
 
 us_keyboard_layout: false
 
@@ -71,7 +71,7 @@ preset_color_schemes:
     back_color: 0xee303030
     hilited_candidate_text_color: 0x000000
     hilited_candidate_back_color: 0x82e6ca
-    comment_text_color: 0xffccff
+    comment_text_color: 0xbb82e6ca
 
   dark_temple:
     name: 暗堂／Dark Temple
