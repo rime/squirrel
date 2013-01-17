@@ -10,6 +10,8 @@
 
 typedef struct {
   BOOL horizontal;
+  NSString* labelFontName;
+  int labelFontSize;
   NSString* fontName;
   int fontSize;
   double alpha;
@@ -17,7 +19,9 @@ typedef struct {
   double borderHeight;
   double borderWidth;
   NSString *backgroundColor;
+  NSString *candidateLabelColor;
   NSString *candidateTextColor;
+  NSString *highlightedCandidateLabelColor;
   NSString *highlightedCandidateTextColor;
   NSString *highlightedCandidateBackColor;
   NSString *commentTextColor;
@@ -30,6 +34,8 @@ typedef struct {
   NSView* _view;
   NSMutableDictionary* _attrs;
   NSMutableDictionary* _highlightedAttrs;
+  NSMutableDictionary *_labelAttrs;
+  NSMutableDictionary *_labelHighlightedAttrs;
   NSMutableDictionary* _commentAttrs;
   BOOL _horizontal;
   NSString* _candidateFormat;

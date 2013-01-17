@@ -111,6 +111,9 @@ static const double kAlpha = 1.0;
   [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
   [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
+  _labelAttrs = [_attrs mutableCopy];
+  _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
+  
   _commentAttrs = [[NSMutableDictionary alloc] init];
   [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
@@ -180,24 +183,84 @@ static const double kAlpha = 1.0;
     [self hide];
     return;
   }
+  
+  NSRange labelRange, labelRange2, pureCandidateRange;
+  NSString *labelFormat, *labelFormat2, *pureCandidateFormat;
+  {
+    // in our candiate format, everything other than '%@' is
+    // considered as a part of the label
+    
+    labelRange = [_candidateFormat rangeOfString:@"%c"];
+    if (labelRange.location == NSNotFound) {
+      labelRange2 = labelRange;
+      labelFormat2 = labelFormat = nil;
+      
+      pureCandidateRange = NSMakeRange(0, [_candidateFormat length]);
+      pureCandidateFormat = _candidateFormat;
+    }
+    else {
+      pureCandidateRange = [_candidateFormat rangeOfString:@"%@"];
+      if (pureCandidateRange.location == NSNotFound) {
+        // this should never happen, but just ensure that Squirrel
+        // would not crash when such edge case occurs...
+        
+        labelFormat = _candidateFormat;
+        
+        labelRange2 = pureCandidateRange;
+        labelFormat2 = nil;
+        
+        pureCandidateFormat = @"";
+      }
+      else {
+        if (NSMaxRange(pureCandidateRange) >= [_candidateFormat length]) {
+          // '%@' is at the end, so label2 does not exist
+          labelRange2 = NSMakeRange(NSNotFound, 0);
+          labelFormat2 = nil;
+          
+          // fix label1, everything other than '%@' is label1
+          labelRange.location = 0;
+          labelRange.length = pureCandidateRange.location;
+        }
+        else {
+          labelRange = NSMakeRange(0, pureCandidateRange.location);
+          labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange), [_candidateFormat length] - NSMaxRange(pureCandidateRange));
+          
+          labelFormat2 = [_candidateFormat substringWithRange:labelRange2];
+        }
+        
+        pureCandidateFormat = @"%@";
+        labelFormat = [_candidateFormat substringWithRange:labelRange];
+      }
+    }
+  }
+  
   NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
-    NSString* str;
-    if ([_candidateFormat rangeOfString:@"%c"].length > 0) {
-      // default: 1. 2. 3... custom: A. B. C...
-      char label_character = (i < [labels length]) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
-      str = [NSString stringWithFormat:_candidateFormat, label_character, [candidates objectAtIndex:i]];
-    }
-    else {
-      str = [NSString stringWithFormat:_candidateFormat, [candidates objectAtIndex:i]];
-    }
-    NSMutableAttributedString* line = [[[NSMutableAttributedString alloc] initWithString:str
-                                                                              attributes:_attrs] autorelease];
+    NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
+    
+    // default: 1. 2. 3... custom: A. B. C...
+    char label_character = (i < [labels length]) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
+    
+    NSDictionary *attrs = _attrs, *labelAttrs = _labelAttrs;
     if (i == index) {
-      NSRange whole_line = NSMakeRange(0, [line length]);
-      [line setAttributes:_highlightedAttrs range:whole_line];
+      attrs = _highlightedAttrs;
+      labelAttrs = _labelHighlightedAttrs;
     }
+    
+    if (labelRange.location != NSNotFound) {
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat, label_character]
+                                                                    attributes:labelAttrs] autorelease]];
+    }
+    
+    [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[candidates objectAtIndex:i]
+                                                                  attributes:attrs] autorelease]];
+    
+    if (labelRange2.location != NSNotFound) {
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat2, label_character]
+                                                                    attributes:labelAttrs] autorelease]];
+    }
+    
     if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
       [line appendAttributedString:[[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
                                                                     attributes:_commentAttrs] autorelease]];
@@ -206,8 +269,11 @@ static const double kAlpha = 1.0;
       [text appendAttributedString:[[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
                                                                     attributes:_attrs] autorelease]];
     }
+    
     [text appendAttributedString:line];
+    [line release];
   }
+  
   [(SquirrelView*)_view setContent:text];
   [text release];
   [self show];
@@ -236,10 +302,20 @@ static const double kAlpha = 1.0;
 {
   _horizontal = style->horizontal;
   
+  if (style->labelFontSize == 0) {
+    style->labelFontSize = kFontSize;
+  }
   if (style->fontSize == 0) {  // default size
     style->fontSize = kFontSize;
   }
   
+  NSFont* labelFont = nil;
+  if (style->labelFontName != nil) {
+    labelFont = [NSFont fontWithName:style->labelFontName size:style->labelFontSize];
+  }
+  if (labelFont == nil) {
+    labelFont = [NSFont userFontOfSize:style->labelFontSize];
+  }
   NSFont* font = nil;
   if (style->fontName != nil) {
     font = [NSFont fontWithName:style->fontName size:style->fontSize];
@@ -250,6 +326,8 @@ static const double kAlpha = 1.0;
   }
   [_attrs setObject:font forKey:NSFontAttributeName];
   [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
+  [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
+  [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_commentAttrs setObject:font forKey:NSFontAttributeName];
   
   if (style->backgroundColor != nil) {
@@ -268,7 +346,15 @@ static const double kAlpha = 1.0;
   else {
     [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
   }
-
+  
+  if (style->candidateLabelColor != nil) {
+    NSColor *color = [self colorFromString:style->candidateLabelColor];
+    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  else {
+    [_labelAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+  }
+  
   if (style->highlightedCandidateTextColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateTextColor];
     [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
@@ -284,6 +370,15 @@ static const double kAlpha = 1.0;
   else {
     [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
   }
+    
+  if (style->highlightedCandidateLabelColor != nil) {
+    NSColor *color = [self colorFromString:style->highlightedCandidateLabelColor];
+    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  else {
+    [_labelHighlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+  }
+  [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
   if (style->commentTextColor != nil) {
     NSColor *color = [self colorFromString:style->commentTextColor];

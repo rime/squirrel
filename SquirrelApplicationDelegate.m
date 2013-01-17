@@ -30,6 +30,11 @@
   return _enableNotifications;
 }
 
+-(BOOL)preferNotificationCenter
+{
+  return _preferNotificationCenter;
+}
+
 -(NSDictionary*)appOptions
 {
   return _appOptions;
@@ -60,7 +65,7 @@
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://code.google.com/p/rimeime/w/list"]];
 }
 
-void show_message(const char* msg_text, const char* msg_id) {
+static void show_message_growl(const char* msg_text, const char* msg_id) {
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
                               description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
@@ -71,6 +76,28 @@ void show_message(const char* msg_text, const char* msg_id) {
                              clickContext:nil
                                identifier:[NSString stringWithUTF8String:msg_id]];
   [pool release];
+}
+
+static void show_message_notification_center(const char* msg_text, const char* msg_id) {
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+  id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];
+  [notification performSelector:@selector(setTitle:) withObject:NSLocalizedString(@"Squirrel", nil)];
+  [notification performSelector:@selector(setSubtitle:) withObject:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)];
+  id notificationCenter = [(id)NSClassFromString(@"NSUserNotificationCenter") performSelector:@selector(defaultUserNotificationCenter)];
+  [notificationCenter performSelector:@selector(removeAllDeliveredNotifications)];
+  [notificationCenter performSelector:@selector(deliverNotification:) withObject:notification];
+  [notification release];
+  [pool release];
+}
+
+void (*show_message)(const char* msg_text, const char* msg_id) = show_message_growl;
+static void select_show_message(BOOL preferNotificationCenter) {
+  if (preferNotificationCenter) {
+      show_message = show_message_notification_center;
+  }
+  else {
+      show_message = show_message_growl;
+  }
 }
 
 void notification_handler(void* context_object, RimeSessionId session_id,
@@ -179,7 +206,23 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
   }
   [GrowlApplicationBridge setShouldUseBuiltInNotifications:_enableBuitinNotifcations];
-
+  
+  _preferNotificationCenter = NO;
+  if (RimeConfigGetBool(&config, "show_notifications_via_notification_center", &value)) {
+    BOOL isAtLeastMountainLion = NO;
+    {
+      SInt32 versionMajor, versionMinor;
+      if (Gestalt(gestaltSystemVersionMajor, &versionMajor) == noErr &&
+          Gestalt(gestaltSystemVersionMinor, &versionMinor) == noErr) {
+        isAtLeastMountainLion = (versionMajor >= 10) && (versionMinor >= 8);
+      }
+    }
+    
+    _preferNotificationCenter = (BOOL)value && isAtLeastMountainLion;
+  }
+  
+  select_show_message(_preferNotificationCenter);
+  
   [self updateUIStyle:&config];
   [self loadAppOptionsFromConfig:&config];
   
@@ -188,11 +231,27 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)updateUIStyle:(RimeConfig*)config
 {
-  SquirrelUIStyle style = { NO, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil };
+  SquirrelUIStyle style = { NO, nil, 0, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil, nil, nil };
   
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
+  }
+    
+  char label_font_face[100] = {0};
+  if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
+    style.labelFontName = [[NSString alloc] initWithUTF8String:label_font_face];
+  }
+  RimeConfigGetInt(config, "style/label_font_point", &style.labelFontSize);
+  
+  char label_color[20] = {0};
+  style.candidateLabelColor = nil;
+  if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
+    style.candidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
+  }
+  style.highlightedCandidateLabelColor = nil;
+  if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
+    style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
   }
   
   char font_face[100] = {0};
@@ -287,9 +346,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   
   [_panel updateUIStyle:&style];
   
+  [style.labelFontName release];
   [style.fontName release];
   [style.backgroundColor release];
+  [style.candidateLabelColor release];
   [style.candidateTextColor release];
+  [style.highlightedCandidateLabelColor release];
   [style.highlightedCandidateTextColor release];
   [style.highlightedCandidateBackColor release];
   [style.commentTextColor release];

@@ -8,9 +8,18 @@ us_keyboard_layout: false
 # options: always | never | appropriate == growl_is_running
 show_notifications_when: growl_is_running
 
+# Show notifications via Notification Center instead of Growl.
+# (Only valid if OS version is at least 10.8 and
+#  'show_notifications_when' is NOT set to 'never'.)
+show_notifications_via_notification_center: false
+
 style:
   horizontal: false
   #candidate_format: '%c. %@ '
+  #label_font_face: 'STHeitiTC-Medium'
+  #label_font_point: 18
+  #label_color: 0x888888
+  #label_hilited_color: 0x888888
   #font_face: 'Heiti TC'
   #font_point: 21
   corner_radius: 10
