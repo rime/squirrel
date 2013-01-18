@@ -324,6 +324,37 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
   #undef blend_value
 }
 
+static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
+{
+  if (fullname == nil) {
+    return nil;
+  }
+  
+  NSArray *fontNames = [fullname componentsSeparatedByString:@","];
+  NSMutableArray *validFontDescriptors = [NSMutableArray arrayWithCapacity:[fontNames count]];
+  for (NSString *fontName in fontNames) {
+    fontName = [fontName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    if ([NSFont fontWithName:fontName size:0.0] != nil) {
+      // If the font name is not valid, NSFontDescriptor will still create something for us.
+      // However, when we draw the actual text, Squirrel will crash if there is any font descriptor
+      // with invalid font name.
+      [validFontDescriptors addObject:[NSFontDescriptor fontDescriptorWithName:fontName size:0.0]];
+    }
+  }
+  
+  if ([validFontDescriptors count] == 0) {
+    return nil;
+  }
+  else if ([validFontDescriptors count] == 1) {
+    return [validFontDescriptors objectAtIndex:0];
+  }
+  
+  NSFontDescriptor *initialFontDescriptor = [validFontDescriptors objectAtIndex:0];
+  NSArray *fallbackDescriptors = [validFontDescriptors subarrayWithRange:NSMakeRange(1, [validFontDescriptors count] - 1)];
+  NSDictionary *attributes = [NSDictionary dictionaryWithObject:fallbackDescriptors forKey:NSFontCascadeListAttribute];
+  return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
+}
+
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
   _horizontal = style->horizontal;
@@ -335,20 +366,36 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
     style->labelFontSize = style->fontSize;
   }
   
+  NSFontDescriptor* fontDescriptor = nil;
   NSFont* font = nil;
   if (style->fontName != nil) {
-    font = [NSFont fontWithName:style->fontName size:style->fontSize];
+    fontDescriptor = getFontDescriptor(style->fontName);
+    if (fontDescriptor != nil) {
+      font = [NSFont fontWithDescriptor:fontDescriptor size:style->fontSize];
+    }
   }
   if (font == nil) {
     // use default font
     font = [NSFont userFontOfSize:style->fontSize];
   }
+  NSFontDescriptor* labelFontDescriptor = nil;
   NSFont* labelFont = nil;
   if (style->labelFontName != nil) {
-    labelFont = [NSFont fontWithName:style->labelFontName size:style->labelFontSize];
+    labelFontDescriptor = getFontDescriptor(style->labelFontName);
+    if (labelFontDescriptor == nil) {
+      labelFontDescriptor = fontDescriptor;
+    }
+    if (labelFontDescriptor != nil) {
+      labelFont = [NSFont fontWithDescriptor:labelFontDescriptor size:style->labelFontSize];
+    }
   }
   if (labelFont == nil) {
-    labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
+    if (fontDescriptor != nil) {
+      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:style->labelFontSize];
+    }
+    else {
+      labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
+    }
   }
   [_attrs setObject:font forKey:NSFontAttributeName];
   [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
