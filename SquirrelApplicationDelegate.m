@@ -454,6 +454,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 -(void)loadAppOptionsFromConfig:(RimeConfig*)config
 {
   //NSLog(@"updateAppOptionsFromConfig:");
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
   NSMutableDictionary* appOptions = [[NSMutableDictionary alloc] init];
   [_appOptions release];
   _appOptions = appOptions;
@@ -462,7 +463,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigBeginMap(&app_iter, config, "app_options");
   while (RimeConfigNext(&app_iter)) {
     //NSLog(@"DEBUG app[%d]: %s (%s)", app_iter.index, app_iter.key, app_iter.path);
-    NSMutableDictionary* options = [[NSMutableDictionary alloc] init];
+    NSMutableDictionary* options = [[[NSMutableDictionary alloc] init] autorelease];
     [appOptions setValue:options forKey:[NSString stringWithUTF8String:app_iter.key]];
     RimeConfigBeginMap(&option_iter, config, app_iter.path);
     while (RimeConfigNext(&option_iter)) {
@@ -475,6 +476,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     RimeConfigEnd(&option_iter);
   }
   RimeConfigEnd(&app_iter);
+  [pool release];
 }
 
 // prevent freezing the system when squirrel suffers crashes and thus is launched repeatedly by IMK.
