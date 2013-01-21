@@ -37,7 +37,6 @@ typedef struct {
   NSMutableDictionary *_labelAttrs;
   NSMutableDictionary *_labelHighlightedAttrs;
   NSMutableDictionary* _commentAttrs;
-  BOOL _horizontal;
   NSString* _candidateFormat;
 }
 

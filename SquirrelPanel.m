@@ -12,18 +12,47 @@ static const int kOffsetHeight = 5;
 static const int kFontSize = 24;
 static const double kAlpha = 1.0;
 
+typedef struct {
+  CTLineRef line;
+  
+  CGColorRef bgColor;
+  CGRect bgRect;
+  
+  CGFloat width;
+  CGFloat height;
+  CGFloat ascent;
+  CGFloat descent;
+  CGFloat leading;
+} SquirrelCandidate;
+
 @interface SquirrelView : NSView
 {
-  NSAttributedString* _content;
+  SquirrelCandidate *_candidates;
+  NSUInteger _candidateCount;
+  NSSize _contentSize;
+  
+  NSColor *_backgroundColor;
+  CGFloat _cornerRadius;
+  CGFloat _borderHeight;
+  CGFloat _borderWidth;
+  BOOL _horizontal;
+  
+  CGFloat _horizontalSpacing;
+  CGFloat _verticalSpacing;
 }
 
 @property (nonatomic, retain) NSColor *backgroundColor;
-@property (nonatomic, assign) double cornerRadius;
-@property (nonatomic, assign) double borderHeight;
-@property (nonatomic, assign) double borderWidth;
+@property (nonatomic, assign) CGFloat cornerRadius;
+@property (nonatomic, assign) CGFloat borderHeight;
+@property (nonatomic, assign) CGFloat borderWidth;
+@property (nonatomic, assign) BOOL horizontal;
+@property (nonatomic, readonly) NSSize contentSize;
 
--(NSSize)contentSize;
--(void)setContent:(NSAttributedString*)content;
+- (void)setMultiplierForHorizontalSpacing:(double)horizontalMultiplier
+             multiplierForVerticalSpacing:(double)verticalMultiplier
+                            candidateFont:(NSFont *)font;
+
+-(void)setContents:(NSArray *)contents;
 
 @end
 
@@ -34,6 +63,8 @@ static const double kAlpha = 1.0;
 @synthesize cornerRadius = _cornerRadius;
 @synthesize borderHeight = _borderHeight;
 @synthesize borderWidth = _borderWidth;
+@synthesize horizontal = _horizontal;
+@synthesize contentSize = _contentSize;
 
 -(NSColor *)backgroundColor
 {
@@ -44,43 +75,174 @@ static const double kAlpha = 1.0;
   return [NSColor windowBackgroundColor];
 }
 
--(double)borderHeight
+-(CGFloat)borderHeight
 {
   return MAX(_borderHeight, _cornerRadius);
 }
 
--(double)borderWidth
+-(CGFloat)borderWidth
 {
   return MAX(_borderWidth, _cornerRadius);
 }
 
--(NSSize)contentSize
+- (void)setMultiplierForHorizontalSpacing:(double)horizontalMultiplier
+             multiplierForVerticalSpacing:(double)verticalMultiplier
+                            candidateFont:(NSFont *)font
 {
-  if (!_content) return NSMakeSize(0, 0);
-  return [_content size];
+  CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+  CFDictionarySetValue(attributes, kCTFontAttributeName, font);
+  
+  CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("m"), attributes);
+  CFRelease(attributes);
+  
+  CTLineRef line = CTLineCreateWithAttributedString(attributedString);
+  CFRelease(attributedString);
+  
+  CGFloat ascent, descent, leading;
+  double width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
+  CFRelease(line);
+  
+  _horizontalSpacing = width * horizontalMultiplier;
+  _verticalSpacing = (descent + leading) * verticalMultiplier;
 }
 
--(void)setContent:(NSAttributedString*)content
+-(void)setContents:(NSArray *)contents
 {
-  [content retain];
-  [_content release];
-  _content = content;
+  if (_candidates != NULL) {
+    NSUInteger i;
+    for (i = 0; i < _candidateCount; i++) {
+      CFRelease(_candidates[i].line);
+      if (_candidates[i].bgColor != NULL) CGColorRelease(_candidates[i].bgColor);
+    }
+    
+    free(_candidates);
+    _candidates = NULL;
+    _candidateCount = 0;
+    _contentSize = NSZeroSize;
+  }
+  
+  if (contents == nil || [contents count] == 0) {
+    return;
+  }
+  
+  _candidateCount = [contents count];
+  _candidates = (SquirrelCandidate *)calloc(_candidateCount, sizeof(SquirrelCandidate));
+  
+  NSUInteger i = 0;
+  for (i = 0; i < _candidateCount; i++) {
+    NSAttributedString *attributedString = [contents objectAtIndex:i];
+    
+    __block NSRange bgRange;
+    __block NSColor *bgColor = nil;
+    [attributedString enumerateAttribute:NSBackgroundColorAttributeName
+                                 inRange:NSMakeRange(0, [attributedString length])
+                                 options:0
+                              usingBlock:^(id value, NSRange range, BOOL *stop) {
+                                if (bgColor != nil) return; // should only occur once for now...
+                                bgColor = [value retain];
+                                bgRange = range;
+                              }];
+    
+    _candidates[i].line = CTLineCreateWithAttributedString((CFAttributedStringRef)attributedString);
+    _candidates[i].width = CTLineGetTypographicBounds(_candidates[i].line, &_candidates[i].ascent, &_candidates[i].descent, &_candidates[i].leading);
+    _candidates[i].height = _candidates[i].ascent + _candidates[i].descent + _candidates[i].leading;
+    
+    if (_horizontal) {
+      _contentSize.width += _candidates[i].width;
+      _contentSize.height = MAX(_contentSize.height, _candidates[i].height);
+    }
+    else {
+      _contentSize.width = MAX(_contentSize.width, _candidates[i].width);
+      _contentSize.height += _candidates[i].height;
+    }
+    
+    if (bgColor != nil) {
+      CGFloat components[4];
+      [[bgColor colorUsingColorSpaceName:NSDeviceRGBColorSpace] getComponents:components];
+      [bgColor release];
+      
+      CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+      _candidates[i].bgColor = CGColorCreate(colorSpace, components);
+      CGColorSpaceRelease(colorSpace);
+      
+      CFIndex startIndex = bgRange.location;
+      CFIndex endIndex = NSMaxRange(bgRange);
+      
+      CGFloat startOffset = CTLineGetOffsetForStringIndex(_candidates[i].line, startIndex, NULL);
+      CGFloat endOffset;
+      if (endIndex < [attributedString length]) {
+        endOffset = CTLineGetOffsetForStringIndex(_candidates[i].line, endIndex, NULL);
+      }
+      else {
+        endOffset = _candidates[i].width;
+      }
+      
+      _candidates[i].bgRect = CGRectMake(startOffset, -_candidates[i].descent, endOffset - startOffset, _candidates[i].height);
+    }
+  }
+    
+  if (_horizontal) {
+    _contentSize.width += (_candidateCount - 1) * _horizontalSpacing;
+  }
+  else {
+    _contentSize.height += (_candidateCount - 1) * _verticalSpacing;
+  }
+  
   [self setNeedsDisplay:YES];
 }
 
 -(void)drawRect:(NSRect)rect
 {
-  if (!_content) {
+  if (_candidates == NULL) {
     return;
   }
-
+  
   [[self backgroundColor] setFill];
   [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius] fill];
-
-  NSPoint point = rect.origin;
-  point.x += [self borderWidth];
-  point.y += [self borderHeight];
-  [_content drawAtPoint:point];
+  
+  CGContextRef ctx = (CGContextRef)[[NSGraphicsContext currentContext] graphicsPort];
+  CGContextSaveGState(ctx);
+  CGContextSetTextMatrix(ctx, CGAffineTransformIdentity);
+  
+  CGSize offset = CGSizeMake([self borderWidth], [self borderHeight]);
+  NSInteger i;
+  
+  if (_horizontal) {
+    for (i = 0; i < _candidateCount; i++) {
+      CGFloat xOffset = offset.width;
+      CGFloat yOffset = offset.height + _candidates[i].descent;
+      
+      offset.width += _candidates[i].width;
+      offset.width += _horizontalSpacing;
+      
+      if (_candidates[i].bgColor != NULL) {
+        CGContextSetFillColorWithColor(ctx, _candidates[i].bgColor);
+        CGContextFillRect(ctx, CGRectOffset(_candidates[i].bgRect, xOffset, yOffset));
+      }
+      
+      CGContextSetTextPosition(ctx, xOffset, yOffset);
+      CTLineDraw(_candidates[i].line, ctx);
+    }
+  }
+  else {
+    for (i = _candidateCount - 1; i >= 0; i--) {
+      CGFloat xOffset = offset.width;
+      CGFloat yOffset = offset.height + _candidates[i].descent;
+      
+      offset.height += _candidates[i].height;
+      offset.height += _verticalSpacing;
+      
+      if (_candidates[i].bgColor != NULL) {
+        CGContextSetFillColorWithColor(ctx, _candidates[i].bgColor);
+        CGContextFillRect(ctx, CGRectOffset(_candidates[i].bgRect, xOffset, yOffset));
+      }
+      
+      CGContextSetTextPosition(ctx, xOffset, yOffset);
+      CTLineDraw(_candidates[i].line, ctx);
+    }
+  }
+  
+  CGContextRestoreGState(ctx);
 }
 
 @end
@@ -120,7 +282,6 @@ static const double kAlpha = 1.0;
   [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
-  _horizontal = NO;
   _candidateFormat = @"%c. %@ ";
   return self;
 }
@@ -236,7 +397,7 @@ static const double kAlpha = 1.0;
     }
   }
   
-  NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
+  NSMutableArray *contents = [[NSMutableArray alloc] initWithCapacity:[candidates count]];
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -267,17 +428,13 @@ static const double kAlpha = 1.0;
       [line appendAttributedString:[[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
                                                                     attributes:_commentAttrs] autorelease]];
     }
-    if (i > 0) {
-      [text appendAttributedString:[[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
-                                                                    attributes:_attrs] autorelease]];
-    }
     
-    [text appendAttributedString:line];
+    [contents addObject:line];
     [line release];
   }
   
-  [(SquirrelView*)_view setContent:text];
-  [text release];
+  [(SquirrelView*)_view setContents:contents];
+  [contents release];
   [self show];
 }
 
@@ -357,7 +514,7 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
 
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
-  _horizontal = style->horizontal;
+  [(SquirrelView *)_view setHorizontal:style->horizontal];
   
   if (style->fontSize == 0) {  // default size
     style->fontSize = kFontSize;
@@ -467,7 +624,12 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
   [(SquirrelView *) _view setBorderHeight:style->borderHeight];
   [(SquirrelView *) _view setBorderWidth:style->borderWidth];
-
+  
+  // TODO: add options into squirrel.yaml
+  [(SquirrelView *)_view setMultiplierForHorizontalSpacing:1.0
+                              multiplierForVerticalSpacing:1.0
+                                             candidateFont:font];
+  
   [_window setAlphaValue:style->alpha];
   
   [style->candidateFormat retain];
