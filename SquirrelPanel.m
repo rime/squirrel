@@ -30,6 +30,7 @@ typedef struct {
   SquirrelCandidate *_candidates;
   NSUInteger _candidateCount;
   NSSize _contentSize;
+  CGFloat _descent;
   
   NSColor *_backgroundColor;
   CGFloat _cornerRadius;
@@ -119,6 +120,7 @@ typedef struct {
     _candidates = NULL;
     _candidateCount = 0;
     _contentSize = NSZeroSize;
+    _descent = 0.0;
   }
   
   if (contents == nil || [contents count] == 0) {
@@ -150,6 +152,8 @@ typedef struct {
     if (_horizontal) {
       _contentSize.width += _candidates[i].width;
       _contentSize.height = MAX(_contentSize.height, _candidates[i].height);
+      
+      _descent = MAX(_descent, _candidates[i].descent);
     }
     else {
       _contentSize.width = MAX(_contentSize.width, _candidates[i].width);
@@ -180,7 +184,7 @@ typedef struct {
       _candidates[i].bgRect = CGRectMake(startOffset, -_candidates[i].descent, endOffset - startOffset, _candidates[i].height);
     }
   }
-    
+  
   if (_horizontal) {
     _contentSize.width += (_candidateCount - 1) * _horizontalSpacing;
   }
@@ -210,7 +214,7 @@ typedef struct {
   if (_horizontal) {
     for (i = 0; i < _candidateCount; i++) {
       CGFloat xOffset = offset.width;
-      CGFloat yOffset = offset.height + _candidates[i].descent;
+      CGFloat yOffset = offset.height + _descent;
       
       offset.width += _candidates[i].width;
       offset.width += _horizontalSpacing;
