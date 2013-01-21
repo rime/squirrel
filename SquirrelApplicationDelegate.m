@@ -236,7 +236,8 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)updateUIStyle:(RimeConfig*)config
 {
-  SquirrelUIStyle style = { NO, nil, 0, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil, nil, nil };
+  SquirrelUIStyle style;
+  bzero(&style, sizeof(style));
   
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
