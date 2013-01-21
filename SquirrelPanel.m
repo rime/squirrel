@@ -625,9 +625,8 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [(SquirrelView *) _view setBorderHeight:style->borderHeight];
   [(SquirrelView *) _view setBorderWidth:style->borderWidth];
   
-  // TODO: add options into squirrel.yaml
-  [(SquirrelView *)_view setMultiplierForHorizontalSpacing:1.0
-                              multiplierForVerticalSpacing:1.0
+  [(SquirrelView *)_view setMultiplierForHorizontalSpacing:style->horizontalSpacingMultiplier
+                              multiplierForVerticalSpacing:style->verticalSpacingMultiplier
                                              candidateFont:font];
   
   [_window setAlphaValue:style->alpha];
@@ -635,7 +634,6 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [style->candidateFormat retain];
   [_candidateFormat release];
   _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@ ";
-;
 }
 
 @end

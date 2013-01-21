@@ -22,6 +22,8 @@ style:
   #label_hilited_color: 0x888888
   #font_face: 'Heiti TC'
   #font_point: 21
+  #horizontal_spacing_multiplier: 1.0
+  #vertical_spacing_multiplier: 1.0
   corner_radius: 10
   border_height: 0
   border_width: 0
@@ -108,6 +110,8 @@ preset_color_schemes:
     author: Chongyu Zhu <lembacon@gmail.com>, based on 搜狗「简约白」
     horizontal: true
     candidate_format: '%c %@ '
+    horizontal_spacing_multiplier: 1.0
+    vertical_spacing_multiplier: 1.0
     corner_radius: 6
     border_height: 6
     border_width: 6

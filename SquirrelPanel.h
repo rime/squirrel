@@ -15,6 +15,8 @@ typedef struct {
   NSString* fontName;
   int fontSize;
   double alpha;
+  double horizontalSpacingMultiplier;
+  double verticalSpacingMultiplier;
   double cornerRadius;
   double borderHeight;
   double borderWidth;
