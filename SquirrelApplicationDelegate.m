@@ -236,8 +236,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)updateUIStyle:(RimeConfig*)config
 {
-  SquirrelUIStyle style;
-  bzero(&style, sizeof(style));
+  SquirrelUIStyle style = { NO, nil, 0, nil, 0, 1.0, 0.0, 0.0, 0.0, nil, nil, nil, nil, nil, nil, nil, nil };
   
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
@@ -266,21 +265,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
   RimeConfigGetInt(config, "style/font_point", &style.fontSize);
   
-  double alpha;
-  style.alpha = 1.0;
-  if (RimeConfigGetDouble(config, "style/alpha", &alpha)) {
-    style.alpha = fmax(fmin(alpha, 1.0), 0.1);
-  }
-  
-  double horizontal_spacing_multiplier;
-  style.horizontalSpacingMultiplier = 1.0;
-  if (RimeConfigGetDouble(config, "style/horizontal_spacing_multiplier", &horizontal_spacing_multiplier)) {
-    style.horizontalSpacingMultiplier = horizontal_spacing_multiplier;
-  }
-  double vertical_spacing_multiplier;
-  style.verticalSpacingMultiplier = 1.0;
-  if (RimeConfigGetDouble(config, "style/vertical_spacing_multiplier", &vertical_spacing_multiplier)) {
-    style.verticalSpacingMultiplier = vertical_spacing_multiplier;
+  RimeConfigGetDouble(config, "style/alpha", &style.alpha);
+  if (style.alpha > 1.0) {
+    style.alpha = 1.0;
+  } else if (style.alpha < 0.1) {
+    style.alpha = 0.1;
   }
   
   RimeConfigGetDouble(config, "style/corner_radius", &style.cornerRadius);
@@ -414,18 +403,6 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/alpha"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_alpha)) {
         style.alpha = fmax(fmin(overridden_alpha, 1.0), 0.1);
-      }
-      
-      double overridden_horizontal_spacing_multiplier;
-      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/horizontal_spacing_multiplier"];
-      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_horizontal_spacing_multiplier)) {
-        style.horizontalSpacingMultiplier = overridden_horizontal_spacing_multiplier;
-      }
-      
-      double overridden_vertical_spacing_multiplier;
-      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/vertical_spacing_multiplier"];
-      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_vertical_spacing_multiplier)) {
-        style.verticalSpacingMultiplier = overridden_vertical_spacing_multiplier;
       }
       
       double overridden_corner_radius;
