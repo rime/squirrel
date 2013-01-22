@@ -15,6 +15,8 @@ typedef struct {
   NSString* fontName;
   int fontSize;
   double alpha;
+  double horizontalSpacingMultiplier;
+  double verticalSpacingMultiplier;
   double cornerRadius;
   double borderHeight;
   double borderWidth;
@@ -37,7 +39,6 @@ typedef struct {
   NSMutableDictionary *_labelAttrs;
   NSMutableDictionary *_labelHighlightedAttrs;
   NSMutableDictionary* _commentAttrs;
-  BOOL _horizontal;
   NSString* _candidateFormat;
 }
 
