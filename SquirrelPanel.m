@@ -292,20 +292,20 @@ typedef struct {
   [_window setContentView:_view];
   
   _attrs = [[NSMutableDictionary alloc] init];
-  [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
-  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_attrs setObject:[NSColor controlTextColor] forKey:(id)kCTForegroundColorAttributeName];
+  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
-  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
-  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
   _commentAttrs = [[NSMutableDictionary alloc] init];
-  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
+  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _candidateFormat = @"%c. %@";
   return self;
@@ -579,11 +579,11 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
       labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
     }
   }
-  [_attrs setObject:font forKey:NSFontAttributeName];
-  [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
-  [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_commentAttrs setObject:font forKey:NSFontAttributeName];
+  [_attrs setObject:font forKey:(id)kCTFontAttributeName];
+  [_highlightedAttrs setObject:font forKey:(id)kCTFontAttributeName];
+  [_labelAttrs setObject:labelFont forKey:(id)kCTFontAttributeName];
+  [_labelHighlightedAttrs setObject:labelFont forKey:(id)kCTFontAttributeName];
+  [_commentAttrs setObject:font forKey:(id)kCTFontAttributeName];
   
   if (style->backgroundColor != nil) {
     NSColor *color = [self colorFromString:style->backgroundColor];
@@ -596,27 +596,27 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   
   if (style->candidateTextColor != nil) {
     NSColor *color = [self colorFromString:style->candidateTextColor];
-    [_attrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_attrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    [_attrs setObject:[NSColor controlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
   
   if (style->candidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style->candidateLabelColor];
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    NSColor *color = blendColors([_attrs objectForKey:NSForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors([_attrs objectForKey:(id)kCTForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
+    [_labelAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   
   if (style->highlightedCandidateTextColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateTextColor];
-    [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_highlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
 
   if (style->highlightedCandidateBackColor != nil) {
@@ -629,21 +629,21 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   
   if (style->highlightedCandidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateLabelColor];
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelHighlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    NSColor *color = blendColors([_highlightedAttrs objectForKey:NSForegroundColorAttributeName],
+    NSColor *color = blendColors([_highlightedAttrs objectForKey:(id)kCTForegroundColorAttributeName],
                                  [_highlightedAttrs objectForKey:NSBackgroundColorAttributeName]);
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelHighlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
   if (style->commentTextColor != nil) {
     NSColor *color = [self colorFromString:style->commentTextColor];
-    [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
   
   [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
