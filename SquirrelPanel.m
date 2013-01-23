@@ -161,9 +161,9 @@ typedef struct {
                                  inRange:NSMakeRange(0, [attributedString length])
                                  options:0
                               usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                if (bgColor != nil) return; // should only occur once for now...
                                 bgColor = [value retain];
                                 bgRange = range;
+                                *stop = YES; // should only occur once for now...
                               }];
     
     _candidates[i].line = CTLineCreateWithAttributedString((CFAttributedStringRef)attributedString);
@@ -256,18 +256,22 @@ typedef struct {
     }
   }
   else {
-    for (i = _candidateCount - 1; i >= 0; i--) {
+    offset.height = NSHeight([self bounds]) - offset.height;
+
+    for (i = 0; i < _candidateCount; i++) {
+      offset.height -= _candidates[i].ascent;
+
       CGFloat xOffset = offset.width;
-      CGFloat yOffset = offset.height + _candidates[i].descent;
-      
-      offset.height += _candidates[i].height;
-      offset.height += _verticalSpacing;
-      
+      CGFloat yOffset = offset.height;
+
+      offset.height -= _candidates[i].descent + _candidates[i].leading;
+      offset.height -= _verticalSpacing;
+
       if (_candidates[i].bgColor != NULL) {
         CGContextSetFillColorWithColor(ctx, _candidates[i].bgColor);
         CGContextFillRect(ctx, CGRectOffset(_candidates[i].bgRect, xOffset, yOffset));
       }
-      
+
       CGContextSetTextPosition(ctx, xOffset, yOffset);
       CTLineDraw(_candidates[i].line, ctx);
     }
