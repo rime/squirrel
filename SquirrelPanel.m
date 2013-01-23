@@ -90,21 +90,42 @@ typedef struct {
              multiplierForVerticalSpacing:(double)verticalMultiplier
                             candidateFont:(NSFont *)font
 {
-  CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-  CFDictionarySetValue(attributes, kCTFontAttributeName, font);
-  
-  CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("m"), attributes);
-  CFRelease(attributes);
-  
-  CTLineRef line = CTLineCreateWithAttributedString(attributedString);
-  CFRelease(attributedString);
-  
-  CGFloat ascent, descent, leading;
-  double width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-  CFRelease(line);
-  
-  _horizontalSpacing = width * horizontalMultiplier;
-  _verticalSpacing = (descent + leading) * verticalMultiplier;
+  // in order to make the horizontal spacing balancing with the original
+  // trailing whitespaces, we now determine the default horizontal
+  // spacing by using the whitespace character ' '
+  {
+    CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(attributes, kCTFontAttributeName, font);
+
+    CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR(" "), attributes);
+    CFRelease(attributes);
+
+    CTLineRef line = CTLineCreateWithAttributedString(attributedString);
+    CFRelease(attributedString);
+
+    double width = CTLineGetTypographicBounds(line, NULL, NULL, NULL);
+    CFRelease(line);
+
+    _horizontalSpacing = round(width * horizontalMultiplier);
+  }
+
+  // still use 'm' to determine the default line spacing (descent + leading)
+  {
+    CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(attributes, kCTFontAttributeName, font);
+
+    CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("m"), attributes);
+    CFRelease(attributes);
+
+    CTLineRef line = CTLineCreateWithAttributedString(attributedString);
+    CFRelease(attributedString);
+
+    CGFloat descent, leading;
+    CTLineGetTypographicBounds(line, NULL, &descent, &leading);
+    CFRelease(line);
+
+    _verticalSpacing = round((descent + leading) * verticalMultiplier);
+  }
 }
 
 -(void)setContents:(NSArray *)contents
@@ -140,14 +161,20 @@ typedef struct {
                                  inRange:NSMakeRange(0, [attributedString length])
                                  options:0
                               usingBlock:^(id value, NSRange range, BOOL *stop) {
-                                if (bgColor != nil) return; // should only occur once for now...
                                 bgColor = [value retain];
                                 bgRange = range;
+                                *stop = YES; // should only occur once for now...
                               }];
     
     _candidates[i].line = CTLineCreateWithAttributedString((CFAttributedStringRef)attributedString);
     _candidates[i].width = CTLineGetTypographicBounds(_candidates[i].line, &_candidates[i].ascent, &_candidates[i].descent, &_candidates[i].leading);
     _candidates[i].height = _candidates[i].ascent + _candidates[i].descent + _candidates[i].leading;
+
+    _candidates[i].ascent = round(_candidates[i].ascent);
+    _candidates[i].descent = round(_candidates[i].descent);
+    _candidates[i].leading = round(_candidates[i].leading);
+    _candidates[i].width = ceil(_candidates[i].width);
+    _candidates[i].height = ceil(_candidates[i].height);
     
     if (_horizontal) {
       _contentSize.width += _candidates[i].width;
@@ -181,7 +208,7 @@ typedef struct {
         endOffset = _candidates[i].width;
       }
       
-      _candidates[i].bgRect = CGRectMake(startOffset, -_candidates[i].descent, endOffset - startOffset, _candidates[i].height);
+      _candidates[i].bgRect = CGRectMake(floor(startOffset), -_candidates[i].descent, ceil(endOffset - startOffset), _candidates[i].height);
     }
   }
   
@@ -229,18 +256,22 @@ typedef struct {
     }
   }
   else {
-    for (i = _candidateCount - 1; i >= 0; i--) {
+    offset.height = NSHeight([self bounds]) - offset.height;
+
+    for (i = 0; i < _candidateCount; i++) {
+      offset.height -= _candidates[i].ascent;
+
       CGFloat xOffset = offset.width;
-      CGFloat yOffset = offset.height + _candidates[i].descent;
-      
-      offset.height += _candidates[i].height;
-      offset.height += _verticalSpacing;
-      
+      CGFloat yOffset = offset.height;
+
+      offset.height -= _candidates[i].descent + _candidates[i].leading;
+      offset.height -= _verticalSpacing;
+
       if (_candidates[i].bgColor != NULL) {
         CGContextSetFillColorWithColor(ctx, _candidates[i].bgColor);
         CGContextFillRect(ctx, CGRectOffset(_candidates[i].bgRect, xOffset, yOffset));
       }
-      
+
       CGContextSetTextPosition(ctx, xOffset, yOffset);
       CTLineDraw(_candidates[i].line, ctx);
     }
@@ -271,20 +302,20 @@ typedef struct {
   [_window setContentView:_view];
   
   _attrs = [[NSMutableDictionary alloc] init];
-  [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
-  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_attrs setObject:[NSColor controlTextColor] forKey:(id)kCTForegroundColorAttributeName];
+  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
-  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
-  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
   _commentAttrs = [[NSMutableDictionary alloc] init];
-  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
+  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
   _candidateFormat = @"%c. %@";
   return self;
@@ -558,11 +589,11 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
       labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
     }
   }
-  [_attrs setObject:font forKey:NSFontAttributeName];
-  [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
-  [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_commentAttrs setObject:font forKey:NSFontAttributeName];
+  [_attrs setObject:font forKey:(id)kCTFontAttributeName];
+  [_highlightedAttrs setObject:font forKey:(id)kCTFontAttributeName];
+  [_labelAttrs setObject:labelFont forKey:(id)kCTFontAttributeName];
+  [_labelHighlightedAttrs setObject:labelFont forKey:(id)kCTFontAttributeName];
+  [_commentAttrs setObject:font forKey:(id)kCTFontAttributeName];
   
   if (style->backgroundColor != nil) {
     NSColor *color = [self colorFromString:style->backgroundColor];
@@ -575,27 +606,27 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   
   if (style->candidateTextColor != nil) {
     NSColor *color = [self colorFromString:style->candidateTextColor];
-    [_attrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_attrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    [_attrs setObject:[NSColor controlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
   
   if (style->candidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style->candidateLabelColor];
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    NSColor *color = blendColors([_attrs objectForKey:NSForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors([_attrs objectForKey:(id)kCTForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
+    [_labelAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   
   if (style->highlightedCandidateTextColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateTextColor];
-    [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_highlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
 
   if (style->highlightedCandidateBackColor != nil) {
@@ -608,21 +639,21 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   
   if (style->highlightedCandidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style->highlightedCandidateLabelColor];
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelHighlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    NSColor *color = blendColors([_highlightedAttrs objectForKey:NSForegroundColorAttributeName],
+    NSColor *color = blendColors([_highlightedAttrs objectForKey:(id)kCTForegroundColorAttributeName],
                                  [_highlightedAttrs objectForKey:NSBackgroundColorAttributeName]);
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_labelHighlightedAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
   if (style->commentTextColor != nil) {
     NSColor *color = [self colorFromString:style->commentTextColor];
-    [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:color forKey:(id)kCTForegroundColorAttributeName];
   }
   else {
-    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   }
   
   [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
