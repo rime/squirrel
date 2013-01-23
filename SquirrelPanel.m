@@ -90,21 +90,42 @@ typedef struct {
              multiplierForVerticalSpacing:(double)verticalMultiplier
                             candidateFont:(NSFont *)font
 {
-  CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
-  CFDictionarySetValue(attributes, kCTFontAttributeName, font);
-  
-  CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("m"), attributes);
-  CFRelease(attributes);
-  
-  CTLineRef line = CTLineCreateWithAttributedString(attributedString);
-  CFRelease(attributedString);
-  
-  CGFloat ascent, descent, leading;
-  double width = CTLineGetTypographicBounds(line, &ascent, &descent, &leading);
-  CFRelease(line);
-  
-  _horizontalSpacing = width * horizontalMultiplier;
-  _verticalSpacing = (descent + leading) * verticalMultiplier;
+  // in order to make the horizontal spacing balancing with the original
+  // trailing whitespaces, we now determine the default horizontal
+  // spacing by using the whitespace character ' '
+  {
+    CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(attributes, kCTFontAttributeName, font);
+
+    CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR(" "), attributes);
+    CFRelease(attributes);
+
+    CTLineRef line = CTLineCreateWithAttributedString(attributedString);
+    CFRelease(attributedString);
+
+    double width = CTLineGetTypographicBounds(line, NULL, NULL, NULL);
+    CFRelease(line);
+
+    _horizontalSpacing = width * horizontalMultiplier;
+  }
+
+  // still use 'm' to determine the default line spacing (descent + leading)
+  {
+    CFMutableDictionaryRef attributes = CFDictionaryCreateMutable(kCFAllocatorDefault, 1, &kCFTypeDictionaryKeyCallBacks, &kCFTypeDictionaryValueCallBacks);
+    CFDictionarySetValue(attributes, kCTFontAttributeName, font);
+
+    CFAttributedStringRef attributedString = CFAttributedStringCreate(kCFAllocatorDefault, CFSTR("m"), attributes);
+    CFRelease(attributes);
+
+    CTLineRef line = CTLineCreateWithAttributedString(attributedString);
+    CFRelease(attributedString);
+
+    CGFloat descent, leading;
+    CTLineGetTypographicBounds(line, NULL, &descent, &leading);
+    CFRelease(line);
+
+    _verticalSpacing = (descent + leading) * verticalMultiplier;
+  }
 }
 
 -(void)setContents:(NSArray *)contents
