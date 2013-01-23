@@ -106,7 +106,7 @@ typedef struct {
     double width = CTLineGetTypographicBounds(line, NULL, NULL, NULL);
     CFRelease(line);
 
-    _horizontalSpacing = width * horizontalMultiplier;
+    _horizontalSpacing = round(width * horizontalMultiplier);
   }
 
   // still use 'm' to determine the default line spacing (descent + leading)
@@ -124,7 +124,7 @@ typedef struct {
     CTLineGetTypographicBounds(line, NULL, &descent, &leading);
     CFRelease(line);
 
-    _verticalSpacing = (descent + leading) * verticalMultiplier;
+    _verticalSpacing = round((descent + leading) * verticalMultiplier);
   }
 }
 
@@ -169,6 +169,12 @@ typedef struct {
     _candidates[i].line = CTLineCreateWithAttributedString((CFAttributedStringRef)attributedString);
     _candidates[i].width = CTLineGetTypographicBounds(_candidates[i].line, &_candidates[i].ascent, &_candidates[i].descent, &_candidates[i].leading);
     _candidates[i].height = _candidates[i].ascent + _candidates[i].descent + _candidates[i].leading;
+
+    _candidates[i].ascent = round(_candidates[i].ascent);
+    _candidates[i].descent = round(_candidates[i].descent);
+    _candidates[i].leading = round(_candidates[i].leading);
+    _candidates[i].width = ceil(_candidates[i].width);
+    _candidates[i].height = ceil(_candidates[i].height);
     
     if (_horizontal) {
       _contentSize.width += _candidates[i].width;
@@ -202,7 +208,7 @@ typedef struct {
         endOffset = _candidates[i].width;
       }
       
-      _candidates[i].bgRect = CGRectMake(startOffset, -_candidates[i].descent, endOffset - startOffset, _candidates[i].height);
+      _candidates[i].bgRect = CGRectMake(floor(startOffset), -_candidates[i].descent, ceil(endOffset - startOffset), _candidates[i].height);
     }
   }
   
