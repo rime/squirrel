@@ -321,7 +321,7 @@ typedef struct {
   [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:(id)kCTForegroundColorAttributeName];
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:(id)kCTFontAttributeName];
   
-  _candidateFormat = @"%c. %@";
+  _candidateFormat = @"%c. %@ ";
   return self;
 }
 
@@ -672,7 +672,7 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   
   [style->candidateFormat retain];
   [_candidateFormat release];
-  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@";
+  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@ ";
 }
 
 @end
