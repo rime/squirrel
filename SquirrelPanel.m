@@ -40,6 +40,7 @@ typedef struct {
   
   CGFloat _horizontalSpacing;
   CGFloat _verticalSpacing;
+  CGFloat _maxLeading;
 }
 
 @property (nonatomic, retain) NSColor *backgroundColor;
@@ -126,6 +127,8 @@ typedef struct {
 
     _verticalSpacing = round((descent + leading) * verticalMultiplier);
   }
+
+  _maxLeading = CTFontGetLeading((CTFontRef)font);
 }
 
 -(void)setContents:(NSArray *)contents
@@ -168,6 +171,7 @@ typedef struct {
     
     _candidates[i].line = CTLineCreateWithAttributedString((CFAttributedStringRef)attributedString);
     _candidates[i].width = CTLineGetTypographicBounds(_candidates[i].line, &_candidates[i].ascent, &_candidates[i].descent, &_candidates[i].leading);
+    _candidates[i].leading = MIN(_maxLeading, _candidates[i].leading); // work around abnormal leading caused by U+30FB 
     _candidates[i].height = _candidates[i].ascent + _candidates[i].descent + _candidates[i].leading;
 
     _candidates[i].ascent = round(_candidates[i].ascent);
@@ -175,7 +179,7 @@ typedef struct {
     _candidates[i].leading = round(_candidates[i].leading);
     _candidates[i].width = ceil(_candidates[i].width);
     _candidates[i].height = ceil(_candidates[i].height);
-    
+
     if (_horizontal) {
       _contentSize.width += _candidates[i].width;
       _contentSize.height = MAX(_contentSize.height, _candidates[i].height);
