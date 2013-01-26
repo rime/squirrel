@@ -3,9 +3,9 @@ RIME_SHARED_DATA_PATH="/Library/Input Methods/Squirrel.app/Contents/SharedSuppor
 echo "RIME_SHARED_DATA_PATH=$RIME_SHARED_DATA_PATH"
 echo "precompiling Rime schemas. patience..."
 (
-cd "$RIME_SHARED_DATA_PATH";
-../MacOS/Squirrel --quit;
-../MacOS/Squirrel --build;
+cd "$RIME_SHARED_DATA_PATH"
+../MacOS/Squirrel --quit
+../MacOS/Squirrel --build
 if [ -e rime.log ]; then rm rime.log; fi
-#if [ -e installation.yaml ]; then rm installation.yaml; fi
+../MacOS/Squirrel --install
 )

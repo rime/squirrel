@@ -1,5 +1,6 @@
 
 #import "SquirrelApplicationDelegate.h"
+#import "OVInputSourceHelper.h"
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <string.h>
@@ -26,6 +27,20 @@ int main(int argc, char *argv[])
   if (argc > 1 && !strcmp("--reload", argv[1])) {
     [[NSDistributedNotificationCenter defaultCenter] postNotificationName:@"SquirrelReloadNotification"
                                                                    object:nil];
+    return 0;
+  }
+  
+  if (argc > 1 && !strcmp("--install", argv[1])) {
+    // register and enable Squirrel
+    NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
+    if (![OVInputSourceHelper registerInputSource:bundleURL])
+      return 1;
+    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
+    TISInputSourceRef inputSource = [OVInputSourceHelper inputSourceForInputSourceID:bundleID];
+    if (inputSource && ![OVInputSourceHelper inputSourceEnabled:inputSource]) {
+      if (![OVInputSourceHelper enableInputSource:inputSource])
+        return 1;
+    }
     return 0;
   }
   
