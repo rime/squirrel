@@ -122,6 +122,8 @@ static const double kAlpha = 1.0;
   
   _horizontal = NO;
   _candidateFormat = @"%c. %@ ";
+  _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
+  
   return self;
 }
 
@@ -275,6 +277,9 @@ static const double kAlpha = 1.0;
     [text appendAttributedString:line];
     [line release];
   }
+    [text addAttribute:NSParagraphStyleAttributeName
+               value:(id)_paragraphStyle
+               range:NSMakeRange(0, [text length])];
   
   [(SquirrelView*)_view setContent:text];
   [text release];
@@ -473,7 +478,11 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [style->candidateFormat retain];
   [_candidateFormat release];
   _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@ ";
-;
+
+  NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  [paragraphStyle setParagraphSpacing:style->lineSpacing];
+  [_paragraphStyle release];
+  _paragraphStyle = paragraphStyle;
 }
 
 @end

@@ -18,6 +18,7 @@ typedef struct {
   double cornerRadius;
   double borderHeight;
   double borderWidth;
+  double lineSpacing;
   NSString *backgroundColor;
   NSString *candidateLabelColor;
   NSString *candidateTextColor;
@@ -30,15 +31,16 @@ typedef struct {
 
 @interface SquirrelPanel : NSObject {
   NSRect _position;
-  NSWindow* _window;
-  NSView* _view;
-  NSMutableDictionary* _attrs;
-  NSMutableDictionary* _highlightedAttrs;
+  NSWindow *_window;
+  NSView *_view;
+  NSMutableDictionary *_attrs;
+  NSMutableDictionary *_highlightedAttrs;
   NSMutableDictionary *_labelAttrs;
   NSMutableDictionary *_labelHighlightedAttrs;
-  NSMutableDictionary* _commentAttrs;
+  NSMutableDictionary *_commentAttrs;
   BOOL _horizontal;
-  NSString* _candidateFormat;
+  NSString *_candidateFormat;
+  NSParagraphStyle *_paragraphStyle;
 }
 
 -(void)show;

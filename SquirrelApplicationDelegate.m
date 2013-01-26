@@ -275,6 +275,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RimeConfigGetDouble(config, "style/corner_radius", &style.cornerRadius);
   RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
   RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
+  RimeConfigGetDouble(config, "style/line_spacing", &style.lineSpacing);
   
   char format[FORMAT_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
@@ -421,6 +422,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/border_width"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_border_width)) {
         style.borderWidth = overridden_border_width;
+      }
+      
+      double overridden_line_spacing;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"line_spacing"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_line_spacing)) {
+        style.lineSpacing = overridden_line_spacing;
       }
       
       char overridden_format[FORMAT_BUFSIZE] = {0};
