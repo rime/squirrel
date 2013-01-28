@@ -56,6 +56,9 @@
 		44B4F79F15A929E4009DFF5D /* zyenpheng.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */; };
 		44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */; };
 		44CD640C15E2646B0021234E /* librime.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44CD640915E2633D0021234E /* librime.dylib */; };
+		44D3E63C16B6BFAE00D2E12B /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44D3E63616B6BF4200D2E12B /* symbols.yaml */; };
+		44D3E63D16B6BFAE00D2E12B /* cangjie5_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44D3E63A16B6BF7300D2E12B /* cangjie5_express.schema.yaml */; };
+		44D3E63E16B6BFAE00D2E12B /* combo_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44D3E63816B6BF6100D2E12B /* combo_pinyin.schema.yaml */; };
 		44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8E16A653E700C2B08F /* rime_deployer */; };
 		44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8F16A653E700C2B08F /* rime_dict_manager */; };
 		44E8CD99166B8542002C8EE3 /* Growl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44E8CD98166B8542002C8EE3 /* Growl.framework */; };
@@ -102,6 +105,9 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				44D3E63C16B6BFAE00D2E12B /* symbols.yaml in Copy Shared Support Files */,
+				44D3E63D16B6BFAE00D2E12B /* cangjie5_express.schema.yaml in Copy Shared Support Files */,
+				44D3E63E16B6BFAE00D2E12B /* combo_pinyin.schema.yaml in Copy Shared Support Files */,
 				4495EA3A162E63A600F236CA /* soutzoe.dict.yaml in Copy Shared Support Files */,
 				4495EA3B162E63A600F236CA /* soutzoe.schema.yaml in Copy Shared Support Files */,
 				44B20C981600874800A85924 /* emoji.dict.yaml in Copy Shared Support Files */,
@@ -226,6 +232,9 @@
 		44B4F79815A929E4009DFF5D /* zyenpheng.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zyenpheng.dict.yaml; sourceTree = "<group>"; };
 		44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zyenpheng.schema.yaml; sourceTree = "<group>"; };
 		44CD640915E2633D0021234E /* librime.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.dylib; path = librime/xbuild/lib/Release/librime.dylib; sourceTree = "<group>"; };
+		44D3E63616B6BF4200D2E12B /* symbols.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = symbols.yaml; path = brise/symbols.yaml; sourceTree = "<group>"; };
+		44D3E63816B6BF6100D2E12B /* combo_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = combo_pinyin.schema.yaml; sourceTree = "<group>"; };
+		44D3E63A16B6BF7300D2E12B /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cangjie5_express.schema.yaml; sourceTree = "<group>"; };
 		44DA191A152B8CB600FB8EF0 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_CN; path = zh_CN.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44DA191B152B8CBC00FB8EF0 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_TW; path = zh_TW.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44DA7A2714DD596700C1ED3B /* essay.kct */ = {isa = PBXFileReference; lastKnownFileType = file; name = essay.kct; path = brise/essay.kct; sourceTree = SOURCE_ROOT; };
@@ -390,6 +399,7 @@
 		44935C0114F052EC00346874 /* supplement */ = {
 			isa = PBXGroup;
 			children = (
+				44D3E63816B6BF6100D2E12B /* combo_pinyin.schema.yaml */,
 				44B20C94160086F400A85924 /* emoji.dict.yaml */,
 				44B20C95160086F400A85924 /* emoji.schema.yaml */,
 				44B4F79315A929E4009DFF5D /* ipa_xsampa.dict.yaml */,
@@ -424,6 +434,7 @@
 		44DA7A2814DD596700C1ED3B /* preset */ = {
 			isa = PBXGroup;
 			children = (
+				44D3E63A16B6BF7300D2E12B /* cangjie5_express.schema.yaml */,
 				4426D34415028210009100C7 /* bopomofo.schema.yaml */,
 				44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */,
 				44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */,
@@ -442,6 +453,7 @@
 		44DA7A4214DD598900C1ED3B /* SharedSupport */ = {
 			isa = PBXGroup;
 			children = (
+				44D3E63616B6BF4200D2E12B /* symbols.yaml */,
 				4495EA36162E637B00F236CA /* soutzoe.dict.yaml */,
 				4495EA37162E637B00F236CA /* soutzoe.schema.yaml */,
 				442B5B871570C37200370DEA /* squirrel.yaml */,
