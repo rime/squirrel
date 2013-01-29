@@ -12,6 +12,9 @@
   NSUInteger                  _lastModifier;
   NSEventType                 _lastEventType;
   RimeSessionId               _session;
+  // for chord-typing
+  char _chord[128];
+  NSTimer *_chordTimer;
 }
 
 -(void)commitString:(NSString*)string;
@@ -24,5 +27,9 @@
           highlighted:(NSUInteger)index;
 
 -(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers;
+
+-(void)onChordTimer:(NSTimer *)timer;
+-(void)updateChord:(int)ch;
+-(void)clearChord;
 
 @end

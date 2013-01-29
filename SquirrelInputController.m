@@ -12,29 +12,29 @@
 -(void)destroySession;
 -(void)rimeConsumeCommittedText;
 -(void)rimeUpdate;
-@end 
+@end
 
 // implementation of the public interface
 @implementation SquirrelInputController
 
 /*!
- @method     
+ @method
  @abstract   Receive incoming event
- @discussion This method receives key events from the client application. 
+ @discussion This method receives key events from the client application.
  */
 -(BOOL)handleEvent:(NSEvent*)event client:(id)sender
 {
-  // Return YES to indicate the the key input was received and dealt with.  
-  // Key processing will not continue in that case.  In other words the 
+  // Return YES to indicate the the key input was received and dealt with.
+  // Key processing will not continue in that case.  In other words the
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
   //NSLog(@"handleEvent:client:");
-  
+
   _currentClient = sender;
 
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  
+
   if (!_session || !RimeFindSession(_session)) {
     [self createSession];
     if (!_session) {
@@ -42,10 +42,10 @@
       return NO;
     }
   }
-  
+
   BOOL handled = NO;
   NSUInteger modifiers = [event modifierFlags];
-  
+
   switch ([event type]) {
     case NSFlagsChanged:
       {
@@ -95,7 +95,7 @@
       // ignore Command+X hotkeys.
       if (modifiers & OSX_COMMAND_MASK)
         break;
-      
+
       NSInteger keyCode = [event keyCode];
       NSString* keyChars = [event charactersIgnoringModifiers];
       if (!isalpha([keyChars UTF8String][0]))
@@ -121,12 +121,12 @@
     defaults:
       break;
   }
-  
+
   [pool release];
-  
+
   _lastModifier = modifiers;
   _lastEventType = [event type];
-  
+
   return handled;
 }
 
@@ -135,9 +135,9 @@
   //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x", rime_keycode, rime_modifiers);
 
   // TODO add special key event preprocessing here
-  
+
   BOOL handled = (BOOL)RimeProcessKey(_session, rime_keycode, rime_modifiers);
-  
+
   // TODO add special key event postprocessing here
 
   {
@@ -150,8 +150,69 @@
       }
     }
   }
-  
+
+  // Simulate key-ups for every interesting key-down for chord-typing.
+  if (handled) {
+    bool is_basic_latin = rime_keycode >= XK_space && rime_keycode <= XK_asciitilde && rime_modifiers == 0;
+    if (is_basic_latin && RimeGetOption(_session, "_chord_typing")) {
+      [self updateChord:rime_keycode];
+    }
+    else {
+      [self clearChord];
+    }
+  }
+
   return handled;
+}
+
+-(void)onChordTimer:(NSTimer *)timer
+{
+  if (_chord[0] && _session) {
+    // simulate key-ups
+    for (char *p = _chord; *p; ++p) {
+      RimeProcessKey(_session, *p, kReleaseMask);
+    }
+    [self rimeUpdate];
+  }
+  [self clearChord];
+}
+
+-(void)updateChord:(int)ch
+{
+  char *p = strchr(_chord, ch);
+  if (p != NULL) {
+    // just repeating
+    return;
+  }
+  else {
+    // append ch to _chord
+    p = strchr(_chord, '\0');
+    *p++ = ch;
+    *p = '\0';
+  }
+  // reset timer
+  if (_chordTimer && [_chordTimer isValid]) {
+    [_chordTimer invalidate];
+  }
+  const NSTimeInterval CHORD_KEY_UP_INTERVAL = 0.1;
+  _chordTimer = [NSTimer scheduledTimerWithTimeInterval:CHORD_KEY_UP_INTERVAL
+                                                 target:self
+                                               selector:@selector(onChordTimer:)
+                                               userInfo:nil
+                                                repeats:NO];
+}
+
+-(void)clearChord
+{
+  if (_chord[0]) {
+    _chord[0] = '\0';
+  }
+  if (_chordTimer) {
+    if ([_chordTimer isValid]) {
+      [_chordTimer invalidate];
+    }
+    _chordTimer = nil;
+  }
 }
 
 -(NSUInteger)recognizedEvents:(id)sender
@@ -176,7 +237,6 @@
     _currentClient = inputClient;
     [self createSession];
   }
-  
   return self;
 }
 
@@ -188,20 +248,20 @@
 }
 
 /*!
- @method     
+ @method
  @abstract   Called when a user action was taken that ends an input session.
- Typically triggered by the user selecting a new input method 
+ Typically triggered by the user selecting a new input method
  or keyboard layout.
- @discussion When this method is called your controller should send the 
- current input buffer to the client via a call to 
- insertText:replacementRange:.  Additionally, this is the time 
+ @discussion When this method is called your controller should send the
+ current input buffer to the client via a call to
+ insertText:replacementRange:.  Additionally, this is the time
  to clean up if that is necessary.
  */
 
--(void)commitComposition:(id)sender 
+-(void)commitComposition:(id)sender
 {
   //NSLog(@"commitComposition:");
-  // FIXME: chrome's address bar issues this callback when showing suggestions. 
+  // FIXME: chrome's address bar issues this callback when showing suggestions.
   if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return;
   // force committing existing Rime composition
@@ -249,7 +309,7 @@
   return _candidates;
 }
 
--(void)dealloc 
+-(void)dealloc
 {
   [_preeditString release];
   [_candidates release];
@@ -260,12 +320,12 @@
 -(void)commitString:(NSString*)string
 {
   //NSLog(@"commitString:");
-  [_currentClient insertText:string 
+  [_currentClient insertText:string
             replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
-  
+
   [_preeditString release];
   _preeditString = @"";
-  
+
   [[[NSApp delegate] panel] hide];
 }
 
@@ -284,7 +344,7 @@
   _preeditString = preedit;
   _selRange = range;
   _caretPos = pos;
-  
+
   //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld", range.location, range.length, pos);
   NSDictionary* attrs;
   NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:preedit];
@@ -299,9 +359,9 @@
     [attrString setAttributes:attrs range:remainingRange];
   }
   [_currentClient setMarkedText:attrString
-                 selectionRange:NSMakeRange(pos, 0) 
+                 selectionRange:NSMakeRange(pos, 0)
                replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
-  
+
   [attrString release];
 }
 
@@ -321,7 +381,7 @@
   [panel updateCandidates:candidates andComments:comments withLabels:labels highlighted:index];
 }
 
-@end // SquirrelController 
+@end // SquirrelController
 
 
 // implementation of private interface
@@ -332,7 +392,7 @@
   NSString* app = [_currentClient bundleIdentifier];
   NSLog(@"createSession: %@", app);
   _session = RimeCreateSession();
-  
+
   // optionally, set app specific options
   NSDictionary* appOptions = [[NSApp delegate] appOptions];
   NSDictionary* options = [appOptions objectForKey:app];
@@ -354,6 +414,7 @@
     RimeDestroySession(_session);
     _session = 0;
   }
+  [self clearChord];
 }
 
 -(void)rimeConsumeCommittedText
@@ -370,7 +431,7 @@
 {
   //NSLog(@"update");
   [self rimeConsumeCommittedText];
-  
+
   RimeContext ctx = {0};
   RIME_STRUCT_INIT(RimeContext, ctx);
   if (RimeGetContext(_session, &ctx)) {
