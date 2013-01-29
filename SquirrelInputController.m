@@ -194,8 +194,8 @@
   if (_chordTimer && [_chordTimer isValid]) {
     [_chordTimer invalidate];
   }
-  const NSTimeInterval CHORD_KEY_UP_INTERVAL = 0.1;
-  _chordTimer = [NSTimer scheduledTimerWithTimeInterval:CHORD_KEY_UP_INTERVAL
+  NSTimeInterval interval = [[NSApp delegate] chordDuration];
+  _chordTimer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                  target:self
                                                selector:@selector(onChordTimer:)
                                                userInfo:nil

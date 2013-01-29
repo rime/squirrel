@@ -40,6 +40,11 @@
   return _appOptions;
 }
 
+-(NSTimeInterval)chordDuration
+{
+  return _chordDuration;
+}
+
 -(IBAction)deploy:(id)sender
 {
   NSLog(@"Start maintenace...");
@@ -169,7 +174,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   squirrel_traits.user_data_dir = [userDataDir UTF8String];
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
-  squirrel_traits.distribution_version = [[[[NSBundle mainBundle] infoDictionary] 
+  squirrel_traits.distribution_version = [[[[NSBundle mainBundle] infoDictionary]
                                            objectForKey:@"CFBundleVersion"] UTF8String];
   NSLog(@"Initializing la rime...");
   RimeInitialize(&squirrel_traits);
@@ -187,13 +192,20 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     return;
   }
   NSLog(@"Loading squirrel specific config...");
-  
+
   _useUSKeyboardLayout = NO;
   Bool value;
   if (RimeConfigGetBool(&config, "us_keyboard_layout", &value)) {
     _useUSKeyboardLayout = (BOOL)value;
   }
-  
+
+  _chordDuration = 0.1;
+  double duration;
+  if (RimeConfigGetDouble(&config, "chord_duration", &duration)) {
+    if (duration > 0)
+      _chordDuration = duration;
+  }
+
   _enableNotifications = YES;
   _enableBuitinNotifcations = NO;
   char str[100] = {0};
@@ -206,7 +218,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
   }
   [GrowlApplicationBridge setShouldUseBuiltInNotifications:_enableBuitinNotifcations];
-  
+
   _preferNotificationCenter = NO;
   if (RimeConfigGetBool(&config, "show_notifications_via_notification_center", &value)) {
     BOOL isAtLeastMountainLion = NO;
@@ -217,15 +229,15 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         isAtLeastMountainLion = (versionMajor >= 10) && (versionMinor >= 8);
       }
     }
-    
+
     _preferNotificationCenter = (BOOL)value && isAtLeastMountainLion;
   }
-  
+
   select_show_message(_preferNotificationCenter);
-  
+
   [self updateUIStyle:&config];
   [self loadAppOptionsFromConfig:&config];
-  
+
   RimeConfigClose(&config);
 }
 
@@ -238,18 +250,18 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 {
   SquirrelUIStyle style;
   bzero(&style, sizeof(style));
-  
+
   Bool value = False;
   if (RimeConfigGetBool(config, "style/horizontal", &value)) {
     style.horizontal = (BOOL)value;
   }
-  
+
   char label_font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
     style.labelFontName = [[NSString alloc] initWithUTF8String:label_font_face];
   }
   RimeConfigGetInt(config, "style/label_font_point", &style.labelFontSize);
-  
+
   char label_color[COLOR_BUFSIZE] = {0};
   style.candidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
@@ -259,29 +271,29 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
     style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
   }
-  
+
   char font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/font_face", font_face, sizeof(font_face))) {
     style.fontName = [[NSString alloc] initWithUTF8String:font_face];
   }
   RimeConfigGetInt(config, "style/font_point", &style.fontSize);
-  
+
   double alpha;
   style.alpha = 1.0;
   if (RimeConfigGetDouble(config, "style/alpha", &alpha)) {
     style.alpha = fmax(fmin(alpha, 1.0), 0.1);
   }
-  
+
   RimeConfigGetDouble(config, "style/corner_radius", &style.cornerRadius);
   RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
   RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
   RimeConfigGetDouble(config, "style/line_spacing", &style.lineSpacing);
-  
+
   char format[FORMAT_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
       style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
   }
-  
+
   char color_scheme[COLOR_SCHEME_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
     NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
@@ -321,7 +333,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     else {
       // weasel panel has an additional line at the top to show preedit text, that `text_color` is for.
       // if not otherwise specified, candidate text is rendered in this color.
-      // in other words, `candidate_text_color` inherits this. 
+      // in other words, `candidate_text_color` inherits this.
       style.candidateTextColor = [fallback_text_color retain];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_text_color"];
@@ -343,7 +355,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.commentTextColor = [[NSString alloc] initWithUTF8String:color];
     }
-    
+
     // the following per-color-scheme configurations, if exist, will
     // override configurations with the same name under the global 'style' section
     {
@@ -352,20 +364,20 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       if (RimeConfigGetBool(config, [key UTF8String], &overridden_value)) {
         style.horizontal = (BOOL)overridden_value;
       }
-      
+
       char overridden_label_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_font_face, sizeof(overridden_label_font_face))) {
         if (style.labelFontName != nil) [style.labelFontName release];
         style.labelFontName = [[NSString alloc] initWithUTF8String:overridden_label_font_face];
       }
-      
+
       int overridden_label_font_size;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_point"];
       if (RimeConfigGetInt(config, [key UTF8String], &overridden_label_font_size)) {
         style.labelFontSize = overridden_label_font_size;
       }
-      
+
       char overridden_label_color[COLOR_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_color"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
@@ -387,7 +399,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
           style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
         }
       }
-      
+
       char overridden_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_font_face, sizeof(overridden_font_face))) {
@@ -399,37 +411,37 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       if (RimeConfigGetInt(config, [key UTF8String], &overridden_font_size)) {
         style.fontSize = overridden_font_size;
       }
-      
+
       double overridden_alpha;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/alpha"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_alpha)) {
         style.alpha = fmax(fmin(overridden_alpha, 1.0), 0.1);
       }
-      
+
       double overridden_corner_radius;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/corner_radius"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_corner_radius)) {
         style.cornerRadius = overridden_corner_radius;
       }
-      
+
       double overridden_border_height;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/border_height"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_border_height)) {
         style.borderHeight = overridden_border_height;
       }
-      
+
       double overridden_border_width;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/border_width"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_border_width)) {
         style.borderWidth = overridden_border_width;
       }
-      
+
       double overridden_line_spacing;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"line_spacing"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_line_spacing)) {
         style.lineSpacing = overridden_line_spacing;
       }
-      
+
       char overridden_format[FORMAT_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_format"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_format, sizeof(overridden_format))) {
@@ -437,15 +449,15 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         style.candidateFormat = [[NSString alloc] initWithUTF8String:overridden_format];
       }
     }
-    
+
     [key release];
     [fallback_text_color release];
     [fallback_hilited_text_color release];
     [fallback_hilited_back_color release];
   }
-  
+
   [_panel updateUIStyle:&style];
-  
+
   [style.labelFontName release];
   [style.fontName release];
   [style.backgroundColor release];
@@ -524,32 +536,32 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   return NSTerminateNow;
 }
 
-//add an awakeFromNib item so that we can set the action method.  Note that 
-//any menuItems without an action will be disabled when displayed in the Text 
+//add an awakeFromNib item so that we can set the action method.  Note that
+//any menuItems without an action will be disabled when displayed in the Text
 //Input Menu.
 -(void)awakeFromNib
 {
   //NSLog(@"SquirrelApplicationDelegate awakeFromNib");
-  
+
   NSNotificationCenter* center = [[NSWorkspace sharedWorkspace] notificationCenter];
   [center addObserver:self
              selector:@selector(workspaceWillPowerOff:)
                  name:NSWorkspaceWillPowerOffNotification
                object:nil];
-  
+
   NSDistributedNotificationCenter* notifCenter = [NSDistributedNotificationCenter defaultCenter];
   [notifCenter addObserver:self
                   selector:@selector(rimeNeedsReload:)
                       name:@"SquirrelReloadNotification"
                     object:nil];
-  
+
 }
 
--(void)dealloc 
+-(void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  
+
   [_appOptions release];
   [super dealloc];
 }

@@ -1,9 +1,12 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.18"
+config_version: "0.19"
 
 us_keyboard_layout: false
+
+# for veteran chord-typist
+chord_duration: 0.1  # seconds
 
 # options: always | never | appropriate == growl_is_running
 show_notifications_when: growl_is_running

@@ -15,6 +15,7 @@
   BOOL _enableBuitinNotifcations;
   BOOL _preferNotificationCenter;
   NSDictionary* _appOptions;
+  NSTimeInterval _chordDuration;
 }
 
 -(NSMenu*)menu;
@@ -24,6 +25,7 @@
 -(BOOL)enableNotifications;
 -(BOOL)preferNotificationCenter;
 -(NSDictionary*)appOptions;
+-(NSTimeInterval)chordDuration;
 
 -(IBAction)deploy:(id)sender;
 -(IBAction)syncUserData:(id)sender;
