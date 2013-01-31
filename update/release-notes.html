@@ -1,5 +1,30 @@
 ﻿<h3>【鼠鬚管】更新日誌</h3>
 
+<hr/>
+
+<p><strong>鼠鬚管 0.9.17</strong> &lt;2013-01-31&gt;</p>
+
+<ul>
+  <li><p>改進：安裝完畢自動啓用鼠鬚管</p></li>
+  <li><p>變更：Caps Lock 燈亮時默認輸出大寫字母</p></li>
+  <li><p>新增：支持設定候選行間距（<code>style/line_spacing:</code>）</p></li>
+  <li><p>新增：支持並擊輸入（並擊速度選項 <code>chord_duration:</code>）</p>
+  <p>並擊輸入方案【宮保拼音】</p></li>
+  <li><p>新增：無重碼自動上屏（<code>speller/auto_select:</code>）</p>
+  <p>輸入方案【倉頡・快打模式】</p></li>
+  <li><p>改進：允許以空格做輸入碼，或作爲符號頂字上屏</p>
+  <p>（<code>speller/use_space:, punctuator/use_space:</code>）</p></li>
+  <li><p>改進：【注音】輸入方案以空格輸入第一聲（陰平）</p></li>
+  <li><p>新增：特殊符號表 <code>symbols.yaml</code> 用法見↙</p></li>
+  <li><p>改進：【朙月拼音・簡化字】以 <code>/ts</code> 等形式輸入特殊符號</p></li>
+  <li><p>改進：標點符號註明〔全角〕〔半角〕</p></li>
+  <li><p>優化：同步用戶資料時更聰明地備份用戶自定義的 YAML 文件</p></li>
+  <li><p>修復：避免創建、使用不完整的詞典文件</p></li>
+  <li><p>修復：糾正用戶詞典中無法調頻的受損詞條</p></li>
+</ul>
+
+<hr/>
+
 <p><strong>鼠鬚管 0.9.16</strong> &lt;2013-01-18&gt;</p>
 
 <ul>
@@ -14,18 +39,6 @@
   <li><p>修復：0.9.15 版本安裝了錯誤的詞典文件</p>
   <p>如果除【朙月拼音】外還有其他詞典用 0.9.15 版本編譯後出錯，
   請刪除用戶文件夾中對應的 .bin 文件，再用新版本部署。</p></li>
-</ul>
-
-<hr/>
-
-<p><strong>鼠鬚管 0.9.15.1</strong> &lt;2013-01-17&gt;</p>
-
-<ul>
-  <li><p>新增：Caps Lock 點亮時，切換到西文模式，輸出小寫字母</p>
-  <p>選項 <code>ascii_composer/switch_key/Caps_Lock:</code></p></li>
-  <li><p>新增：支持 Emacs 風格的編輯鍵 Control + 字母</p></li>
-  <li><p>修復：一處內存泄漏</p></li>
-  <li><p>修復：用戶詞典有可能因讀取時 I/O 錯誤導致部份詞序無法調整</p></li>
 </ul>
 
 <hr/>
