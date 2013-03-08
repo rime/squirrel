@@ -3,7 +3,14 @@
 all: release
 install: install-release
 
+ESSAY = brise/essay.kct
 LIBRIME = librime/xbuild/lib/Release/librime.dylib
+
+$(ESSAY):
+	cd brise; make essay
+
+essay:
+	cd brise; make essay
 
 $(LIBRIME):
 	cd librime; make -f Makefile.xcode
@@ -11,12 +18,12 @@ $(LIBRIME):
 librime:
 	cd librime; make -f Makefile.xcode
 
-release: $(LIBRIME)
+release: $(ESSAY) $(LIBRIME)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Release/Squirrel.app Squirrel.app
 
-debug: $(LIBRIME)
+debug: $(ESSAY) $(LIBRIME)
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Debug/Squirrel.app Squirrel.app
