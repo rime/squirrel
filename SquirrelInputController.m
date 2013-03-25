@@ -118,6 +118,11 @@
       }
     }
       break;
+    case NSLeftMouseDown:
+    {
+      [self commitComposition:_currentClient];
+    }
+      break;
     defaults:
       break;
   }
@@ -218,7 +223,7 @@
 -(NSUInteger)recognizedEvents:(id)sender
 {
   //NSLog(@"recognizedEvents:");
-  return NSKeyDownMask | NSFlagsChangedMask;
+  return NSKeyDownMask | NSFlagsChangedMask | NSLeftMouseDownMask;
 }
 
 -(void)activateServer:(id)sender
