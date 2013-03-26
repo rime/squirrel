@@ -139,6 +139,8 @@ preset_color_schemes:
 app_options:
   com.alfredapp.Alfred:
     ascii_mode: true
+  com.runningwithcrayons.Alfred-2:
+    ascii_mode: true
   com.blacktree.Quicksilver:
     ascii_mode: true
   com.apple.Terminal:
