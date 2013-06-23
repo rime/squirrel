@@ -95,6 +95,13 @@ static void show_message_notification_center(const char* msg_text, const char* m
   [pool release];
 }
 
+static void show_status_message(const char* msg_text, const char* msg_id) {
+  SquirrelPanel* panel = [[NSApp delegate] panel];
+  if (panel) {
+    [panel updateMessage:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)];
+  }
+}
+
 void (*show_message)(const char* msg_text, const char* msg_id) = show_message_growl;
 static void select_show_message(BOOL preferNotificationCenter) {
   if (preferNotificationCenter) {
@@ -119,27 +126,30 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
     return;
   }
-  // off?
-  id app_delegate = (id)context_object;
-  if (app_delegate && ![app_delegate enableNotifications]) {
-    return;
-  }
+//  // off?
+//  id app_delegate = (id)context_object;
+//  if (app_delegate && ![app_delegate enableNotifications]) {
+//    return;
+//  }
   // schema change
   if (!strcmp(message_type, "schema")) {
     const char* schema_name = strchr(message_value, '/');
-    if (schema_name)
-      show_message(++schema_name, message_type);
+    if (schema_name) {
+      ++schema_name;
+//      show_message(schema_name, message_type);
+      show_status_message(schema_name, message_type);
+    }
     return;
   }
-  // builtin notifications suck! avoid bubble flood
-  if ([GrowlApplicationBridge isMistEnabled]) {
-    static time_t previous_notify_time = 0;
-    time_t now = time(NULL);
-    bool is_cool = now - previous_notify_time > 5;
-    if (!is_cool)
-      return;  // too soon
-    previous_notify_time = now;
-  }
+//  // builtin notifications suck! avoid bubble flood
+//  if ([GrowlApplicationBridge isMistEnabled]) {
+//    static time_t previous_notify_time = 0;
+//    time_t now = time(NULL);
+//    bool is_cool = now - previous_notify_time > 5;
+//    if (!is_cool)
+//      return;  // too soon
+//    previous_notify_time = now;
+//  }
   // option change
   if (!strcmp(message_type, "option")) {
     if (!strcmp(message_value, "ascii_mode") || !strcmp(message_value, "!ascii_mode")) {
@@ -147,14 +157,17 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       bool is_ascii_mode = (message_value[0] != '!');
       if (is_ascii_mode != was_ascii_mode) {
         was_ascii_mode = is_ascii_mode;
-        show_message(message_value, message_type);
+//        show_message(message_value, message_type);
+        show_status_message(message_value, message_type);
       }
     }
     else if (!strcmp(message_value, "full_shape") || !strcmp(message_value, "!full_shape")) {
-      show_message(message_value, message_type);
+//      show_message(message_value, message_type);
+      show_status_message(message_value, message_type);
     }
     else if (!strcmp(message_value, "simplification") || !strcmp(message_value, "!simplification")) {
-      show_message(message_value, message_type);
+//      show_message(message_value, message_type);
+      show_status_message(message_value, message_type);
     }
   }
 }
@@ -207,7 +220,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
 
   _enableNotifications = YES;
-  _enableBuitinNotifcations = NO;
+  _enableBuitinNotifcations = YES;
   char str[100] = {0};
   if (RimeConfigGetString(&config, "show_notifications_when", str, sizeof(str))) {
     if (!strcmp(str, "always")) {
@@ -561,7 +574,9 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-
+  if (_panel) {
+    [_panel hideStatus:nil];
+  }
   [_appOptions release];
   [super dealloc];
 }

@@ -90,7 +90,7 @@ static const double kAlpha = 1.0;
 
 -(id)init
 {
-  //NSLog(@"SqurrelPanel init");
+//  NSLog(@"SqurrelPanel init");
   _position = NSMakeRect(0, 0, 0, 0);
   _window = [[NSWindow alloc] initWithContentRect:_position
                                         styleMask:NSBorderlessWindowMask
@@ -124,11 +124,17 @@ static const double kAlpha = 1.0;
   _candidateFormat = @"%c. %@ ";
   _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
   
+  _numCandidates = 0;
+  _message = nil;
+  _statusTimer = nil;
+  
   return self;
 }
 
 -(void)show
 {
+//  NSLog(@"show: %d %@", _numCandidates, _message);
+  
   NSRect window_rect = [_window frame];
   // resize frame
   NSSize content_size = [(SquirrelView*)_view contentSize];
@@ -170,6 +176,7 @@ static const double kAlpha = 1.0;
 
 -(void)hide
 {
+//  NSLog(@"hide:");
   [_window orderOut:nil];
 }
 
@@ -183,8 +190,23 @@ static const double kAlpha = 1.0;
              withLabels:(NSString*)labels
             highlighted:(NSUInteger)index
 {
-  if ([candidates count] == 0) {
-    [self hide];
+  _numCandidates = [candidates count];
+//  NSLog(@"updateCandidates: %d %@", _numCandidates, _message);
+  if (_numCandidates) {
+    [self updateMessage:nil];
+    if (_statusTimer) {
+      [_statusTimer invalidate];
+      _statusTimer = nil;
+    }
+  }
+  else {
+    if (_message) {
+      [self showStatus:_message];
+      [self updateMessage:nil];
+    }
+    else if (!_statusTimer) {
+      [self hide];
+    }
     return;
   }
   
@@ -286,6 +308,45 @@ static const double kAlpha = 1.0;
   [self show];
 }
 
+-(void)updateMessage:(NSString *)msg
+{
+//  NSLog(@"updateMessage: %@ -> %@", _message, msg);
+  [msg retain];
+  [_message release];
+  _message = msg;
+}
+
+-(void)showStatus:(NSString *)msg
+{
+//  NSLog(@"showStatus: %@", msg);
+  
+  NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
+  [text appendAttributedString:[[[NSAttributedString alloc] initWithString: msg
+                                                                attributes:_commentAttrs] autorelease]];
+  [(SquirrelView*)_view setContent:text];
+  [text release];
+  [self show];
+  
+  if (_statusTimer) {
+    [_statusTimer invalidate];
+  }
+  _statusTimer = [NSTimer scheduledTimerWithTimeInterval:1.2
+                                                  target:self
+                                                selector:@selector(hideStatus:)
+                                                userInfo:nil
+                                                 repeats:NO];
+}
+
+-(void)hideStatus:(NSTimer *)timer
+{
+//  NSLog(@"hideStatus: %@", _message);
+  [_message release];
+  _message = nil;
+  [_statusTimer invalidate];
+  _statusTimer = nil;
+  [self hide];
+}
+
 -(NSColor *)colorFromString:(NSString *)string
 {
   if (string == nil) {
@@ -321,12 +382,12 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
                                                                       blue:&b.b
                                                                      alpha:&b.a];
   
-  #define blend_value(f, b) (((f) * 2.0 + (b)) / 3.0)
+#define blend_value(f, b) (((f) * 2.0 + (b)) / 3.0)
   return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
                                green:blend_value(f.g, b.g)
                                 blue:blend_value(f.b, b.b)
                                alpha:f.a];
-  #undef blend_value
+#undef blend_value
 }
 
 static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)

@@ -41,6 +41,10 @@ typedef struct {
   BOOL _horizontal;
   NSString *_candidateFormat;
   NSParagraphStyle *_paragraphStyle;
+  
+  int _numCandidates;
+  NSString *_message;
+  NSTimer *_statusTimer;
 }
 
 -(void)show;
@@ -50,6 +54,10 @@ typedef struct {
             andComments:(NSArray*)comments
              withLabels:(NSString*)labels
             highlighted:(NSUInteger)index;
+-(void)updateMessage:(NSString*)msg;
+-(void)showStatus:(NSString*)msg;
+-(void)hideStatus:(NSTimer*)timer;
+
 -(void)updateUIStyle:(SquirrelUIStyle*)style;
 
 @end

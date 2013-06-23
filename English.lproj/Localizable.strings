@@ -4,8 +4,8 @@
 "deploy_start" = "Deploying Rime input method engine.";
 "deploy_success" = "Squirrel is ready.";
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
-"ascii_mode" = "Abc";
-"!ascii_mode" = "Chinese";
+"ascii_mode" = "A";
+"!ascii_mode" = "中";
 "full_shape" = "Full shape";
 "!full_shape" = "Half shape";
 "simplification" = "Simplified";

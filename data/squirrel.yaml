@@ -8,8 +8,8 @@ us_keyboard_layout: false
 # for veteran chord-typist
 chord_duration: 0.1  # seconds
 
-# options: always | never | appropriate == growl_is_running
-show_notifications_when: growl_is_running
+# options: always | never | appropriate
+show_notifications_when: appropriate
 
 # Show notifications via Notification Center instead of Growl.
 # (Only valid if OS version is at least 10.8 and
