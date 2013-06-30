@@ -126,11 +126,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
     return;
   }
-//  // off?
-//  id app_delegate = (id)context_object;
-//  if (app_delegate && ![app_delegate enableNotifications]) {
-//    return;
-//  }
+  // off?
+  id app_delegate = (id)context_object;
+  if (app_delegate && ![app_delegate enableNotifications]) {
+    return;
+  }
   // schema change
   if (!strcmp(message_type, "schema")) {
     const char* schema_name = strchr(message_value, '/');
