@@ -44,7 +44,7 @@
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>SUFeedURL</key>
-	<string>https://raw.github.com/lotem/squirrel/master/update/appcast.xml</string>
+	<string>http://rimeime.github.io/squirrel-update/appcast.xml</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 </dict>
