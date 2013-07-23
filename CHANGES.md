@@ -3,6 +3,18 @@
 
 RIME 主頁： http://code.google.com/p/rimeime/
 
+鼠鬚管 0.9.20 <2013-07-23>
+---
+  * 新增：支持全角模式
+  * 新增：【倉頡】按快趣取碼規則生成常用詞組
+  * 更新：拼音、粵拼、中古漢語等輸入方案、繁簡轉換詞典
+  * 修復：大陸與臺灣異讀的字「微」「檔」「蝸」「垃圾」等
+  * 變更：設置 `show_notifications_when: never` 不再提示輸入法狀態
+  * 修復：自定義中西文切換鍵 `Control+space` 無法切回中文模式
+  * 修復：用戶詞典未能完整支持 `derive` 拼寫運算產生的歧義切分
+  * 新增：（輸入方案設計用）干預多個 translator 之間的結果排序<br/>
+    選項 `translator/initial_quality: 0`
+
 鼠鬚管 0.9.19 <2013-06-24>
 ---
   * 新增：切換輸入法狀態時在光標處延時顯示當前狀態
@@ -14,7 +26,7 @@ RIME 主頁： http://code.google.com/p/rimeime/
   * 修復：自定義短語不應參與組詞
   * 修復：「链」「坂」「喂」在簡化字模式下無法組詞（須清除用戶字頻）
   * 新增：對特定類型候選字不做繁簡轉換<br/>
-    例如不轉換反查字 `simplifier/exclude_types: reverse_lookup`
+    例如不轉換反查字 `simplifier/exclude_types: [ reverse_lookup ]`
 
 鼠鬚管 0.9.18 <2013-04-26>
 ---
