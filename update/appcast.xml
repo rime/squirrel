@@ -6,13 +6,13 @@
     <description>鼠鬚管Appcast更新頻道</description>
     <language>zh</language>
     <item>
-      <title>鼠鬚管 0.9.20</title>
+      <title>鼠鬚管 0.9.20.1</title>
       <sparkle:releaseNotesLink>http://rimeime.github.io/squirrel-update/</sparkle:releaseNotesLink>
-      <pubDate>Tue, 23 Jul 2013 18:00:00 +0800</pubDate>
-      <enclosure url="http://dl.bintray.com/lotem/rime/Squirrel-0.9.20.zip?direct"
-                 sparkle:version="0.9.20"
-                 sparkle:dsaSignature="MCwCFAMhntITbK9lZm5oH4Tj3r2ESr2sAhRMeQVVGNLybGKrU27glAh2S1SqSQ=="
-                 length="7346319"
+      <pubDate>Tue, 24 Jul 2013 00:00:00 +0800</pubDate>
+      <enclosure url="http://dl.bintray.com/lotem/rime/Squirrel-0.9.20.1.zip?direct"
+                 sparkle:version="0.9.20.1"
+                 sparkle:dsaSignature="MCwCFBRAMTS+YTTZYW5kQ6Q3j6ckc1kpAhQVDBJ6OGvAD+FX7+UOAFmJdSFDIw=="
+                 length="7346392"
                  type="application/octet-stream"/>
     </item>
   </channel>
