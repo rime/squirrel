@@ -35,15 +35,6 @@ static const double kAlpha = 1.0;
 @synthesize borderHeight = _borderHeight;
 @synthesize borderWidth = _borderWidth;
 
--(NSColor *)backgroundColor
-{
-  if (_backgroundColor != nil) {
-    return _backgroundColor;
-  }
-  
-  return [NSColor windowBackgroundColor];
-}
-
 -(double)borderHeight
 {
   return MAX(_borderHeight, _cornerRadius);
@@ -74,7 +65,13 @@ static const double kAlpha = 1.0;
     return;
   }
 
-  [[self backgroundColor] setFill];
+  if ([self backgroundColor]) {
+    [[self backgroundColor] setFill];
+  }
+  else {
+    [[NSColor windowBackgroundColor] setFill];
+  }
+  
   [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius] fill];
 
   NSPoint point = rect.origin;
@@ -368,6 +365,11 @@ static const double kAlpha = 1.0;
 
 static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *backgroundColor)
 {
+  if (!backgroundColor) {
+    //return foregroundColor;
+    backgroundColor = [NSColor lightGrayColor];
+  }
+  
   struct {
     CGFloat r, g, b, a;
   } f, b;
@@ -376,11 +378,13 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
                                                                      green:&f.g
                                                                       blue:&f.b
                                                                      alpha:&f.a];
+  //NSLog(@"fg: %f %f %f %f", f.r, f.g, f.b, f.a);
   
   [[backgroundColor colorUsingColorSpaceName:NSDeviceRGBColorSpace] getRed:&b.r
                                                                      green:&b.g
                                                                       blue:&b.b
                                                                      alpha:&b.a];
+  //NSLog(@"bg: %f %f %f %f", b.r, b.g, b.b, b.a);
   
 #define blend_value(f, b) (((f) * 2.0 + (b)) / 3.0)
   return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
