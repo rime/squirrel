@@ -137,16 +137,18 @@
 
 -(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers
 {
-  //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x", rime_keycode, rime_modifiers);
-
   // TODO add special key event preprocessing here
 
   BOOL handled = (BOOL)RimeProcessKey(_session, rime_keycode, rime_modifiers);
+  //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
 
   // TODO add special key event postprocessing here
 
-  {
-    BOOL isVimBackInCommandMode = (!handled && rime_keycode == XK_Escape);
+  if (!handled) {
+    BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
+    ((rime_modifiers & kControlMask) && (rime_keycode == XK_c ||
+                                         rime_keycode == XK_C ||
+                                         rime_keycode == XK_bracketleft));
     if (isVimBackInCommandMode) {
       NSString* app = [_currentClient bundleIdentifier];
       if ([app isEqualToString:@"org.vim.MacVim"] && !RimeGetOption(_session, "ascii_mode")) {

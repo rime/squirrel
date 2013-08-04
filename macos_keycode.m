@@ -90,7 +90,21 @@ int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift, int caps)
       if ((!!shift != !!caps) && keychar >= 'a' && keychar <= 'z') {
         keychar -= 'a' - 'A';
       }
-      ret = (keychar >= 0x20 && keychar <= 0x7e) ? keychar : 0;
+      if (keychar >= 0x20 && keychar <= 0x7e) {
+        ret = keychar;
+      }
+      else if (keychar == 0x1b) {  // ^[
+        ret = XK_bracketleft;
+      }
+      else if (keychar == 0x1c) {  // ^\
+        ret = XK_backslash;
+      }
+      else if (keychar == 0x1d) {  // ^]
+        ret = XK_bracketright;
+      }
+      else if (keychar == 0x1f) {  // ^_
+        ret = XK_minus;
+      }
       break;
   }
   
