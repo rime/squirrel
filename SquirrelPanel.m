@@ -394,7 +394,7 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
 #undef blend_value
 }
 
-static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
+static NSFontDescriptor* getFontDescriptor(NSString *fullname)
 {
   if (fullname == nil) {
     return nil;
@@ -548,6 +548,63 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [paragraphStyle setParagraphSpacing:style->lineSpacing];
   [_paragraphStyle release];
   _paragraphStyle = paragraphStyle;
+}
+
+-(void)overrideFont:(NSString*)fontFace {
+  NSFontDescriptor *fontDescriptor = getFontDescriptor(fontFace);
+  if (!fontDescriptor) {
+    NSLog(@"unrecognized font face: '%@'", fontFace);
+    return;
+  }
+  if (!_overridenFont) {
+    _overridenFont = [[_attrs objectForKey:NSFontAttributeName] retain];
+  }
+  NSFont *font = [NSFont fontWithDescriptor:fontDescriptor size:[_overridenFont pointSize]];
+  [_attrs setObject:font forKey:NSFontAttributeName];
+  [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
+  [_commentAttrs setObject:font forKey:NSFontAttributeName];
+}
+
+-(void)overrideLabelFont:(NSString*)fontFace {
+  NSFontDescriptor *fontDescriptor = getFontDescriptor(fontFace);
+  if (!fontDescriptor) {
+    NSLog(@"unrecognized font face: '%@'", fontFace);
+    return;
+  }
+  if (!_overridenLabelFont) {
+    _overridenLabelFont = [[_labelAttrs objectForKey:NSFontAttributeName] retain];
+  }
+  NSFont *font = [NSFont fontWithDescriptor:fontDescriptor size:[_overridenLabelFont pointSize]];
+  [_labelAttrs setObject:font forKey:NSFontAttributeName];
+  [_labelHighlightedAttrs setObject:font forKey:NSFontAttributeName];
+}
+
+-(void)overrideCandidateFormat:(NSString *)candidateFormat {
+  if (!_overridenCandidateFormat) {
+    _overridenCandidateFormat = _candidateFormat;
+  }
+  _candidateFormat = [candidateFormat retain];
+}
+
+-(void)restoreUIStyle {
+  if (_overridenFont) {
+    [_attrs setObject:_overridenFont forKey:NSFontAttributeName];
+    [_highlightedAttrs setObject:_overridenFont forKey:NSFontAttributeName];
+    [_commentAttrs setObject:_overridenFont forKey:NSFontAttributeName];
+    [_overridenFont release];
+    _overridenFont = nil;
+  }
+  if (_overridenLabelFont) {
+    [_labelAttrs setObject:_overridenLabelFont forKey:NSFontAttributeName];
+    [_labelHighlightedAttrs setObject:_overridenLabelFont forKey:NSFontAttributeName];
+    [_overridenLabelFont release];
+    _overridenLabelFont = nil;
+  }
+  if (_overridenCandidateFormat) {
+    [_candidateFormat release];
+    _candidateFormat = _overridenCandidateFormat;
+    _overridenCandidateFormat = nil;
+  }
 }
 
 @end

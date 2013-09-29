@@ -45,6 +45,10 @@ typedef struct {
   int _numCandidates;
   NSString *_message;
   NSTimer *_statusTimer;
+  
+  NSFont *_overridenFont;
+  NSFont *_overridenLabelFont;
+  NSString *_overridenCandidateFormat;
 }
 
 -(void)show;
@@ -59,5 +63,10 @@ typedef struct {
 -(void)hideStatus:(NSTimer*)timer;
 
 -(void)updateUIStyle:(SquirrelUIStyle*)style;
+
+-(void)overrideFont:(NSString*)fontFace;
+-(void)overrideLabelFont:(NSString*)fontFace;
+-(void)overrideCandidateFormat:(NSString*)candidateFormat;
+-(void)restoreUIStyle;
 
 @end

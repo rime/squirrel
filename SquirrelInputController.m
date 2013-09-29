@@ -318,9 +318,10 @@
 
 -(void)dealloc
 {
+  [self destroySession];
   [_preeditString release];
   [_candidates release];
-  [self destroySession];
+  [_schemaId release];
   [super dealloc];
 }
 
@@ -434,10 +435,60 @@
   }
 }
 
+#define FONT_FACE_BUFSIZE (200)
+#define FORMAT_BUFSIZE (100)
+
+-(void)loadSchemaSpecificSettings:(NSString*)schemaId {
+  [[[NSApp delegate] panel] restoreUIStyle];
+  NSString *fontFace = nil;
+  NSString *labelFontFace = nil;
+  NSString *candidateFormat = nil;
+  RimeConfig config;
+  if (RimeSchemaOpen([schemaId UTF8String], &config)) {
+    char font_face[FONT_FACE_BUFSIZE] = {0};
+    if (RimeConfigGetString(&config, "style/font_face", font_face, FONT_FACE_BUFSIZE)) {
+      fontFace = [NSString stringWithUTF8String:font_face];
+    }
+    if (RimeConfigGetString(&config, "style/label_font_face", font_face, FONT_FACE_BUFSIZE)) {
+      labelFontFace = [NSString stringWithUTF8String:font_face];
+    }
+    char format[FORMAT_BUFSIZE] = {0};
+    if (RimeConfigGetString(&config, "style/candidate_format", format, FORMAT_BUFSIZE)) {
+      candidateFormat = [NSString stringWithUTF8String:format];
+    }
+  }
+  if (fontFace) {
+    NSLog(@"schema specific font '%@' for '%@'", fontFace, _schemaId);
+    [[[NSApp delegate] panel] overrideFont: fontFace];
+    if (!labelFontFace) {
+      labelFontFace = [fontFace retain];
+    }
+  }
+  if (labelFontFace) {
+    NSLog(@"schema specific label font '%@' for '%@'", labelFontFace, _schemaId);
+    [[[NSApp delegate] panel] overrideLabelFont: labelFontFace];
+  }
+  if (candidateFormat) {
+    NSLog(@"schema sepcific candidate format '%@' for '%@'", candidateFormat, _schemaId);
+    [[[NSApp delegate] panel] overrideCandidateFormat: candidateFormat];
+  }
+}
+
 -(void)rimeUpdate
 {
   //NSLog(@"update");
   [self rimeConsumeCommittedText];
+
+  RimeStatus status = {0};
+  RIME_STRUCT_INIT(RimeStatus, status);
+  if (RimeGetStatus(_session, &status)) {
+    // enable schema specific ui style
+    if (!_schemaId || strcmp([_schemaId UTF8String], status.schema_id) != 0) {
+      [_schemaId release];
+      _schemaId = [[NSString alloc] initWithUTF8String:status.schema_id];
+      [self loadSchemaSpecificSettings:_schemaId];
+    }
+  }
 
   RimeContext ctx = {0};
   RIME_STRUCT_INIT(RimeContext, ctx);
