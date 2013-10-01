@@ -1,7 +1,6 @@
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelPanel.h"
 #import <Growl/Growl.h>
-#import <rime_api.h>
 
 @implementation SquirrelApplicationDelegate
 
@@ -248,7 +247,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
   select_show_message(_preferNotificationCenter);
 
-  [self updateUIStyle:&config];
+  [self updateUIStyle:&config initialize:YES];
   [self loadAppOptionsFromConfig:&config];
 
   RimeConfigClose(&config);
@@ -259,114 +258,134 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 #define COLOR_SCHEME_BUFSIZE (100)
 #define FORMAT_BUFSIZE (100)
 
--(void)updateUIStyle:(RimeConfig*)config
+-(void)updateUIStyle:(RimeConfig*)config initialize:(BOOL)initializing
 {
-  SquirrelUIStyle style;
-  bzero(&style, sizeof(style));
+  SquirrelUIStyle *style;
+  if (initializing) {
+    style = [[SquirrelUIStyle alloc] init];
+  }
+  else {
+    style = [_baseStyle copy];
+  }
 
-  Bool value = False;
-  if (RimeConfigGetBool(config, "style/horizontal", &value)) {
-    style.horizontal = (BOOL)value;
+  Bool bool_value;
+  if (RimeConfigGetBool(config, "style/horizontal", &bool_value)) {
+    style.horizontal = (BOOL)bool_value;
   }
 
   char label_font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
-    style.labelFontName = [[NSString alloc] initWithUTF8String:label_font_face];
+    style.labelFontName = [NSString stringWithUTF8String:label_font_face];
   }
-  RimeConfigGetInt(config, "style/label_font_point", &style.labelFontSize);
+  
+  int int_value;
+  if (RimeConfigGetInt(config, "style/label_font_point", &int_value)) {
+    style.labelFontSize = int_value;
+  }
 
   char label_color[COLOR_BUFSIZE] = {0};
   style.candidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
-    style.candidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
+    style.candidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
   style.highlightedCandidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
-    style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:label_color];
+    style.highlightedCandidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
 
   char font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/font_face", font_face, sizeof(font_face))) {
-    style.fontName = [[NSString alloc] initWithUTF8String:font_face];
+    style.fontName = [NSString stringWithUTF8String:font_face];
   }
-  RimeConfigGetInt(config, "style/font_point", &style.fontSize);
-
-  double alpha;
-  style.alpha = 1.0;
-  if (RimeConfigGetDouble(config, "style/alpha", &alpha)) {
-    style.alpha = fmax(fmin(alpha, 1.0), 0.1);
+  
+  if (RimeConfigGetInt(config, "style/font_point", &int_value)) {
+    style.fontSize = int_value;
   }
 
-  RimeConfigGetDouble(config, "style/corner_radius", &style.cornerRadius);
-  RimeConfigGetDouble(config, "style/border_height", &style.borderHeight);
-  RimeConfigGetDouble(config, "style/border_width", &style.borderWidth);
-  RimeConfigGetDouble(config, "style/line_spacing", &style.lineSpacing);
+  double double_value;
+  if (RimeConfigGetDouble(config, "style/alpha", &double_value)) {
+    style.alpha = fmax(fmin(double_value, 1.0), 0.0);
+  }
+
+  if (RimeConfigGetDouble(config, "style/corner_radius", &double_value)) {
+    style.cornerRadius = double_value;
+  }
+  if (RimeConfigGetDouble(config, "style/border_height", &double_value)) {
+    style.borderHeight = double_value;
+  }
+  if (RimeConfigGetDouble(config, "style/border_width", &double_value)) {
+    style.borderWidth = double_value;
+  }
+  if (RimeConfigGetDouble(config, "style/line_spacing", &double_value)) {
+    style.lineSpacing = double_value;
+  }
 
   char format[FORMAT_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
-      style.candidateFormat = [[NSString alloc] initWithUTF8String:format];
+      style.candidateFormat = [NSString stringWithUTF8String:format];
   }
 
   char color_scheme[COLOR_SCHEME_BUFSIZE] = {0};
-  if (RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
-    NSMutableString* key = [[NSMutableString alloc] initWithString:@"preset_color_schemes/"];
+  if (initializing &&  // not applicable to per schema configuration
+      RimeConfigGetString(config, "style/color_scheme", color_scheme, sizeof(color_scheme))) {
+    NSMutableString* key = [NSMutableString stringWithString:@"preset_color_schemes/"];
     [key appendString:[NSString stringWithUTF8String:color_scheme]];
     NSUInteger prefix_length = [key length];
     // 0xaabbggrr or 0xbbggrr
     char color[COLOR_BUFSIZE] = {0};
     [key appendString:@"/back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      style.backgroundColor = [[NSString alloc] initWithUTF8String:color];
+      style.backgroundColor = [NSString stringWithUTF8String:color];
     }
     NSString* fallback_text_color = nil;
     NSString* fallback_hilited_text_color = nil;
     NSString* fallback_hilited_back_color = nil;
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_text_color = [[NSString alloc] initWithUTF8String:color];
+      fallback_text_color = [NSString stringWithUTF8String:color];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_hilited_text_color = [[NSString alloc] initWithUTF8String:color];
+      fallback_hilited_text_color = [NSString stringWithUTF8String:color];
     }
     else {
-      fallback_hilited_text_color = [fallback_text_color retain];
+      fallback_hilited_text_color = fallback_text_color;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_hilited_back_color = [[NSString alloc] initWithUTF8String:color];
+      fallback_hilited_back_color = [NSString stringWithUTF8String:color];
     }
     else {
-      fallback_hilited_back_color = [style.backgroundColor retain];
+      fallback_hilited_back_color = style.backgroundColor;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      style.candidateTextColor = [[NSString alloc] initWithUTF8String:color];
+      style.candidateTextColor = [NSString stringWithUTF8String:color];
     }
     else {
       // weasel panel has an additional line at the top to show preedit text, that `text_color` is for.
       // if not otherwise specified, candidate text is rendered in this color.
       // in other words, `candidate_text_color` inherits this.
-      style.candidateTextColor = [fallback_text_color retain];
+      style.candidateTextColor = fallback_text_color;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      style.highlightedCandidateTextColor = [[NSString alloc] initWithUTF8String:color];
+      style.highlightedCandidateTextColor = [NSString stringWithUTF8String:color];
     }
     else {
-      style.highlightedCandidateTextColor = [fallback_hilited_text_color retain];
+      style.highlightedCandidateTextColor = fallback_hilited_text_color;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      style.highlightedCandidateBackColor = [[NSString alloc] initWithUTF8String:color];
+      style.highlightedCandidateBackColor = [NSString stringWithUTF8String:color];
     }
     else {
-      style.highlightedCandidateBackColor = [fallback_hilited_back_color retain];
+      style.highlightedCandidateBackColor = fallback_hilited_back_color;
     }
     // new in squirrel
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/comment_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      style.commentTextColor = [[NSString alloc] initWithUTF8String:color];
+      style.commentTextColor = [NSString stringWithUTF8String:color];
     }
 
     // the following per-color-scheme configurations, if exist, will
@@ -381,8 +400,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       char overridden_label_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_font_face, sizeof(overridden_label_font_face))) {
-        if (style.labelFontName != nil) [style.labelFontName release];
-        style.labelFontName = [[NSString alloc] initWithUTF8String:overridden_label_font_face];
+        style.labelFontName = [NSString stringWithUTF8String:overridden_label_font_face];
       }
 
       int overridden_label_font_size;
@@ -394,13 +412,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       char overridden_label_color[COLOR_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_color"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
-        if (style.candidateLabelColor != nil) [style.candidateLabelColor release];
-        style.candidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+        style.candidateLabelColor = [NSString stringWithUTF8String:overridden_label_color];
       }
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/label_hilited_color"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
-        if (style.highlightedCandidateLabelColor != nil) [style.highlightedCandidateLabelColor release];
-        style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+        style.highlightedCandidateLabelColor = [NSString stringWithUTF8String:overridden_label_color];
       }
       else {
         // 'label_hilited_color' does not quite fit the styles under each color scheme,
@@ -408,16 +424,14 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         // valid
         [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_label_color"];
         if (RimeConfigGetString(config, [key UTF8String], overridden_label_color, sizeof(overridden_label_color))) {
-          if (style.highlightedCandidateLabelColor != nil) [style.highlightedCandidateLabelColor release];
-          style.highlightedCandidateLabelColor = [[NSString alloc] initWithUTF8String:overridden_label_color];
+          style.highlightedCandidateLabelColor = [NSString stringWithUTF8String:overridden_label_color];
         }
       }
 
       char overridden_font_face[FONT_FACE_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_face"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_font_face, sizeof(overridden_font_face))) {
-        if (style.fontName != nil) [style.fontName release];
-        style.fontName = [[NSString alloc] initWithUTF8String:overridden_font_face];
+        style.fontName = [NSString stringWithUTF8String:overridden_font_face];
       }
       int overridden_font_size;
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/font_point"];
@@ -458,29 +472,17 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       char overridden_format[FORMAT_BUFSIZE] = {0};
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_format"];
       if (RimeConfigGetString(config, [key UTF8String], overridden_format, sizeof(overridden_format))) {
-        if (style.candidateFormat != nil) [style.candidateFormat release];
-        style.candidateFormat = [[NSString alloc] initWithUTF8String:overridden_format];
+        style.candidateFormat = [NSString stringWithUTF8String:overridden_format];
       }
     }
-
-    [key release];
-    [fallback_text_color release];
-    [fallback_hilited_text_color release];
-    [fallback_hilited_back_color release];
   }
 
-  [_panel updateUIStyle:&style];
-
-  [style.labelFontName release];
-  [style.fontName release];
-  [style.backgroundColor release];
-  [style.candidateLabelColor release];
-  [style.candidateTextColor release];
-  [style.highlightedCandidateLabelColor release];
-  [style.highlightedCandidateTextColor release];
-  [style.highlightedCandidateBackColor release];
-  [style.commentTextColor release];
-  [style.candidateFormat release];
+  [_panel updateUIStyle:style];
+  
+  if (initializing) {
+    _baseStyle = [style retain];
+  }
+  [style release];
 }
 
 -(void)loadAppOptionsFromConfig:(RimeConfig*)config
@@ -578,6 +580,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     [_panel hideStatus:nil];
   }
   [_appOptions release];
+  [_baseStyle release];
   [super dealloc];
 }
 
