@@ -12,6 +12,7 @@
   NSUInteger                  _lastModifier;
   NSEventType                 _lastEventType;
   RimeSessionId               _session;
+  NSString                   *_schemaId;
   // for chord-typing
   char _chord[128];
   NSTimer *_chordTimer;

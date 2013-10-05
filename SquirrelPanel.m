@@ -8,6 +8,69 @@
 
 #import "SquirrelPanel.h"
 
+@implementation SquirrelUIStyle
+
+@synthesize horizontal = _horizontal;
+@synthesize labelFontName = _labelFontName;
+@synthesize labelFontSize = _labelFontSize;
+@synthesize fontName = _fontName;
+@synthesize fontSize = _fontSize;
+@synthesize alpha = _alpha;
+@synthesize cornerRadius = _cornerRadius;
+@synthesize borderHeight = _borderHeight;
+@synthesize borderWidth = _borderWidth;
+@synthesize lineSpacing = _lineSpacing;
+@synthesize backgroundColor = _backgroundColor;
+@synthesize candidateLabelColor = _candidateLabelColor;
+@synthesize candidateTextColor = _candidateTextColor;
+@synthesize highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
+@synthesize highlightedCandidateTextColor = _highlightedCandidateTextColor;
+@synthesize highlightedCandidateBackColor = _highlightedCandidateBackColor;
+@synthesize commentTextColor = _commentTextColor;
+@synthesize candidateFormat = _candidateFormat;
+
+- (void)dealloc
+{
+  [_labelFontName release];
+  [_fontName release];
+  [_backgroundColor release];
+  [_candidateLabelColor release];
+  [_candidateTextColor release];
+  [_highlightedCandidateLabelColor release];
+  [_highlightedCandidateTextColor release];
+  [_highlightedCandidateBackColor release];
+  [_commentTextColor release];
+  [_candidateFormat release];
+  [super dealloc];
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+  SquirrelUIStyle* style = [[SquirrelUIStyle allocWithZone:zone] init];
+  style.horizontal = _horizontal;
+  style.labelFontName = _labelFontName;
+  style.labelFontSize = _labelFontSize;
+  style.fontName = _fontName;
+  style.fontSize = _fontSize;
+  style.alpha = _alpha;
+  style.cornerRadius = _cornerRadius;
+  style.borderHeight = _borderHeight;
+  style.borderWidth = _borderWidth;
+  style.lineSpacing = _lineSpacing;
+  style.backgroundColor = _backgroundColor;
+  style.candidateLabelColor = _candidateLabelColor;
+  style.candidateTextColor = _candidateTextColor;
+  style.highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
+  style.highlightedCandidateTextColor = _highlightedCandidateTextColor;
+  style.highlightedCandidateBackColor = _highlightedCandidateBackColor;
+  style.commentTextColor = _commentTextColor;
+  style.candidateFormat = _candidateFormat;
+  return style;
+}
+
+@end
+
+
 static const int kOffsetHeight = 5;
 static const int kFontSize = 24;
 static const double kAlpha = 1.0;
@@ -394,7 +457,7 @@ static inline NSColor *blendColors(NSColor *foregroundColor, NSColor *background
 #undef blend_value
 }
 
-static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
+static NSFontDescriptor* getFontDescriptor(NSString *fullname)
 {
   if (fullname == nil) {
     return nil;
@@ -427,44 +490,44 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
 
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
-  _horizontal = style->horizontal;
+  _horizontal = style.horizontal;
   
-  if (style->fontSize == 0) {  // default size
-    style->fontSize = kFontSize;
+  if (style.fontSize == 0) {  // default size
+    style.fontSize = kFontSize;
   }
-  if (style->labelFontSize == 0) {
-    style->labelFontSize = style->fontSize;
+  if (style.labelFontSize == 0) {
+    style.labelFontSize = style.fontSize;
   }
   
   NSFontDescriptor* fontDescriptor = nil;
   NSFont* font = nil;
-  if (style->fontName != nil) {
-    fontDescriptor = getFontDescriptor(style->fontName);
+  if (style.fontName != nil) {
+    fontDescriptor = getFontDescriptor(style.fontName);
     if (fontDescriptor != nil) {
-      font = [NSFont fontWithDescriptor:fontDescriptor size:style->fontSize];
+      font = [NSFont fontWithDescriptor:fontDescriptor size:style.fontSize];
     }
   }
   if (font == nil) {
     // use default font
-    font = [NSFont userFontOfSize:style->fontSize];
+    font = [NSFont userFontOfSize:style.fontSize];
   }
   NSFontDescriptor* labelFontDescriptor = nil;
   NSFont* labelFont = nil;
-  if (style->labelFontName != nil) {
-    labelFontDescriptor = getFontDescriptor(style->labelFontName);
+  if (style.labelFontName != nil) {
+    labelFontDescriptor = getFontDescriptor(style.labelFontName);
     if (labelFontDescriptor == nil) {
       labelFontDescriptor = fontDescriptor;
     }
     if (labelFontDescriptor != nil) {
-      labelFont = [NSFont fontWithDescriptor:labelFontDescriptor size:style->labelFontSize];
+      labelFont = [NSFont fontWithDescriptor:labelFontDescriptor size:style.labelFontSize];
     }
   }
   if (labelFont == nil) {
     if (fontDescriptor != nil) {
-      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:style->labelFontSize];
+      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:style.labelFontSize];
     }
     else {
-      labelFont = [NSFont fontWithName:[font fontName] size:style->labelFontSize];
+      labelFont = [NSFont fontWithName:[font fontName] size:style.labelFontSize];
     }
   }
   [_attrs setObject:font forKey:NSFontAttributeName];
@@ -473,8 +536,8 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_commentAttrs setObject:font forKey:NSFontAttributeName];
   
-  if (style->backgroundColor != nil) {
-    NSColor *color = [self colorFromString:style->backgroundColor];
+  if (style.backgroundColor != nil) {
+    NSColor *color = [self colorFromString:style.backgroundColor];
     [(SquirrelView *) _view setBackgroundColor:(color)];
   }
   else {
@@ -482,16 +545,16 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
     [(SquirrelView *) _view setBackgroundColor:nil];
   }
   
-  if (style->candidateTextColor != nil) {
-    NSColor *color = [self colorFromString:style->candidateTextColor];
+  if (style.candidateTextColor != nil) {
+    NSColor *color = [self colorFromString:style.candidateTextColor];
     [_attrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
     [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
   }
   
-  if (style->candidateLabelColor != nil) {
-    NSColor *color = [self colorFromString:style->candidateLabelColor];
+  if (style.candidateLabelColor != nil) {
+    NSColor *color = [self colorFromString:style.candidateLabelColor];
     [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
@@ -499,24 +562,24 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
     [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   
-  if (style->highlightedCandidateTextColor != nil) {
-    NSColor *color = [self colorFromString:style->highlightedCandidateTextColor];
+  if (style.highlightedCandidateTextColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedCandidateTextColor];
     [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
     [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
   }
 
-  if (style->highlightedCandidateBackColor != nil) {
-    NSColor *color = [self colorFromString:style->highlightedCandidateBackColor];
+  if (style.highlightedCandidateBackColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedCandidateBackColor];
     [_highlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
   }
   else {
     [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
   }
   
-  if (style->highlightedCandidateLabelColor != nil) {
-    NSColor *color = [self colorFromString:style->highlightedCandidateLabelColor];
+  if (style.highlightedCandidateLabelColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedCandidateLabelColor];
     [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
@@ -526,26 +589,29 @@ static inline NSFontDescriptor *getFontDescriptor(NSString *fullname)
   }
   [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
-  if (style->commentTextColor != nil) {
-    NSColor *color = [self colorFromString:style->commentTextColor];
+  if (style.commentTextColor != nil) {
+    NSColor *color = [self colorFromString:style.commentTextColor];
     [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
     [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   }
   
-  [(SquirrelView *) _view setCornerRadius:style->cornerRadius];
-  [(SquirrelView *) _view setBorderHeight:style->borderHeight];
-  [(SquirrelView *) _view setBorderWidth:style->borderWidth];
+  [(SquirrelView *) _view setCornerRadius:style.cornerRadius];
+  [(SquirrelView *) _view setBorderHeight:style.borderHeight];
+  [(SquirrelView *) _view setBorderWidth:style.borderWidth];
 
-  [_window setAlphaValue:style->alpha];
+  if (style.alpha == 0.0) {
+    style.alpha = 1.0;
+  }
+  [_window setAlphaValue:style.alpha];
   
-  [style->candidateFormat retain];
+  [style.candidateFormat retain];
   [_candidateFormat release];
-  _candidateFormat = style->candidateFormat ? style->candidateFormat : @"%c. %@ ";
+  _candidateFormat = style.candidateFormat ? style.candidateFormat : @"%c. %@ ";
 
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  [paragraphStyle setParagraphSpacing:style->lineSpacing];
+  [paragraphStyle setParagraphSpacing:style.lineSpacing];
   [_paragraphStyle release];
   _paragraphStyle = paragraphStyle;
 }

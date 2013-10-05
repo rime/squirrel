@@ -1,5 +1,6 @@
 
 #import <Cocoa/Cocoa.h>
+#import <rime_api.h>
 #import "SquirrelPanel.h"
 
 // Note: the SquirrelApplicationDelegate is instantiated automatically as an outlet of NSApp's instance
@@ -16,6 +17,7 @@
   BOOL _preferNotificationCenter;
   NSDictionary* _appOptions;
   NSTimeInterval _chordDuration;
+  SquirrelUIStyle* _baseStyle;
 }
 
 -(NSMenu*)menu;
@@ -35,6 +37,8 @@
 -(void)startRimeWithFullCheck:(BOOL)fullCheck;
 -(void)loadSquirrelConfig;
 -(BOOL)problematicLaunchDetected;
+
+-(void)updateUIStyle:(RimeConfig*)config initialize:(BOOL)initializing;
 
 @end
 

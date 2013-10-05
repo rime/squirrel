@@ -8,26 +8,29 @@
 
 #import <Cocoa/Cocoa.h>
 
-typedef struct {
-  BOOL horizontal;
-  NSString* labelFontName;
-  int labelFontSize;
-  NSString* fontName;
-  int fontSize;
-  double alpha;
-  double cornerRadius;
-  double borderHeight;
-  double borderWidth;
-  double lineSpacing;
-  NSString *backgroundColor;
-  NSString *candidateLabelColor;
-  NSString *candidateTextColor;
-  NSString *highlightedCandidateLabelColor;
-  NSString *highlightedCandidateTextColor;
-  NSString *highlightedCandidateBackColor;
-  NSString *commentTextColor;
-  NSString *candidateFormat;
-} SquirrelUIStyle;
+@interface SquirrelUIStyle : NSObject<NSCopying> {
+}
+
+@property (nonatomic, assign) BOOL horizontal;
+@property (nonatomic, copy) NSString* labelFontName;
+@property (nonatomic, assign) int labelFontSize;
+@property (nonatomic, copy) NSString* fontName;
+@property (nonatomic, assign) int fontSize;
+@property (nonatomic, assign) double alpha;
+@property (nonatomic, assign) double cornerRadius;
+@property (nonatomic, assign) double borderHeight;
+@property (nonatomic, assign) double borderWidth;
+@property (nonatomic, assign) double lineSpacing;
+@property (nonatomic, copy) NSString *backgroundColor;
+@property (nonatomic, copy) NSString *candidateLabelColor;
+@property (nonatomic, copy) NSString *candidateTextColor;
+@property (nonatomic, copy) NSString *highlightedCandidateLabelColor;
+@property (nonatomic, copy) NSString *highlightedCandidateTextColor;
+@property (nonatomic, copy) NSString *highlightedCandidateBackColor;
+@property (nonatomic, copy) NSString *commentTextColor;
+@property (nonatomic, copy) NSString *candidateFormat;
+
+@end
 
 @interface SquirrelPanel : NSObject {
   NSRect _position;
@@ -45,6 +48,10 @@ typedef struct {
   int _numCandidates;
   NSString *_message;
   NSTimer *_statusTimer;
+  
+  NSFont *_overridenFont;
+  NSFont *_overridenLabelFont;
+  NSString *_overridenCandidateFormat;
 }
 
 -(void)show;
@@ -59,5 +66,10 @@ typedef struct {
 -(void)hideStatus:(NSTimer*)timer;
 
 -(void)updateUIStyle:(SquirrelUIStyle*)style;
+
+-(void)overrideFont:(NSString*)fontFace;
+-(void)overrideLabelFont:(NSString*)fontFace;
+-(void)overrideCandidateFormat:(NSString*)candidateFormat;
+-(void)restoreUIStyle;
 
 @end

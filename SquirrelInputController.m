@@ -318,9 +318,10 @@
 
 -(void)dealloc
 {
+  [self destroySession];
   [_preeditString release];
   [_candidates release];
-  [self destroySession];
+  [_schemaId release];
   [super dealloc];
 }
 
@@ -434,10 +435,30 @@
   }
 }
 
+-(void)loadSchemaSpecificSettings:(NSString*)schemaId {
+  RimeConfig config;
+  if (RimeSchemaOpen([schemaId UTF8String], &config)) {
+    [[NSApp delegate] updateUIStyle:&config initialize:NO];
+    RimeConfigClose(&config);
+  }
+}
+
 -(void)rimeUpdate
 {
   //NSLog(@"update");
   [self rimeConsumeCommittedText];
+
+  RimeStatus status = {0};
+  RIME_STRUCT_INIT(RimeStatus, status);
+  if (RimeGetStatus(_session, &status)) {
+    // enable schema specific ui style
+    if (!_schemaId || strcmp([_schemaId UTF8String], status.schema_id) != 0) {
+      [_schemaId release];
+      _schemaId = [[NSString alloc] initWithUTF8String:status.schema_id];
+      [self loadSchemaSpecificSettings:_schemaId];
+    }
+    RimeFreeStatus(&status);
+  }
 
   RimeContext ctx = {0};
   RIME_STRUCT_INIT(RimeContext, ctx);
