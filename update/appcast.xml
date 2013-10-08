@@ -9,10 +9,10 @@
       <title>鼠鬚管 0.9.21</title>
       <sparkle:releaseNotesLink>http://rimeime.github.io/squirrel-update/</sparkle:releaseNotesLink>
       <pubDate>Sun, 6 Oct 2013 20:00:00 +0800</pubDate>
-      <enclosure url="http://dl.bintray.com/lotem/rime/Squirrel-0.9.21.zip?direct"
-                 sparkle:version="0.9.21"
-                 sparkle:dsaSignature="MC0CFDShNOZBfeALlxxnNKklUsSEOOJkAhUArHgG7h0CZMFMil+Wwo4zzbCMkeY="
-                 length="7893354"
+      <enclosure url="http://dl.bintray.com/lotem/rime/Squirrel-0.9.21.1.zip?direct"
+                 sparkle:version="0.9.21.1"
+                 sparkle:dsaSignature="MC0CFQCSEU8ARZII+tZvCxoi4Q8aVqRGYAIUcR9VMSwNfSqx9uZduilQjOAYgMI="
+                 length="7893173"
                  type="application/octet-stream"/>
     </item>
   </channel>
