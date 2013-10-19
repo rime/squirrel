@@ -427,7 +427,7 @@
 
 -(void)rimeConsumeCommittedText
 {
-  RimeCommit commit = {0};
+  RIME_STRUCT(RimeCommit, commit);
   if (RimeGetCommit(_session, &commit)) {
     NSString *commitText = [NSString stringWithUTF8String:commit.text];
     [self commitString: commitText];
@@ -448,8 +448,7 @@
   //NSLog(@"update");
   [self rimeConsumeCommittedText];
 
-  RimeStatus status = {0};
-  RIME_STRUCT_INIT(RimeStatus, status);
+  RIME_STRUCT(RimeStatus, status);
   if (RimeGetStatus(_session, &status)) {
     // enable schema specific ui style
     if (!_schemaId || strcmp([_schemaId UTF8String], status.schema_id) != 0) {
@@ -460,8 +459,7 @@
     RimeFreeStatus(&status);
   }
 
-  RimeContext ctx = {0};
-  RIME_STRUCT_INIT(RimeContext, ctx);
+  RIME_STRUCT(RimeContext, ctx);
   if (RimeGetContext(_session, &ctx)) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;

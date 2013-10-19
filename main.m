@@ -44,12 +44,11 @@ int main(int argc, char *argv[])
     return 0;
   }
   
-  RimeSetupLogging("rime.squirrel");
-  
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
     show_message("deploy_update", "deploy");
     // build all schemas in current directory
+    RimeSetupLogging("rime.squirrel-builder");
     RimeDeployerInitialize(NULL);
     return RimeDeployWorkspace() ? 0 : 1;
   }
@@ -75,6 +74,7 @@ int main(int argc, char *argv[])
     [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
   }
   else {
+    [[NSApp delegate] setupRime];
     [[NSApp delegate] startRimeWithFullCheck:NO];
     [[NSApp delegate] loadSquirrelConfig];
     NSLog(@"Squirrel reporting!");
