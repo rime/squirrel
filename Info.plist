@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Squirrel</string>
 	<key>CFBundleIconFile</key>
-	<string>zhung.icns</string>
+	<string>squirrel-app.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.21.1</string>
+	<string>0.9.21.9</string>
 	<key>InputMethodConnectionName</key>
 	<string>Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
@@ -40,7 +40,7 @@
 		<string>Hant</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime.icns</string>
+	<string>rime.pdf</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>SUFeedURL</key>
