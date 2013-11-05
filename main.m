@@ -1,10 +1,13 @@
 
 #import "SquirrelApplicationDelegate.h"
-#import "OVInputSourceHelper.h"
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <string.h>
 #import <rime_api.h>
+
+void RegisterInputSource();
+void ActivateInputSource();
+BOOL IsInputSourceActive();
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
@@ -32,14 +35,9 @@ int main(int argc, char *argv[])
   
   if (argc > 1 && !strcmp("--install", argv[1])) {
     // register and enable Squirrel
-    NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
-    if (![OVInputSourceHelper registerInputSource:bundleURL])
-      return 1;
-    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    TISInputSourceRef inputSource = [OVInputSourceHelper inputSourceForInputSourceID:bundleID];
-    if (inputSource && ![OVInputSourceHelper inputSourceEnabled:inputSource]) {
-      if (![OVInputSourceHelper enableInputSource:inputSource])
-        return 1;
+    if (!IsInputSourceActive()) {
+      RegisterInputSource();
+      ActivateInputSource();
     }
     return 0;
   }
