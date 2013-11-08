@@ -74,7 +74,7 @@ static void show_message_growl(const char* msg_text, const char* msg_id) {
   [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
                               description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
                          notificationName:@"Squirrel"
-                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
+                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"squirrel-app"] TIFFRepresentation]]
                                  priority:0
                                  isSticky:NO
                              clickContext:nil
