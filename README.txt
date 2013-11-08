@@ -24,14 +24,14 @@
 ----------------------------------------------------------
 安裝輸入法
 
-本品適用於64位 Mac OS X 10.6+
+本品適用於64位 Mac OS X 10.7+
 
 初次安裝，如果在部份應用程序中打不出字，請註銷並重新登錄。
 
 ----------------------------------------------------------
 使用輸入法
 
-選取輸入法指示器菜單裏的【中】字樣圖標，開始用鼠鬚管寫字。
+選取輸入法指示器菜單裏的【ㄓ】字樣圖標，開始用鼠鬚管寫字。
 通過快捷鍵 Ctrl+` 呼出方案選單、切換輸入方式。
 
 ----------------------------------------------------------
@@ -68,7 +68,7 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
     作者 上海閒話abc、吳語越音、寒寒豆
   * 【中古全拼／三拼】
     採用《廣韻》音系的中古漢語拼音，亦稱「古韻羅馬字」。
-    韻典網・廣韻 http://ytenx.org/kyonh/
+    韻典網·廣韻 http://ytenx.org/kyonh/
     http://zh.wikipedia.org/wiki/User:Polyhedron/中古漢語拼音
     作者 Polyhedron
   * 【X-SAMPA】
@@ -85,20 +85,21 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
   * waynezhang
   * Chongyu Zhu <lembacon@gmail.com>
 
-項目策劃：
-  * 中州式恕堂
+美術：
+  * 圖標設計 佛振、梁海
+  * 配色方案 Aben、Chongyu Zhu、skoj、佛振
 
-感謝以下自由軟件及第三方程序庫：
-  * Boost C++ Libraries
-  * darts-clone
-  * google-glog
-  * Google Test
-  * Growl
-  * Kyoto Cabinet
-  * opencc / 開放中文轉換
-  * Sparkle
-  * UTF8-CPP
-  * yaml-cpp
+本品引用了以下開源軟件：
+  * Boost C++ Libraries  (Boost Software License)
+  * darts-clone  (New BSD License)
+  * google-glog  (New BSD License)
+  * Google Test  (New BSD License)
+  * Growl  (BSD License)
+  * Kyoto Cabinet  (GNU Public License)
+  * opencc / 開放中文轉換  (Apache License 2.0)
+  * Sparkle  (MIT License)
+  * UTF8-CPP  (Boost Software License)
+  * yaml-cpp  (MIT License)
 
 感謝王公子捐贈開發用機。
 
@@ -111,7 +112,7 @@ http://code.google.com/p/rimeime/issues/list
 已知問題
   * 不支持在輸入法中定義功能鍵 F1 ~ F12
   * 不支持數字小鍵盤
-  * 尚未完成輸入法設定介面
+  * 尚未提供輸入法設定介面
 
 ----------------------------------------------------------
 聯繫方式
