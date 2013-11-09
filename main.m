@@ -1,10 +1,13 @@
 
 #import "SquirrelApplicationDelegate.h"
-#import "OVInputSourceHelper.h"
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <string.h>
 #import <rime_api.h>
+
+void RegisterInputSource();
+void ActivateInputSource();
+BOOL IsInputSourceActive();
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
@@ -32,24 +35,18 @@ int main(int argc, char *argv[])
   
   if (argc > 1 && !strcmp("--install", argv[1])) {
     // register and enable Squirrel
-    NSURL *bundleURL = [[NSBundle mainBundle] bundleURL];
-    if (![OVInputSourceHelper registerInputSource:bundleURL])
-      return 1;
-    NSString *bundleID = [[NSBundle mainBundle] bundleIdentifier];
-    TISInputSourceRef inputSource = [OVInputSourceHelper inputSourceForInputSourceID:bundleID];
-    if (inputSource && ![OVInputSourceHelper inputSourceEnabled:inputSource]) {
-      if (![OVInputSourceHelper enableInputSource:inputSource])
-        return 1;
+    if (!IsInputSourceActive()) {
+      RegisterInputSource();
+      ActivateInputSource();
     }
     return 0;
   }
-  
-  RimeSetupLogging("rime.squirrel");
   
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
     show_message("deploy_update", "deploy");
     // build all schemas in current directory
+    RimeSetupLogging("rime.squirrel-builder");
     RimeDeployerInitialize(NULL);
     return RimeDeployWorkspace() ? 0 : 1;
   }
@@ -75,6 +72,7 @@ int main(int argc, char *argv[])
     [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
   }
   else {
+    [[NSApp delegate] setupRime];
     [[NSApp delegate] startRimeWithFullCheck:NO];
     [[NSApp delegate] loadSquirrelConfig];
     NSLog(@"Squirrel reporting!");

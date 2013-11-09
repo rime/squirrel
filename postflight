@@ -1,11 +1,12 @@
 #!/bin/bash
+CONSOLE_USER=`/usr/bin/stat -f%Su /dev/console`
 RIME_SHARED_DATA_PATH="/Library/Input Methods/Squirrel.app/Contents/SharedSupport"
 echo "RIME_SHARED_DATA_PATH=$RIME_SHARED_DATA_PATH"
-echo "precompiling Rime schemas. patience..."
+echo "precompiling Rime schemata. patience..."
 (
 cd "$RIME_SHARED_DATA_PATH"
 ../MacOS/Squirrel --quit
 ../MacOS/Squirrel --build
 if [ -e rime.log ]; then rm rime.log; fi
-../MacOS/Squirrel --install
+/usr/bin/sudo -u $CONSOLE_USER ../MacOS/Squirrel --install
 )

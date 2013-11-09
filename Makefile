@@ -4,19 +4,26 @@ all: release
 install: install-release
 
 ESSAY = brise/essay.kct
-LIBRIME = librime/xbuild/lib/Release/librime.dylib
+LIBRIME = lib/librime.0.dylib
+
+LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.0.dylib
+RIME_DEPLOYER_OUTPUT = librime/xbuild/bin/Release/rime_deployer
+RIME_DICT_MANAGER_OUTPUT = librime/xbuild/bin/Release/rime_dict_manager
 
 $(ESSAY):
-	cd brise; make essay
+	$(MAKE) essay
+
+$(LIBRIME):
+	$(MAKE) librime
 
 essay:
 	cd brise; make essay
 
-$(LIBRIME):
-	cd librime; make -f Makefile.xcode
-
 librime:
 	cd librime; make -f Makefile.xcode
+	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
+	cp $(RIME_DEPLOYER_OUTPUT) bin/
+	cp $(RIME_DICT_MANAGER_OUTPUT) bin/
 
 release: $(ESSAY) $(LIBRIME)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
@@ -40,5 +47,7 @@ install-release:
 	"/Library/Input Methods/Squirrel.app/Contents/Resources/postflight"
 
 clean:
-	rm -rf build
-	rm build.log
+	rm -rf build > /dev/null 2>&1 || true
+	rm build.log > /dev/null 2>&1 || true
+	rm bin/* > /dev/null 2>&1 || true
+	rm lib/* > /dev/null 2>&1 || true

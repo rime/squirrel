@@ -34,6 +34,7 @@
 -(IBAction)configure:(id)sender;
 -(IBAction)openWiki:(id)sender;
 
+-(void)setupRime;
 -(void)startRimeWithFullCheck:(BOOL)fullCheck;
 -(void)loadSquirrelConfig;
 -(BOOL)problematicLaunchDetected;

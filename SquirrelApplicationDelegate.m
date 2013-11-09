@@ -74,7 +74,7 @@ static void show_message_growl(const char* msg_text, const char* msg_id) {
   [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
                               description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
                          notificationName:@"Squirrel"
-                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"zhung"] TIFFRepresentation]]
+                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"squirrel-app"] TIFFRepresentation]]
                                  priority:0
                                  isSticky:NO
                              clickContext:nil
@@ -171,7 +171,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
 }
 
--(void)startRimeWithFullCheck:(BOOL)fullCheck
+-(void)setupRime
 {
   NSString* userDataDir = [@"~/Library/Rime" stringByStandardizingPath];
   NSFileManager* fileManager = [NSFileManager defaultManager];
@@ -181,16 +181,21 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     }
   }
   RimeSetNotificationHandler(notification_handler, self);
-  RimeTraits squirrel_traits;
-  RIME_STRUCT_INIT(RimeTraits, squirrel_traits);
+  RIME_STRUCT(RimeTraits, squirrel_traits);
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
   squirrel_traits.user_data_dir = [userDataDir UTF8String];
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
   squirrel_traits.distribution_version = [[[[NSBundle mainBundle] infoDictionary]
                                            objectForKey:@"CFBundleVersion"] UTF8String];
+  squirrel_traits.app_name = "rime.squirrel";
+  RimeSetup(&squirrel_traits);
+}
+
+-(void)startRimeWithFullCheck:(BOOL)fullCheck
+{
   NSLog(@"Initializing la rime...");
-  RimeInitialize(&squirrel_traits);
+  RimeInitialize(NULL);
   // check for configuration updates
   if (RimeStartMaintenance((Bool)fullCheck)) {
     // update squirrel config

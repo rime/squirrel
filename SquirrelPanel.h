@@ -67,9 +67,4 @@
 
 -(void)updateUIStyle:(SquirrelUIStyle*)style;
 
--(void)overrideFont:(NSString*)fontFace;
--(void)overrideLabelFont:(NSString*)fontFace;
--(void)overrideCandidateFormat:(NSString*)candidateFormat;
--(void)restoreUIStyle;
-
 @end
