@@ -409,6 +409,9 @@
   NSString* app = [_currentClient bundleIdentifier];
   NSLog(@"createSession: %@", app);
   _session = RimeCreateSession();
+  
+  [_schemaId release];
+  _schemaId = nil;
 
   // optionally, set app specific options
   NSDictionary* appOptions = [[NSApp delegate] appOptions];
