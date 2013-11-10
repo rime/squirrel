@@ -11,6 +11,7 @@
 @implementation SquirrelUIStyle
 
 @synthesize horizontal = _horizontal;
+@synthesize inlinePreedit = _inlinePreedit;
 @synthesize labelFontName = _labelFontName;
 @synthesize labelFontSize = _labelFontSize;
 @synthesize fontName = _fontName;
@@ -20,9 +21,13 @@
 @synthesize borderHeight = _borderHeight;
 @synthesize borderWidth = _borderWidth;
 @synthesize lineSpacing = _lineSpacing;
+@synthesize spacing = _spacing;
 @synthesize backgroundColor = _backgroundColor;
+@synthesize textColor = _textColor;
 @synthesize candidateLabelColor = _candidateLabelColor;
 @synthesize candidateTextColor = _candidateTextColor;
+@synthesize highlightedTextColor = _highlightedTextColor;
+@synthesize highlightedBackColor = _highlightedBackColor;
 @synthesize highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
 @synthesize highlightedCandidateTextColor = _highlightedCandidateTextColor;
 @synthesize highlightedCandidateBackColor = _highlightedCandidateBackColor;
@@ -34,8 +39,11 @@
   [_labelFontName release];
   [_fontName release];
   [_backgroundColor release];
+  [_textColor release];
   [_candidateLabelColor release];
   [_candidateTextColor release];
+  [_highlightedTextColor release];
+  [_highlightedBackColor release];
   [_highlightedCandidateLabelColor release];
   [_highlightedCandidateTextColor release];
   [_highlightedCandidateBackColor release];
@@ -48,6 +56,7 @@
 {
   SquirrelUIStyle* style = [[SquirrelUIStyle allocWithZone:zone] init];
   style.horizontal = _horizontal;
+  style.inlinePreedit = _inlinePreedit;
   style.labelFontName = _labelFontName;
   style.labelFontSize = _labelFontSize;
   style.fontName = _fontName;
@@ -57,9 +66,13 @@
   style.borderHeight = _borderHeight;
   style.borderWidth = _borderWidth;
   style.lineSpacing = _lineSpacing;
+  style.spacing = _spacing;
   style.backgroundColor = _backgroundColor;
+  style.textColor = _textColor;
   style.candidateLabelColor = _candidateLabelColor;
   style.candidateTextColor = _candidateTextColor;
+  style.highlightedTextColor = _highlightedTextColor;
+  style.highlightedBackColor = _highlightedBackColor;
   style.highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
   style.highlightedCandidateTextColor = _highlightedCandidateTextColor;
   style.highlightedCandidateBackColor = _highlightedCandidateBackColor;
@@ -180,15 +193,35 @@ static const double kAlpha = 1.0;
   [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
   
+  _preeditAttrs = [[NSMutableDictionary alloc] init];
+  [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_preeditAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  
+  _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
+  [_preeditHighlightedAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+  [_preeditHighlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  
   _horizontal = NO;
+  _inlinePreedit = NO;
   _candidateFormat = @"%c. %@ ";
   _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
+  _preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
   
   _numCandidates = 0;
   _message = nil;
   _statusTimer = nil;
   
   return self;
+}
+
+-(BOOL)horizontal
+{
+  return _horizontal;
+}
+
+-(BOOL)inlinePreedit
+{
+  return _inlinePreedit;
 }
 
 -(void)show
@@ -245,14 +278,17 @@ static const double kAlpha = 1.0;
   _position = caretPos;
 }
 
--(void)updateCandidates:(NSArray*)candidates
-            andComments:(NSArray*)comments
-             withLabels:(NSString*)labels
-            highlighted:(NSUInteger)index
+-(void)updatePreedit:(NSString*)preedit
+        withSelRange:(NSRange)selRange
+          atCaretPos:(NSUInteger)caretPos
+       andCandidates:(NSArray*)candidates
+         andComments:(NSArray*)comments
+          withLabels:(NSString*)labels
+         highlighted:(NSUInteger)index
 {
   _numCandidates = [candidates count];
-//  NSLog(@"updateCandidates: %d %@", _numCandidates, _message);
-  if (_numCandidates) {
+//  NSLog(@"updatePreedit: ... andCandidates: %d %@", _numCandidates, _message);
+  if (_numCandidates || (preedit && [preedit length])) {
     [self updateMessage:nil];
     if (_statusTimer) {
       [_statusTimer invalidate];
@@ -321,6 +357,38 @@ static const double kAlpha = 1.0;
   }
   
   NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
+  size_t candidate_start_pos = 0;
+  
+  // preedit
+  if (preedit) {
+    NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
+    if (selRange.location > 0) {
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringToIndex:selRange.location]
+                                                                    attributes:_preeditAttrs] autorelease]];
+    }
+    if (selRange.length > 0) {
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringWithRange:selRange]
+                                                                    attributes:_preeditHighlightedAttrs] autorelease]];
+    }
+    if (selRange.location + selRange.length < [preedit length]) {
+      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringFromIndex:selRange.location + selRange.length]
+                                                                    attributes:_preeditAttrs] autorelease]];
+    }
+    [text appendAttributedString:line];
+    [line release];
+    
+    if (_numCandidates) {
+      [text appendAttributedString:[[[NSAttributedString alloc] initWithString:@"\n"
+                                                                    attributes: _preeditAttrs] autorelease]];
+    }
+    [text addAttribute:NSParagraphStyleAttributeName
+                 value:_preeditParagraphStyle
+                 range:NSMakeRange(0, [text length])];
+
+    candidate_start_pos = [text length];
+  }
+  
+  // candidates
   NSUInteger i;
   for (i = 0; i < [candidates count]; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -359,9 +427,9 @@ static const double kAlpha = 1.0;
     [text appendAttributedString:line];
     [line release];
   }
-    [text addAttribute:NSParagraphStyleAttributeName
+  [text addAttribute:NSParagraphStyleAttributeName
                value:(id)_paragraphStyle
-               range:NSMakeRange(0, [text length])];
+               range:NSMakeRange(candidate_start_pos, [text length] - candidate_start_pos)];
   
   [(SquirrelView*)_view setContent:text];
   [text release];
@@ -491,6 +559,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
 -(void)updateUIStyle:(SquirrelUIStyle *)style
 {
   _horizontal = style.horizontal;
+  _inlinePreedit = style.inlinePreedit;
   
   if (style.fontSize == 0) {  // default size
     style.fontSize = kFontSize;
@@ -535,6 +604,8 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_commentAttrs setObject:font forKey:NSFontAttributeName];
+  [_preeditAttrs setObject:font forKey:NSFontAttributeName];
+  [_preeditHighlightedAttrs setObject:font forKey:NSFontAttributeName];
   
   if (style.backgroundColor != nil) {
     NSColor *color = [self colorFromString:style.backgroundColor];
@@ -597,6 +668,30 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
     [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   }
   
+  if (style.textColor != nil) {
+    NSColor *color = [self colorFromString:style.textColor];
+    [_preeditAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  else {
+    [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+  }
+  
+  if (style.highlightedTextColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedTextColor];
+    [_preeditHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  else {
+    [_preeditHighlightedAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+  }
+  
+  if (style.highlightedBackColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedBackColor];
+    [_preeditHighlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
+  }
+  else {
+    [_preeditHighlightedAttrs removeObjectForKey:NSBackgroundColorAttributeName];
+  }
+  
   [(SquirrelView *) _view setCornerRadius:style.cornerRadius];
   [(SquirrelView *) _view setBorderHeight:style.borderHeight];
   [(SquirrelView *) _view setBorderWidth:style.borderWidth];
@@ -614,6 +709,11 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   [paragraphStyle setParagraphSpacing:style.lineSpacing];
   [_paragraphStyle release];
   _paragraphStyle = paragraphStyle;
+  
+  paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  [paragraphStyle setParagraphSpacing:style.spacing];
+  [_preeditParagraphStyle release];
+  _preeditParagraphStyle = paragraphStyle;
 }
 
 @end
