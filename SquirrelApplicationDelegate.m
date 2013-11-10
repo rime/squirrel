@@ -290,11 +290,9 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
 
   char label_color[COLOR_BUFSIZE] = {0};
-  style.candidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
     style.candidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
-  style.highlightedCandidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
     style.highlightedCandidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
