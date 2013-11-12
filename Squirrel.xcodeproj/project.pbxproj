@@ -52,7 +52,7 @@
 		44B4F7A015A929E4009DFF5D /* zyenpheng.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */; };
 		44C49DF317F8155000847938 /* stroke.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44C49DEF17F814AF00847938 /* stroke.dict.yaml */; };
 		44C49DF417F8155000847938 /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44C49DF017F814AF00847938 /* stroke.schema.yaml */; };
-		44CD640C15E2646B0021234E /* librime.0.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44CD640915E2633D0021234E /* librime.0.dylib */; };
+		44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44CD640915E2633D0021234E /* librime.1.dylib */; };
 		44CD7D9F1828D981006E9222 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 44CD7D9E1828D981006E9222 /* rime.pdf */; };
 		44CDB5451780AB38008930FB /* sampheng.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44CDB5431780AA95008930FB /* sampheng.schema.yaml */; };
 		44D3E63C16B6BFAE00D2E12B /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44D3E63616B6BF4200D2E12B /* symbols.yaml */; };
@@ -168,7 +168,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				44CD640C15E2646B0021234E /* librime.0.dylib in Copy 3rd-party Frameworks */,
+				44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */,
 				44E8CD9A166B857F002C8EE3 /* Growl.framework in Copy 3rd-party Frameworks */,
 				44F01493152AF6AF00EFDAC3 /* Sparkle.framework in Copy 3rd-party Frameworks */,
 			);
@@ -225,7 +225,7 @@
 		44B4F79915A929E4009DFF5D /* zyenpheng.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = zyenpheng.schema.yaml; sourceTree = "<group>"; };
 		44C49DEF17F814AF00847938 /* stroke.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stroke.dict.yaml; sourceTree = "<group>"; };
 		44C49DF017F814AF00847938 /* stroke.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = stroke.schema.yaml; sourceTree = "<group>"; };
-		44CD640915E2633D0021234E /* librime.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.0.dylib; path = lib/librime.0.dylib; sourceTree = "<group>"; };
+		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
 		44CD7D9E1828D981006E9222 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
 		44CDB5431780AA95008930FB /* sampheng.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = sampheng.schema.yaml; sourceTree = "<group>"; };
 		44D3E63616B6BF4200D2E12B /* symbols.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = symbols.yaml; path = brise/symbols.yaml; sourceTree = "<group>"; };
@@ -310,7 +310,7 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				44CD640915E2633D0021234E /* librime.0.dylib */,
+				44CD640915E2633D0021234E /* librime.1.dylib */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				44E8CD98166B8542002C8EE3 /* Growl.framework */,
 				44F01492152AF6AF00EFDAC3 /* Sparkle.framework */,
@@ -622,7 +622,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = (
-					"-lrime.0",
+					"-lrime.1",
 					"-lz",
 					"-lstdc++",
 				);
@@ -659,7 +659,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = (
-					"-lrime.0",
+					"-lrime.1",
 					"-lz",
 					"-lstdc++",
 				);

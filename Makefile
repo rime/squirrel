@@ -4,9 +4,9 @@ all: release
 install: install-release
 
 ESSAY = brise/essay.kct
-LIBRIME = lib/librime.0.dylib
+LIBRIME = lib/librime.1.dylib
 
-LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.0.dylib
+LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
 RIME_DEPLOYER_OUTPUT = librime/xbuild/bin/Release/rime_deployer
 RIME_DICT_MANAGER_OUTPUT = librime/xbuild/bin/Release/rime_dict_manager
 
