@@ -32,6 +32,7 @@
 @synthesize highlightedCandidateTextColor = _highlightedCandidateTextColor;
 @synthesize highlightedCandidateBackColor = _highlightedCandidateBackColor;
 @synthesize commentTextColor = _commentTextColor;
+@synthesize highlightedCommentTextColor = _highlightedCommentTextColor;
 @synthesize candidateFormat = _candidateFormat;
 
 - (void)dealloc
@@ -48,6 +49,7 @@
   [_highlightedCandidateTextColor release];
   [_highlightedCandidateBackColor release];
   [_commentTextColor release];
+  [_highlightedCommentTextColor release];
   [_candidateFormat release];
   [super dealloc];
 }
@@ -77,6 +79,7 @@
   style.highlightedCandidateTextColor = _highlightedCandidateTextColor;
   style.highlightedCandidateBackColor = _highlightedCandidateBackColor;
   style.commentTextColor = _commentTextColor;
+  style.highlightedCommentTextColor = _highlightedCommentTextColor;
   style.candidateFormat = _candidateFormat;
   return style;
 }
@@ -189,9 +192,8 @@ static const double kAlpha = 1.0;
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
-  _commentAttrs = [[NSMutableDictionary alloc] init];
-  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _commentAttrs = [_attrs mutableCopy];  
+  _commentHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
@@ -396,10 +398,11 @@ static const double kAlpha = 1.0;
     // default: 1. 2. 3... custom: A. B. C...
     char label_character = (i < [labels length]) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
     
-    NSDictionary *attrs = _attrs, *labelAttrs = _labelAttrs;
+    NSDictionary *attrs = _attrs, *labelAttrs = _labelAttrs, *commentAttrs = _commentAttrs;
     if (i == index) {
       attrs = _highlightedAttrs;
       labelAttrs = _labelHighlightedAttrs;
+      commentAttrs = _commentHighlightedAttrs;
     }
     
     if (labelRange.location != NSNotFound) {
@@ -417,7 +420,7 @@ static const double kAlpha = 1.0;
     
     if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
       [line appendAttributedString:[[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
-                                                                    attributes:_commentAttrs] autorelease]];
+                                                                    attributes:commentAttrs] autorelease]];
     }
     if (i > 0) {
       [text appendAttributedString:[[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
@@ -604,6 +607,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
   [_commentAttrs setObject:font forKey:NSFontAttributeName];
+  [_commentHighlightedAttrs setObject:font forKey:NSFontAttributeName];
   [_preeditAttrs setObject:font forKey:NSFontAttributeName];
   [_preeditHighlightedAttrs setObject:font forKey:NSFontAttributeName];
   
@@ -665,8 +669,17 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
     [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
   }
+  
+  if (style.highlightedCommentTextColor != nil) {
+    NSColor *color = [self colorFromString:style.highlightedCommentTextColor];
+    [_commentHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+  }
+  else {
+    [_commentHighlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+  }
+  [_commentHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
   if (style.textColor != nil) {
     NSColor *color = [self colorFromString:style.textColor];
