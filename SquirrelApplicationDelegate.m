@@ -389,7 +389,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     else {
       style.highlightedCandidateBackColor = style.highlightedBackColor;
     }
-    // new in squirrel
+
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/comment_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.commentTextColor = [NSString stringWithUTF8String:color];
@@ -398,9 +398,6 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_comment_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.highlightedCommentTextColor = [NSString stringWithUTF8String:color];
-    }
-    else {
-      style.highlightedCommentTextColor = style.commentTextColor;
     }
 
     // the following per-color-scheme configurations, if exist, will

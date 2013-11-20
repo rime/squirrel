@@ -192,8 +192,12 @@ static const double kAlpha = 1.0;
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
-  _commentAttrs = [_attrs mutableCopy];  
-  _commentHighlightedAttrs = [_highlightedAttrs mutableCopy];
+  _commentAttrs = [[NSMutableDictionary alloc] init];
+  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  
+  _commentHighlightedAttrs = [_commentAttrs mutableCopy];
+  [_commentHighlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
   
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
@@ -669,7 +673,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
     [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_commentAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
   }
   
   if (style.highlightedCommentTextColor != nil) {
@@ -677,7 +681,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
     [_commentHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
   }
   else {
-    [_commentHighlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+    [_commentHighlightedAttrs setObject:[_commentAttrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
   }
   [_commentHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
   
