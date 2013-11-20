@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.21"
+config_version: "0.22"
 
 us_keyboard_layout: false
 
@@ -42,6 +42,7 @@ preset_color_schemes:
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0xeefa3a0a
     comment_text_color: 0x5a5a5a
+    hilited_comment_text_color: 0xfcac9d
 
   azure:
     name: 青天／Azure
@@ -64,6 +65,7 @@ preset_color_schemes:
     hilited_candidate_text_color: 0x7fffff
     hilited_candidate_back_color: 0x40000000
     comment_text_color: 0xa5a5a5
+    hilited_comment_text_color: 0x449c9d
 
   ink:
     name: 墨池／Ink
@@ -76,6 +78,7 @@ preset_color_schemes:
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0xcc000000
     comment_text_color: 0x5a5a5a
+    hilited_comment_text_color: 0x808080
 
   lost_temple:
     name: 孤寺／Lost Temple
@@ -86,6 +89,7 @@ preset_color_schemes:
     hilited_candidate_text_color: 0x000000
     hilited_candidate_back_color: 0x82e6ca
     comment_text_color: 0xbb82e6ca
+    hilited_comment_text_color: 0xbb203d34
 
   dark_temple:
     name: 暗堂／Dark Temple
@@ -123,6 +127,8 @@ preset_color_schemes:
     hilited_back_color: 0xFFFFFF #拼音串高亮背景
     hilited_candidate_text_color: 0xFFFFFF #第一候选项
     hilited_candidate_back_color: 0xCE7539 #第一候选项背景
+    comment_text_color: 0x6D6D6D #注解文字
+    hilited_comment_text_color: 0xEBC6B0 #注解文字高亮
 
   solarized_rock:
     name: 曬經石／Solarized Rock
@@ -134,6 +140,7 @@ preset_color_schemes:
     candidate_text_color: 0x969483
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0x8236d3
+    hilited_comment_text_color: 0x362b00
 
   clean_white:
     name: 简约白／Clean White

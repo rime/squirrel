@@ -32,6 +32,7 @@
 @property (nonatomic, copy) NSString *highlightedCandidateLabelColor;
 @property (nonatomic, copy) NSString *highlightedCandidateTextColor;
 @property (nonatomic, copy) NSString *highlightedCandidateBackColor;
+@property (nonatomic, copy) NSString *highlightedCommentTextColor;
 @property (nonatomic, copy) NSString *commentTextColor;
 @property (nonatomic, copy) NSString *candidateFormat;
 
@@ -46,6 +47,7 @@
   NSMutableDictionary *_labelAttrs;
   NSMutableDictionary *_labelHighlightedAttrs;
   NSMutableDictionary *_commentAttrs;
+  NSMutableDictionary *_commentHighlightedAttrs;
   NSMutableDictionary *_preeditAttrs;
   NSMutableDictionary *_preeditHighlightedAttrs;
   BOOL _horizontal;
