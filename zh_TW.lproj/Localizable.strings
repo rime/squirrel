@@ -17,3 +17,5 @@
 "!full_shape" = "半角";
 "simplification" = "汉字";
 "!simplification" = "漢字";
+"extended_charset" = "增廣";
+"!extended_charset" = "通用";
