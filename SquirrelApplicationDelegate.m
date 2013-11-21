@@ -168,6 +168,10 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 //      show_message(message_value, message_type);
       show_status_message(message_value, message_type);
     }
+    else if (!strcmp(message_value, "extended_charset") || !strcmp(message_value, "!extended_charset")) {
+//      show_message(message_value, message_type);
+      show_status_message(message_value, message_type);
+    }
   }
 }
 

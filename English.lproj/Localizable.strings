@@ -10,3 +10,5 @@
 "!full_shape" = "Half shape";
 "simplification" = "Simplified";
 "!simplification" = "Traditional";
+"extended_charset" = "CJK extended";
+"!extended_charset" = "CJK baseset";
