@@ -373,20 +373,29 @@
   [attrString release];
 }
 
--(void)showCandidates:(NSArray*)candidates
-          andComments:(NSArray*)comments
-           withLabels:(NSString*)labels
-          highlighted:(NSUInteger)index
+-(void)showPreedit:(NSString*)preedit
+      withSelRange:(NSRange)selRange
+        atCaretPos:(NSUInteger)caretPos
+     andCandidates:(NSArray*)candidates
+       andComments:(NSArray*)comments
+        withLabels:(NSString*)labels
+       highlighted:(NSUInteger)index
 {
-  //NSLog(@"showCandidates:");
+  //NSLog(@"showPreedit: ... andCandidates:");
   [candidates retain];
   [_candidates release];
   _candidates = candidates;
-  NSRect caretPos;
-  [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&caretPos];
+  NSRect inputPos;
+  [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel* panel = [[NSApp delegate] panel];
-  [panel updatePosition:caretPos];
-  [panel updateCandidates:candidates andComments:comments withLabels:labels highlighted:index];
+  [panel updatePosition:inputPos];
+  [panel updatePreedit:preedit
+          withSelRange:selRange
+            atCaretPos:caretPos
+         andCandidates:candidates
+           andComments:comments
+            withLabels:labels
+           highlighted:index];
 }
 
 @end // SquirrelController
@@ -400,6 +409,9 @@
   NSString* app = [_currentClient bundleIdentifier];
   NSLog(@"createSession: %@", app);
   _session = RimeCreateSession();
+  
+  [_schemaId release];
+  _schemaId = nil;
 
   // optionally, set app specific options
   NSDictionary* appOptions = [[NSApp delegate] appOptions];
@@ -455,6 +467,12 @@
       [_schemaId release];
       _schemaId = [[NSString alloc] initWithUTF8String:status.schema_id];
       [self loadSchemaSpecificSettings:_schemaId];
+      // inline preedit
+      _inlinePreedit = [[[NSApp delegate] panel] inlinePreedit] &&
+          !RimeGetOption(_session, "no_inline") &&   // not disabled in app options
+          ![_schemaId isEqualToString:@".default"];  // not in switcher where app options are not accessible
+      // if not inline, embed soft cursor in preedit string
+      RimeSetOption(_session, "soft_cursor", !_inlinePreedit);
     }
     RimeFreeStatus(&status);
   }
@@ -471,7 +489,16 @@
     NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
     NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
     NSRange selRange = NSMakeRange(start, end - start);
-    [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
+    if (_inlinePreedit) {
+      [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
+    }
+    else {
+      NSRange empty = {0, 0};
+      // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
+      // note this is a full-shape space U+3000; using half shape characters like "..." will result in
+      // an unstable baseline when composing Chinese characters.
+      [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+    }
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
     NSMutableArray *comments = [NSMutableArray array];
@@ -489,10 +516,13 @@
     if (ctx.menu.select_keys) {
       labels = [NSString stringWithUTF8String:ctx.menu.select_keys];
     }
-    [self showCandidates:candidates
-             andComments:comments
-              withLabels:labels
-             highlighted:ctx.menu.highlighted_candidate_index];
+    [self showPreedit:(_inlinePreedit ? nil : preeditText)
+         withSelRange:selRange
+           atCaretPos:caretPos
+        andCandidates:candidates
+          andComments:comments
+           withLabels:labels
+          highlighted:ctx.menu.highlighted_candidate_index];
     RimeFreeContext(&ctx);
   }
 }

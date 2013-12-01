@@ -3,6 +3,28 @@
 
 RIME 主頁： http://code.google.com/p/rimeime/
 
+鼠鬚管 0.9.23 <2013-12-01>
+---
+【鼠鬚管】變更集
+
+  * 新增：非嵌入式編碼行，`style/inline_preedit: false`
+  * 變更：候選窗默認英文字體設爲 Lucida Grande，非嵌入模式中較爲美觀
+  * 改進：高亮候選的背景色延伸到候選註釋區域，新增配色選項 `hilited_comment_text_color:`
+  * 改進：提示（碼表輸入法）大字符集開關狀態「通用／增廣」
+  * 修復：[Issue 509](https://code.google.com/p/rimeime/issues/detail?id=509) 打開方案選單時設定 `style/label_color` 被重置
+
+Rime 算法庫變更集
+
+  * 更新：librime 升級到 1.0
+  * 修復：`table_translator` 按字符集過濾候選字，修正對 CJK-D 漢字的判斷
+
+【東風破】變更集
+
+  * 優化：【粵拼】兼容[教育學院拼音方案](http://zh.wikipedia.org/wiki/%E6%95%99%E8%82%B2%E5%AD%B8%E9%99%A2%E6%8B%BC%E9%9F%B3%E6%96%B9%E6%A1%88)
+  * 更新：`symbols.yaml` 由 Patricivs 重新整理符號表
+  * 更新：Emoji 提供更加豐富的繪文字
+  * 更新：【八股文】【朙月拼音】【地球拼音】【中古全拼】修正錯別字、註音錯誤
+
 鼠鬚管 0.9.22 <2013-11-09>
 ---
 【鼠鬚管】變更集

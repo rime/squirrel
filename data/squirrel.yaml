@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.20"
+config_version: "0.22"
 
 us_keyboard_layout: false
 
@@ -19,33 +19,38 @@ show_notifications_via_notification_center: false
 style:
   color_scheme: native
   horizontal: false
+  inline_preedit: true
   corner_radius: 10
   border_height: 0
   border_width: 0
   line_spacing: 1
+  spacing: 5  # space between preedit and candidates in non-inline mode
   #candidate_format: '%c. %@ '
-  #font_face: 'Heiti TC'
+  font_face: 'Lucida Grande'  # supporting soft cursor '›'
   #font_point: 21
   #label_font_face: 'STHeitiTC-Medium'
   #label_font_point: 18
-  #label_color: 0x888888
-  #label_hilited_color: 0x888888
 
 preset_color_schemes:
   aqua:
     name: 碧水／Aqua
     author: 佛振 <chen.sst@gmail.com>
-    text_color: 0x000000
+    text_color: 0x606060
     back_color: 0xeeeceeee
+    candidate_text_color: 0x000000
+    hilited_text_color: 0x000000
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0xeefa3a0a
     comment_text_color: 0x5a5a5a
+    hilited_comment_text_color: 0xfcac9d
 
   azure:
     name: 青天／Azure
     author: 佛振 <chen.sst@gmail.com>
-    text_color: 0xffeacc
+    text_color: 0xcfa677
+    candidate_text_color: 0xffeacc
     back_color: 0xee8b4e01
+    hilited_text_color: 0xffeacc
     hilited_candidate_text_color: 0x7ffeff
     hilited_candidate_back_color: 0x00000000
     comment_text_color: 0xc69664
@@ -53,44 +58,60 @@ preset_color_schemes:
   luna:
     name: 明月／Luna
     author: 佛振 <chen.sst@gmail.com>
-    text_color: 0xeceeee
+    text_color: 0xa5a5a5
     back_color: 0xdd000000
+    candidate_text_color: 0xeceeee
+    hilited_text_color: 0x7fffff
     hilited_candidate_text_color: 0x7fffff
     hilited_candidate_back_color: 0x40000000
     comment_text_color: 0xa5a5a5
+    hilited_comment_text_color: 0x449c9d
 
   ink:
     name: 墨池／Ink
     author: 佛振 <chen.sst@gmail.com>
     text_color: 0x000000
     back_color: 0xeeffffff
+    candidate_text_color: 0x000000
+    hilited_text_color: 0x000000
+    hilited_back_color: 0xdddddd
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0xcc000000
     comment_text_color: 0x5a5a5a
+    hilited_comment_text_color: 0x808080
 
   lost_temple:
     name: 孤寺／Lost Temple
     author: 佛振 <chen.sst@gmail.com>, based on ir_black
     text_color: 0xe8f3f6
     back_color: 0xee303030
+    hilited_text_color: 0x82e6ca
     hilited_candidate_text_color: 0x000000
     hilited_candidate_back_color: 0x82e6ca
     comment_text_color: 0xbb82e6ca
+    hilited_comment_text_color: 0xbb203d34
 
   dark_temple:
     name: 暗堂／Dark Temple
     author: 佛振 <chen.sst@gmail.com>, based on ir_black
-    text_color: 0xffdfaa
+    text_color: 0x92f6da
     back_color: 0x222222
+    candidate_text_color: 0xd8e3e6
+    hilited_text_color: 0xffcf9a
+    hilited_back_color: 0x222222
     hilited_candidate_text_color: 0x92f6da
-    hilited_candidate_back_color: 0x10000000
+    hilited_candidate_back_color: 0x10000000  # 0x333333
     comment_text_color: 0x606cff
 
   starcraft:
     name: 星際我爭霸／StarCraft
     author: Contralisk <contralisk@gmail.com>, original artwork by Blizzard Entertainment
-    text_color: 0x30bb55
+    text_color: 0xccaa88
+    candidate_text_color: 0x30bb55
     back_color: 0xee000000
+    border_color: 0x1010a0
+    hilited_text_color: 0xfecb96
+    hilited_back_color: 0x000000
     hilited_candidate_text_color: 0x70ffaf
     hilited_candidate_back_color: 0x00000000
     comment_text_color: 0xfecb96
@@ -98,14 +119,16 @@ preset_color_schemes:
   google:
     name: 谷歌／Google
     author: skoj <skoj@qq.com>
-    #text_color: 0x666666 #拼音串
+    text_color: 0x666666 #拼音串
     candidate_text_color: 0x000000 #非第一候选项
     back_color: 0xFFFFFF #背景
-    #border_color: 0xE2E2E2 #边框
-    #hilited_text_color: 0x000000 #拼音串高亮
-    #hilited_back_color: 0xFFFFFF #拼音串高亮背景
+    border_color: 0xE2E2E2 #边框
+    hilited_text_color: 0x000000 #拼音串高亮
+    hilited_back_color: 0xFFFFFF #拼音串高亮背景
     hilited_candidate_text_color: 0xFFFFFF #第一候选项
     hilited_candidate_back_color: 0xCE7539 #第一候选项背景
+    comment_text_color: 0x6D6D6D #注解文字
+    hilited_comment_text_color: 0xEBC6B0 #注解文字高亮
 
   solarized_rock:
     name: 曬經石／Solarized Rock
@@ -117,6 +140,7 @@ preset_color_schemes:
     candidate_text_color: 0x969483
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0x8236d3
+    hilited_comment_text_color: 0x362b00
 
   clean_white:
     name: 简约白／Clean White
@@ -129,7 +153,9 @@ preset_color_schemes:
     font_point: 16
     label_font_point: 12
     label_color: 0x888888
-    text_color: 0x000000
+    text_color: 0x808080
+    hilited_text_color: 0x000000
+    candidate_text_color: 0x000000
     comment_text_color: 0x808080
     back_color: 0xeeeeee
     hilited_candidate_label_color: 0xa0c98915
@@ -145,11 +171,12 @@ app_options:
     ascii_mode: true
   com.apple.Terminal:
     ascii_mode: true
-    soft_cursor: true
+    no_inline: true
   com.googlecode.iterm2:
     ascii_mode: true
   org.vim.MacVim:
     ascii_mode: true
+    no_inline: true
   #com.apple.dt.Xcode:
   #  ascii_mode: true
   #com.barebones.textwrangler:

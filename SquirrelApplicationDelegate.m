@@ -168,6 +168,10 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 //      show_message(message_value, message_type);
       show_status_message(message_value, message_type);
     }
+    else if (!strcmp(message_value, "extended_charset") || !strcmp(message_value, "!extended_charset")) {
+//      show_message(message_value, message_type);
+      show_status_message(message_value, message_type);
+    }
   }
 }
 
@@ -278,7 +282,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (RimeConfigGetBool(config, "style/horizontal", &bool_value)) {
     style.horizontal = (BOOL)bool_value;
   }
-
+  
+  if (RimeConfigGetBool(config, "style/inline_preedit", &bool_value)) {
+    style.inlinePreedit = (BOOL)bool_value;
+  }
+  
   char label_font_face[FONT_FACE_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/label_font_face", label_font_face, sizeof(label_font_face))) {
     style.labelFontName = [NSString stringWithUTF8String:label_font_face];
@@ -290,11 +298,9 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
 
   char label_color[COLOR_BUFSIZE] = {0};
-  style.candidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_color", label_color, sizeof(label_color))) {
     style.candidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
-  style.highlightedCandidateLabelColor = nil;
   if (RimeConfigGetString(config, "style/label_hilited_color", label_color, sizeof(label_color))) {
     style.highlightedCandidateLabelColor = [NSString stringWithUTF8String:label_color];
   }
@@ -325,6 +331,9 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (RimeConfigGetDouble(config, "style/line_spacing", &double_value)) {
     style.lineSpacing = double_value;
   }
+  if (RimeConfigGetDouble(config, "style/spacing", &double_value)) {
+    style.spacing = double_value;
+  }
 
   char format[FORMAT_BUFSIZE] = {0};
   if (RimeConfigGetString(config, "style/candidate_format", format, sizeof(format))) {
@@ -343,55 +352,56 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.backgroundColor = [NSString stringWithUTF8String:color];
     }
-    NSString* fallback_text_color = nil;
-    NSString* fallback_hilited_text_color = nil;
-    NSString* fallback_hilited_back_color = nil;
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_text_color = [NSString stringWithUTF8String:color];
+      style.textColor = [NSString stringWithUTF8String:color];
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_hilited_text_color = [NSString stringWithUTF8String:color];
+      style.highlightedTextColor = [NSString stringWithUTF8String:color];
     }
     else {
-      fallback_hilited_text_color = fallback_text_color;
+      style.highlightedTextColor = style.textColor;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
-      fallback_hilited_back_color = [NSString stringWithUTF8String:color];
+      style.highlightedBackColor = [NSString stringWithUTF8String:color];
     }
     else {
-      fallback_hilited_back_color = style.backgroundColor;
+      style.highlightedBackColor = nil;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/candidate_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.candidateTextColor = [NSString stringWithUTF8String:color];
     }
     else {
-      // weasel panel has an additional line at the top to show preedit text, that `text_color` is for.
-      // if not otherwise specified, candidate text is rendered in this color.
-      // in other words, `candidate_text_color` inherits this.
-      style.candidateTextColor = fallback_text_color;
+      // in non-inline mode, 'text_color' is for rendering preedit text.
+      // if not otherwise specified, candidate text is also rendered in this color.
+      style.candidateTextColor = style.textColor;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.highlightedCandidateTextColor = [NSString stringWithUTF8String:color];
     }
     else {
-      style.highlightedCandidateTextColor = fallback_hilited_text_color;
+      style.highlightedCandidateTextColor = style.highlightedTextColor;
     }
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_candidate_back_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.highlightedCandidateBackColor = [NSString stringWithUTF8String:color];
     }
     else {
-      style.highlightedCandidateBackColor = fallback_hilited_back_color;
+      style.highlightedCandidateBackColor = style.highlightedBackColor;
     }
-    // new in squirrel
+
     [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/comment_text_color"];
     if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
       style.commentTextColor = [NSString stringWithUTF8String:color];
+    }
+
+    [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/hilited_comment_text_color"];
+    if (RimeConfigGetString(config, [key UTF8String], color, sizeof(color))) {
+      style.highlightedCommentTextColor = [NSString stringWithUTF8String:color];
     }
 
     // the following per-color-scheme configurations, if exist, will
@@ -401,6 +411,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/horizontal"];
       if (RimeConfigGetBool(config, [key UTF8String], &overridden_value)) {
         style.horizontal = (BOOL)overridden_value;
+      }
+      
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"/inline_preedit"];
+      if (RimeConfigGetBool(config, [key UTF8String], &overridden_value)) {
+        style.inlinePreedit = (BOOL)overridden_value;
       }
 
       char overridden_label_font_face[FONT_FACE_BUFSIZE] = {0};
@@ -473,6 +488,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"line_spacing"];
       if (RimeConfigGetDouble(config, [key UTF8String], &overridden_line_spacing)) {
         style.lineSpacing = overridden_line_spacing;
+      }
+
+      double overridden_spacing;
+      [key replaceCharactersInRange:NSMakeRange(prefix_length, [key length] - prefix_length) withString:@"spacing"];
+      if (RimeConfigGetDouble(config, [key UTF8String], &overridden_spacing)) {
+        style.spacing = overridden_spacing;
       }
 
       char overridden_format[FORMAT_BUFSIZE] = {0};

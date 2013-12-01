@@ -13,6 +13,7 @@
   NSEventType                 _lastEventType;
   RimeSessionId               _session;
   NSString                   *_schemaId;
+  BOOL                        _inlinePreedit;
   // for chord-typing
   char _chord[128];
   NSTimer *_chordTimer;
@@ -22,10 +23,13 @@
 -(void)showPreeditString:(NSString*)string
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos;
--(void)showCandidates:(NSArray*)candidates
-          andComments:(NSArray*)comments
-           withLabels:(NSString*)labels
-          highlighted:(NSUInteger)index;
+-(void)showPreedit:(NSString*)preedit
+      withSelRange:(NSRange)selRange
+        atCaretPos:(NSUInteger)caretPos
+     andCandidates:(NSArray*)candidates
+       andComments:(NSArray*)comments
+        withLabels:(NSString*)labels
+       highlighted:(NSUInteger)index;
 
 -(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers;
 
