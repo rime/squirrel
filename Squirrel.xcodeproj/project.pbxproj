@@ -32,6 +32,8 @@
 		44943BB815066A540005EE85 /* postflight in Resources */ = {isa = PBXBuildFile; fileRef = 44943BB715066A540005EE85 /* postflight */; };
 		4495EA3A162E63A600F236CA /* soutzoe.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4495EA36162E637B00F236CA /* soutzoe.dict.yaml */; };
 		4495EA3B162E63A600F236CA /* soutzoe.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4495EA37162E637B00F236CA /* soutzoe.schema.yaml */; };
+		44986A95184B421700B3278D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44986A93184B421700B3278D /* LICENSE.txt */; };
+		44986A96184B421700B3278D /* README.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44986A94184B421700B3278D /* README.txt */; };
 		44ABBE7014DD5A2100B8A82D /* default.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44ABBE6314DD59EA00B8A82D /* default.yaml */; };
 		44ABBE7114DD5A2700B8A82D /* essay.kct in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44DA7A2714DD596700C1ED3B /* essay.kct */; };
 		44ABBE7214DD5A4000B8A82D /* cangjie5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */; };
@@ -211,6 +213,8 @@
 		44943BB715066A540005EE85 /* postflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = postflight; sourceTree = "<group>"; };
 		4495EA36162E637B00F236CA /* soutzoe.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = soutzoe.dict.yaml; sourceTree = "<group>"; };
 		4495EA37162E637B00F236CA /* soutzoe.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = soutzoe.schema.yaml; sourceTree = "<group>"; };
+		44986A93184B421700B3278D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		44986A94184B421700B3278D /* README.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		44ABBE6314DD59EA00B8A82D /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.yaml; path = brise/default.yaml; sourceTree = SOURCE_ROOT; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
 		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
@@ -356,6 +360,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44986A93184B421700B3278D /* LICENSE.txt */,
+				44986A94184B421700B3278D /* README.txt */,
 				44CD7D9E1828D981006E9222 /* rime.pdf */,
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
 				44943BB715066A540005EE85 /* postflight */,
@@ -532,6 +538,8 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
+				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
+				44986A96184B421700B3278D /* README.txt in Resources */,
 				44943BB815066A540005EE85 /* postflight in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
