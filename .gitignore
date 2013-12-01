@@ -6,6 +6,8 @@ build
 build.log
 bin/*
 lib/*
-package
+package/archives/*
+package/Squirrel.pkg
+package/sign/*.pem
 *~
 .*.swp
