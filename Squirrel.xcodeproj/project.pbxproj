@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		257189F6185807B5004B9D83 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 257189F5185807B5004B9D83 /* bopomofo_tw.schema.yaml */; };
 		4407F3B014EC078F001329FE /* to_tw_variants.txt in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
 		4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
 		4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
@@ -106,6 +107,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				257189F6185807B5004B9D83 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
 				44C49DF317F8155000847938 /* stroke.dict.yaml in Copy Shared Support Files */,
 				44C49DF417F8155000847938 /* stroke.schema.yaml in Copy Shared Support Files */,
 				44CDB5451780AB38008930FB /* sampheng.schema.yaml in Copy Shared Support Files */,
@@ -182,6 +184,7 @@
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		257189F5185807B5004B9D83 /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -435,6 +438,7 @@
 			isa = PBXGroup;
 			children = (
 				4426D34415028210009100C7 /* bopomofo.schema.yaml */,
+				257189F5185807B5004B9D83 /* bopomofo_tw.schema.yaml */,
 				44DA7A2914DD596700C1ED3B /* cangjie5.dict.yaml */,
 				44DA7A2A14DD596700C1ED3B /* cangjie5.schema.yaml */,
 				44D3E63A16B6BF7300D2E12B /* cangjie5_express.schema.yaml */,
