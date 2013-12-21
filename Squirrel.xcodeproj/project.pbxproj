@@ -604,6 +604,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -629,11 +630,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
-				OTHER_LDFLAGS = (
-					"-lrime.1",
-					"-lz",
-					"-lstdc++",
-				);
+				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
@@ -643,6 +640,7 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LIBRARY = "libc++";
 				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -666,11 +664,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
-				OTHER_LDFLAGS = (
-					"-lrime.1",
-					"-lz",
-					"-lstdc++",
-				);
+				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;

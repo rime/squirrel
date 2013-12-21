@@ -84,6 +84,7 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
   * BYVoid <byvoid.kcp@gmail.com>
   * waynezhang
   * Chongyu Zhu <lembacon@gmail.com>
+  * 雪齋 <lyc20041@gmail.com>
 
 美術：
   * 圖標設計 佛振、梁海
