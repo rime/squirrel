@@ -3,6 +3,22 @@
 
 RIME 主頁： http://code.google.com/p/rimeime/
 
+鼠鬚管 0.9.24 <2013-12-21>
+---
+Rime 算法庫變更集
+
+  * 更新：librime 升級到 1.1
+  * 新增：固定方案選單排列順序的選項 `default.yaml`: `switcher/fix_schema_list_order: true`
+  * 修復：正確匹配嵌套的“‘彎引號’”
+  * 改進：碼表輸入法自動上屏及頂字上屏（[示例](https://gist.github.com/lotem/f879a020d56ef9b3b792)）
+    若有 `speller/auto_select: true`，則選項 `speller/max_code_length:` 限定第N碼無重碼自動上屏
+  * 優化：爲詞組自動編碼時，限制因多音字而產生的組合數目，避免窮舉消耗過量資源
+
+【東風破】變更集
+
+  * 更新：【粵拼】匯入衆多粵語詞彙
+  * 優化：調整部分異體字的字頻
+
 鼠鬚管 0.9.23 <2013-12-01>
 ---
 【鼠鬚管】變更集
