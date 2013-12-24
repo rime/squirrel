@@ -2,7 +2,7 @@
 <pkgref spec="1.12" uuid="785ABFD1-B7A1-4E5A-A9C9-7C8D930BBE79">
   <config>
     <identifier>com.googlecode.rimeime.Squirrel.pkg</identifier>
-    <version>0.9.24</version>
+    <version>0.9.24.1</version>
     <description/>
     <post-install type="none"/>
     <requireAuthorization/>
@@ -25,7 +25,7 @@
   </scripts>
   <contents>
     <file-list>01squirrel-contents.xml</file-list>
-    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app" version="0.9.24" isDowngradeable="true">
+    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app" version="0.9.24.1" isDowngradeable="true">
       <component id="com.growl.growlframework" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Growl.framework" version="1.3.1"/>
       <component id="org.andymatuschak.Sparkle" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Sparkle.framework" version="313"/>
     </component>
