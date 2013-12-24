@@ -594,6 +594,7 @@
       </f>
       <f n="SharedSupport" o="root" g="wheel" p="16877">
         <f n="bopomofo.schema.yaml" o="root" g="wheel" p="33188"/>
+        <f n="bopomofo_tw.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="cangjie5.dict.yaml" o="root" g="wheel" p="33188"/>
         <f n="cangjie5.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="cangjie5_express.schema.yaml" o="root" g="wheel" p="33188"/>
