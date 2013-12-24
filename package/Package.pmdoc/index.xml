@@ -63,7 +63,7 @@
 -------------------------------------------------\
 
 \f1 \'a1\'69\'b9\'ab\'c5\'bd\'ba\'de\'a1\'6a\'bf\'e9\'a4\'4a\'aa\'6b
-\f0  0.9.24\
+\f0  0.9.24.1\
 \
 
 \f1 \'a6\'a1\'ae\'a4\'b0\'f3
@@ -151,7 +151,7 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide\
 \f0 \
 \
 
-\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.24 <2013-12-21>\
+\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.24.1 <2013-12-24>\
 ---\
 Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
 \
@@ -165,6 +165,7 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
 \
 \'a1\'be\'96\'7c\'ef\'4c\'c6\'c6\'a1\'bf\'d7\'83\'b8\'fc\'bc\'af\
 \
+  * \'d0\'c2\'d4\'f6\'a3\'ba\'a1\'be\'d7\'a2\'d2\'f4\'a1\'a4\'c5\'5f\'9e\'b3\'d5\'fd\'f3\'77\'a1\'bf\
   * \'b8\'fc\'d0\'c2\'a3\'ba\'a1\'be\'bb\'9b\'c6\'b4\'a1\'bf\'85\'52\'c8\'eb\'d0\'5c\'b6\'e0\'bb\'9b\'d5\'5a\'d4\'7e\'8f\'a1\
   * \'83\'9e\'bb\'af\'a3\'ba\'d5\'7b\'d5\'fb\'b2\'bf\'b7\'d6\'ae\'90\'f3\'77\'d7\'d6\'b5\'c4\'d7\'d6\'ee\'6c\
 \
@@ -346,7 +347,7 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
   <mod>properties.systemDomain</mod>
   <mod>properties.title</mod>
   <mod>properties.customizeOption</mod>
+  <mod>description</mod>
   <mod>properties.userDomain</mod>
   <mod>properties.anywhereDomain</mod>
-  <mod>description</mod>
 </pkmkdoc>
