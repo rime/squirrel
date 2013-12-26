@@ -63,7 +63,7 @@
 -------------------------------------------------\
 
 \f1 \'a1\'69\'b9\'ab\'c5\'bd\'ba\'de\'a1\'6a\'bf\'e9\'a4\'4a\'aa\'6b
-\f0  0.9.24.1\
+\f0  0.9.24.2\
 \
 
 \f1 \'a6\'a1\'ae\'a4\'b0\'f3
@@ -151,8 +151,12 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide\
 \f0 \
 \
 
-\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.24.1 <2013-12-24>\
+\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.24.2 <2013-12-25>\
 ---\
+\'a1\'be\'ca\'f3\'f4\'50\'b9\'dc\'a1\'bf\'d7\'83\'b8\'fc\'bc\'af\
+\
+  * \'d0\'de\'8f\'cd\'a3\'baMySQL Workbench \'b1\'c0\'9d\'a2\
+\
 Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
 \
   * \'b8\'fc\'d0\'c2\'a3\'balibrime \'c9\'fd\'bc\'89\'b5\'bd 1.1\
@@ -344,10 +348,10 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
   </resources>
   <flags/>
   <item type="file">01squirrel.xml</item>
-  <mod>properties.systemDomain</mod>
+  <mod>properties.anywhereDomain</mod>
   <mod>properties.title</mod>
   <mod>properties.customizeOption</mod>
   <mod>description</mod>
   <mod>properties.userDomain</mod>
-  <mod>properties.anywhereDomain</mod>
+  <mod>properties.systemDomain</mod>
 </pkmkdoc>

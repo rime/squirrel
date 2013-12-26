@@ -329,7 +329,7 @@
 {
   //NSLog(@"commitString:");
   [_currentClient insertText:string
-            replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+            replacementRange:NSMakeRange(NSNotFound, 0)];
 
   [_preeditString release];
   _preeditString = @"";
@@ -368,7 +368,7 @@
   }
   [_currentClient setMarkedText:attrString
                  selectionRange:NSMakeRange(pos, 0)
-               replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+               replacementRange:NSMakeRange(NSNotFound, 0)];
 
   [attrString release];
 }
