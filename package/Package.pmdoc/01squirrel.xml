@@ -2,7 +2,7 @@
 <pkgref spec="1.12" uuid="785ABFD1-B7A1-4E5A-A9C9-7C8D930BBE79">
   <config>
     <identifier>com.googlecode.rimeime.Squirrel.pkg</identifier>
-    <version>0.9.24.1</version>
+    <version>0.9.24.2</version>
     <description/>
     <post-install type="none"/>
     <requireAuthorization/>

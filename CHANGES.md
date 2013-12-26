@@ -3,8 +3,12 @@
 
 RIME 主頁： http://code.google.com/p/rimeime/
 
-鼠鬚管 0.9.24.1 <2013-12-24>
+鼠鬚管 0.9.24.2 <2013-12-25>
 ---
+【鼠鬚管】變更集
+
+  * 修復：MySQL Workbench 崩潰
+
 Rime 算法庫變更集
 
   * 更新：librime 升級到 1.1
