@@ -161,7 +161,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       }
     }
     else if (!strcmp(message_value, "full_shape") || !strcmp(message_value, "!full_shape")) {
-//      show_message(message_value, message_type);
+      //      show_message(message_value, message_type);
+      show_status_message(message_value, message_type);
+    }
+    else if (!strcmp(message_value, "ascii_punct") || !strcmp(message_value, "!ascii_punct")) {
+      //      show_message(message_value, message_type);
       show_status_message(message_value, message_type);
     }
     else if (!strcmp(message_value, "simplification") || !strcmp(message_value, "!simplification")) {
