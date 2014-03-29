@@ -27,7 +27,7 @@
   </contents>
   <resources bg-scale="none" bg-align="topleft">
     <locale lang="zh">
-      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265
+      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
 {\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fnil\fcharset136 STHeitiTC-Light;\f2\fnil\fcharset134 STHeitiSC-Light;
 }
 {\colortbl;\red255\green255\blue255;}
@@ -63,7 +63,7 @@
 -------------------------------------------------\
 
 \f1 \'a1\'69\'b9\'ab\'c5\'bd\'ba\'de\'a1\'6a\'bf\'e9\'a4\'4a\'aa\'6b
-\f0  0.9.24.2\
+\f0  0.9.25\
 \
 
 \f1 \'a6\'a1\'ae\'a4\'b0\'f3
@@ -151,27 +151,23 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide\
 \f0 \
 \
 
-\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.24.2 <2013-12-25>\
+\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.25 <2014-03-29>\
 ---\
-\'a1\'be\'ca\'f3\'f4\'50\'b9\'dc\'a1\'bf\'d7\'83\'b8\'fc\'bc\'af\
-\
-  * \'d0\'de\'8f\'cd\'a3\'baMySQL Workbench \'b1\'c0\'9d\'a2\
-\
 Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
 \
-  * \'b8\'fc\'d0\'c2\'a3\'balibrime \'c9\'fd\'bc\'89\'b5\'bd 1.1\
-  * \'d0\'c2\'d4\'f6\'a3\'ba\'b9\'cc\'b6\'a8\'b7\'bd\'b0\'b8\'df\'78\'86\'ce\'c5\'c5\'c1\'d0\'ed\'98\'d0\'f2\'b5\'c4\'df\'78\'ed\'97\
-  * \'d0\'de\'8f\'cd\'a3\'ba\'d5\'fd\'b4\'5f\'c6\'a5\'c5\'e4\'c7\'b6\'cc\'d7\'b5\'c4\'a1\'b0\'a1\'ae\'8f\'9d\'d2\'fd\'cc\'96\'a1\'af\'a1\'b1\
-  * \'b8\'c4\'df\'4d\'a3\'ba\'b4\'61\'b1\'ed\'dd\'94\'c8\'eb\'b7\'a8\'d7\'d4\'84\'d3\'c9\'cf\'c6\'c1\'bc\'b0\'ed\'94\'d7\'d6\'c9\'cf\'c6\'c1\
-    \'cf\'de\'b6\'a8\'b5\'daN\'b4\'61\'9f\'6f\'d6\'d8\'b4\'61\'d7\'d4\'84\'d3\'c9\'cf\'c6\'c1\
-  * \'83\'9e\'bb\'af\'a3\'ba\'a0\'91\'d4\'7e\'bd\'4d\'d7\'d4\'84\'d3\'be\'8e\'b4\'61\'95\'72\'a3\'ac\'cf\'de\'d6\'c6\'d2\'f2\'b6\'e0\'d2\'f4\'d7\'d6\'b6\'f8\'ae\'61\'c9\'fa\'b5\'c4\'bd\'4d\'ba\'cf\'94\'b5\'c4\'bf\'a3\'ac\
-    \'b1\'dc\'c3\'e2\'b8\'46\'c5\'65\'cf\'fb\'ba\'c4\'df\'5e\'c1\'bf\'d9\'59\'d4\'b4\
+  * \'d0\'c2\'d4\'f6\'a3\'ba\'d6\'d0\'ce\'f7\'ce\'c4\'c7\'d0\'93\'51\'b7\'bd\'ca\'bd `clear`\'a3\'ac\'c7\'d0\'93\'51\'95\'72\'c7\'e5\'b3\'fd\'ce\'b4\'cd\'ea\'b3\'c9\'b5\'c4\'dd\'94\'c8\'eb\
+  * \'b8\'c4\'df\'4d\'a3\'ba\'e9\'4c\'b0\'b4 Shift\'a3\'a8\'bb\'f2 Control\'a3\'a9\'e6\'49\'b2\'bb\'d3\'7c\'b0\'6c\'d6\'d0\'ce\'f7\'ce\'c4\'c7\'d0\'93\'51\
+  * \'b8\'c4\'df\'4d\'a3\'ba\'81\'4b\'93\'f4\'dd\'94\'c8\'eb\'a3\'ac\'c8\'f4\'b0\'b4\'bb\'d8\'dc\'87\'e6\'49\'84\'74\'c9\'cf\'c6\'c1\'b0\'b4\'e6\'49\'8c\'a6\'91\'aa\'b5\'c4\'d7\'d6\'b7\'fb\
+  * \'b8\'c4\'df\'4d\'a3\'ba\'d6\'a7\'b3\'d6\'8c\'a6\'d3\'c3\'91\'f4\'d4\'4f\'b6\'a8\'d6\'d0\'b5\'c4\'c1\'d0\'b1\'ed\'d4\'aa\'cb\'d8\'b4\'f2\'d1\'61\'ec\'77\'a3\'ac\'c0\'fd\'c8\'e7 `switcher/@0/reset: 1`\
+  * \'b8\'c4\'df\'4d\'a3\'ba\'c8\'b1\'c9\'d9\'d4\'7e\'b5\'e4\'d4\'b4\'ce\'c4\'bc\'fe `*.dict.yaml` \'95\'72\'c0\'fb\'d3\'c3\'b9\'cc\'91\'42\'d4\'7e\'b5\'e4 `*.table.bin` \'cd\'ea\'b3\'c9\'b2\'bf\'ca\'f0\
+  * \'d0\'de\'8f\'cd\'a3\'ba\'d7\'d4\'84\'d3\'bd\'4d\'d4\'7e\'b5\'c4\'d4\'7e\'b5\'e4\'b2\'bf\'ca\'f0\'95\'72\'ce\'b4\'99\'7a\'b2\'e9\'a1\'be\'b0\'cb\'b9\'c9\'ce\'c4\'a1\'bf\'b5\'c4\'d7\'83\'b8\'fc\'a3\'ac\'8c\'a7\'d6\'c2\'cb\'f7\'d2\'fd\'ca\'a7\'d0\'a7\'a1\'a2\'ba\'f2\'df\'78\'d7\'d6\'c8\'b1\'ca\'a7\
+  * \'d0\'de\'8f\'cd\'a3\'ba`comment_format` \'95\'fe\'8c\'a6\'ba\'f2\'df\'78\'d4\'5d\'e1\'8c\'d6\'d8\'d1\'7d\'ca\'b9\'d3\'c3\'b6\'e0\'b4\'ce\'b5\'c4BUG\
 \
 \'a1\'be\'96\'7c\'ef\'4c\'c6\'c6\'a1\'bf\'d7\'83\'b8\'fc\'bc\'af\
 \
-  * \'d0\'c2\'d4\'f6\'a3\'ba\'a1\'be\'d7\'a2\'d2\'f4\'a1\'a4\'c5\'5f\'9e\'b3\'d5\'fd\'f3\'77\'a1\'bf\
-  * \'b8\'fc\'d0\'c2\'a3\'ba\'a1\'be\'bb\'9b\'c6\'b4\'a1\'bf\'85\'52\'c8\'eb\'d0\'5c\'b6\'e0\'bb\'9b\'d5\'5a\'d4\'7e\'8f\'a1\
-  * \'83\'9e\'bb\'af\'a3\'ba\'d5\'7b\'d5\'fb\'b2\'bf\'b7\'d6\'ae\'90\'f3\'77\'d7\'d6\'b5\'c4\'d7\'d6\'ee\'6c\
+  * \'d0\'c2\'d4\'f6\'a3\'ba\'bf\'ec\'bd\'dd\'e6\'49 `Control+.` \'c7\'d0\'93\'51\'d6\'d0\'ce\'f7\'ce\'c4\'98\'cb\'fc\'63\
+  * \'b8\'fc\'d0\'c2\'a3\'ba\'a1\'be\'b0\'cb\'b9\'c9\'ce\'c4\'a1\'bf\'a1\'be\'96\'4c\'d4\'c2\'c6\'b4\'d2\'f4\'a1\'bf\'a1\'be\'b5\'d8\'c7\'f2\'c6\'b4\'d2\'f4\'a1\'bf\'a1\'be\'ce\'e5\'b9\'50\'ae\'8b\'a1\'bf\
+  * \'b8\'c4\'df\'4d\'a3\'ba\'a1\'be\'96\'4c\'d4\'c2\'c6\'b4\'d2\'f4\'a1\'a4\'d5\'5a\'be\'e4\'c1\'f7\'a1\'bf`/0` ~ `/10` \'dd\'94\'c8\'eb\'94\'b5\'d7\'d6\'b7\'fb\'cc\'96\
 \
 
 \f0 -------------------------------------------------\
@@ -348,10 +344,10 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
   </resources>
   <flags/>
   <item type="file">01squirrel.xml</item>
-  <mod>properties.anywhereDomain</mod>
+  <mod>properties.systemDomain</mod>
   <mod>properties.title</mod>
   <mod>properties.customizeOption</mod>
   <mod>description</mod>
+  <mod>properties.anywhereDomain</mod>
   <mod>properties.userDomain</mod>
-  <mod>properties.systemDomain</mod>
 </pkmkdoc>
