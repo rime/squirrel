@@ -7,6 +7,7 @@ echo "precompiling Rime schemata. patience..."
 cd "$RIME_SHARED_DATA_PATH"
 ../MacOS/Squirrel --quit
 ../MacOS/Squirrel --build
+if [ -e essay.kct ]; then rm essay.kct; fi
 if [ -e rime.log ]; then rm rime.log; fi
 /usr/bin/sudo -u $CONSOLE_USER ../MacOS/Squirrel --install
 )
