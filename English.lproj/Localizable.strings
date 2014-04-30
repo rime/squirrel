@@ -8,8 +8,8 @@
 "!ascii_mode" = "中";
 "full_shape" = "Full shape";
 "!full_shape" = "Half shape";
-"ascii_punct" = "，．";
-"!ascii_punct" = "，。";
+"ascii_punct" = "．，";
+"!ascii_punct" = "。，";
 "simplification" = "Simplified";
 "!simplification" = "Traditional";
 "extended_charset" = "CJK extended";
