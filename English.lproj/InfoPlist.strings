@@ -2,5 +2,7 @@
 
 NSHumanReadableCopyright = "Copyleft 2012, RIME Developers";
 
+com.googlecode.rimeime.inputmethod.Squirrel = "Squirrel";
+
 CFBundleName = "Squirrel";
 CFBundleDisplayName = "Squirrel";

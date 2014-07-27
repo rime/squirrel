@@ -47,5 +47,44 @@
 	<string>http://rimeime.github.io/squirrel-update/appcast.xml</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
+	
+	<key>ComponentInputModeDict</key>
+	<dict>
+		<key>tsInputModeListKey</key>
+		<dict>
+			<key>com.googlecode.rimeime.inputmethod.Squirrel</key>
+			<dict>
+				<key>TISInputSourceID</key>
+				<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
+				<key>TISIntendedLanguage</key>
+				<string>zh-Hans</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModeCharacterRepertoireKey</key>
+				<array>
+					<string>zh-Hans</string>
+					<string>zh-Hant</string>
+				</array>
+				<key>tsInputModeDefaultStateKey</key>
+				<true/>
+				<key>tsInputModeIsVisibleKey</key>
+				<true/>
+				<key>tsInputModeKeyEquivalentModifiersKey</key>
+				<integer>4608</integer>
+				<key>tsInputModeMenuIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModePaletteIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModePrimaryInScriptKey</key>
+				<true/>
+				<key>tsInputModeScriptKey</key>
+				<string>smUnicodeScript</string>
+			</dict>
+		</dict>
+		<key>tsVisibleInputModeOrderedArrayKey</key>
+		<array>
+			<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
+		</array>
+	</dict>
 </dict>
 </plist>
