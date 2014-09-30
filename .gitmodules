@@ -1,6 +1,8 @@
 [submodule "librime"]
 	path = librime
 	url = git@github.com:lotem/librime.git
+	ignore = dirty
 [submodule "brise"]
 	path = brise
 	url = git@github.com:lotem/brise.git
+	ignore = dirty
