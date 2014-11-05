@@ -95,7 +95,7 @@ static void show_message_notification_center(const char* msg_text, const char* m
 }
 
 static void show_status_message(const char* msg_text, const char* msg_id) {
-  SquirrelPanel* panel = [[NSApp delegate] panel];
+  SquirrelPanel* panel = [(SquirrelApplicationDelegate *)[NSApp delegate] panel];
   if (panel) {
     [panel updateMessage:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)];
   }

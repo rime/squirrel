@@ -201,7 +201,7 @@
   if (_chordTimer && [_chordTimer isValid]) {
     [_chordTimer invalidate];
   }
-  NSTimeInterval interval = [[NSApp delegate] chordDuration];
+  NSTimeInterval interval = [(SquirrelApplicationDelegate *)[NSApp delegate] chordDuration];
   _chordTimer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                  target:self
                                                selector:@selector(onChordTimer:)
@@ -231,7 +231,7 @@
 -(void)activateServer:(id)sender
 {
   //NSLog(@"activateServer:");
-  if ([[NSApp delegate] useUSKeyboardLayout]) {
+  if ([(SquirrelApplicationDelegate *)[NSApp delegate] useUSKeyboardLayout]) {
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
   _preeditString = @"";
@@ -250,7 +250,7 @@
 -(void)deactivateServer:(id)sender
 {
   //NSLog(@"deactivateServer:");
-  [[[NSApp delegate] panel] hide];
+  [[(SquirrelApplicationDelegate *)[NSApp delegate] panel] hide];
   [self commitComposition:sender];
 }
 
@@ -283,32 +283,32 @@
 // so here we deliver messages to our responsible SquirrelApplicationDelegate
 -(void)deploy:(id)sender
 {
-  [[NSApp delegate] deploy:sender];
+  [(SquirrelApplicationDelegate *)[NSApp delegate] deploy:sender];
 }
 
 -(void)syncUserData:(id)sender
 {
-  [[NSApp delegate] syncUserData:sender];
+  [(SquirrelApplicationDelegate *)[NSApp delegate] syncUserData:sender];
 }
 
 -(void)configure:(id)sender
 {
-  [[NSApp delegate] configure:sender];
+  [(SquirrelApplicationDelegate *)[NSApp delegate] configure:sender];
 }
 
 -(void)checkForUpdates:(id)sender
 {
-  [[[NSApp delegate] updater] performSelector:@selector(checkForUpdates:) withObject:sender];
+  [[(SquirrelApplicationDelegate *)[NSApp delegate] updater] performSelector:@selector(checkForUpdates:) withObject:sender];
 }
 
 -(void)openWiki:(id)sender
 {
-  [[NSApp delegate] openWiki:sender];
+  [(SquirrelApplicationDelegate *)[NSApp delegate] openWiki:sender];
 }
 
 -(NSMenu*)menu
 {
-  return [[NSApp delegate] menu];
+  return [(SquirrelApplicationDelegate *)[NSApp delegate] menu];
 }
 
 -(NSArray*)candidates:(id)sender
@@ -334,7 +334,7 @@
   [_preeditString release];
   _preeditString = @"";
 
-  [[[NSApp delegate] panel] hide];
+  [[(SquirrelApplicationDelegate *)[NSApp delegate] panel] hide];
 }
 
 -(void)showPreeditString:(NSString*)preedit
@@ -387,7 +387,7 @@
   _candidates = candidates;
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
-  SquirrelPanel* panel = [[NSApp delegate] panel];
+  SquirrelPanel* panel = [(SquirrelApplicationDelegate *)[NSApp delegate] panel];
   [panel updatePosition:inputPos];
   [panel updatePreedit:preedit
           withSelRange:selRange
@@ -414,7 +414,7 @@
   _schemaId = nil;
 
   // optionally, set app specific options
-  NSDictionary* appOptions = [[NSApp delegate] appOptions];
+  NSDictionary* appOptions = [(SquirrelApplicationDelegate *)[NSApp delegate] appOptions];
   NSDictionary* options = [appOptions objectForKey:app];
   if (options) {
     for (NSString* key in options) {
@@ -450,7 +450,7 @@
 -(void)loadSchemaSpecificSettings:(NSString*)schemaId {
   RimeConfig config;
   if (RimeSchemaOpen([schemaId UTF8String], &config)) {
-    [[NSApp delegate] updateUIStyle:&config initialize:NO];
+    [(SquirrelApplicationDelegate *)[NSApp delegate] updateUIStyle:&config initialize:NO];
     RimeConfigClose(&config);
   }
 }
@@ -468,7 +468,7 @@
       _schemaId = [[NSString alloc] initWithUTF8String:status.schema_id];
       [self loadSchemaSpecificSettings:_schemaId];
       // inline preedit
-      _inlinePreedit = [[[NSApp delegate] panel] inlinePreedit] &&
+      _inlinePreedit = [[(SquirrelApplicationDelegate *)[NSApp delegate] panel] inlinePreedit] &&
           !RimeGetOption(_session, "no_inline") &&   // not disabled in app options
           ![_schemaId isEqualToString:@".default"];  // not in switcher where app options are not accessible
       // if not inline, embed soft cursor in preedit string
