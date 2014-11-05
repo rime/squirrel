@@ -240,10 +240,7 @@
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
   //NSLog(@"initWithServer:delegate:client:");
-  if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
-    _currentClient = inputClient;
-    [self createSession];
-  }
+  self = [super initWithServer:server delegate:delegate client:inputClient];
   return self;
 }
 
