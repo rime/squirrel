@@ -17,6 +17,7 @@
   // for chord-typing
   char _chord[128];
   NSTimer *_chordTimer;
+  NSString *_currentApp;
 }
 
 -(void)commitString:(NSString*)string;

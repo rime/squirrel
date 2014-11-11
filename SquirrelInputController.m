@@ -12,6 +12,7 @@
 -(void)destroySession;
 -(void)rimeConsumeCommittedText;
 -(void)rimeUpdate;
+-(void)updateAppOptions;
 @end
 
 // implementation of the public interface
@@ -29,10 +30,10 @@
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
-  //NSLog(@"handleEvent:client:");
+//  NSLog(@"handleEvent:client:");
 
   _currentClient = sender;
-
+  
   NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
 
   if (!_session || !RimeFindSession(_session)) {
@@ -41,6 +42,15 @@
       [pool release];
       return NO;
     }
+  }
+  
+  NSString *app = [_currentClient bundleIdentifier];
+//  NSLog(@"app = %@", app);
+//  NSLog(@"_currentApp = %@", _currentApp);
+  
+  if (![_currentApp isEqualToString:app]) {
+    _currentApp = [app copy];
+    [self updateAppOptions];
   }
 
   BOOL handled = NO;
@@ -240,7 +250,10 @@
 -(id)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
 {
   //NSLog(@"initWithServer:delegate:client:");
-  self = [super initWithServer:server delegate:delegate client:inputClient];
+  if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
+    _currentClient = inputClient;
+    [self createSession];
+  }
   return self;
 }
 
@@ -319,6 +332,7 @@
   [_preeditString release];
   [_candidates release];
   [_schemaId release];
+  [_currentApp release];
   [super dealloc];
 }
 
@@ -405,14 +419,24 @@
 {
   NSString* app = [_currentClient bundleIdentifier];
   NSLog(@"createSession: %@", app);
+  _currentApp = [app copy];
   _session = RimeCreateSession();
   
   [_schemaId release];
   _schemaId = nil;
 
+  if (_session) {
+    [self updateAppOptions];
+  }
+}
+
+-(void)updateAppOptions
+{
+  if (!_currentApp) return;
+  NSLog(@"setAppOptions: %@", _currentApp);
   // optionally, set app specific options
   NSDictionary* appOptions = [(SquirrelApplicationDelegate *)[NSApp delegate] appOptions];
-  NSDictionary* options = [appOptions objectForKey:app];
+  NSDictionary* options = [appOptions objectForKey:_currentApp];
   if (options) {
     for (NSString* key in options) {
       NSNumber* value = [options objectForKey:key];
