@@ -8,11 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		257189F6185807B5004B9D83 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 257189F5185807B5004B9D83 /* bopomofo_tw.schema.yaml */; };
-		4407F3B014EC078F001329FE /* to_tw_variants.txt in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* to_tw_variants.txt */; };
-		4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */; };
-		4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */; };
-		4407F3B314EC078F001329FE /* zht2zhs.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* zht2zhs.ini */; };
-		4407F3B414EC078F001329FE /* zht2zhtw_v.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* zht2zhtw_v.ini */; };
 		4426D35E150290C3009100C7 /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34515028210009100C7 /* terra_pinyin.dict.yaml */; };
 		4426D35F150290C3009100C7 /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34615028210009100C7 /* terra_pinyin.schema.yaml */; };
 		4426D360150290CF009100C7 /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34415028210009100C7 /* bopomofo.schema.yaml */; };
@@ -86,21 +81,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4407F3CA14EC079A001329FE /* Copy opencc Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = opencc;
-			dstSubfolderSpec = 12;
-			files = (
-				4407F3B014EC078F001329FE /* to_tw_variants.txt in Copy opencc Files */,
-				4407F3B114EC078F001329FE /* trad_to_simp_characters.ocd in Copy opencc Files */,
-				4407F3B214EC078F001329FE /* trad_to_simp_phrases.ocd in Copy opencc Files */,
-				4407F3B314EC078F001329FE /* zht2zhs.ini in Copy opencc Files */,
-				4407F3B414EC078F001329FE /* zht2zhtw_v.ini in Copy opencc Files */,
-			);
-			name = "Copy opencc Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -387,19 +367,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4407F39D14EC071E001329FE /* opencc */ = {
-			isa = PBXGroup;
-			children = (
-				4407F39E14EC071E001329FE /* to_tw_variants.txt */,
-				4407F39F14EC071E001329FE /* trad_to_simp_characters.ocd */,
-				4407F3A014EC071E001329FE /* trad_to_simp_phrases.ocd */,
-				4407F3A114EC071E001329FE /* zht2zhs.ini */,
-				4407F3A214EC071E001329FE /* zht2zhtw_v.ini */,
-			);
-			name = opencc;
-			path = data/opencc;
-			sourceTree = "<group>";
-		};
 		44935C0114F052EC00346874 /* supplement */ = {
 			isa = PBXGroup;
 			children = (
@@ -462,7 +429,6 @@
 				44F908F018BA505700A6FDB7 /* essay.txt */,
 				44D3E63616B6BF4200D2E12B /* symbols.yaml */,
 				442B5B871570C37200370DEA /* squirrel.yaml */,
-				4407F39D14EC071E001329FE /* opencc */,
 				44ABBE6314DD59EA00B8A82D /* default.yaml */,
 				44DA7A2814DD596700C1ED3B /* preset */,
 				44935C0114F052EC00346874 /* supplement */,
@@ -492,7 +458,6 @@
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
 				44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */,
-				4407F3CA14EC079A001329FE /* Copy opencc Files */,
 				44E21A8D16A653AC00C2B08F /* CopyFiles */,
 			);
 			buildRules = (
