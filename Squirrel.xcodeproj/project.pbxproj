@@ -9,11 +9,10 @@
 /* Begin PBXBuildFile section */
 		257189F6185807B5004B9D83 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 257189F5185807B5004B9D83 /* bopomofo_tw.schema.yaml */; };
 		4407F3B014EC078F001329FE /* TWVariants.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39E14EC071E001329FE /* TWVariants.ocd */; };
-		4407F3B114EC078F001329FE /* TWPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F39F14EC071E001329FE /* TWPhrases.txt */; };
-		4407F3B214EC078F001329FE /* TSCharacters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* TSCharacters.ocd */; };
-		4407F3B314EC078F001329FE /* TSPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* TSPhrases.ocd */; };
-		4407F3B414EC078F001329FE /* zht2zhs.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* t2s.json */; };
-		4407F3B514EC078F001329FE /* zht2zhtw_v.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A314EC071E001329FE /* t2tw.json */; };
+		4407F3B114EC078F001329FE /* TSCharacters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A014EC071E001329FE /* TSCharacters.ocd */; };
+		4407F3B214EC078F001329FE /* TSPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A114EC071E001329FE /* TSPhrases.ocd */; };
+		4407F3B314EC078F001329FE /* zht2zhs.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A214EC071E001329FE /* t2s.json */; };
+		4407F3B414EC078F001329FE /* zht2zhtw_v.ini in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 4407F3A314EC071E001329FE /* t2tw.json */; };
 		4426D35E150290C3009100C7 /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34515028210009100C7 /* terra_pinyin.dict.yaml */; };
 		4426D35F150290C3009100C7 /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34615028210009100C7 /* terra_pinyin.schema.yaml */; };
 		4426D360150290CF009100C7 /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4426D34415028210009100C7 /* bopomofo.schema.yaml */; };
@@ -94,11 +93,10 @@
 			dstSubfolderSpec = 12;
 			files = (
 				4407F3B014EC078F001329FE /* TWVariants.ocd in Copy opencc Files */,
-				4407F3B114EC078F001329FE /* TWPhrases.ocd in Copy opencc Files */,
-				4407F3B214EC078F001329FE /* TSCharacters.ocd in Copy opencc Files */,
-				4407F3B314EC078F001329FE /* TSPhrases.ocd in Copy opencc Files */,
-				4407F3B414EC078F001329FE /* t2s.json in Copy opencc Files */,
-				4407F3B514EC078F001329FE /* t2tw.json in Copy opencc Files */,
+				4407F3B114EC078F001329FE /* TSCharacters.ocd in Copy opencc Files */,
+				4407F3B214EC078F001329FE /* TSPhrases.ocd in Copy opencc Files */,
+				4407F3B314EC078F001329FE /* t2s.json in Copy opencc Files */,
+				4407F3B414EC078F001329FE /* t2tw.json in Copy opencc Files */,
 			);
 			name = "Copy opencc Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -393,11 +391,10 @@
 			isa = PBXGroup;
 			children = (
 				4407F39E14EC071E001329FE /* TWVariants.ocd */,
-				4407F39F14EC071E001329FE /* TWPhrses.ocd */,
-				4407F3A014EC071E001329FE /* TSCharacters.ocd */,
-				4407F3A114EC071E001329FE /* TSPhrases.ocd */,
-				4407F3A214EC071E001329FE /* t2s.json */,
-				4407F3A314EC071E001329FE /* t2tw.json */,
+				4407F39F14EC071E001329FE /* TSCharacters.ocd */,
+				4407F3A014EC071E001329FE /* TSPhrases.ocd */,
+				4407F3A114EC071E001329FE /* t2s.json */,
+				4407F3A214EC071E001329FE /* t2tw.json */,
 			);
 			name = opencc;
 			path = data/opencc;

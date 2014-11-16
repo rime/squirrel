@@ -4,19 +4,13 @@
     "type": "mmseg",
     "dict": {
       "type": "ocd",
-      "file": "TWPhrases.ocd"
+      "file": "TWVariants.ocd"
     }
   },
   "conversion_chain": [{
     "dict": {
-      "type": "group",
-      "dicts": [{
-        "type": "ocd",
-        "file": "TWPhrases.ocd"
-      }, {
-        "type": "ocd",
-        "file": "TWVariants.ocd"
-      }]
+      "type": "ocd",
+      "file": "TWVariants.ocd"
     }
   }]
 }
