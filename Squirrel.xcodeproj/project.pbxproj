@@ -27,6 +27,7 @@
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
+		7B53068F1A30104000486AC2 /* double_pinyin_pyjj.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B53068D1A30102D00486AC2 /* double_pinyin_pyjj.schema.yaml */; };
 		7BD9C04C1A2C689B008C0913 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7BD9BFF61A2C686C008C0913 /* bopomofo_tw.schema.yaml */; };
 		7BD9C04D1A2C689B008C0913 /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7BD9BFF71A2C686C008C0913 /* bopomofo.schema.yaml */; };
 		7BD9C04E1A2C689B008C0913 /* cangjie5_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7BD9BFF81A2C686C008C0913 /* cangjie5_express.schema.yaml */; };
@@ -117,6 +118,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				7B53068F1A30104000486AC2 /* double_pinyin_pyjj.schema.yaml in Copy Shared Support Files */,
 				7BD9C04C1A2C689B008C0913 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
 				7BD9C04D1A2C689B008C0913 /* bopomofo.schema.yaml in Copy Shared Support Files */,
 				7BD9C04E1A2C689B008C0913 /* cangjie5_express.schema.yaml in Copy Shared Support Files */,
@@ -230,6 +232,7 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7B53068D1A30102D00486AC2 /* double_pinyin_pyjj.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = double_pinyin_pyjj.schema.yaml; path = data/brise/double_pinyin_pyjj.schema.yaml; sourceTree = "<group>"; };
 		7BD9BF631A2C63AD008C0913 /* HKVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd; sourceTree = "<group>"; };
 		7BD9BF641A2C63AD008C0913 /* s2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2t.json; sourceTree = "<group>"; };
 		7BD9BF651A2C63AD008C0913 /* STCharacters.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = STCharacters.ocd; sourceTree = "<group>"; };
@@ -423,6 +426,7 @@
 		44DA7A4214DD598900C1ED3B /* SharedSupport */ = {
 			isa = PBXGroup;
 			children = (
+				7B53068D1A30102D00486AC2 /* double_pinyin_pyjj.schema.yaml */,
 				7BD9BFF61A2C686C008C0913 /* bopomofo_tw.schema.yaml */,
 				7BD9BFF71A2C686C008C0913 /* bopomofo.schema.yaml */,
 				7BD9BFF81A2C686C008C0913 /* cangjie5_express.schema.yaml */,
