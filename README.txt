@@ -80,11 +80,13 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
 
 程序設計：
   * 佛振 <chen.sst@gmail.com>
-  * 鄒旭 <zouivex@gmail.com>
-  * BYVoid <byvoid.kcp@gmail.com>
-  * waynezhang
+  * Linghua Zhang <linghua.zhang@me.com>
   * Chongyu Zhu <lembacon@gmail.com>
   * 雪齋 <lyc20041@gmail.com>
+  * faberii <ofaberii@gmail.com>
+  * Chun-wei Kuo <Dendoh@gmail.com>
+  * Junlu Cheng <frank4565@gmail.com>
+  * Jak Wings <jakwings@gmail.com>
 
 美術：
   * 圖標設計 佛振、梁海
@@ -96,8 +98,10 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide
   * google-glog  (New BSD License)
   * Google Test  (New BSD License)
   * Growl  (BSD License)
-  * Kyoto Cabinet  (GNU Public License)
-  * opencc / 開放中文轉換  (Apache License 2.0)
+  * Kyoto Cabinet  (GNU General Public License)
+  * LevelDB  (New BSD License)
+  * librime  (GNU General Public License 3.0)
+  * OpenCC / 開放中文轉換  (Apache License 2.0)
   * Sparkle  (MIT License)
   * UTF8-CPP  (Boost Software License)
   * yaml-cpp  (MIT License)
