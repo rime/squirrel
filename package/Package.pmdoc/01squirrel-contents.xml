@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <pkg-contents spec="1.12">
-  <f n="Squirrel.app" o="root" g="wheel" p="16877" pt="/Users/lotem/code/squirrel/build/Release/Squirrel.app" m="true" t="file">
+  <f n="Squirrel.app" o="root" g="wheel" p="16877" pt="/Users/lotem/squirrel/build/Release/Squirrel.app" m="true" t="file">
     <f n="Contents" o="root" g="wheel" p="16877">
       <f n="Frameworks" o="root" g="wheel" p="16877">
         <f n="Growl.framework" o="root" g="wheel" p="16877">
@@ -604,6 +604,7 @@
         <f n="double_pinyin_abc.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="double_pinyin_flypy.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="double_pinyin_mspy.schema.yaml" o="root" g="wheel" p="33188"/>
+        <f n="double_pinyin_pyjj.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="emoji.dict.yaml" o="root" g="wheel" p="33188"/>
         <f n="emoji.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="essay.txt" o="root" g="wheel" p="33188"/>
@@ -617,11 +618,16 @@
         <f n="luna_pinyin_simp.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="luna_pinyin_tw.schema.yaml" o="root" g="wheel" p="33188"/>
         <f n="opencc" o="root" g="wheel" p="16877">
-          <f n="to_tw_variants.txt" o="root" g="wheel" p="33188"/>
-          <f n="trad_to_simp_characters.ocd" o="root" g="wheel" p="33188"/>
-          <f n="trad_to_simp_phrases.ocd" o="root" g="wheel" p="33188"/>
-          <f n="zht2zhs.ini" o="root" g="wheel" p="33188"/>
-          <f n="zht2zhtw_v.ini" o="root" g="wheel" p="33188"/>
+          <f n="HKVariants.ocd" o="root" g="wheel" p="33188"/>
+          <f n="s2t.json" o="root" g="wheel" p="33188"/>
+          <f n="STCharacters.ocd" o="root" g="wheel" p="33188"/>
+          <f n="STPhrases.ocd" o="root" g="wheel" p="33188"/>
+          <f n="t2hk.json" o="root" g="wheel" p="33188"/>
+          <f n="t2s.json" o="root" g="wheel" p="33188"/>
+          <f n="t2tw.json" o="root" g="wheel" p="33188"/>
+          <f n="TSCharacters.ocd" o="root" g="wheel" p="33188"/>
+          <f n="TSPhrases.ocd" o="root" g="wheel" p="33188"/>
+          <f n="TWVariants.ocd" o="root" g="wheel" p="33188"/>
         </f>
         <f n="pinyin_simp.dict.yaml" o="root" g="wheel" p="33188"/>
         <f n="pinyin_simp.schema.yaml" o="root" g="wheel" p="33188"/>

@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.25</string>
+	<string>0.9.26</string>
 	<key>InputMethodConnectionName</key>
 	<string>Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
@@ -44,10 +44,10 @@
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>SUFeedURL</key>
-	<string>http://rimeime.github.io/squirrel-update/appcast.xml</string>
+    <string>http://rimeime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
-	
+
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>

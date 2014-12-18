@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<pkgref spec="1.12" uuid="785ABFD1-B7A1-4E5A-A9C9-7C8D930BBE79">
+<pkgref spec="1.12" uuid="1EE5C324-906B-44CD-BE11-21352CB4606C">
   <config>
     <identifier>com.googlecode.rimeime.Squirrel.pkg</identifier>
-    <version>0.9.25</version>
+    <version>0.9.26</version>
     <description/>
     <post-install type="none"/>
     <requireAuthorization/>
-    <installFrom includeRoot="true">/Users/lotem/code/squirrel/build/Release/Squirrel.app</installFrom>
+    <installFrom mod="true" includeRoot="true">/Users/lotem/squirrel/build/Release/Squirrel.app</installFrom>
     <installTo mod="true">/Library/Input Methods</installTo>
     <flags>
       <followSymbolicLinks/>
@@ -14,6 +14,7 @@
     <packageStore type="internal"/>
     <mod>installTo</mod>
     <mod>relocatable</mod>
+    <mod>installFrom.path</mod>
     <mod>scripts.postinstall.path</mod>
     <mod>identifier</mod>
     <mod>parent</mod>
@@ -25,9 +26,9 @@
   </scripts>
   <contents>
     <file-list>01squirrel-contents.xml</file-list>
-    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app" version="0.9.25" isDowngradeable="true">
-      <component id="com.growl.growlframework" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Growl.framework" version="1.3.1"/>
-      <component id="org.andymatuschak.Sparkle" path="/Users/lotem/code/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Sparkle.framework" version="313"/>
+    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/squirrel/build/Release/Squirrel.app" version="0.9.26" isDowngradeable="true">
+      <component id="com.growl.growlframework" path="/Users/lotem/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Growl.framework" version="1.3.1"/>
+      <component id="org.andymatuschak.Sparkle" path="/Users/lotem/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Sparkle.framework" version="313"/>
     </component>
     <filter>/CVS$</filter>
     <filter>/\.svn$</filter>
