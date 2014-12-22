@@ -1,7 +1,12 @@
 【鼠鬚管】更新日誌
 ===
 
-RIME 主頁： https://rimeime.github.io
+RIME 主葉：https://rimeime.github.io
+
+鼠鬚管 0.9.26.1 <2014-12-22>
+---
+
+  * 修復：0.9.26 版本設置 `translator/enable_user_dict: false` 發生崩潰
 
 鼠鬚管 0.9.26 <2014-12-16>
 ---
