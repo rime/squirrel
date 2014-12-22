@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<pkgref spec="1.12" uuid="1EE5C324-906B-44CD-BE11-21352CB4606C">
+<pkgref spec="1.12" uuid="B0722148-4346-435C-820C-A061B907E4BC">
   <config>
     <identifier>com.googlecode.rimeime.Squirrel.pkg</identifier>
     <version>0.9.26.1</version>
     <description/>
     <post-install type="req-logout"/>
     <requireAuthorization/>
-    <installFrom mod="true" includeRoot="true">/Users/lotem/squirrel/build/Release/Squirrel.app</installFrom>
+    <installFrom includeRoot="true">/Users/lotem/work/squirrel/build/Release/Squirrel.app</installFrom>
     <installTo mod="true">/Library/Input Methods</installTo>
     <flags>
       <followSymbolicLinks/>
@@ -15,21 +15,30 @@
     <mod>installTo</mod>
     <mod>postInstall</mod>
     <mod>relocatable</mod>
-    <mod>installFrom.path</mod>
     <mod>scripts.postinstall.path</mod>
+    <mod>scripts.preinstall.path</mod>
     <mod>identifier</mod>
     <mod>parent</mod>
     <mod>version</mod>
     <mod>installTo.path</mod>
   </config>
   <scripts>
+    <preinstall relative="true" mod="true">../preflight</preinstall>
     <postinstall relative="true" mod="true">../postflight</postinstall>
   </scripts>
   <contents>
     <file-list>01squirrel-contents.xml</file-list>
-    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/squirrel/build/Release/Squirrel.app" version="0.9.26.1" isDowngradeable="true">
-      <component id="com.growl.growlframework" path="/Users/lotem/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Growl.framework" version="1.3.1"/>
-      <component id="org.andymatuschak.Sparkle" path="/Users/lotem/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Sparkle.framework" version="313"/>
+    <component id="com.googlecode.rimeime.inputmethod.Squirrel" path="/Users/lotem/work/squirrel/build/Release/Squirrel.app" version="0.9.26.1" isDowngradeable="true">
+      <component id="com.growl.growlframework" path="/Users/lotem/work/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Growl.framework" version="1.3.1" isDowngradeable="true">
+        <mod>isRelocatable</mod>
+        <mod>isDowngradeable</mod>
+      </component>
+      <component id="org.andymatuschak.Sparkle" path="/Users/lotem/work/squirrel/build/Release/Squirrel.app/Contents/Frameworks/Sparkle.framework" version="313" isDowngradeable="true">
+        <mod>isRelocatable</mod>
+        <mod>isDowngradeable</mod>
+      </component>
+      <mod>isRelocatable</mod>
+      <mod>isDowngradeable</mod>
     </component>
     <filter>/CVS$</filter>
     <filter>/\.svn$</filter>

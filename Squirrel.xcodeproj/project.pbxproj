@@ -27,6 +27,7 @@
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
+		44FED9BA1A48502900037B05 /* preflight in Resources */ = {isa = PBXBuildFile; fileRef = 44FED9B91A48502900037B05 /* preflight */; };
 		7B53068F1A30104000486AC2 /* double_pinyin_pyjj.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B53068D1A30102D00486AC2 /* double_pinyin_pyjj.schema.yaml */; };
 		7BD9C04C1A2C689B008C0913 /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7BD9BFF61A2C686C008C0913 /* bopomofo_tw.schema.yaml */; };
 		7BD9C04D1A2C689B008C0913 /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7BD9BFF71A2C686C008C0913 /* bopomofo.schema.yaml */; };
@@ -232,6 +233,7 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
+		44FED9B91A48502900037B05 /* preflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = preflight; sourceTree = "<group>"; };
 		7B53068D1A30102D00486AC2 /* double_pinyin_pyjj.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = double_pinyin_pyjj.schema.yaml; path = data/brise/double_pinyin_pyjj.schema.yaml; sourceTree = "<group>"; };
 		7BD9BF631A2C63AD008C0913 /* HKVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd; sourceTree = "<group>"; };
 		7BD9BF641A2C63AD008C0913 /* s2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2t.json; sourceTree = "<group>"; };
@@ -381,6 +383,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				44FED9B91A48502900037B05 /* preflight */,
 				44986A93184B421700B3278D /* LICENSE.txt */,
 				44986A94184B421700B3278D /* README.txt */,
 				44CD7D9E1828D981006E9222 /* rime.pdf */,
@@ -552,6 +555,7 @@
 				44986A96184B421700B3278D /* README.txt in Resources */,
 				44943BB815066A540005EE85 /* postflight in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
+				44FED9BA1A48502900037B05 /* preflight in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
 				4493402B158A4ABC0041A35A /* squirrel-app.icns in Resources */,
 				448CCCDD166B2E0500337E78 /* Growl Registration Ticket.growlRegDict in Resources */,

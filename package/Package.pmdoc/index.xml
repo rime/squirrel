@@ -21,13 +21,13 @@
 
 &#x4ECA;&#x7531;&#x3014;RIME&#xFF0F;&#x4E2D;&#x5DDE;&#x97FB;&#x8F38;&#x5165;&#x6CD5;&#x5F15;&#x64CE;&#x3015;&#x5F37;&#x529B;&#x9A45;&#x52D5;</description>
   <contents>
-    <choice title="Squirrel" id="choice0" starts_selected="true" starts_enabled="true" starts_hidden="false">
+    <choice title="Squirrel" id="choice0" starts_selected="true" starts_enabled="true" starts_hidden="true">
       <pkgref id="com.googlecode.rimeime.Squirrel.pkg"/>
     </choice>
   </contents>
   <resources bg-scale="none" bg-align="topleft">
     <locale lang="zh">
-      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
+      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
 {\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fnil\fcharset136 STHeitiTC-Light;\f2\fnil\fcharset134 STHeitiSC-Light;
 }
 {\colortbl;\red255\green255\blue255;}
@@ -363,10 +363,10 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
   </resources>
   <flags/>
   <item type="file">01squirrel.xml</item>
-  <mod>properties.systemDomain</mod>
+  <mod>description</mod>
   <mod>properties.title</mod>
   <mod>properties.customizeOption</mod>
   <mod>properties.userDomain</mod>
   <mod>properties.anywhereDomain</mod>
-  <mod>description</mod>
+  <mod>properties.systemDomain</mod>
 </pkmkdoc>

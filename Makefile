@@ -52,16 +52,19 @@ debug: $(DEPENDS)
 	rm -f build/Squirrel.app
 	cd build ; ln -s Debug/Squirrel.app Squirrel.app
 
+SQUIRREL_APP_PATH = /Library/Input Methods/Squirrel.app
+
 install-debug:
-	rm -rf "/Library/Input Methods/Squirrel.app/Contents/Frameworks"
-	rm -rf "/Library/Input Methods/Squirrel.app/Contents/MacOS"
+	rm -rf "$(SQUIRREL_APP_PATH)/Contents/Frameworks"
+	rm -rf "$(SQUIRREL_APP_PATH)/Contents/MacOS"
+
 	cp -R build/Debug/Squirrel.app "/Library/Input Methods"
-	"/Library/Input Methods/Squirrel.app/Contents/Resources/postflight"
+	"$(SQUIRREL_APP_PATH)/Contents/Resources/postflight"
 
 install-release:
-	rm -rf "/Library/Input Methods/Squirrel.app"
+	rm -rf "$(SQUIRREL_APP_PATH)"
 	cp -R build/Release/Squirrel.app "/Library/Input Methods"
-	"/Library/Input Methods/Squirrel.app/Contents/Resources/postflight"
+	"$(SQUIRREL_APP_PATH)/Contents/Resources/postflight"
 
 clean:
 	rm -rf build > /dev/null 2>&1 || true
