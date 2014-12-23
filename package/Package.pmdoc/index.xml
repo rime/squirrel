@@ -27,7 +27,7 @@
   </contents>
   <resources bg-scale="none" bg-align="topleft">
     <locale lang="zh">
-      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1343\cocoasubrtf160
+      <resource mime-type="text/rtf" kind="embedded" type="welcome"><![CDATA[{\rtf1\ansi\ansicpg1252\cocoartf1265\cocoasubrtf190
 {\fonttbl\f0\fnil\fcharset0 LucidaGrande;\f1\fnil\fcharset136 STHeitiTC-Light;\f2\fnil\fcharset134 STHeitiSC-Light;
 }
 {\colortbl;\red255\green255\blue255;}
@@ -63,7 +63,7 @@
 -------------------------------------------------\
 
 \f1 \'a1\'69\'b9\'ab\'c5\'bd\'ba\'de\'a1\'6a\'bf\'e9\'a4\'4a\'aa\'6b
-\f0  0.9.26.1\
+\f0  0.9.26.2\
 \
 
 \f1 \'a6\'a1\'ae\'a4\'b0\'f3\'aa\'a9\'c5\'76\'a9\'d2\'b5\'4c
@@ -149,7 +149,12 @@ http://code.google.com/p/rimeime/wiki/CustomizationGuide\
 \f0 \
 \
 
-\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.26.1 <2014-12-22>\
+\f2 \'ca\'f3\'f4\'50\'b9\'dc 0.9.26.2 <2014-12-23>\
+---\
+\
+  * \'d0\'de\'8f\'cd\'a3\'ba\'b0\'b2\'d1\'62\'e1\'e1\'dd\'94\'c8\'eb\'b7\'a8\'d4\'da\'d2\'bb\'d0\'a9 app \'d6\'d0\'9f\'6f\'b7\'a8\'86\'99\'d3\'c3 #43\
+\
+\'ca\'f3\'f4\'50\'b9\'dc 0.9.26.1 <2014-12-22>\
 ---\
 \
   * \'d0\'de\'8f\'cd\'a3\'ba0.9.26 \'b0\'e6\'b1\'be\'d4\'4f\'d6\'c3 `translator/enable_user_dict: false` \'b0\'6c\'c9\'fa\'b1\'c0\'9d\'a2\
@@ -363,10 +368,10 @@ Rime \'cb\'e3\'b7\'a8\'8e\'ec\'d7\'83\'b8\'fc\'bc\'af\
   </resources>
   <flags/>
   <item type="file">01squirrel.xml</item>
-  <mod>description</mod>
+  <mod>properties.systemDomain</mod>
   <mod>properties.title</mod>
   <mod>properties.customizeOption</mod>
+  <mod>description</mod>
   <mod>properties.userDomain</mod>
   <mod>properties.anywhereDomain</mod>
-  <mod>properties.systemDomain</mod>
 </pkmkdoc>
