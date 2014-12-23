@@ -3,6 +3,11 @@
 
 RIME 主葉：https://rimeime.github.io
 
+鼠鬚管 0.9.26.2 <2014-12-23>
+---
+
+  * 修復：安裝後輸入法在一些 app 中無法啓用 [#43](https://github.com/lotem/squirrel/issues/43)
+
 鼠鬚管 0.9.26.1 <2014-12-22>
 ---
 
