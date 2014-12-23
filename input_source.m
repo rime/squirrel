@@ -13,6 +13,7 @@ void RegisterInputSource() {
       NULL, kInstalledLocation, strlen((const char *)kInstalledLocation), NO);
   if (installedLocationURL) {
     TISRegisterInputSource(installedLocationURL);
+    CFRelease(installedLocationURL);
   }
 }
 
@@ -37,6 +38,7 @@ void ActivateInputSource() {
       NSLog(@"'%@' should have been activated.", sourceID);
     }
   }
+  CFRelease(sourceList);
 }
 
 void DeactivateInputSource() {
@@ -54,6 +56,7 @@ void DeactivateInputSource() {
       NSLog(@"'%@' should have been deactivated.", sourceID);
     }
   }
+  CFRelease(sourceList);
 }
 
 BOOL IsInputSourceActive() {
@@ -74,6 +77,7 @@ BOOL IsInputSourceActive() {
       }
     }
   }
+  CFRelease(sourceList);
   NSLog(@"IsInputSourceActive: %d / 2", active);
   return active == 2;  // 1 active input method + 1 active input mode
 }
