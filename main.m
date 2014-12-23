@@ -7,7 +7,8 @@
 
 void RegisterInputSource();
 void ActivateInputSource();
-BOOL IsInputSourceActive();
+void DeactivateInputSource();
+//BOOL IsInputSourceActive();
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
@@ -35,10 +36,9 @@ int main(int argc, char *argv[])
   
   if (argc > 1 && !strcmp("--install", argv[1])) {
     // register and enable Squirrel
-    if (!IsInputSourceActive()) {
-      RegisterInputSource();
-      ActivateInputSource();
-    }
+    RegisterInputSource();
+    DeactivateInputSource();
+    ActivateInputSource();
     return 0;
   }
   

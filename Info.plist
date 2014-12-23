@@ -19,7 +19,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>0.9.26.1</string>
+	<string>0.9.26.2</string>
 	<key>InputMethodConnectionName</key>
 	<string>Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
@@ -44,10 +44,9 @@
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>SUFeedURL</key>
-    <string>http://rimeime.github.io/release/squirrel/appcast.xml</string>
+	<string>http://rimeime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
-
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
@@ -55,9 +54,9 @@
 			<key>com.googlecode.rimeime.inputmethod.Squirrel</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
+				<string>com.googlecode.rimeime.inputmethod.Squirrel.Rime</string>
 				<key>TISIntendedLanguage</key>
-				<string>zh-Hans</string>
+				<string>zh</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
@@ -83,7 +82,7 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
+			<string>com.googlecode.rimeime.inputmethod.Squirrel.Rime</string>
 		</array>
 	</dict>
 </dict>
