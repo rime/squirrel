@@ -15,7 +15,7 @@
 式恕堂 版權所無
 
 授權條款：GPL v3
-項目主頁：http://code.google.com/p/rimeime/
+項目主頁：http://rimeime.github.io
 
 您可能還需要 RIME 用於其他操作系統的發行版：
   * 【中州韻】用於 Linux + IBus 輸入法框架
