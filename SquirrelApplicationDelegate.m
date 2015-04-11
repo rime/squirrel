@@ -66,7 +66,7 @@
 
 -(IBAction)openWiki:(id)sender
 {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"http://code.google.com/p/rimeime/w/list"]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:@"https://github.com/rime/home/wiki/UserGuide"]];
 }
 
 static void show_message_growl(const char* msg_text, const char* msg_id) {
