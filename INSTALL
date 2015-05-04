@@ -1,3 +1,0 @@
-#! /bin/bash
-git submodule update --init
-make deps && make && sudo make install
