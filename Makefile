@@ -1,18 +1,18 @@
-.PHONY: all install librime data update_brise update_opencc_dict deps release debug clean
+.PHONY: all install librime data update_brise update_opencc_data deps release debug clean
 
 all: release
 install: install-release
 
 LIBRIME = lib/librime.1.dylib
 BRISE = data/brise/default.yaml data/brise/symbols.yaml data/brise/essay.txt
-OPENCC_DICT = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd
+OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc/t2s.json
 
-DEPENDS = $(LIBRIME) $(BRISE) $(OPENCC_DICT)
+DEPENDS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
 
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
 RIME_DEPLOYER_OUTPUT = librime/xbuild/bin/Release/rime_deployer
 RIME_DICT_MANAGER_OUTPUT = librime/xbuild/bin/Release/rime_dict_manager
-OPENCC_DICT_OUTPUT = librime/thirdparty/src/opencc/build/data/*.ocd
+OPENCC_DATA_OUTPUT = librime/thirdparty/data/opencc/*.*
 DATA_FILES = brise/default.yaml brise/symbols.yaml brise/essay.txt brise/preset/*.yaml brise/supplement/*.yaml
 
 $(LIBRIME):
@@ -21,8 +21,8 @@ $(LIBRIME):
 $(BRISE):
 	$(MAKE) update_brise
 
-$(OPENCC_DICT):
-	$(MAKE) update_opencc_dict
+$(OPENCC_DATA):
+	$(MAKE) update_opencc_data
 
 librime:
 	cd librime; make -f Makefile.xcode
@@ -30,15 +30,16 @@ librime:
 	cp $(RIME_DEPLOYER_OUTPUT) bin/
 	cp $(RIME_DICT_MANAGER_OUTPUT) bin/
 
-data: update_brise update_opencc_dict
+data: update_brise update_opencc_data
 
 update_brise:
 	mkdir -p data/brise
 	cp $(DATA_FILES) data/brise/
 
-update_opencc_dict:
+update_opencc_data:
 	cd librime; make -f Makefile.xcode thirdparty/opencc
-	cp $(OPENCC_DICT_OUTPUT) data/opencc/
+	mkdir -p data/opencc
+	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
 deps: librime data
 
