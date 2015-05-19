@@ -10,10 +10,14 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc
 DEPENDS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
 
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
-RIME_DEPLOYER_OUTPUT = librime/xbuild/bin/Release/rime_deployer
-RIME_DICT_MANAGER_OUTPUT = librime/xbuild/bin/Release/rime_dict_manager
+RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
+RIME_BIN_DEPLOYER = rime_deployer
+RIME_BIN_DICT_MANAGER = rime_dict_manager
 OPENCC_DATA_OUTPUT = librime/thirdparty/data/opencc/*.*
 DATA_FILES = brise/default.yaml brise/symbols.yaml brise/essay.txt brise/preset/*.yaml brise/supplement/*.yaml
+
+INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
+INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
 
 $(LIBRIME):
 	$(MAKE) librime
@@ -27,8 +31,10 @@ $(OPENCC_DATA):
 librime:
 	cd librime; make -f Makefile.xcode
 	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
-	cp $(RIME_DEPLOYER_OUTPUT) bin/
-	cp $(RIME_DICT_MANAGER_OUTPUT) bin/
+	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
+	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DEPLOYER)
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
 
 data: update_brise update_opencc_data
 
