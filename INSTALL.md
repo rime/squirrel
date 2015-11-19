@@ -19,7 +19,14 @@ brew install git
 brew install boost
 ```
 
-> If you've built Boost manually instead of Homebrewing it, set `BOOST_ROOT` to its top level directory in the terminal.
+You can also install them with [MacPorts](https://www.macports.org/):
+
+``` sh
+port install cmake git
+port install boost -no_static
+```
+
+> If you've built Boost manually instead of installing it with Homebrew or MacPorts, set `BOOST_ROOT` to its top level directory in the terminal.
 
 ### Checkout the code
 
