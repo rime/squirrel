@@ -278,9 +278,10 @@
 -(void)commitComposition:(id)sender
 {
   //NSLog(@"commitComposition:");
-  // FIXME: chrome's address bar issues this callback when showing suggestions.
-  if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
-    return;
+  // The issue of address bar in Chrome does not exist anymore (version 47)
+  //  - FIXME: chrome's address bar issues this callback when showing suggestions.
+  /* if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
+    return; */
   // force committing existing Rime composition
   if (_session && RimeCommitComposition(_session)) {
     [self rimeConsumeCommittedText];
