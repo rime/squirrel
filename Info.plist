@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>squirrel-app.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.googlecode.rimeime.inputmethod.Squirrel</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -20,33 +20,6 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>0.9.26.2</string>
-	<key>InputMethodConnectionName</key>
-	<string>Squirrel_1_Connection</string>
-	<key>InputMethodServerControllerClass</key>
-	<string>SquirrelInputController</string>
-	<key>InputMethodServerDelegateClass</key>
-	<string>SquirrelInputController</string>
-	<key>LSBackgroundOnly</key>
-	<false/>
-	<key>LSUIElement</key>
-	<true/>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
-	<key>NSPrincipalClass</key>
-	<string>NSApplication</string>
-	<key>tsInputMethodCharacterRepertoireKey</key>
-	<array>
-		<string>Hans</string>
-		<string>Hant</string>
-	</array>
-	<key>tsInputMethodIconFileKey</key>
-	<string>rime.pdf</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
-	<key>SUFeedURL</key>
-	<string>http://rimeime.github.io/release/squirrel/appcast.xml</string>
-	<key>SUEnableAutomaticChecks</key>
-	<true/>
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
@@ -85,5 +58,32 @@
 			<string>com.googlecode.rimeime.inputmethod.Squirrel.Rime</string>
 		</array>
 	</dict>
+	<key>InputMethodConnectionName</key>
+	<string>Squirrel_1_Connection</string>
+	<key>InputMethodServerControllerClass</key>
+	<string>SquirrelInputController</string>
+	<key>InputMethodServerDelegateClass</key>
+	<string>SquirrelInputController</string>
+	<key>LSBackgroundOnly</key>
+	<false/>
+	<key>LSUIElement</key>
+	<true/>
+	<key>NSMainNibFile</key>
+	<string>MainMenu</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+	<key>SUEnableAutomaticChecks</key>
+	<true/>
+	<key>SUFeedURL</key>
+	<string>http://rimeime.github.io/release/squirrel/appcast.xml</string>
+	<key>SUPublicDSAKeyFile</key>
+	<string>dsa_pub.pem</string>
+	<key>tsInputMethodCharacterRepertoireKey</key>
+	<array>
+		<string>Hans</string>
+		<string>Hant</string>
+	</array>
+	<key>tsInputMethodIconFileKey</key>
+	<string>rime.pdf</string>
 </dict>
 </plist>
