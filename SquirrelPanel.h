@@ -1,11 +1,3 @@
-//
-//  SquirrelPanel.h
-//  Squirrel
-//
-//  Created by 弓辰 on 2012/2/13.
-//  Copyright 2012 __MyCompanyName__. All rights reserved.
-//
-
 #import <Cocoa/Cocoa.h>
 
 @interface SquirrelUIStyle : NSObject<NSCopying> {
