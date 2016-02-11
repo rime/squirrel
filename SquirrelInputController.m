@@ -57,8 +57,7 @@
           handled = YES;
           break;
         }
-        // NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender,
-        // modifiers);
+        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
         int changes = _lastModifier ^ modifiers;
@@ -102,8 +101,7 @@
         if (!isalpha(keyChars.UTF8String[0])) {
           keyChars = event.characters;
         }
-        // NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars:
-        // [%@]",
+        //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars: [%@]",
         //      sender, modifiers, keyCode, keyChars);
 
         // translate osx keyevents to rime keyevents
