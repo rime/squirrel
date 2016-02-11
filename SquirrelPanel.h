@@ -30,28 +30,7 @@
 
 @end
 
-@interface SquirrelPanel : NSObject {
-  NSRect _position;
-  NSWindow *_window;
-  NSView *_view;
-  NSMutableDictionary *_attrs;
-  NSMutableDictionary *_highlightedAttrs;
-  NSMutableDictionary *_labelAttrs;
-  NSMutableDictionary *_labelHighlightedAttrs;
-  NSMutableDictionary *_commentAttrs;
-  NSMutableDictionary *_commentHighlightedAttrs;
-  NSMutableDictionary *_preeditAttrs;
-  NSMutableDictionary *_preeditHighlightedAttrs;
-  BOOL _horizontal;
-  BOOL _inlinePreedit;
-  NSString *_candidateFormat;
-  NSParagraphStyle *_paragraphStyle;
-  NSParagraphStyle *_preeditParagraphStyle;
-  
-  int _numCandidates;
-  NSString *_message;
-  NSTimer *_statusTimer;
-}
+@interface SquirrelPanel : NSObject
 
 @property (nonatomic, readonly) BOOL horizontal;
 @property (nonatomic, readonly) BOOL inlinePreedit;
