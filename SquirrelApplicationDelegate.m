@@ -94,7 +94,7 @@ static void show_message_notification_center(const char* msg_text, const char* m
 }
 
 static void show_status_message(const char* msg_text, const char* msg_id) {
-  SquirrelPanel* panel = ((SquirrelApplicationDelegate *)NSApp.delegate).panel;
+  SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   if (panel) {
     [panel updateMessage:NSLocalizedString(@(msg_text), nil)];
   }
@@ -531,7 +531,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
         //NSLog(@"DEBUG option[%d]: %s (%s)", option_iter.index, option_iter.key, option_iter.path);
         Bool value = False;
         if (RimeConfigGetBool(config, option_iter.path, &value)) {
-          [options setValue:[NSNumber numberWithBool:value] forKey:@(option_iter.key)];
+          [options setValue:[NSNumber numberWithBool:!!value] forKey:@(option_iter.key)];
         }
       }
       RimeConfigEnd(&option_iter);
@@ -609,3 +609,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 }
 
 @end  //SquirrelApplicationDelegate
+
+@implementation NSApplication (SquirrelApp)
+
+-(SquirrelApplicationDelegate *)squirrelAppDelegate {
+  return (SquirrelApplicationDelegate *)self.delegate;
+}
+
+@end
+

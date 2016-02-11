@@ -43,5 +43,11 @@
 
 @end
 
+@interface NSApplication (SquirrelApp)
+
+@property(nonatomic, readonly, strong) SquirrelApplicationDelegate *squirrelAppDelegate;
+
+@end
+
 // also used in main.m
 extern void (*show_message)(const char* msg_text, const char* msg_id);

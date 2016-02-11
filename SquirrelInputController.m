@@ -23,120 +23,105 @@
  @abstract   Receive incoming event
  @discussion This method receives key events from the client application.
  */
--(BOOL)handleEvent:(NSEvent*)event client:(id)sender
+- (BOOL)handleEvent:(NSEvent*)event client:(id)sender
 {
   // Return YES to indicate the the key input was received and dealt with.
   // Key processing will not continue in that case.  In other words the
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
-//  NSLog(@"handleEvent:client:");
-
   _currentClient = sender;
-  
+
   NSUInteger modifiers = event.modifierFlags;
 
   BOOL handled = NO;
 
   @autoreleasepool {
-
     if (!_session || !RimeFindSession(_session)) {
       [self createSession];
       if (!_session) {
         return NO;
       }
     }
-    
-    NSString *app = [_currentClient bundleIdentifier];
-//  NSLog(@"app = %@", app);
-//  NSLog(@"_currentApp = %@", _currentApp);
-    
+
+    NSString* app = [_currentClient bundleIdentifier];
+
     if (![_currentApp isEqualToString:app]) {
       _currentApp = [app copy];
       [self updateAppOptions];
     }
 
     switch (event.type) {
-      case NSFlagsChanged:
-        {
-          if (_lastModifier == modifiers) {
-            handled = YES;
-            break;
-          }
-          //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
-          int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-          int release_mask = 0;
-          int changes = _lastModifier ^ modifiers;
-          if (changes & OSX_CAPITAL_MASK)
-          {
-            // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
-            // while NSFlagsChanged event has the flag changed already.
-            // so it is necessary to revert kLockMask.
-            rime_modifiers ^= kLockMask;
-            [self processKey:XK_Caps_Lock modifiers:rime_modifiers];
-          }
-          if (changes & OSX_SHIFT_MASK)
-          {
-            release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
-            [self processKey:XK_Shift_L modifiers:(rime_modifiers | release_mask)];
-          }
-          if (changes & OSX_CTRL_MASK)
-          {
-            release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask;
-            [self processKey:XK_Control_L modifiers:(rime_modifiers | release_mask)];
-          }
-          if (changes & OSX_ALT_MASK)
-          {
-            release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
-            [self processKey:XK_Alt_L modifiers:(rime_modifiers | release_mask)];
-          }
-          if (changes & OSX_COMMAND_MASK)
-          {
-            release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
-            [self processKey:XK_Super_L modifiers:(rime_modifiers | release_mask)];
-            // do not update UI when using Command key
-            break;
-          }
-          [self rimeUpdate];
+      case NSFlagsChanged: {
+        if (_lastModifier == modifiers) {
+          handled = YES;
+          break;
         }
-        break;
-      case NSKeyDown:
-      {
+        // NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender,
+        // modifiers);
+        int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
+        int release_mask = 0;
+        int changes = _lastModifier ^ modifiers;
+        if (changes & OSX_CAPITAL_MASK) {
+          // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
+          // while NSFlagsChanged event has the flag changed already.
+          // so it is necessary to revert kLockMask.
+          rime_modifiers ^= kLockMask;
+          [self processKey:XK_Caps_Lock modifiers:rime_modifiers];
+        }
+        if (changes & OSX_SHIFT_MASK) {
+          release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
+          [self processKey:XK_Shift_L
+                 modifiers:(rime_modifiers | release_mask)];
+        }
+        if (changes & OSX_CTRL_MASK) {
+          release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask;
+          [self processKey:XK_Control_L
+                 modifiers:(rime_modifiers | release_mask)];
+        }
+        if (changes & OSX_ALT_MASK) {
+          release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
+          [self processKey:XK_Alt_L modifiers:(rime_modifiers | release_mask)];
+        }
+        if (changes & OSX_COMMAND_MASK) {
+          release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
+          [self processKey:XK_Super_L
+                 modifiers:(rime_modifiers | release_mask)];
+          // do not update UI when using Command key
+          break;
+        }
+        [self rimeUpdate];
+      } break;
+      case NSKeyDown: {
         // ignore Command+X hotkeys.
         if (modifiers & OSX_COMMAND_MASK)
           break;
 
         NSInteger keyCode = event.keyCode;
         NSString* keyChars = event.charactersIgnoringModifiers;
-        if (!isalpha(keyChars.UTF8String[0]))
-        {
+        if (!isalpha(keyChars.UTF8String[0])) {
           keyChars = event.characters;
         }
-        //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars: [%@]",
+        // NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars:
+        // [%@]",
         //      sender, modifiers, keyCode, keyChars);
 
         // translate osx keyevents to rime keyevents
-        int rime_keycode = osx_keycode_to_rime_keycode(keyCode,
-                                                       keyChars.UTF8String[0],
-                                                       modifiers & OSX_SHIFT_MASK,
-                                                       modifiers & OSX_CAPITAL_MASK);
-        if (rime_keycode)
-        {
+        int rime_keycode = osx_keycode_to_rime_keycode(
+          keyCode, keyChars.UTF8String[0], modifiers & OSX_SHIFT_MASK,
+          modifiers & OSX_CAPITAL_MASK);
+        if (rime_keycode) {
           int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-          handled = [self processKey: rime_keycode modifiers: rime_modifiers];
+          handled = [self processKey:rime_keycode modifiers:rime_modifiers];
           [self rimeUpdate];
         }
-      }
-        break;
-      case NSLeftMouseDown:
-      {
+      } break;
+      case NSLeftMouseDown: {
         [self commitComposition:_currentClient];
-      }
-        break;
-      defaults:
+      } break;
+      default:
         break;
     }
-
   }
 
   _lastModifier = modifiers;
@@ -211,7 +196,7 @@
   if (_chordTimer && _chordTimer.valid) {
     [_chordTimer invalidate];
   }
-  NSTimeInterval interval = ((SquirrelApplicationDelegate *)NSApp.delegate).chordDuration;
+  NSTimeInterval interval = NSApp.squirrelAppDelegate.chordDuration;
   _chordTimer = [NSTimer scheduledTimerWithTimeInterval:interval
                                                  target:self
                                                selector:@selector(onChordTimer:)
@@ -241,7 +226,7 @@
 -(void)activateServer:(id)sender
 {
   //NSLog(@"activateServer:");
-  if (((SquirrelApplicationDelegate *)NSApp.delegate).useUSKeyboardLayout) {
+  if (NSApp.squirrelAppDelegate.useUSKeyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
   _preeditString = @"";
@@ -260,7 +245,7 @@
 -(void)deactivateServer:(id)sender
 {
   //NSLog(@"deactivateServer:");
-  [((SquirrelApplicationDelegate *)NSApp.delegate).panel hide];
+  [NSApp.squirrelAppDelegate.panel hide];
   [self commitComposition:sender];
 }
 
@@ -294,32 +279,32 @@
 // so here we deliver messages to our responsible SquirrelApplicationDelegate
 -(void)deploy:(id)sender
 {
-  [(SquirrelApplicationDelegate *)NSApp.delegate deploy:sender];
+  [NSApp.squirrelAppDelegate deploy:sender];
 }
 
 -(void)syncUserData:(id)sender
 {
-  [(SquirrelApplicationDelegate *)NSApp.delegate syncUserData:sender];
+  [NSApp.squirrelAppDelegate syncUserData:sender];
 }
 
 -(void)configure:(id)sender
 {
-  [(SquirrelApplicationDelegate *)NSApp.delegate configure:sender];
+  [NSApp.squirrelAppDelegate configure:sender];
 }
 
 -(void)checkForUpdates:(id)sender
 {
-  [((SquirrelApplicationDelegate *)NSApp.delegate).updater performSelector:@selector(checkForUpdates:) withObject:sender];
+  [NSApp.squirrelAppDelegate.updater performSelector:@selector(checkForUpdates:) withObject:sender];
 }
 
 -(void)openWiki:(id)sender
 {
-  [(SquirrelApplicationDelegate *)NSApp.delegate openWiki:sender];
+  [NSApp.squirrelAppDelegate openWiki:sender];
 }
 
 -(NSMenu*)menu
 {
-  return ((SquirrelApplicationDelegate *)NSApp.delegate).menu;
+  return NSApp.squirrelAppDelegate.menu;
 }
 
 -(NSArray*)candidates:(id)sender
@@ -340,7 +325,7 @@
 
   _preeditString = @"";
 
-  [((SquirrelApplicationDelegate *)NSApp.delegate).panel hide];
+  [NSApp.squirrelAppDelegate.panel hide];
 }
 
 -(void)showPreeditString:(NSString*)preedit
@@ -388,7 +373,7 @@
   _candidates = candidates;
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
-  SquirrelPanel* panel = ((SquirrelApplicationDelegate *)NSApp.delegate).panel;
+  SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   [panel updatePosition:inputPos];
   [panel updatePreedit:preedit
           withSelRange:selRange
@@ -424,7 +409,7 @@
   if (!_currentApp) return;
   NSLog(@"setAppOptions: %@", _currentApp);
   // optionally, set app specific options
-  NSDictionary* appOptions = ((SquirrelApplicationDelegate *)NSApp.delegate).appOptions;
+  NSDictionary* appOptions = NSApp.squirrelAppDelegate.appOptions;
   NSDictionary* options = appOptions[_currentApp];
   if (options) {
     for (NSString* key in options) {
@@ -460,7 +445,7 @@
 -(void)loadSchemaSpecificSettings:(NSString*)schemaId {
   RimeConfig config;
   if (RimeSchemaOpen(schemaId.UTF8String, &config)) {
-    [(SquirrelApplicationDelegate *)NSApp.delegate updateUIStyle:&config initialize:NO];
+    [NSApp.squirrelAppDelegate updateUIStyle:&config initialize:NO];
     RimeConfigClose(&config);
   }
 }
@@ -477,7 +462,7 @@
       _schemaId = @(status.schema_id);
       [self loadSchemaSpecificSettings:_schemaId];
       // inline preedit
-      _inlinePreedit = ((SquirrelApplicationDelegate *)NSApp.delegate).panel.inlinePreedit &&
+      _inlinePreedit = NSApp.squirrelAppDelegate.panel.inlinePreedit &&
           !RimeGetOption(_session, "no_inline") &&   // not disabled in app options
           ![_schemaId isEqualToString:@".default"];  // not in switcher where app options are not accessible
       // if not inline, embed soft cursor in preedit string

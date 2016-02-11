@@ -691,7 +691,6 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   }
   _window.alphaValue = style.alpha;
   
-  style.candidateFormat;
   _candidateFormat = style.candidateFormat ? style.candidateFormat : @"%c. %@ ";
 
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
