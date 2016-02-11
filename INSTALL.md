@@ -31,23 +31,12 @@ port install boost -no_static
 ### Checkout the code
 
 ``` sh
-git clone git@github.com:rime/squirrel.git
-# for brise & librime
-cd squirrel
-git submodule update --init
+git clone --recursive https://github.com/rime/squirrel.git
 ```
 
 ### Build dependencies
 
-Build librime's dependencies:
-
-``` sh
-make -C librime -f Makefile.xcode thirdparty
-```
-
-> Note: you can also `brew install` the dependent libraries instead of building them with the above.
-
-Then build librime and data files that Squirrel depends on:
+Build librime, dependent third-party libraries and data files:
 
 ``` sh
 make deps

@@ -29,7 +29,7 @@ $(OPENCC_DATA):
 	$(MAKE) update_opencc_data
 
 librime:
-	cd librime; make -f Makefile.xcode
+	cd librime; make -f Makefile.xcode thirdparty release
 	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
