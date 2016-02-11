@@ -20,14 +20,14 @@
   SquirrelUIStyle* _baseStyle;
 }
 
--(NSMenu*)menu;
--(SquirrelPanel*)panel;
--(id)updater;
--(BOOL)useUSKeyboardLayout;
--(BOOL)enableNotifications;
--(BOOL)preferNotificationCenter;
--(NSDictionary*)appOptions;
--(NSTimeInterval)chordDuration;
+@property (nonatomic, readonly, copy) NSMenu *menu;
+@property (nonatomic, readonly, strong) SquirrelPanel *panel;
+@property (nonatomic, readonly, strong) id updater;
+@property (nonatomic, readonly) BOOL useUSKeyboardLayout;
+@property (nonatomic, readonly) BOOL enableNotifications;
+@property (nonatomic, readonly) BOOL preferNotificationCenter;
+@property (nonatomic, readonly, copy) NSDictionary *appOptions;
+@property (nonatomic, readonly) NSTimeInterval chordDuration;
 
 -(IBAction)deploy:(id)sender;
 -(IBAction)syncUserData:(id)sender;
@@ -37,7 +37,7 @@
 -(void)setupRime;
 -(void)startRimeWithFullCheck:(BOOL)fullCheck;
 -(void)loadSquirrelConfig;
--(BOOL)problematicLaunchDetected;
+@property (nonatomic, readonly) BOOL problematicLaunchDetected;
 
 -(void)updateUIStyle:(RimeConfig*)config initialize:(BOOL)initializing;
 

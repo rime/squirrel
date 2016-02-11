@@ -83,7 +83,7 @@ static const double kAlpha = 1.0;
 @property (nonatomic, assign) double borderHeight;
 @property (nonatomic, assign) double borderWidth;
 
--(NSSize)contentSize;
+@property (nonatomic, readonly) NSSize contentSize;
 -(void)setContent:(NSAttributedString*)content;
 
 @end
@@ -124,8 +124,8 @@ static const double kAlpha = 1.0;
     return;
   }
 
-  if ([self backgroundColor]) {
-    [[self backgroundColor] setFill];
+  if (self.backgroundColor) {
+    [self.backgroundColor setFill];
   }
   else {
     [[NSColor windowBackgroundColor] setFill];
@@ -134,8 +134,8 @@ static const double kAlpha = 1.0;
   [[NSBezierPath bezierPathWithRoundedRect:rect xRadius:_cornerRadius yRadius:_cornerRadius] fill];
 
   NSPoint point = rect.origin;
-  point.x += [self borderWidth];
-  point.y += [self borderHeight];
+  point.x += self.borderWidth;
+  point.y += self.borderHeight;
   [_content drawAtPoint:point];
 }
 
@@ -144,7 +144,7 @@ static const double kAlpha = 1.0;
 
 @implementation SquirrelPanel
 
--(id)init
+-(instancetype)init
 {
 //  NSLog(@"SqurrelPanel init");
   _position = NSMakeRect(0, 0, 0, 0);
@@ -152,40 +152,40 @@ static const double kAlpha = 1.0;
                                         styleMask:NSBorderlessWindowMask
                                           backing:NSBackingStoreBuffered
                                             defer:NO];
-  [_window setAlphaValue:kAlpha];
+  _window.alphaValue = kAlpha;
   [_window setLevel:NSScreenSaverWindowLevel + 1];
   [_window setHasShadow:YES];    
   [_window setOpaque:NO];
-  [_window setBackgroundColor:[NSColor clearColor]];
-  _view = [[SquirrelView alloc] initWithFrame:[[_window contentView] frame]];
-  [_window setContentView:_view];
+  _window.backgroundColor = [NSColor clearColor];
+  _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
+  _window.contentView = _view;
   
   _attrs = [[NSMutableDictionary alloc] init];
-  [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
-  [_attrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+  _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
-  [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
-  [_highlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
+  _highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
+  _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
   _commentAttrs = [[NSMutableDictionary alloc] init];
-  [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_commentAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _commentHighlightedAttrs = [_commentAttrs mutableCopy];
-  [_commentHighlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
+  _commentHighlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
   
   _preeditAttrs = [[NSMutableDictionary alloc] init];
-  [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
-  [_preeditAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
-  [_preeditHighlightedAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
-  [_preeditHighlightedAttrs setObject:[NSFont userFontOfSize:kFontSize] forKey:NSFontAttributeName];
+  _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+  _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _horizontal = NO;
   _inlinePreedit = NO;
@@ -214,20 +214,20 @@ static const double kAlpha = 1.0;
 {
 //  NSLog(@"show: %d %@", _numCandidates, _message);
   
-  NSRect window_rect = [_window frame];
+  NSRect window_rect = _window.frame;
   // resize frame
-  NSSize content_size = [(SquirrelView*)_view contentSize];
-  window_rect.size.height = content_size.height + [(SquirrelView*)_view borderHeight] * 2;
-  window_rect.size.width = content_size.width + [(SquirrelView*)_view borderWidth] * 2;
+  NSSize content_size = ((SquirrelView*)_view).contentSize;
+  window_rect.size.height = content_size.height + ((SquirrelView*)_view).borderHeight * 2;
+  window_rect.size.width = content_size.width + ((SquirrelView*)_view).borderWidth * 2;
   // reposition window
   window_rect.origin.x = NSMinX(_position);
   window_rect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(window_rect);
   // fit in current screen
-  NSRect screen_rect = [[NSScreen mainScreen] frame];
+  NSRect screen_rect = [NSScreen mainScreen].frame;
   NSArray* screens = [NSScreen screens];
   NSUInteger i;
-  for (i = 0; i < [screens count]; ++i) {
-    NSRect rect = [[screens objectAtIndex:i] frame];
+  for (i = 0; i < screens.count; ++i) {
+    NSRect rect = [screens[i] frame];
     if (NSPointInRect(_position.origin, rect)) {
       screen_rect = rect;
       break;
@@ -272,9 +272,9 @@ static const double kAlpha = 1.0;
           withLabels:(NSString*)labels
          highlighted:(NSUInteger)index
 {
-  _numCandidates = [candidates count];
+  _numCandidates = candidates.count;
 //  NSLog(@"updatePreedit: ... andCandidates: %d %@", _numCandidates, _message);
-  if (_numCandidates || (preedit && [preedit length])) {
+  if (_numCandidates || (preedit && preedit.length)) {
     [self updateMessage:nil];
     if (_statusTimer) {
       [_statusTimer invalidate];
@@ -303,7 +303,7 @@ static const double kAlpha = 1.0;
       labelRange2 = labelRange;
       labelFormat2 = labelFormat = nil;
       
-      pureCandidateRange = NSMakeRange(0, [_candidateFormat length]);
+      pureCandidateRange = NSMakeRange(0, _candidateFormat.length);
       pureCandidateFormat = _candidateFormat;
     }
     else {
@@ -320,7 +320,7 @@ static const double kAlpha = 1.0;
         pureCandidateFormat = @"";
       }
       else {
-        if (NSMaxRange(pureCandidateRange) >= [_candidateFormat length]) {
+        if (NSMaxRange(pureCandidateRange) >= _candidateFormat.length) {
           // '%@' is at the end, so label2 does not exist
           labelRange2 = NSMakeRange(NSNotFound, 0);
           labelFormat2 = nil;
@@ -331,7 +331,7 @@ static const double kAlpha = 1.0;
         }
         else {
           labelRange = NSMakeRange(0, pureCandidateRange.location);
-          labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange), [_candidateFormat length] - NSMaxRange(pureCandidateRange));
+          labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange), _candidateFormat.length - NSMaxRange(pureCandidateRange));
           
           labelFormat2 = [_candidateFormat substringWithRange:labelRange2];
         }
@@ -356,7 +356,7 @@ static const double kAlpha = 1.0;
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:[preedit substringWithRange:selRange]
                                                                     attributes:_preeditHighlightedAttrs]];
     }
-    if (selRange.location + selRange.length < [preedit length]) {
+    if (selRange.location + selRange.length < preedit.length) {
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:[preedit substringFromIndex:selRange.location + selRange.length]
                                                                     attributes:_preeditAttrs]];
     }
@@ -368,18 +368,18 @@ static const double kAlpha = 1.0;
     }
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
-                 range:NSMakeRange(0, [text length])];
+                 range:NSMakeRange(0, text.length)];
 
-    candidate_start_pos = [text length];
+    candidate_start_pos = text.length;
   }
   
   // candidates
   NSUInteger i;
-  for (i = 0; i < [candidates count]; ++i) {
+  for (i = 0; i < candidates.count; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
     
     // default: 1. 2. 3... custom: A. B. C...
-    char label_character = (i < [labels length]) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
+    char label_character = (i < labels.length) ? [labels characterAtIndex:i] : ((i + 1) % 10 + '0');
     
     NSDictionary *attrs = _attrs, *labelAttrs = _labelAttrs, *commentAttrs = _commentAttrs;
     if (i == index) {
@@ -393,7 +393,7 @@ static const double kAlpha = 1.0;
                                                                     attributes:labelAttrs]];
     }
     
-    [line appendAttributedString:[[NSAttributedString alloc] initWithString:[candidates objectAtIndex:i]
+    [line appendAttributedString:[[NSAttributedString alloc] initWithString:candidates[i]
                                                                   attributes:attrs]];
     
     if (labelRange2.location != NSNotFound) {
@@ -401,8 +401,8 @@ static const double kAlpha = 1.0;
                                                                     attributes:labelAttrs]];
     }
     
-    if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
-      [line appendAttributedString:[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
+    if (i < comments.count && [comments[i] length] != 0) {
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString: comments[i]
                                                                     attributes:commentAttrs]];
     }
     if (i > 0) {
@@ -414,7 +414,7 @@ static const double kAlpha = 1.0;
   }
   [text addAttribute:NSParagraphStyleAttributeName
                value:(id)_paragraphStyle
-               range:NSMakeRange(candidate_start_pos, [text length] - candidate_start_pos)];
+               range:NSMakeRange(candidate_start_pos, text.length - candidate_start_pos)];
   
   [(SquirrelView*)_view setContent:text];
   [self show];
@@ -462,13 +462,13 @@ static const double kAlpha = 1.0;
   }
   
   int r = 0, g = 0, b =0, a = 0xff;
-  if ([string length] == 10) {
+  if (string.length == 10) {
     // 0xffccbbaa
-    sscanf([string UTF8String], "0x%02x%02x%02x%02x", &a, &b, &g, &r);
+    sscanf(string.UTF8String, "0x%02x%02x%02x%02x", &a, &b, &g, &r);
   }
-  else if ([string length] == 8) {
+  else if (string.length == 8) {
     // 0xccbbaa
-    sscanf([string UTF8String], "0x%02x%02x%02x", &b, &g, &r);
+    sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
   
   return [NSColor colorWithDeviceRed:(CGFloat)r / 255. green:(CGFloat)g / 255. blue:(CGFloat)b / 255. alpha:(CGFloat)a / 255.];
@@ -512,7 +512,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   }
   
   NSArray *fontNames = [fullname componentsSeparatedByString:@","];
-  NSMutableArray *validFontDescriptors = [NSMutableArray arrayWithCapacity:[fontNames count]];
+  NSMutableArray *validFontDescriptors = [NSMutableArray arrayWithCapacity:fontNames.count];
   for (__strong NSString *fontName in fontNames) {
     fontName = [fontName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([NSFont fontWithName:fontName size:0.0] != nil) {
@@ -523,16 +523,16 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
     }
   }
   
-  if ([validFontDescriptors count] == 0) {
+  if (validFontDescriptors.count == 0) {
     return nil;
   }
-  else if ([validFontDescriptors count] == 1) {
-    return [validFontDescriptors objectAtIndex:0];
+  else if (validFontDescriptors.count == 1) {
+    return validFontDescriptors[0];
   }
   
-  NSFontDescriptor *initialFontDescriptor = [validFontDescriptors objectAtIndex:0];
-  NSArray *fallbackDescriptors = [validFontDescriptors subarrayWithRange:NSMakeRange(1, [validFontDescriptors count] - 1)];
-  NSDictionary *attributes = [NSDictionary dictionaryWithObject:fallbackDescriptors forKey:NSFontCascadeListAttribute];
+  NSFontDescriptor *initialFontDescriptor = validFontDescriptors[0];
+  NSArray *fallbackDescriptors = [validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count - 1)];
+  NSDictionary *attributes = @{NSFontCascadeListAttribute: fallbackDescriptors};
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
 
@@ -576,21 +576,21 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
       labelFont = [NSFont fontWithDescriptor:fontDescriptor size:style.labelFontSize];
     }
     else {
-      labelFont = [NSFont fontWithName:[font fontName] size:style.labelFontSize];
+      labelFont = [NSFont fontWithName:font.fontName size:style.labelFontSize];
     }
   }
-  [_attrs setObject:font forKey:NSFontAttributeName];
-  [_highlightedAttrs setObject:font forKey:NSFontAttributeName];
-  [_labelAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_labelHighlightedAttrs setObject:labelFont forKey:NSFontAttributeName];
-  [_commentAttrs setObject:font forKey:NSFontAttributeName];
-  [_commentHighlightedAttrs setObject:font forKey:NSFontAttributeName];
-  [_preeditAttrs setObject:font forKey:NSFontAttributeName];
-  [_preeditHighlightedAttrs setObject:font forKey:NSFontAttributeName];
+  _attrs[NSFontAttributeName] = font;
+  _highlightedAttrs[NSFontAttributeName] = font;
+  _labelAttrs[NSFontAttributeName] = labelFont;
+  _labelHighlightedAttrs[NSFontAttributeName] = labelFont;
+  _commentAttrs[NSFontAttributeName] = font;
+  _commentHighlightedAttrs[NSFontAttributeName] = font;
+  _preeditAttrs[NSFontAttributeName] = font;
+  _preeditHighlightedAttrs[NSFontAttributeName] = font;
   
   if (style.backgroundColor != nil) {
     NSColor *color = [self colorFromString:style.backgroundColor];
-    [(SquirrelView *) _view setBackgroundColor:(color)];
+    ((SquirrelView *) _view).backgroundColor = (color);
   }
   else {
     // default color
@@ -599,107 +599,107 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   
   if (style.candidateTextColor != nil) {
     NSColor *color = [self colorFromString:style.candidateTextColor];
-    [_attrs setObject:color forKey:NSForegroundColorAttributeName];
+    _attrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_attrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   }
   
   if (style.candidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style.candidateLabelColor];
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _labelAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    NSColor *color = blendColors([_attrs objectForKey:NSForegroundColorAttributeName], [(SquirrelView *)_view backgroundColor]);
-    [_labelAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors(_attrs[NSForegroundColorAttributeName], ((SquirrelView *)_view).backgroundColor);
+    _labelAttrs[NSForegroundColorAttributeName] = color;
   }
   
   if (style.highlightedCandidateTextColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedCandidateTextColor];
-    [_highlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _highlightedAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_highlightedAttrs setObject:[NSColor selectedControlTextColor] forKey:NSForegroundColorAttributeName];
+    _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
   }
 
   if (style.highlightedCandidateBackColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedCandidateBackColor];
-    [_highlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
+    _highlightedAttrs[NSBackgroundColorAttributeName] = color;
   }
   else {
-    [_highlightedAttrs setObject:[NSColor selectedTextBackgroundColor] forKey:NSBackgroundColorAttributeName];
+    _highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
   }
   
   if (style.highlightedCandidateLabelColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedCandidateLabelColor];
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _labelHighlightedAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    NSColor *color = blendColors([_highlightedAttrs objectForKey:NSForegroundColorAttributeName],
-                                 [_highlightedAttrs objectForKey:NSBackgroundColorAttributeName]);
-    [_labelHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    NSColor *color = blendColors(_highlightedAttrs[NSForegroundColorAttributeName],
+                                 _highlightedAttrs[NSBackgroundColorAttributeName]);
+    _labelHighlightedAttrs[NSForegroundColorAttributeName] = color;
   }
-  [_labelHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
+  _labelHighlightedAttrs[NSBackgroundColorAttributeName] = _highlightedAttrs[NSBackgroundColorAttributeName];
   
   if (style.commentTextColor != nil) {
     NSColor *color = [self colorFromString:style.commentTextColor];
-    [_commentAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _commentAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_commentAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+    _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
   }
   
   if (style.highlightedCommentTextColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedCommentTextColor];
-    [_commentHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _commentHighlightedAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_commentHighlightedAttrs setObject:[_commentAttrs objectForKey:NSForegroundColorAttributeName] forKey:NSForegroundColorAttributeName];
+    _commentHighlightedAttrs[NSForegroundColorAttributeName] = _commentAttrs[NSForegroundColorAttributeName];
   }
-  [_commentHighlightedAttrs setObject:[_highlightedAttrs objectForKey:NSBackgroundColorAttributeName] forKey:NSBackgroundColorAttributeName];
+  _commentHighlightedAttrs[NSBackgroundColorAttributeName] = _highlightedAttrs[NSBackgroundColorAttributeName];
   
   if (style.textColor != nil) {
     NSColor *color = [self colorFromString:style.textColor];
-    [_preeditAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _preeditAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_preeditAttrs setObject:[NSColor disabledControlTextColor] forKey:NSForegroundColorAttributeName];
+    _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
   }
   
   if (style.highlightedTextColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedTextColor];
-    [_preeditHighlightedAttrs setObject:color forKey:NSForegroundColorAttributeName];
+    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = color;
   }
   else {
-    [_preeditHighlightedAttrs setObject:[NSColor controlTextColor] forKey:NSForegroundColorAttributeName];
+    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   }
   
   if (style.highlightedBackColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedBackColor];
-    [_preeditHighlightedAttrs setObject:color forKey:NSBackgroundColorAttributeName];
+    _preeditHighlightedAttrs[NSBackgroundColorAttributeName] = color;
   }
   else {
     [_preeditHighlightedAttrs removeObjectForKey:NSBackgroundColorAttributeName];
   }
   
-  [(SquirrelView *) _view setCornerRadius:style.cornerRadius];
-  [(SquirrelView *) _view setBorderHeight:style.borderHeight];
-  [(SquirrelView *) _view setBorderWidth:style.borderWidth];
+  ((SquirrelView *) _view).cornerRadius = style.cornerRadius;
+  ((SquirrelView *) _view).borderHeight = style.borderHeight;
+  ((SquirrelView *) _view).borderWidth = style.borderWidth;
 
   if (style.alpha == 0.0) {
     style.alpha = 1.0;
   }
-  [_window setAlphaValue:style.alpha];
+  _window.alphaValue = style.alpha;
   
   style.candidateFormat;
   _candidateFormat = style.candidateFormat ? style.candidateFormat : @"%c. %@ ";
 
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  [paragraphStyle setParagraphSpacing:style.lineSpacing];
+  paragraphStyle.paragraphSpacing = style.lineSpacing;
   _paragraphStyle = paragraphStyle;
   
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  [paragraphStyle setParagraphSpacing:style.spacing];
+  paragraphStyle.paragraphSpacing = style.spacing;
   _preeditParagraphStyle = paragraphStyle;
 }
 

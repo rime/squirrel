@@ -17,7 +17,7 @@ const NSString *kConnectionName = @"Squirrel_1_Connection";
 int main(int argc, char *argv[])
 {
   if (argc > 1 && !strcmp("--quit", argv[1])) {
-    NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
+    NSString* bundleId = [NSBundle mainBundle].bundleIdentifier;
     NSArray* runningSquirrels = [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
     for (NSRunningApplication* squirrelApp in runningSquirrels) {
       [squirrelApp terminate];
@@ -52,26 +52,26 @@ int main(int argc, char *argv[])
   
   // find the bundle identifier and then initialize the input method server
     IMKServer* server = [[IMKServer alloc] initWithName: (NSString *) kConnectionName
-                                       bundleIdentifier: [[NSBundle mainBundle] bundleIdentifier]];
+                                       bundleIdentifier: [NSBundle mainBundle].bundleIdentifier];
     
     // load the bundle explicitly because in this case the input method is a
     // background only application
     [NSBundle loadNibNamed: @"MainMenu" owner: [NSApplication sharedApplication]];
     
     // opencc will be configured with relative dictionary paths
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[[NSBundle mainBundle] sharedSupportPath]];
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[NSBundle mainBundle].sharedSupportPath];
     
-    if ([(SquirrelApplicationDelegate *)[NSApp delegate] problematicLaunchDetected]) {
+    if (((SquirrelApplicationDelegate *)NSApp.delegate).problematicLaunchDetected) {
       NSLog(@"Problematic launch detected!");
-      NSArray* args = [NSArray arrayWithObjects:@"Problematic launch detected! \
+      NSArray* args = @[@"Problematic launch detected! \
                        Squirrel may be suffering a crash due to imporper configuration. \
-                       Revert previous modifications to see if the problem recurs.", nil];
+                       Revert previous modifications to see if the problem recurs."];
       [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
     }
     else {
-      [(SquirrelApplicationDelegate *)[NSApp delegate] setupRime];
-      [(SquirrelApplicationDelegate *)[NSApp delegate] startRimeWithFullCheck:NO];
-      [(SquirrelApplicationDelegate *)[NSApp delegate] loadSquirrelConfig];
+      [(SquirrelApplicationDelegate *)NSApp.delegate setupRime];
+      [(SquirrelApplicationDelegate *)NSApp.delegate startRimeWithFullCheck:NO];
+      [(SquirrelApplicationDelegate *)NSApp.delegate loadSquirrelConfig];
       NSLog(@"Squirrel reporting!");
     }
     

@@ -61,8 +61,8 @@
   NSTimer *_statusTimer;
 }
 
--(BOOL)horizontal;
--(BOOL)inlinePreedit;
+@property (nonatomic, readonly) BOOL horizontal;
+@property (nonatomic, readonly) BOOL inlinePreedit;
 
 -(void)show;
 -(void)hide;
