@@ -70,28 +70,27 @@
 }
 
 static void show_message_growl(const char* msg_text, const char* msg_id) {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
-                              description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
-                         notificationName:@"Squirrel"
-                                 iconData:[NSData dataWithData:[[NSImage imageNamed:@"squirrel-app"] TIFFRepresentation]]
-                                 priority:0
-                                 isSticky:NO
-                             clickContext:nil
-                               identifier:[NSString stringWithUTF8String:msg_id]];
-  [pool release];
+  @autoreleasepool {
+    [GrowlApplicationBridge notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
+                                description:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)
+                           notificationName:@"Squirrel"
+                                   iconData:[NSData dataWithData:[[NSImage imageNamed:@"squirrel-app"] TIFFRepresentation]]
+                                   priority:0
+                                   isSticky:NO
+                               clickContext:nil
+                                 identifier:[NSString stringWithUTF8String:msg_id]];
+  }
 }
 
 static void show_message_notification_center(const char* msg_text, const char* msg_id) {
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];
-  [notification performSelector:@selector(setTitle:) withObject:NSLocalizedString(@"Squirrel", nil)];
-  [notification performSelector:@selector(setSubtitle:) withObject:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)];
-  id notificationCenter = [(id)NSClassFromString(@"NSUserNotificationCenter") performSelector:@selector(defaultUserNotificationCenter)];
-  [notificationCenter performSelector:@selector(removeAllDeliveredNotifications)];
-  [notificationCenter performSelector:@selector(deliverNotification:) withObject:notification];
-  [notification release];
-  [pool release];
+  @autoreleasepool {
+    id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];
+    [notification performSelector:@selector(setTitle:) withObject:NSLocalizedString(@"Squirrel", nil)];
+    [notification performSelector:@selector(setSubtitle:) withObject:NSLocalizedString([NSString stringWithUTF8String:msg_text], nil)];
+    id notificationCenter = [(id)NSClassFromString(@"NSUserNotificationCenter") performSelector:@selector(defaultUserNotificationCenter)];
+    [notificationCenter performSelector:@selector(removeAllDeliveredNotifications)];
+    [notificationCenter performSelector:@selector(deliverNotification:) withObject:notification];
+  }
 }
 
 static void show_status_message(const char* msg_text, const char* msg_id) {
@@ -126,7 +125,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
     return;
   }
   // off?
-  id app_delegate = (id)context_object;
+  id app_delegate = (__bridge id)context_object;
   if (app_delegate && ![app_delegate enableNotifications]) {
     return;
   }
@@ -188,7 +187,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       NSLog(@"Error creating user data directory: %@", userDataDir);
     }
   }
-  RimeSetNotificationHandler(notification_handler, self);
+  RimeSetNotificationHandler(notification_handler, (__bridge void *)(self));
   RIME_STRUCT(RimeTraits, squirrel_traits);
   squirrel_traits.shared_data_dir = [[[NSBundle mainBundle] sharedSupportPath] UTF8String];
   squirrel_traits.user_data_dir = [userDataDir UTF8String];
@@ -511,37 +510,35 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [_panel updateUIStyle:style];
   
   if (initializing) {
-    _baseStyle = [style retain];
+    _baseStyle = style;
   }
-  [style release];
 }
 
 -(void)loadAppOptionsFromConfig:(RimeConfig*)config
 {
   //NSLog(@"updateAppOptionsFromConfig:");
-  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-  NSMutableDictionary* appOptions = [[NSMutableDictionary alloc] init];
-  [_appOptions release];
-  _appOptions = appOptions;
-  RimeConfigIterator app_iter;
-  RimeConfigIterator option_iter;
-  RimeConfigBeginMap(&app_iter, config, "app_options");
-  while (RimeConfigNext(&app_iter)) {
-    //NSLog(@"DEBUG app[%d]: %s (%s)", app_iter.index, app_iter.key, app_iter.path);
-    NSMutableDictionary* options = [[[NSMutableDictionary alloc] init] autorelease];
-    [appOptions setValue:options forKey:[NSString stringWithUTF8String:app_iter.key]];
-    RimeConfigBeginMap(&option_iter, config, app_iter.path);
-    while (RimeConfigNext(&option_iter)) {
-      //NSLog(@"DEBUG option[%d]: %s (%s)", option_iter.index, option_iter.key, option_iter.path);
-      Bool value = False;
-      if (RimeConfigGetBool(config, option_iter.path, &value)) {
-        [options setValue:[NSNumber numberWithBool:value] forKey:[NSString stringWithUTF8String:option_iter.key]];
+  @autoreleasepool {
+    NSMutableDictionary* appOptions = [[NSMutableDictionary alloc] init];
+    _appOptions = appOptions;
+    RimeConfigIterator app_iter;
+    RimeConfigIterator option_iter;
+    RimeConfigBeginMap(&app_iter, config, "app_options");
+    while (RimeConfigNext(&app_iter)) {
+      //NSLog(@"DEBUG app[%d]: %s (%s)", app_iter.index, app_iter.key, app_iter.path);
+      NSMutableDictionary* options = [[NSMutableDictionary alloc] init];
+      [appOptions setValue:options forKey:[NSString stringWithUTF8String:app_iter.key]];
+      RimeConfigBeginMap(&option_iter, config, app_iter.path);
+      while (RimeConfigNext(&option_iter)) {
+        //NSLog(@"DEBUG option[%d]: %s (%s)", option_iter.index, option_iter.key, option_iter.path);
+        Bool value = False;
+        if (RimeConfigGetBool(config, option_iter.path, &value)) {
+          [options setValue:[NSNumber numberWithBool:value] forKey:[NSString stringWithUTF8String:option_iter.key]];
+        }
       }
+      RimeConfigEnd(&option_iter);
     }
-    RimeConfigEnd(&option_iter);
+    RimeConfigEnd(&app_iter);
   }
-  RimeConfigEnd(&app_iter);
-  [pool release];
 }
 
 // prevent freezing the system when squirrel suffers crashes and thus is launched repeatedly by IMK.
@@ -610,9 +607,6 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   if (_panel) {
     [_panel hideStatus:nil];
   }
-  [_appOptions release];
-  [_baseStyle release];
-  [super dealloc];
 }
 
 @end  //SquirrelApplicationDelegate

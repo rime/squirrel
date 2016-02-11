@@ -23,7 +23,7 @@ void ActivateInputSource() {
   for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"examining input source '%@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
@@ -47,7 +47,7 @@ void DeactivateInputSource() {
   for (int i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i - 1));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"examining input source '%@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
@@ -65,7 +65,7 @@ BOOL IsInputSourceActive() {
   for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     NSLog(@"examining input source '%@'", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||

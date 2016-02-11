@@ -35,24 +35,6 @@
 @synthesize highlightedCommentTextColor = _highlightedCommentTextColor;
 @synthesize candidateFormat = _candidateFormat;
 
-- (void)dealloc
-{
-  [_labelFontName release];
-  [_fontName release];
-  [_backgroundColor release];
-  [_textColor release];
-  [_candidateLabelColor release];
-  [_candidateTextColor release];
-  [_highlightedTextColor release];
-  [_highlightedBackColor release];
-  [_highlightedCandidateLabelColor release];
-  [_highlightedCandidateTextColor release];
-  [_highlightedCandidateBackColor release];
-  [_commentTextColor release];
-  [_highlightedCommentTextColor release];
-  [_candidateFormat release];
-  [super dealloc];
-}
 
 - (id)copyWithZone:(NSZone *)zone
 {
@@ -96,7 +78,7 @@ static const double kAlpha = 1.0;
   NSAttributedString* _content;
 }
 
-@property (nonatomic, retain) NSColor *backgroundColor;
+@property (nonatomic, strong) NSColor *backgroundColor;
 @property (nonatomic, assign) double cornerRadius;
 @property (nonatomic, assign) double borderHeight;
 @property (nonatomic, assign) double borderWidth;
@@ -132,8 +114,6 @@ static const double kAlpha = 1.0;
 
 -(void)setContent:(NSAttributedString*)content
 {
-  [content retain];
-  [_content release];
   _content = content;
   [self setNeedsDisplay:YES];
 }
@@ -210,8 +190,8 @@ static const double kAlpha = 1.0;
   _horizontal = NO;
   _inlinePreedit = NO;
   _candidateFormat = @"%c. %@ ";
-  _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
-  _preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
+  _paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
   
   _numCandidates = 0;
   _message = nil;
@@ -369,23 +349,22 @@ static const double kAlpha = 1.0;
   if (preedit) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
     if (selRange.location > 0) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringToIndex:selRange.location]
-                                                                    attributes:_preeditAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:[preedit substringToIndex:selRange.location]
+                                                                    attributes:_preeditAttrs]];
     }
     if (selRange.length > 0) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringWithRange:selRange]
-                                                                    attributes:_preeditHighlightedAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:[preedit substringWithRange:selRange]
+                                                                    attributes:_preeditHighlightedAttrs]];
     }
     if (selRange.location + selRange.length < [preedit length]) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[preedit substringFromIndex:selRange.location + selRange.length]
-                                                                    attributes:_preeditAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:[preedit substringFromIndex:selRange.location + selRange.length]
+                                                                    attributes:_preeditAttrs]];
     }
     [text appendAttributedString:line];
-    [line release];
     
     if (_numCandidates) {
-      [text appendAttributedString:[[[NSAttributedString alloc] initWithString:@"\n"
-                                                                    attributes: _preeditAttrs] autorelease]];
+      [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
+                                                                    attributes: _preeditAttrs]];
     }
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
@@ -410,44 +389,40 @@ static const double kAlpha = 1.0;
     }
     
     if (labelRange.location != NSNotFound) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat, label_character]
-                                                                    attributes:labelAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat, label_character]
+                                                                    attributes:labelAttrs]];
     }
     
-    [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[candidates objectAtIndex:i]
-                                                                  attributes:attrs] autorelease]];
+    [line appendAttributedString:[[NSAttributedString alloc] initWithString:[candidates objectAtIndex:i]
+                                                                  attributes:attrs]];
     
     if (labelRange2.location != NSNotFound) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat2, label_character]
-                                                                    attributes:labelAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:labelFormat2, label_character]
+                                                                    attributes:labelAttrs]];
     }
     
     if (i < [comments count] && [[comments objectAtIndex:i] length] != 0) {
-      [line appendAttributedString:[[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
-                                                                    attributes:commentAttrs] autorelease]];
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString: [comments objectAtIndex:i]
+                                                                    attributes:commentAttrs]];
     }
     if (i > 0) {
-      [text appendAttributedString:[[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
-                                                                    attributes:_attrs] autorelease]];
+      [text appendAttributedString:[[NSAttributedString alloc] initWithString: (_horizontal ? @" " : @"\n")
+                                                                    attributes:_attrs]];
     }
     
     [text appendAttributedString:line];
-    [line release];
   }
   [text addAttribute:NSParagraphStyleAttributeName
                value:(id)_paragraphStyle
                range:NSMakeRange(candidate_start_pos, [text length] - candidate_start_pos)];
   
   [(SquirrelView*)_view setContent:text];
-  [text release];
   [self show];
 }
 
 -(void)updateMessage:(NSString *)msg
 {
 //  NSLog(@"updateMessage: %@ -> %@", _message, msg);
-  [msg retain];
-  [_message release];
   _message = msg;
 }
 
@@ -456,10 +431,9 @@ static const double kAlpha = 1.0;
 //  NSLog(@"showStatus: %@", msg);
   
   NSMutableAttributedString* text = [[NSMutableAttributedString alloc] init];
-  [text appendAttributedString:[[[NSAttributedString alloc] initWithString: msg
-                                                                attributes:_commentAttrs] autorelease]];
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString: msg
+                                                                attributes:_commentAttrs]];
   [(SquirrelView*)_view setContent:text];
-  [text release];
   [self show];
   
   if (_statusTimer) {
@@ -475,7 +449,6 @@ static const double kAlpha = 1.0;
 -(void)hideStatus:(NSTimer *)timer
 {
 //  NSLog(@"hideStatus: %@", _message);
-  [_message release];
   _message = nil;
   [_statusTimer invalidate];
   _statusTimer = nil;
@@ -540,7 +513,7 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   
   NSArray *fontNames = [fullname componentsSeparatedByString:@","];
   NSMutableArray *validFontDescriptors = [NSMutableArray arrayWithCapacity:[fontNames count]];
-  for (NSString *fontName in fontNames) {
+  for (__strong NSString *fontName in fontNames) {
     fontName = [fontName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([NSFont fontWithName:fontName size:0.0] != nil) {
       // If the font name is not valid, NSFontDescriptor will still create something for us.
@@ -718,18 +691,15 @@ static NSFontDescriptor* getFontDescriptor(NSString *fullname)
   }
   [_window setAlphaValue:style.alpha];
   
-  [style.candidateFormat retain];
-  [_candidateFormat release];
+  style.candidateFormat;
   _candidateFormat = style.candidateFormat ? style.candidateFormat : @"%c. %@ ";
 
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   [paragraphStyle setParagraphSpacing:style.lineSpacing];
-  [_paragraphStyle release];
   _paragraphStyle = paragraphStyle;
   
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   [paragraphStyle setParagraphSpacing:style.spacing];
-  [_preeditParagraphStyle release];
   _preeditParagraphStyle = paragraphStyle;
 }
 
