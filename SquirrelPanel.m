@@ -64,55 +64,63 @@ static const double kAlpha = 1.0;
 
 @interface SquirrelView : NSView
 
-@property(nonatomic, strong) NSAttributedString *content;
-
 @property(nonatomic, strong) NSColor *backgroundColor;
-@property(nonatomic, assign) double cornerRadius;
-@property(nonatomic, assign) double borderHeight;
-@property(nonatomic, assign) double borderWidth;
-
 @property(nonatomic, readonly) NSSize contentSize;
+@property(nonatomic, assign) double cornerRadius;
+@property(nonatomic, assign) NSSize edgeInset;
+@property(nonatomic, assign) NSRect highlightedCandidateRect;
+@property(nonatomic, strong) NSColor *highlightedStripColor;
+@property(nonatomic, copy) NSAttributedString *text;
 
 @end
 
 @implementation SquirrelView
 
-- (double)borderHeight {
-  return MAX(_borderHeight, _cornerRadius);
-}
-
-- (double)borderWidth {
-  return MAX(_borderWidth, _cornerRadius);
+- (instancetype)initWithFrame:(NSRect)frameRect {
+  self = [super initWithFrame:frameRect];
+  if (self) {
+    self.wantsLayer = YES;
+    self.layer.masksToBounds = YES;
+  }
+  return self;
 }
 
 - (NSSize)contentSize {
-  return self.content ? self.content.size : NSMakeSize(0, 0);
+  return _text ? _text.size : NSMakeSize(0, 0);
 }
 
-- (void)setContent:(NSAttributedString *)content {
-  _content = content;
-  [self setNeedsDisplay:YES];
+- (void)setText:(NSAttributedString *)text {
+  _text = [text copy];
+  self.needsDisplay = YES;
 }
 
-- (void)drawRect:(NSRect)rect {
-  if (!self.content) {
-    return;
+- (void)setBackgroundColor:(NSColor *)backgroundColor {
+  _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
+  self.layer.backgroundColor = _backgroundColor.CGColor;
+}
+
+- (void) setCornerRadius:(double)cornerRadius {
+  _cornerRadius = cornerRadius;
+  self.layer.cornerRadius = _cornerRadius;
+}
+
+- (void)drawRect:(NSRect)dirtyRect {
+  if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedCandidateRect)) {
+    NSRect stripRect = self.highlightedCandidateRect;
+    stripRect.origin.y += self.contentSize.height + self.edgeInset.height;
+    stripRect.size.width = NSWidth(self.bounds);
+    if (NSMinY(stripRect) - FLT_EPSILON < self.edgeInset.height) {
+      stripRect.origin.y = 0;
+      stripRect.size.height += self.edgeInset.height;
+    }
+    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - self.edgeInset.height) {
+      stripRect.size.height += self.edgeInset.height;
+    }
+    [self.highlightedStripColor setFill];
+    NSRectFill(stripRect);
   }
 
-  if (self.backgroundColor) {
-    [self.backgroundColor setFill];
-  } else {
-    [[NSColor windowBackgroundColor] setFill];
-  }
-
-  [[NSBezierPath bezierPathWithRoundedRect:rect
-                                   xRadius:_cornerRadius
-                                   yRadius:_cornerRadius] fill];
-
-  NSPoint point = rect.origin;
-  point.x += self.borderWidth;
-  point.y += self.borderHeight;
-  [self.content drawAtPoint:point];
+  [_text drawAtPoint:NSMakePoint(self.edgeInset.width, self.edgeInset.height)];
 }
 
 @end
@@ -136,7 +144,6 @@ static const double kAlpha = 1.0;
   NSParagraphStyle *_preeditParagraphStyle;
 
   int _numCandidates;
-  NSString *_message;
   NSTimer *_statusTimer;
 }
 
@@ -147,7 +154,7 @@ static const double kAlpha = 1.0;
   
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
   _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
-  _highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
+  //_highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
   _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _labelAttrs = [_attrs mutableCopy];
@@ -158,7 +165,8 @@ static const double kAlpha = 1.0;
   _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
   
   _commentHighlightedAttrs = [_commentAttrs mutableCopy];
-  _commentHighlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
+  //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
+  //    [NSColor selectedTextBackgroundColor];
   
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
@@ -196,7 +204,6 @@ static const double kAlpha = 1.0;
     _candidateFormat = @"%c. %@ ";
 
     _numCandidates = 0;
-    _message = nil;
     _statusTimer = nil;
   }
   return self;
@@ -204,43 +211,39 @@ static const double kAlpha = 1.0;
 
 - (void)show {
   //NSLog(@"show: %d %@", _numCandidates, _message);
-
-  NSRect window_rect = _window.frame;
-  // resize frame
-  window_rect.size.height = _view.contentSize.height + _view.borderHeight * 2;
-  window_rect.size.width = _view.contentSize.width + _view.borderWidth * 2;
-  // reposition window
-  window_rect.origin.x = NSMinX(_position);
-  window_rect.origin.y =
-      NSMinY(_position) - kOffsetHeight - NSHeight(window_rect);
+  NSRect windowRect;
+  windowRect.size = NSMakeSize(_view.contentSize.width + _view.edgeInset.width * 2,
+                               _view.contentSize.height + _view.edgeInset.height * 2);
+  windowRect.origin = NSMakePoint(NSMinX(_position),
+                                  NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   // fit in current screen
-  NSRect screen_rect = [NSScreen mainScreen].frame;
+  NSRect screenRect = [NSScreen mainScreen].frame;
   NSArray *screens = [NSScreen screens];
   NSUInteger i;
   for (i = 0; i < screens.count; ++i) {
     NSRect rect = [screens[i] frame];
     if (NSPointInRect(_position.origin, rect)) {
-      screen_rect = rect;
+      screenRect = rect;
       break;
     }
   }
-  if (NSMaxX(window_rect) > NSMaxX(screen_rect)) {
-    window_rect.origin.x = NSMaxX(screen_rect) - NSWidth(window_rect);
+  if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
+    windowRect.origin.x = NSMaxX(screenRect) - NSWidth(windowRect);
   }
-  if (NSMinX(window_rect) < NSMinX(screen_rect)) {
-    window_rect.origin.x = NSMinX(screen_rect);
+  if (NSMinX(windowRect) < NSMinX(screenRect)) {
+    windowRect.origin.x = NSMinX(screenRect);
   }
-  if (NSMinY(window_rect) < NSMinY(screen_rect)) {
-    window_rect.origin.y = NSMaxY(_position) + kOffsetHeight;
+  if (NSMinY(windowRect) < NSMinY(screenRect)) {
+    windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
   }
-  if (NSMaxY(window_rect) > NSMaxY(screen_rect)) {
-    window_rect.origin.y = NSMaxY(screen_rect) - NSHeight(window_rect);
+  if (NSMaxY(windowRect) > NSMaxY(screenRect)) {
+    windowRect.origin.y = NSMaxY(screenRect) - NSHeight(windowRect);
   }
-  if (NSMinY(window_rect) < NSMinY(screen_rect)) {
-    window_rect.origin.y = NSMinY(screen_rect);
+  if (NSMinY(windowRect) < NSMinY(screenRect)) {
+    windowRect.origin.y = NSMinY(screenRect);
   }
   // voila !
-  [_window setFrame:window_rect display:YES];
+  [_window setFrame:windowRect display:YES];
   [_window orderFront:nil];
 }
 
@@ -263,16 +266,12 @@ static const double kAlpha = 1.0;
   _numCandidates = candidates.count;
   //NSLog(@"updatePreedit:...andCandidates: %d %@", _numCandidates, _message);
   if (_numCandidates || (preedit && preedit.length)) {
-    [self updateMessage:nil];
     if (_statusTimer) {
       [_statusTimer invalidate];
       _statusTimer = nil;
     }
   } else {
-    if (_message) {
-      [self showStatus:_message];
-      [self updateMessage:nil];
-    } else if (!_statusTimer) {
+    if (!_statusTimer) {
       [self hide];
     }
     return;
@@ -328,7 +327,7 @@ static const double kAlpha = 1.0;
   }
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
-  size_t candidate_start_pos = 0;
+  NSUInteger candidateStartPos = 0;
 
   // preedit
   if (preedit) {
@@ -364,8 +363,10 @@ static const double kAlpha = 1.0;
                  value:_preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
 
-    candidate_start_pos = text.length;
+    candidateStartPos = text.length;
   }
+
+  _view.highlightedCandidateRect = NSZeroRect;
 
   // candidates
   NSUInteger i;
@@ -407,27 +408,38 @@ static const double kAlpha = 1.0;
                                        initWithString:comments[i]
                                            attributes:commentAttrs]];
     }
+
     if (i > 0) {
       [text
           appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:(_horizontal ? @" " : @"\n")
                                          attributes:_attrs]];
     }
-
     [text appendAttributedString:line];
+
+    if (i == index) {
+      NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
+      [text addAttribute:NSParagraphStyleAttributeName
+                   value:_paragraphStyle
+                   range:candidateRange];
+      CGFloat textHeight = text.size.height;
+      [text removeAttribute:NSParagraphStyleAttributeName range:candidateRange];
+      _view.highlightedCandidateRect = NSMakeRect(0, -textHeight,
+                                                  line.size.width, line.size.height);
+    }
   }
   [text addAttribute:NSParagraphStyleAttributeName
-               value:(id)_paragraphStyle
-               range:NSMakeRange(candidate_start_pos,
-                                 text.length - candidate_start_pos)];
+               value:_paragraphStyle
+               range:NSMakeRange(candidateStartPos,
+                                 text.length - candidateStartPos)];
 
-  [_view setContent:text];
+  _view.text = text;
   [self show];
 }
 
 - (void)updateMessage:(NSString *)msg {
   //NSLog(@"updateMessage: %@ -> %@", _message, msg);
-  _message = msg;
+  [self showStatus:msg];
 }
 
 - (void)showStatus:(NSString *)msg {
@@ -435,7 +447,8 @@ static const double kAlpha = 1.0;
 
   NSAttributedString *text = [[NSAttributedString alloc] initWithString:msg
                                                              attributes:_commentAttrs];
-  [_view setContent:text];
+  _view.highlightedCandidateRect = NSZeroRect;
+  _view.text = text;
   [self show];
 
   if (_statusTimer) {
@@ -450,7 +463,6 @@ static const double kAlpha = 1.0;
 
 - (void)hideStatus:(NSTimer *)timer {
   //NSLog(@"hideStatus: %@", _message);
-  _message = nil;
   [_statusTimer invalidate];
   _statusTimer = nil;
   [self hide];
@@ -627,11 +639,9 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   }
 
   if (style.highlightedCandidateBackColor != nil) {
-    NSColor *color = [self colorFromString:style.highlightedCandidateBackColor];
-    _highlightedAttrs[NSBackgroundColorAttributeName] = color;
+    _view.highlightedStripColor = [self colorFromString:style.highlightedCandidateBackColor];
   } else {
-    _highlightedAttrs[NSBackgroundColorAttributeName] =
-        [NSColor selectedTextBackgroundColor];
+    _view.highlightedStripColor = [NSColor selectedTextBackgroundColor];
   }
 
   if (style.highlightedCandidateLabelColor != nil) {
@@ -644,8 +654,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
                     _highlightedAttrs[NSBackgroundColorAttributeName]);
     _labelHighlightedAttrs[NSForegroundColorAttributeName] = color;
   }
-  _labelHighlightedAttrs[NSBackgroundColorAttributeName] =
-      _highlightedAttrs[NSBackgroundColorAttributeName];
+  //_labelHighlightedAttrs[NSBackgroundColorAttributeName] =
+  //    _highlightedAttrs[NSBackgroundColorAttributeName];
 
   if (style.commentTextColor != nil) {
     NSColor *color = [self colorFromString:style.commentTextColor];
@@ -662,36 +672,33 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     _commentHighlightedAttrs[NSForegroundColorAttributeName] =
         _commentAttrs[NSForegroundColorAttributeName];
   }
-  _commentHighlightedAttrs[NSBackgroundColorAttributeName] =
-      _highlightedAttrs[NSBackgroundColorAttributeName];
+  //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
+  //    _highlightedAttrs[NSBackgroundColorAttributeName];
 
   if (style.textColor != nil) {
     NSColor *color = [self colorFromString:style.textColor];
     _preeditAttrs[NSForegroundColorAttributeName] = color;
   } else {
-    _preeditAttrs[NSForegroundColorAttributeName] =
-        [NSColor disabledControlTextColor];
+    _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
   }
 
   if (style.highlightedTextColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedTextColor];
     _preeditHighlightedAttrs[NSForegroundColorAttributeName] = color;
   } else {
-    _preeditHighlightedAttrs[NSForegroundColorAttributeName] =
-        [NSColor controlTextColor];
+    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   }
 
   if (style.highlightedBackColor != nil) {
     NSColor *color = [self colorFromString:style.highlightedBackColor];
     _preeditHighlightedAttrs[NSBackgroundColorAttributeName] = color;
   } else {
-    [_preeditHighlightedAttrs
-        removeObjectForKey:NSBackgroundColorAttributeName];
+    [_preeditHighlightedAttrs removeObjectForKey:NSBackgroundColorAttributeName];
   }
 
   _view.cornerRadius = style.cornerRadius;
-  _view.borderHeight = style.borderHeight;
-  _view.borderWidth = style.borderWidth;
+  _view.edgeInset = NSMakeSize(MAX(style.borderWidth, style.cornerRadius),
+                                  MAX(style.borderHeight, style.cornerRadius));
 
   if (style.alpha == 0.0) {
     style.alpha = 1.0;
