@@ -6,7 +6,6 @@
 #import <rime_api.h>
 #import <rime/key_table.h>
 
-// forward declaration of 'Private' category
 @interface SquirrelInputController(Private)
 -(void)createSession;
 -(void)destroySession;
@@ -15,8 +14,22 @@
 -(void)updateAppOptions;
 @end
 
-// implementation of the public interface
-@implementation SquirrelInputController
+@implementation SquirrelInputController {
+  id _currentClient;
+  NSString *_preeditString;
+  NSRange _selRange;
+  NSUInteger _caretPos;
+  NSArray *_candidates;
+  NSUInteger _lastModifier;
+  NSEventType _lastEventType;
+  RimeSessionId _session;
+  NSString *_schemaId;
+  BOOL _inlinePreedit;
+  // for chord-typing
+  char _chord[128];
+  NSTimer *_chordTimer;
+  NSString *_currentApp;
+}
 
 /*!
  @method
@@ -359,15 +372,15 @@
 
 }
 
--(void)showPreedit:(NSString*)preedit
-      withSelRange:(NSRange)selRange
-        atCaretPos:(NSUInteger)caretPos
-     andCandidates:(NSArray*)candidates
-       andComments:(NSArray*)comments
-        withLabels:(NSString*)labels
-       highlighted:(NSUInteger)index
+-(void)showPanelWithPreedit:(NSString*)preedit
+                   selRange:(NSRange)selRange
+                   caretPos:(NSUInteger)caretPos
+                 candidates:(NSArray*)candidates
+                   comments:(NSArray*)comments
+                     labels:(NSString*)labels
+                highlighted:(NSUInteger)index
 {
-  //NSLog(@"showPreedit: ... andCandidates:");
+  //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
@@ -508,13 +521,13 @@
     if (ctx.menu.select_keys) {
       labels = @(ctx.menu.select_keys);
     }
-    [self showPreedit:(_inlinePreedit ? nil : preeditText)
-         withSelRange:selRange
-           atCaretPos:caretPos
-        andCandidates:candidates
-          andComments:comments
-           withLabels:labels
-          highlighted:ctx.menu.highlighted_candidate_index];
+    [self showPanelWithPreedit:(_inlinePreedit ? nil : preeditText)
+                      selRange:selRange
+                      caretPos:caretPos
+                    candidates:candidates
+                      comments:comments
+                        labels:labels
+                   highlighted:ctx.menu.highlighted_candidate_index];
     RimeFreeContext(&ctx);
   }
 }
