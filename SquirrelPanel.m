@@ -1,76 +1,25 @@
 #import "SquirrelPanel.h"
 
-@implementation SquirrelUIStyle
-
-@synthesize horizontal = _horizontal;
-@synthesize inlinePreedit = _inlinePreedit;
-@synthesize labelFontName = _labelFontName;
-@synthesize labelFontSize = _labelFontSize;
-@synthesize fontName = _fontName;
-@synthesize fontSize = _fontSize;
-@synthesize alpha = _alpha;
-@synthesize cornerRadius = _cornerRadius;
-@synthesize borderHeight = _borderHeight;
-@synthesize borderWidth = _borderWidth;
-@synthesize lineSpacing = _lineSpacing;
-@synthesize spacing = _spacing;
-@synthesize backgroundColor = _backgroundColor;
-@synthesize textColor = _textColor;
-@synthesize candidateLabelColor = _candidateLabelColor;
-@synthesize candidateTextColor = _candidateTextColor;
-@synthesize highlightedTextColor = _highlightedTextColor;
-@synthesize highlightedBackColor = _highlightedBackColor;
-@synthesize highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
-@synthesize highlightedCandidateTextColor = _highlightedCandidateTextColor;
-@synthesize highlightedCandidateBackColor = _highlightedCandidateBackColor;
-@synthesize commentTextColor = _commentTextColor;
-@synthesize highlightedCommentTextColor = _highlightedCommentTextColor;
-@synthesize candidateFormat = _candidateFormat;
-
-- (id)copyWithZone:(NSZone *)zone {
-  SquirrelUIStyle *style = [[SquirrelUIStyle allocWithZone:zone] init];
-  style.horizontal = _horizontal;
-  style.inlinePreedit = _inlinePreedit;
-  style.labelFontName = _labelFontName;
-  style.labelFontSize = _labelFontSize;
-  style.fontName = _fontName;
-  style.fontSize = _fontSize;
-  style.alpha = _alpha;
-  style.cornerRadius = _cornerRadius;
-  style.borderHeight = _borderHeight;
-  style.borderWidth = _borderWidth;
-  style.lineSpacing = _lineSpacing;
-  style.spacing = _spacing;
-  style.backgroundColor = _backgroundColor;
-  style.textColor = _textColor;
-  style.candidateLabelColor = _candidateLabelColor;
-  style.candidateTextColor = _candidateTextColor;
-  style.highlightedTextColor = _highlightedTextColor;
-  style.highlightedBackColor = _highlightedBackColor;
-  style.highlightedCandidateLabelColor = _highlightedCandidateLabelColor;
-  style.highlightedCandidateTextColor = _highlightedCandidateTextColor;
-  style.highlightedCandidateBackColor = _highlightedCandidateBackColor;
-  style.commentTextColor = _commentTextColor;
-  style.highlightedCommentTextColor = _highlightedCommentTextColor;
-  style.candidateFormat = _candidateFormat;
-  return style;
-}
-
-@end
+#import "SquirrelConfig.h"
 
 static const int kOffsetHeight = 5;
-static const int kFontSize = 24;
-static const double kAlpha = 1.0;
+static const int kDefaultFontSize = 24;
+static const NSTimeInterval kShowStatusDuration = 1.2;
+static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
 
 @interface SquirrelView : NSView
 
-@property(nonatomic, strong) NSColor *backgroundColor;
+@property(nonatomic, readonly) NSAttributedString *text;
+@property(nonatomic, readonly) NSRect highlightedRect;
 @property(nonatomic, readonly) NSSize contentSize;
+
+@property(nonatomic, strong) NSColor *backgroundColor;
 @property(nonatomic, assign) double cornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
-@property(nonatomic, assign) NSRect highlightedCandidateRect;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
-@property(nonatomic, copy) NSAttributedString *text;
+
+- (void)setText:(NSAttributedString *)text
+  hilightedRect:(NSRect)rect;
 
 @end
 
@@ -89,8 +38,10 @@ static const double kAlpha = 1.0;
   return _text ? _text.size : NSMakeSize(0, 0);
 }
 
-- (void)setText:(NSAttributedString *)text {
+- (void)setText:(NSAttributedString *)text
+  hilightedRect:(NSRect)rect {
   _text = [text copy];
+  _highlightedRect = rect;
   self.needsDisplay = YES;
 }
 
@@ -105,16 +56,25 @@ static const double kAlpha = 1.0;
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
-  if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedCandidateRect)) {
-    NSRect stripRect = self.highlightedCandidateRect;
-    stripRect.origin.y += self.contentSize.height + self.edgeInset.height;
-    stripRect.size.width = NSWidth(self.bounds);
-    if (NSMinY(stripRect) - FLT_EPSILON < self.edgeInset.height) {
-      stripRect.origin.y = 0;
-      stripRect.size.height += self.edgeInset.height;
+  if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
+    CGFloat edgeWidth = self.edgeInset.width + 1;
+    CGFloat edgeHeight = self.edgeInset.height + 1;
+    NSRect stripRect = self.highlightedRect;
+    if (NSMinX(stripRect) - FLT_EPSILON < 0) {
+      stripRect.size.width += edgeWidth;
+    } else {
+      stripRect.origin.x += edgeWidth;
     }
-    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - self.edgeInset.height) {
-      stripRect.size.height += self.edgeInset.height;
+    if (NSMaxX(stripRect) + FLT_EPSILON > NSWidth(self.bounds) - edgeWidth) {
+      stripRect.size.width += edgeWidth;
+    }
+    if (NSMinY(stripRect) - FLT_EPSILON < 0) {
+      stripRect.size.height += edgeHeight;
+    } else {
+      stripRect.origin.y += edgeHeight;
+    }
+    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - edgeHeight) {
+      stripRect.size.height += edgeHeight;
     }
     [self.highlightedStripColor setFill];
     NSRectFill(stripRect);
@@ -126,9 +86,10 @@ static const double kAlpha = 1.0;
 @end
 
 @implementation SquirrelPanel {
-  NSRect _position;
   NSWindow *_window;
   SquirrelView *_view;
+
+  NSString *_candidateFormat;
   NSMutableDictionary *_attrs;
   NSMutableDictionary *_highlightedAttrs;
   NSMutableDictionary *_labelAttrs;
@@ -137,32 +98,30 @@ static const double kAlpha = 1.0;
   NSMutableDictionary *_commentHighlightedAttrs;
   NSMutableDictionary *_preeditAttrs;
   NSMutableDictionary *_preeditHighlightedAttrs;
-  BOOL _horizontal;
-  BOOL _inlinePreedit;
-  NSString *_candidateFormat;
   NSParagraphStyle *_paragraphStyle;
   NSParagraphStyle *_preeditParagraphStyle;
 
-  int _numCandidates;
   NSTimer *_statusTimer;
 }
 
 - (void)initializeUIStyle {
+  _candidateFormat = kDefaultCandidateFormat;
+
   _attrs = [[NSMutableDictionary alloc] init];
   _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
+  _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
   
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
   _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
   //_highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
-  _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
+  _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
   
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
   
   _commentAttrs = [[NSMutableDictionary alloc] init];
   _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
+  _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
   
   _commentHighlightedAttrs = [_commentAttrs mutableCopy];
   //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
@@ -170,26 +129,24 @@ static const double kAlpha = 1.0;
   
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
+  _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
   
   _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
   _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kFontSize];
+  _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   _paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
   _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
 }
 
 - (instancetype)init {
-  //NSLog(@"SqurrelPanel init");
   self = [super init];
   if (self) {
-    _position = NSMakeRect(0, 0, 0, 0);
     _window = [[NSWindow alloc] initWithContentRect:_position
                                           styleMask:NSBorderlessWindowMask
                                             backing:NSBackingStoreBuffered
                                               defer:YES];
-    _window.alphaValue = kAlpha;
+    _window.alphaValue = 1.0;
     _window.level = NSScreenSaverWindowLevel + 1;
     _window.hasShadow = YES;
     _window.opaque = NO;
@@ -198,19 +155,11 @@ static const double kAlpha = 1.0;
     _window.contentView = _view;
 
     [self initializeUIStyle];
-
-    _horizontal = NO;
-    _inlinePreedit = NO;
-    _candidateFormat = @"%c. %@ ";
-
-    _numCandidates = 0;
-    _statusTimer = nil;
   }
   return self;
 }
 
 - (void)show {
-  //NSLog(@"show: %d %@", _numCandidates, _message);
   NSRect windowRect;
   windowRect.size = NSMakeSize(_view.contentSize.width + _view.edgeInset.width * 2,
                                _view.contentSize.height + _view.edgeInset.height * 2);
@@ -248,24 +197,22 @@ static const double kAlpha = 1.0;
 }
 
 - (void)hide {
-  //NSLog(@"hide:");
+  if (_statusTimer) {
+    [_statusTimer invalidate];
+    _statusTimer = nil;
+  }
   [_window orderOut:nil];
 }
 
-- (void)updatePosition:(NSRect)caretPos {
-  _position = caretPos;
-}
-
-- (void)updatePreedit:(NSString *)preedit
-         withSelRange:(NSRange)selRange
-           atCaretPos:(NSUInteger)caretPos
-        andCandidates:(NSArray *)candidates
-          andComments:(NSArray *)comments
-           withLabels:(NSString *)labels
-          highlighted:(NSUInteger)index {
-  _numCandidates = candidates.count;
-  //NSLog(@"updatePreedit:...andCandidates: %d %@", _numCandidates, _message);
-  if (_numCandidates || (preedit && preedit.length)) {
+- (void)showPreedit:(NSString *)preedit
+           selRange:(NSRange)selRange
+           caretPos:(NSUInteger)caretPos
+         candidates:(NSArray *)candidates
+           comments:(NSArray *)comments
+             labels:(NSString *)labels
+        highlighted:(NSUInteger)index {
+  NSUInteger numCandidates = candidates.count;
+  if (numCandidates || (preedit && preedit.length)) {
     if (_statusTimer) {
       [_statusTimer invalidate];
       _statusTimer = nil;
@@ -354,7 +301,7 @@ static const double kAlpha = 1.0;
     }
     [text appendAttributedString:line];
 
-    if (_numCandidates) {
+    if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@"\n"
                                            attributes:_preeditAttrs]];
@@ -366,7 +313,7 @@ static const double kAlpha = 1.0;
     candidateStartPos = text.length;
   }
 
-  _view.highlightedCandidateRect = NSZeroRect;
+  NSRect highlightedRect = NSZeroRect;
 
   // candidates
   NSUInteger i;
@@ -410,22 +357,30 @@ static const double kAlpha = 1.0;
     }
 
     if (i > 0) {
+      NSString *separator = (_horizontal ? @" " : @"\n");
       [text
           appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:(_horizontal ? @" " : @"\n")
+                                     initWithString:separator
                                          attributes:_attrs]];
     }
+
     [text appendAttributedString:line];
 
     if (i == index) {
+      CGFloat left = 0;
+      CGFloat bottom = 0;
       NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
-      [text addAttribute:NSParagraphStyleAttributeName
-                   value:_paragraphStyle
-                   range:candidateRange];
-      CGFloat textHeight = text.size.height;
-      [text removeAttribute:NSParagraphStyleAttributeName range:candidateRange];
-      _view.highlightedCandidateRect = NSMakeRect(0, -textHeight,
-                                                  line.size.width, line.size.height);
+      if (_horizontal) {
+        NSAttributedString *candidateText = [text attributedSubstringFromRange:candidateRange];
+        left = candidateText.size.width - line.size.width;
+      } else {
+        [text addAttribute:NSParagraphStyleAttributeName
+                     value:_paragraphStyle
+                     range:candidateRange];
+        bottom = -text.size.height;
+        [text removeAttribute:NSParagraphStyleAttributeName range:candidateRange];
+      }
+      highlightedRect = NSMakeRect(left, bottom, line.size.width, line.size.height);
     }
   }
   [text addAttribute:NSParagraphStyleAttributeName
@@ -433,28 +388,43 @@ static const double kAlpha = 1.0;
                range:NSMakeRange(candidateStartPos,
                                  text.length - candidateStartPos)];
 
-  _view.text = text;
+  if (!NSIsEmptyRect(highlightedRect)) {
+    if (_horizontal) {
+      if (preedit) {
+        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+      }
+    } else {
+      NSSize fullSize = text.size;
+      highlightedRect.origin.y += fullSize.height;
+      highlightedRect.size.width = fullSize.width;
+      if (index == 0) {
+        if (preedit) {
+          highlightedRect.size.height += MIN(_preeditParagraphStyle.paragraphSpacing,
+                                             _paragraphStyle.paragraphSpacing) / 2;
+        }
+      } else {
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+      }
+      if (index < numCandidates - 1) {
+        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+      }
+    }
+  }
+  [_view setText:text hilightedRect:highlightedRect];
   [self show];
 }
 
-- (void)updateMessage:(NSString *)msg {
-  //NSLog(@"updateMessage: %@ -> %@", _message, msg);
-  [self showStatus:msg];
-}
-
 - (void)showStatus:(NSString *)msg {
-  //NSLog(@"showStatus: %@", msg);
-
   NSAttributedString *text = [[NSAttributedString alloc] initWithString:msg
                                                              attributes:_commentAttrs];
-  _view.highlightedCandidateRect = NSZeroRect;
-  _view.text = text;
+  [_view setText:text hilightedRect:NSZeroRect];
   [self show];
 
   if (_statusTimer) {
     [_statusTimer invalidate];
   }
-  _statusTimer = [NSTimer scheduledTimerWithTimeInterval:1.2
+  _statusTimer = [NSTimer scheduledTimerWithTimeInterval:kShowStatusDuration
                                                   target:self
                                                 selector:@selector(hideStatus:)
                                                 userInfo:nil
@@ -462,30 +432,7 @@ static const double kAlpha = 1.0;
 }
 
 - (void)hideStatus:(NSTimer *)timer {
-  //NSLog(@"hideStatus: %@", _message);
-  [_statusTimer invalidate];
-  _statusTimer = nil;
   [self hide];
-}
-
-- (NSColor *)colorFromString:(NSString *)string {
-  if (string == nil) {
-    return nil;
-  }
-
-  int r = 0, g = 0, b = 0, a = 0xff;
-  if (string.length == 10) {
-    // 0xffccbbaa
-    sscanf(string.UTF8String, "0x%02x%02x%02x%02x", &a, &b, &g, &r);
-  } else if (string.length == 8) {
-    // 0xccbbaa
-    sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
-  }
-
-  return [NSColor colorWithDeviceRed:(CGFloat)r / 255.
-                               green:(CGFloat)g / 255.
-                                blue:(CGFloat)b / 255.
-                               alpha:(CGFloat)a / 255.];
 }
 
 static inline NSColor *blendColors(NSColor *foregroundColor,
@@ -527,20 +474,15 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   }
 
   NSArray *fontNames = [fullname componentsSeparatedByString:@","];
-  NSMutableArray *validFontDescriptors =
-      [NSMutableArray arrayWithCapacity:fontNames.count];
+  NSMutableArray *validFontDescriptors = [NSMutableArray arrayWithCapacity:fontNames.count];
   for (__strong NSString *fontName in fontNames) {
-    fontName =
-        [fontName stringByTrimmingCharactersInSet:[NSCharacterSet
-                                                      whitespaceCharacterSet]];
+    fontName = [fontName stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     if ([NSFont fontWithName:fontName size:0.0] != nil) {
-      // If the font name is not valid, NSFontDescriptor will still create
-      // something for us.
-      // However, when we draw the actual text, Squirrel will crash if there is
-      // any font descriptor with invalid font name.
-      [validFontDescriptors
-          addObject:[NSFontDescriptor fontDescriptorWithName:fontName
-                                                        size:0.0]];
+      // If the font name is not valid, NSFontDescriptor will still create something for us.
+      // However, when we draw the actual text, Squirrel will crash if there is any font descriptor
+      // with invalid font name.
+      [validFontDescriptors addObject:[NSFontDescriptor fontDescriptorWithName:fontName
+                                                                          size:0.0]];
     }
   }
 
@@ -553,52 +495,195 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSFontDescriptor *initialFontDescriptor = validFontDescriptors[0];
   NSArray *fallbackDescriptors = [validFontDescriptors
       subarrayWithRange:NSMakeRange(1, validFontDescriptors.count - 1)];
-  NSDictionary *attributes =
-      @{NSFontCascadeListAttribute : fallbackDescriptors};
+  NSDictionary *attributes = @{NSFontCascadeListAttribute : fallbackDescriptors};
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
 
-- (void)updateUIStyle:(SquirrelUIStyle *)style {
-  _horizontal = style.horizontal;
-  _inlinePreedit = style.inlinePreedit;
+-(void)updateConfig:(SquirrelConfig *)config {
+  _horizontal = [config getBool:@"style/horizontal"];
+  _inlinePreedit = [config getBool:@"style/inline_preedit"];
+  NSString *candidateFormat = [config getString:@"style/candidate_format"];
+  _candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
 
-  if (style.fontSize == 0) { // default size
-    style.fontSize = kFontSize;
-  }
-  if (style.labelFontSize == 0) {
-    style.labelFontSize = style.fontSize;
+  NSString *fontName = [config getString:@"style/font_face"];
+  NSInteger fontSize = [config getInt:@"style/font_point"];
+  NSString *labelFontName = [config getString:@"style/label_font_face"];
+  NSInteger labelFontSize = [config getInt:@"style/label_font_point"];
+  NSColor *candidateLabelColor = [config getColor:@"style/label_color"];
+  NSColor *highlightedCandidateLabelColor = [config getColor:@"style/label_hilited_color"];
+  CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
+  CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
+  CGFloat borderHeight = [config getDouble:@"style/border_height"];
+  CGFloat borderWidth = [config getDouble:@"style/border_width"];
+  CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
+  CGFloat spacing = [config getDouble:@"style/spacing"];
+
+  NSColor *backgroundColor;
+  NSColor *textColor;
+  NSColor *highlightedTextColor;
+  NSColor *highlightedBackColor;
+  NSColor *candidateTextColor;
+  NSColor *highlightedCandidateTextColor;
+  NSColor *highlightedCandidateBackColor;
+  NSColor *commentTextColor;
+  NSColor *highlightedCommentTextColor;
+
+  NSString *colorScheme = [config getString:@"style/color_scheme"];
+  if (colorScheme) {
+      NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
+
+      backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
+      textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
+      highlightedTextColor =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
+      if (highlightedTextColor == nil) {
+        highlightedTextColor = textColor;
+      }
+      highlightedBackColor =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_back_color"]];
+      candidateTextColor =
+          [config getColor:[prefix stringByAppendingString:@"/candidate_text_color"]];
+      if (candidateTextColor == nil) {
+        // in non-inline mode, 'text_color' is for rendering preedit text.
+        // if not otherwise specified, candidate text is also rendered in this color.
+        candidateTextColor = textColor;
+      }
+      highlightedCandidateTextColor =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_text_color"]];
+      if (highlightedCandidateTextColor == nil) {
+        highlightedCandidateTextColor = highlightedTextColor;
+      }
+      highlightedCandidateBackColor =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_back_color"]];
+      if (highlightedCandidateBackColor == nil) {
+        highlightedCandidateBackColor = highlightedBackColor;
+      }
+      commentTextColor =
+          [config getColor:[prefix stringByAppendingString:@"/comment_text_color"]];
+      highlightedCommentTextColor =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_comment_text_color"]];
+
+      // the following per-color-scheme configurations, if exist, will
+      // override configurations with the same name under the global 'style' section
+
+      NSNumber *horizontalOverridden =
+          [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
+      if (horizontalOverridden) {
+        _horizontal = horizontalOverridden.boolValue;
+      }
+      NSNumber *inlinePreeditOverridden =
+          [config getOptionalBool:[prefix stringByAppendingString:@"/inline_preedit"]];
+      if (inlinePreeditOverridden) {
+        _inlinePreedit = inlinePreeditOverridden.boolValue;
+      }
+      NSString *candidateFormatOverridden =
+          [config getString:[prefix stringByAppendingString:@"/candidate_format"]];
+      if (candidateFormatOverridden) {
+        _candidateFormat = candidateFormatOverridden;
+      }
+
+      NSString *fontNameOverridden =
+          [config getString:[prefix stringByAppendingString:@"/font_face"]];
+      if (fontNameOverridden) {
+        fontName = fontNameOverridden;
+      }
+      NSNumber *fontSizeOverridden =
+          [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
+      if (fontSize) {
+        fontSize = fontSizeOverridden.integerValue;
+      }
+      NSString *labelFontNameOverridden =
+          [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
+      if (labelFontNameOverridden) {
+        labelFontName = labelFontNameOverridden;
+      }
+      NSNumber *labelFontSizeOverridden =
+          [config getOptionalInt:[prefix stringByAppendingString:@"/label_font_point"]];
+      if (labelFontSizeOverridden) {
+        labelFontSize = labelFontSizeOverridden.integerValue;
+      }
+      NSColor *candidateLabelColorOverridden =
+          [config getColor:[prefix stringByAppendingString:@"/label_color"]];
+      if (candidateLabelColorOverridden) {
+        candidateLabelColor = candidateLabelColorOverridden;
+      }
+      NSColor *highlightedCandidateLabelColorOverridden =
+          [config getColor:[prefix stringByAppendingString:@"/label_hilited_color"]];
+      if (!highlightedCandidateLabelColorOverridden) {
+        // for backward compatibility, 'label_hilited_color' and 'hilited_candidate_label_color'
+        // are both valid
+        highlightedCandidateLabelColorOverridden =
+            [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_label_color"]];
+      }
+      if (highlightedCandidateLabelColorOverridden) {
+        highlightedCandidateLabelColor = highlightedCandidateLabelColorOverridden;
+      }
+      NSNumber *alphaOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/alpha"]];
+      if (alphaOverridden) {
+        alpha = fmin(fmax(alphaOverridden.doubleValue, 0.0), 1.0);
+      }
+      NSNumber *cornerRadiusOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/corner_radius"]];
+      if (cornerRadiusOverridden) {
+        cornerRadius = cornerRadiusOverridden.doubleValue;
+      }
+      NSNumber *borderHeightOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
+      if (borderHeightOverridden) {
+        borderHeight = borderHeightOverridden.doubleValue;
+      }
+      NSNumber *borderWidthOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/border_width"]];
+      if (borderWidthOverridden) {
+        borderWidth = borderWidthOverridden.doubleValue;
+      }
+      NSNumber *lineSpacingOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/line_spacing"]];
+      if (lineSpacingOverridden) {
+        lineSpacing = lineSpacingOverridden.doubleValue;
+      }
+      NSNumber *spacingOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/spacing"]];
+      if (spacingOverridden) {
+        spacing = spacingOverridden.doubleValue;
+      }
   }
 
+  if (fontSize == 0) { // default size
+    fontSize = kDefaultFontSize;
+  }
+  if (labelFontSize == 0) {
+    labelFontSize = fontSize;
+  }
   NSFontDescriptor *fontDescriptor = nil;
   NSFont *font = nil;
-  if (style.fontName != nil) {
-    fontDescriptor = getFontDescriptor(style.fontName);
+  if (fontName != nil) {
+    fontDescriptor = getFontDescriptor(fontName);
     if (fontDescriptor != nil) {
-      font = [NSFont fontWithDescriptor:fontDescriptor size:style.fontSize];
+      font = [NSFont fontWithDescriptor:fontDescriptor size:fontSize];
     }
   }
   if (font == nil) {
     // use default font
-    font = [NSFont userFontOfSize:style.fontSize];
+    font = [NSFont userFontOfSize:fontSize];
   }
   NSFontDescriptor *labelFontDescriptor = nil;
   NSFont *labelFont = nil;
-  if (style.labelFontName != nil) {
-    labelFontDescriptor = getFontDescriptor(style.labelFontName);
+  if (labelFontName != nil) {
+    labelFontDescriptor = getFontDescriptor(labelFontName);
     if (labelFontDescriptor == nil) {
       labelFontDescriptor = fontDescriptor;
     }
     if (labelFontDescriptor != nil) {
-      labelFont = [NSFont fontWithDescriptor:labelFontDescriptor
-                                        size:style.labelFontSize];
+      labelFont = [NSFont fontWithDescriptor:labelFontDescriptor size:labelFontSize];
     }
   }
   if (labelFont == nil) {
     if (fontDescriptor != nil) {
-      labelFont =
-          [NSFont fontWithDescriptor:fontDescriptor size:style.labelFontSize];
+      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:labelFontSize];
     } else {
-      labelFont = [NSFont fontWithName:font.fontName size:style.labelFontSize];
+      labelFont = [NSFont fontWithName:font.fontName size:labelFontSize];
     }
   }
   _attrs[NSFontAttributeName] = font;
@@ -610,111 +695,72 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _preeditAttrs[NSFontAttributeName] = font;
   _preeditHighlightedAttrs[NSFontAttributeName] = font;
 
-  _view.backgroundColor = (style.backgroundColor != nil)
-                              ? [self colorFromString:style.backgroundColor]
-                              : nil;
+  // can be nil.
+  _view.backgroundColor = backgroundColor;
 
-  if (style.candidateTextColor != nil) {
-    NSColor *color = [self colorFromString:style.candidateTextColor];
-    _attrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  }
+  _attrs[NSForegroundColorAttributeName] =
+      candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
 
-  if (style.candidateLabelColor != nil) {
-    NSColor *color = [self colorFromString:style.candidateLabelColor];
-    _labelAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    NSColor *color = blendColors(_attrs[NSForegroundColorAttributeName],
-                                 ((SquirrelView *)_view).backgroundColor);
-    _labelAttrs[NSForegroundColorAttributeName] = color;
-  }
+  _labelAttrs[NSForegroundColorAttributeName] =
+      candidateLabelColor ? candidateLabelColor
+          : blendColors(_attrs[NSForegroundColorAttributeName], backgroundColor);
 
-  if (style.highlightedCandidateTextColor != nil) {
-    NSColor *color = [self colorFromString:style.highlightedCandidateTextColor];
-    _highlightedAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _highlightedAttrs[NSForegroundColorAttributeName] =
-        [NSColor selectedControlTextColor];
-  }
+  _highlightedAttrs[NSForegroundColorAttributeName] =
+      highlightedCandidateTextColor ? highlightedCandidateTextColor
+                                    : [NSColor selectedControlTextColor];
 
-  if (style.highlightedCandidateBackColor != nil) {
-    _view.highlightedStripColor = [self colorFromString:style.highlightedCandidateBackColor];
-  } else {
-    _view.highlightedStripColor = [NSColor selectedTextBackgroundColor];
-  }
+  //_highlightedAttrs[NSBackgroundColorAttributeName] =
+  //    highlightedCandidateBackColor ? highlightedCandidateBackColor
+  //                                  : [NSColor selectedTextBackgroundColor];
 
-  if (style.highlightedCandidateLabelColor != nil) {
-    NSColor *color =
-        [self colorFromString:style.highlightedCandidateLabelColor];
-    _labelHighlightedAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    NSColor *color =
-        blendColors(_highlightedAttrs[NSForegroundColorAttributeName],
-                    _highlightedAttrs[NSBackgroundColorAttributeName]);
-    _labelHighlightedAttrs[NSForegroundColorAttributeName] = color;
-  }
+  _view.highlightedStripColor =
+      highlightedCandidateBackColor ? highlightedCandidateBackColor
+                                    : [NSColor selectedTextBackgroundColor];
+
+  _labelHighlightedAttrs[NSForegroundColorAttributeName] =
+      highlightedCandidateLabelColor ? highlightedCandidateLabelColor
+          : blendColors(_highlightedAttrs[NSForegroundColorAttributeName],
+                        _highlightedAttrs[NSBackgroundColorAttributeName]);
+
   //_labelHighlightedAttrs[NSBackgroundColorAttributeName] =
   //    _highlightedAttrs[NSBackgroundColorAttributeName];
 
-  if (style.commentTextColor != nil) {
-    NSColor *color = [self colorFromString:style.commentTextColor];
-    _commentAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _commentAttrs[NSForegroundColorAttributeName] =
-        [NSColor disabledControlTextColor];
-  }
+  _commentAttrs[NSForegroundColorAttributeName] =
+      commentTextColor ? commentTextColor : [NSColor disabledControlTextColor];
 
-  if (style.highlightedCommentTextColor != nil) {
-    NSColor *color = [self colorFromString:style.highlightedCommentTextColor];
-    _commentHighlightedAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _commentHighlightedAttrs[NSForegroundColorAttributeName] =
-        _commentAttrs[NSForegroundColorAttributeName];
-  }
+  _commentHighlightedAttrs[NSForegroundColorAttributeName] =
+      highlightedCommentTextColor ? highlightedCommentTextColor
+                                  : _commentAttrs[NSForegroundColorAttributeName];
+
   //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
   //    _highlightedAttrs[NSBackgroundColorAttributeName];
 
-  if (style.textColor != nil) {
-    NSColor *color = [self colorFromString:style.textColor];
-    _preeditAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  }
+  _preeditAttrs[NSForegroundColorAttributeName] =
+      textColor ? textColor : [NSColor disabledControlTextColor];
 
-  if (style.highlightedTextColor != nil) {
-    NSColor *color = [self colorFromString:style.highlightedTextColor];
-    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = color;
-  } else {
-    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  }
+  _preeditHighlightedAttrs[NSForegroundColorAttributeName] =
+      highlightedTextColor ? highlightedTextColor : [NSColor controlTextColor];
 
-  if (style.highlightedBackColor != nil) {
-    NSColor *color = [self colorFromString:style.highlightedBackColor];
-    _preeditHighlightedAttrs[NSBackgroundColorAttributeName] = color;
+  if (highlightedBackColor != nil) {
+    _preeditHighlightedAttrs[NSBackgroundColorAttributeName] = highlightedBackColor;
   } else {
     [_preeditHighlightedAttrs removeObjectForKey:NSBackgroundColorAttributeName];
   }
 
-  _view.cornerRadius = style.cornerRadius;
-  _view.edgeInset = NSMakeSize(MAX(style.borderWidth, style.cornerRadius),
-                                  MAX(style.borderHeight, style.cornerRadius));
+  _view.cornerRadius = cornerRadius;
+  _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
 
-  if (style.alpha == 0.0) {
-    style.alpha = 1.0;
-  }
-  _window.alphaValue = style.alpha;
-
-  _candidateFormat = style.candidateFormat ? style.candidateFormat : @"%c. %@ ";
+  _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.paragraphSpacing = style.lineSpacing;
+  paragraphStyle.paragraphSpacing = lineSpacing;
   _paragraphStyle = paragraphStyle;
 
-  paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.paragraphSpacing = style.spacing;
-  _preeditParagraphStyle = paragraphStyle;
+  NSMutableParagraphStyle *preeditParagraphStyle =
+      [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  preeditParagraphStyle.paragraphSpacing = spacing;
+  _preeditParagraphStyle = preeditParagraphStyle;
 }
 
 @end

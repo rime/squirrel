@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
     } else {
       [NSApp.squirrelAppDelegate setupRime];
       [NSApp.squirrelAppDelegate startRimeWithFullCheck:NO];
-      [NSApp.squirrelAppDelegate loadSquirrelConfig];
+      [NSApp.squirrelAppDelegate loadSettings];
       NSLog(@"Squirrel reporting!");
     }
 

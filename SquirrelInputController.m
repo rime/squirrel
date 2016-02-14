@@ -1,6 +1,8 @@
-
 #import "SquirrelInputController.h"
+
 #import "SquirrelApplicationDelegate.h"
+#import "SquirrelConfig.h"
+#import "SquirrelPanel.h"
 #import "macos_keycode.h"
 #import "utf8.h"
 #import <rime_api.h>
@@ -28,6 +30,7 @@
   // for chord-typing
   char _chord[128];
   NSTimer *_chordTimer;
+  NSTimeInterval _chordDuration;
   NSString *_currentApp;
 }
 
@@ -207,8 +210,12 @@
   if (_chordTimer && _chordTimer.valid) {
     [_chordTimer invalidate];
   }
-  NSTimeInterval interval = NSApp.squirrelAppDelegate.chordDuration;
-  _chordTimer = [NSTimer scheduledTimerWithTimeInterval:interval
+  _chordDuration = 0.1;
+  NSNumber *duration = [NSApp.squirrelAppDelegate.config getOptionalDouble:@"chord_duration"];
+  if (duration && duration.doubleValue > 0) {
+    _chordDuration = duration.doubleValue;
+  }
+  _chordTimer = [NSTimer scheduledTimerWithTimeInterval:_chordDuration
                                                  target:self
                                                selector:@selector(onChordTimer:)
                                                userInfo:nil
@@ -237,7 +244,7 @@
 -(void)activateServer:(id)sender
 {
   //NSLog(@"activateServer:");
-  if (NSApp.squirrelAppDelegate.useUSKeyboardLayout) {
+  if ([NSApp.squirrelAppDelegate.config getBool:@"us_keyboard_layout"]) {
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
   _preeditString = @"";
@@ -345,7 +352,7 @@
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
 
-  if ([_preeditString isEqual:preedit] &&
+  if ([_preeditString isEqualToString:preedit] &&
       _caretPos == pos && _selRange.location == range.location && _selRange.length == range.length)
     return;
 
@@ -353,7 +360,8 @@
   _selRange = range;
   _caretPos = pos;
 
-  //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld", range.location, range.length, pos);
+  //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld",
+  //      range.location, range.length, pos);
   NSDictionary* attrs;
   NSMutableAttributedString* attrString = [[NSMutableAttributedString alloc] initWithString:preedit];
   if (range.location > 0) {
@@ -385,14 +393,14 @@
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
-  [panel updatePosition:inputPos];
-  [panel updatePreedit:preedit
-          withSelRange:selRange
-            atCaretPos:caretPos
-         andCandidates:candidates
-           andComments:comments
-            withLabels:labels
-           highlighted:index];
+  panel.position = inputPos;
+  [panel showPreedit:preedit
+            selRange:selRange
+            caretPos:caretPos
+          candidates:candidates
+            comments:comments
+              labels:labels
+         highlighted:index];
 }
 
 @end // SquirrelController
@@ -417,18 +425,14 @@
 
 -(void)updateAppOptions
 {
-  if (!_currentApp) return;
-  NSLog(@"setAppOptions: %@", _currentApp);
-  // optionally, set app specific options
-  NSDictionary* appOptions = NSApp.squirrelAppDelegate.appOptions;
-  NSDictionary* options = appOptions[_currentApp];
-  if (options) {
-    for (NSString* key in options) {
-      NSNumber* value = options[key];
-      if (value) {
-        NSLog(@"set app option: %@ = %d", key, value.boolValue);
-        RimeSetOption(_session, key.UTF8String, value.boolValue);
-      }
+  if (!_currentApp)
+    return;
+  SquirrelAppOptions* appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
+  if (appOptions) {
+    for (NSString* key in appOptions) {
+      BOOL value = appOptions[key].boolValue;
+      NSLog(@"set app option: %@ = %d", key, value);
+      rime_get_api()->set_option(_session, key.UTF8String, value);
     }
   }
 }
@@ -453,14 +457,6 @@
   }
 }
 
--(void)loadSchemaSpecificSettings:(NSString*)schemaId {
-  RimeConfig config;
-  if (RimeSchemaOpen(schemaId.UTF8String, &config)) {
-    [NSApp.squirrelAppDelegate updateUIStyle:&config initialize:NO];
-    RimeConfigClose(&config);
-  }
-}
-
 -(void)rimeUpdate
 {
   //NSLog(@"update");
@@ -471,7 +467,7 @@
     // enable schema specific ui style
     if (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id) != 0) {
       _schemaId = @(status.schema_id);
-      [self loadSchemaSpecificSettings:_schemaId];
+      [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
       // inline preedit
       _inlinePreedit = NSApp.squirrelAppDelegate.panel.inlinePreedit &&
           !RimeGetOption(_session, "no_inline") &&   // not disabled in app options
@@ -486,10 +482,8 @@
   if (RimeGetContext(_session, &ctx)) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
-    NSString *preeditText = @"";
-    if (preedit) {
-      preeditText = @(preedit);
-    }
+    NSString *preeditText = preedit ? @(preedit) : @"";
+
     NSUInteger start = utf8len(preedit, ctx.composition.sel_start);
     NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
     NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
