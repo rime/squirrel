@@ -28,6 +28,7 @@
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
 		44FED9BA1A48502900037B05 /* preflight in Resources */ = {isa = PBXBuildFile; fileRef = 44FED9B91A48502900037B05 /* preflight */; };
+		7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -126,6 +127,8 @@
 		44FA4D891685997300116C1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
 		44FED9B91A48502900037B05 /* preflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = preflight; sourceTree = "<group>"; };
+		7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelConfig.h; sourceTree = "<group>"; };
+		7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelConfig.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
@@ -168,6 +171,8 @@
 				44E98EC214AE1AC900847AD6 /* utf8.cpp */,
 				44F84AD514E94C490005D70B /* SquirrelPanel.h */,
 				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
+				7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */,
+				7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -353,6 +358,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
