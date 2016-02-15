@@ -5,7 +5,7 @@
 static const int kOffsetHeight = 5;
 static const int kDefaultFontSize = 24;
 static const NSTimeInterval kShowStatusDuration = 1.2;
-static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
+static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 @interface SquirrelView : NSView
 
@@ -319,6 +319,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
   }
 
   NSRect highlightedRect = NSZeroRect;
+  CGFloat separatorWidth = 0;
 
   // candidates
   NSUInteger i;
@@ -357,16 +358,21 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
 
     if (i < comments.count && [comments[i] length] != 0) {
       [line appendAttributedString:[[NSAttributedString alloc]
+                                       initWithString:@" "
+                                           attributes:_attrs]];
+      [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:comments[i]
                                            attributes:commentAttrs]];
     }
 
     if (i > 0) {
-      NSString *separator = (_horizontal ? @" " : @"\n");
-      [text
-          appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:separator
-                                         attributes:_attrs]];
+      NSAttributedString *separator = [[NSAttributedString alloc]
+                                          initWithString:(_horizontal ? @"  " : @"\n")
+                                              attributes:_attrs];
+      if (_horizontal && separatorWidth == 0) {
+        separatorWidth = separator.size.width;
+      }
+      [text appendAttributedString:separator];
     }
 
     [text appendAttributedString:line];
@@ -397,6 +403,13 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
     if (_horizontal) {
       if (preedit) {
         highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+      }
+      if (index > 0) {
+        highlightedRect.origin.x -= separatorWidth / 2;
+        highlightedRect.size.width += separatorWidth / 2;
+      }
+      if (index < numCandidates - 1) {
+        highlightedRect.size.width += separatorWidth / 2;
       }
     } else {
       NSSize fullSize = text.size;

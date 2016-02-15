@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.22"
+config_version: "0.23"
 
 us_keyboard_layout: false
 
@@ -23,9 +23,9 @@ style:
   corner_radius: 10
   border_height: 0
   border_width: 0
-  line_spacing: 1
-  spacing: 5  # space between preedit and candidates in non-inline mode
-  #candidate_format: '%c. %@ '
+  line_spacing: 5
+  spacing: 10  # space between preedit and candidates in non-inline mode
+  #candidate_format: '%c. %@'
   font_face: 'Lucida Grande'  # supporting soft cursor '›'
   #font_point: 21
   #label_font_face: 'STHeitiTC-Medium'
@@ -70,11 +70,11 @@ preset_color_schemes:
   ink:
     name: 墨池／Ink
     author: 佛振 <chen.sst@gmail.com>
-    text_color: 0x000000
+    text_color: 0x5a5a5a
     back_color: 0xeeffffff
     candidate_text_color: 0x000000
     hilited_text_color: 0x000000
-    hilited_back_color: 0xdddddd
+    #hilited_back_color: 0xdddddd
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0xcc000000
     comment_text_color: 0x5a5a5a
@@ -114,7 +114,8 @@ preset_color_schemes:
     hilited_back_color: 0x000000
     hilited_candidate_text_color: 0x70ffaf
     hilited_candidate_back_color: 0x00000000
-    comment_text_color: 0xfecb96
+    comment_text_color: 0x1010d0
+    hilited_comment_text_color: 0x1010f0
 
   google:
     name: 谷歌／Google
@@ -135,9 +136,10 @@ preset_color_schemes:
     author: Aben <tntaben@gmail.com>, based on Ethan Schoonover's Solarized color scheme
     back_color: 0x362b00
     border_color: 0x362b00
-    text_color: 0x009985
+    text_color: 0x8236d3
     hilited_text_color: 0x98a12a
     candidate_text_color: 0x969483
+    comment_text_color: 0xc098a12a
     hilited_candidate_text_color: 0xffffff
     hilited_candidate_back_color: 0x8236d3
     hilited_comment_text_color: 0x362b00
@@ -146,7 +148,7 @@ preset_color_schemes:
     name: 简约白／Clean White
     author: Chongyu Zhu <lembacon@gmail.com>, based on 搜狗「简约白」
     horizontal: true
-    candidate_format: '%c %@ '
+    candidate_format: '%c %@'
     corner_radius: 6
     border_height: 6
     border_width: 6
