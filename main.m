@@ -44,9 +44,11 @@ int main(int argc, char *argv[]) {
     // notification
     show_message("deploy_update", "deploy");
     // build all schemas in current directory
-    RimeSetupLogging("rime.squirrel-builder");
-    RimeDeployerInitialize(NULL);
-    return RimeDeployWorkspace() ? 0 : 1;
+    RIME_STRUCT(RimeTraits, builder_traits);
+    builder_traits.app_name = "rime.squirrel-builder";
+    rime_get_api()->setup(&builder_traits);
+    rime_get_api()->deployer_initialize(NULL);
+    return rime_get_api()->deploy() ? 0 : 1;
   }
 
   @autoreleasepool {
@@ -82,7 +84,7 @@ int main(int argc, char *argv[]) {
     [[NSApplication sharedApplication] run];
 
     NSLog(@"Squirrel is quitting...");
-    RimeFinalize();
+    rime_get_api()->finalize();
   }
   return 0;
 }

@@ -53,7 +53,7 @@
   BOOL handled = NO;
 
   @autoreleasepool {
-    if (!_session || !RimeFindSession(_session)) {
+    if (!_session || !rime_get_api()->find_session(_session)) {
       [self createSession];
       if (!_session) {
         return NO;
@@ -148,7 +148,7 @@
 {
   // TODO add special key event preprocessing here
 
-  BOOL handled = (BOOL)RimeProcessKey(_session, rime_keycode, rime_modifiers);
+  BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
   //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
 
   // TODO add special key event postprocessing here
@@ -160,8 +160,9 @@
                                          rime_keycode == XK_bracketleft));
     if (isVimBackInCommandMode) {
       NSString* app = [_currentClient bundleIdentifier];
-      if ([app isEqualToString:@"org.vim.MacVim"] && !RimeGetOption(_session, "ascii_mode")) {
-        RimeSetOption(_session, "ascii_mode", True);
+      if ([app isEqualToString:@"org.vim.MacVim"] &&
+          !rime_get_api()->get_option(_session, "ascii_mode")) {
+        rime_get_api()->set_option(_session, "ascii_mode", True);
         NSLog(@"disable conversion to Chinese in MacVim's command mode");
       }
     }
@@ -169,8 +170,9 @@
 
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
-    bool is_basic_latin = rime_keycode >= XK_space && rime_keycode <= XK_asciitilde && rime_modifiers == 0;
-    if (is_basic_latin && RimeGetOption(_session, "_chord_typing")) {
+    bool is_basic_latin =
+        rime_keycode >= XK_space && rime_keycode <= XK_asciitilde && rime_modifiers == 0;
+    if (is_basic_latin && rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode];
     }
     else {
@@ -186,7 +188,7 @@
   if (_chord[0] && _session) {
     // simulate key-ups
     for (char *p = _chord; *p; ++p) {
-      RimeProcessKey(_session, *p, kReleaseMask);
+      rime_get_api()->process_key(_session, *p, kReleaseMask);
     }
     [self rimeUpdate];
   }
@@ -286,7 +288,7 @@
   /* if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return; */
   // force committing existing Rime composition
-  if (_session && RimeCommitComposition(_session)) {
+  if (_session && rime_get_api()->commit_composition(_session)) {
     [self rimeConsumeCommittedText];
   }
 }
@@ -414,7 +416,7 @@
   NSString* app = [_currentClient bundleIdentifier];
   NSLog(@"createSession: %@", app);
   _currentApp = [app copy];
-  _session = RimeCreateSession();
+  _session = rime_get_api()->create_session();
   
   _schemaId = nil;
 
@@ -441,7 +443,7 @@
 {
   //NSLog(@"destroySession:");
   if (_session) {
-    RimeDestroySession(_session);
+    rime_get_api()->destroy_session(_session);
     _session = 0;
   }
   [self clearChord];
@@ -450,10 +452,10 @@
 -(void)rimeConsumeCommittedText
 {
   RIME_STRUCT(RimeCommit, commit);
-  if (RimeGetCommit(_session, &commit)) {
+  if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
     [self commitString: commitText];
-    RimeFreeCommit(&commit);
+    rime_get_api()->free_commit(&commit);
   }
 }
 
@@ -463,23 +465,23 @@
   [self rimeConsumeCommittedText];
 
   RIME_STRUCT(RimeStatus, status);
-  if (RimeGetStatus(_session, &status)) {
+  if (rime_get_api()->get_status(_session, &status)) {
     // enable schema specific ui style
     if (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id) != 0) {
       _schemaId = @(status.schema_id);
       [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
       // inline preedit
       _inlinePreedit = NSApp.squirrelAppDelegate.panel.inlinePreedit &&
-          !RimeGetOption(_session, "no_inline") &&   // not disabled in app options
+          !rime_get_api()->get_option(_session, "no_inline") &&   // not disabled in app options
           ![_schemaId isEqualToString:@".default"];  // not in switcher where app options are not accessible
       // if not inline, embed soft cursor in preedit string
-      RimeSetOption(_session, "soft_cursor", !_inlinePreedit);
+      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
-    RimeFreeStatus(&status);
+    rime_get_api()->free_status(&status);
   }
 
   RIME_STRUCT(RimeContext, ctx);
-  if (RimeGetContext(_session, &ctx)) {
+  if (rime_get_api()->get_context(_session, &ctx)) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
@@ -522,7 +524,7 @@
                       comments:comments
                         labels:labels
                    highlighted:ctx.menu.highlighted_candidate_index];
-    RimeFreeContext(&ctx);
+    rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];
   }

@@ -5,7 +5,6 @@
 @implementation SquirrelConfig {
   NSMutableDictionary *_cache;
   RimeConfig _config;
-  RimeApi *_rimeApi;
   NSString *_schemaId;
   SquirrelConfig *_baseConfig;
   BOOL _isOpen;
@@ -15,7 +14,6 @@
   self = [super init];
   if (self) {
     _cache = [[NSMutableDictionary alloc] init];
-    _rimeApi = rime_get_api();
   }
   return self;
 }
@@ -30,14 +28,14 @@
 
 - (BOOL)openBaseConfig {
   [self close];
-  _isOpen = !!_rimeApi->config_open("squirrel", &_config);
+  _isOpen = !!rime_get_api()->config_open("squirrel", &_config);
   return _isOpen;
 }
 
 - (BOOL)openWithSchemaId:(NSString *)schemaId
               baseConfig:(SquirrelConfig *)baseConfig {
   [self close];
-  _isOpen = !!_rimeApi->schema_open(schemaId.UTF8String, &_config);
+  _isOpen = !!rime_get_api()->schema_open(schemaId.UTF8String, &_config);
   if (_isOpen) {
     _schemaId = schemaId;
     _baseConfig = baseConfig;
@@ -47,7 +45,7 @@
 
 - (void)close {
   if (_isOpen) {
-    _rimeApi->config_close(&_config);
+    rime_get_api()->config_close(&_config);
     _baseConfig = nil;
     _isOpen = NO;
   }
@@ -56,8 +54,8 @@
 - (BOOL)hasSection:(NSString *)section {
   if (_isOpen) {
     RimeConfigIterator iterator = {0};
-    if (_rimeApi->config_begin_map(&iterator, &_config, section.UTF8String)) {
-      _rimeApi->config_end(&iterator);
+    if (rime_get_api()->config_begin_map(&iterator, &_config, section.UTF8String)) {
+      rime_get_api()->config_end(&iterator);
       return YES;
     }
   }
@@ -82,7 +80,7 @@
     return cachedValue;
   }
   Bool value;
-  if (_isOpen && _rimeApi->config_get_bool(&_config, option.UTF8String, &value)) {
+  if (_isOpen && rime_get_api()->config_get_bool(&_config, option.UTF8String, &value)) {
     return _cache[option] = @(!!value);
   }
   return [_baseConfig getOptionalBool:option];
@@ -94,7 +92,7 @@
     return cachedValue;
   }
   int value;
-  if (_isOpen && _rimeApi->config_get_int(&_config, option.UTF8String, &value)) {
+  if (_isOpen && rime_get_api()->config_get_int(&_config, option.UTF8String, &value)) {
     return _cache[option] = @(value);
   }
   return [_baseConfig getOptionalInt:option];
@@ -107,7 +105,7 @@
     return cachedValue;
   }
   double value;
-  if (_isOpen && _rimeApi->config_get_double(&_config, option.UTF8String, &value)) {
+  if (_isOpen && rime_get_api()->config_get_double(&_config, option.UTF8String, &value)) {
     return _cache[option] = @(value);
   }
   return [_baseConfig getOptionalDouble:option];
@@ -118,7 +116,8 @@
   if (cachedValue) {
     return cachedValue;
   }
-  const char *value = _isOpen ? _rimeApi->config_get_cstring(&_config, option.UTF8String) : NULL;
+  const char *value =
+      _isOpen ? rime_get_api()->config_get_cstring(&_config, option.UTF8String) : NULL;
   if (value) {
     return _cache[option] = @(value);
   }
@@ -142,13 +141,13 @@
   NSString * rootKey = [@"app_options/" stringByAppendingString:appName];
   SquirrelMutableAppOptions* appOptions = [[SquirrelMutableAppOptions alloc] init];
   RimeConfigIterator iterator;
-  RimeConfigBeginMap(&iterator, &_config, rootKey.UTF8String);
-  while (RimeConfigNext(&iterator)) {
+  rime_get_api()->config_begin_map(&iterator, &_config, rootKey.UTF8String);
+  while (rime_get_api()->config_next(&iterator)) {
     //NSLog(@"DEBUG option[%d]: %s (%s)", iterator.index, iterator.key, iterator.path);
     BOOL value = [self getBool:@(iterator.path)];
     appOptions[@(iterator.key)] = @(value);
   }
-  RimeConfigEnd(&iterator);
+  rime_get_api()->config_end(&iterator);
   return [appOptions copy];
 }
 
