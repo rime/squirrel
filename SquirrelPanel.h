@@ -18,9 +18,9 @@
             labels:(NSString*)labels
        highlighted:(NSUInteger)index;
 
--(void)showStatus:(NSString*)msg;
-
 -(void)hide;
+
+-(void)updateStatus:(NSString*)message;
 
 -(void)updateConfig:(SquirrelConfig*)config;
 

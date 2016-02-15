@@ -101,6 +101,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
   NSParagraphStyle *_paragraphStyle;
   NSParagraphStyle *_preeditParagraphStyle;
 
+  NSString *_statusMessage;
   NSTimer *_statusTimer;
 }
 
@@ -213,12 +214,16 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
         highlighted:(NSUInteger)index {
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
+    _statusMessage = nil;
     if (_statusTimer) {
       [_statusTimer invalidate];
       _statusTimer = nil;
     }
   } else {
-    if (!_statusTimer) {
+    if (_statusMessage) {
+      [self showStatus:_statusMessage];
+      _statusMessage = nil;
+    } else if (!_statusTimer) {
       [self hide];
     }
     return;
@@ -415,8 +420,12 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@ ";
   [self show];
 }
 
-- (void)showStatus:(NSString *)msg {
-  NSAttributedString *text = [[NSAttributedString alloc] initWithString:msg
+- (void)updateStatus:(NSString *)message {
+  _statusMessage = message;
+}
+
+- (void)showStatus:(NSString *)message {
+  NSAttributedString *text = [[NSAttributedString alloc] initWithString:message
                                                              attributes:_commentAttrs];
   [_view setText:text hilightedRect:NSZeroRect];
   [self show];

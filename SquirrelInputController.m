@@ -523,6 +523,8 @@
                         labels:labels
                    highlighted:ctx.menu.highlighted_candidate_index];
     RimeFreeContext(&ctx);
+  } else {
+    [NSApp.squirrelAppDelegate.panel hide];
   }
 }
 
