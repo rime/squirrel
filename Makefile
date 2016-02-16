@@ -4,10 +4,10 @@ all: release
 install: install-release
 
 LIBRIME = lib/librime.1.dylib
+LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a librime/thirdparty/lib/liblevel.a librime/thirdparty/lib/libopencc.a librime/thirdparty/lib/libyamlcpp.a
 BRISE = data/brise/default.yaml data/brise/symbols.yaml data/brise/essay.txt
 OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc/t2s.json
-
-DEPENDS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
+DEPS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
 
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
 RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
@@ -22,14 +22,17 @@ INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
 $(LIBRIME):
 	$(MAKE) librime
 
+$(LIBRIME_DEPS):
+	$(MAKE) -C librime -f Makefile.xcode thirdparty
+
 $(BRISE):
 	$(MAKE) update_brise
 
 $(OPENCC_DATA):
 	$(MAKE) update_opencc_data
 
-librime:
-	cd librime; make -f Makefile.xcode thirdparty release
+librime: $(LIBRIME_DEPS)
+	$(MAKE) -C librime -f Makefile.xcode release
 	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
@@ -43,18 +46,18 @@ update_brise:
 	cp $(DATA_FILES) data/brise/
 
 update_opencc_data:
-	cd librime; make -f Makefile.xcode thirdparty/opencc
+	$(MAKE) -C librime -f Makefile.xcode thirdparty/opencc
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
 deps: librime data
 
-release: $(DEPENDS)
+release: $(DEPS)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Release/Squirrel.app Squirrel.app
 
-debug: $(DEPENDS)
+debug: $(DEPS)
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 	rm -f build/Squirrel.app
 	cd build ; ln -s Debug/Squirrel.app Squirrel.app
@@ -64,7 +67,6 @@ SQUIRREL_APP_PATH = /Library/Input Methods/Squirrel.app
 install-debug:
 	rm -rf "$(SQUIRREL_APP_PATH)/Contents/Frameworks"
 	rm -rf "$(SQUIRREL_APP_PATH)/Contents/MacOS"
-
 	cp -R build/Debug/Squirrel.app "/Library/Input Methods"
 	"$(SQUIRREL_APP_PATH)/Contents/Resources/postflight"
 
@@ -80,3 +82,4 @@ clean:
 	rm lib/* > /dev/null 2>&1 || true
 	rm data/brise/* > /dev/null 2>&1 || true
 	rm data/opencc/*.ocd > /dev/null 2>&1 || true
+	$(MAKE) -C librime -f Makefile.xcode clean
