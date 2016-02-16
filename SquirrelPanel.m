@@ -611,7 +611,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       }
       NSNumber *fontSizeOverridden =
           [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
-      if (fontSize) {
+      if (fontSizeOverridden) {
         fontSize = fontSizeOverridden.integerValue;
       }
       NSString *labelFontNameOverridden =
