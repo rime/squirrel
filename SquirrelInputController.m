@@ -461,7 +461,7 @@
 
 -(void)rimeUpdate
 {
-  //NSLog(@"update");
+  //NSLog(@"rimeUpdate");
   [self rimeConsumeCommittedText];
 
   RIME_STRUCT(RimeStatus, status);
@@ -470,17 +470,17 @@
     if (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id) != 0) {
       _schemaId = @(status.schema_id);
       [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
-      // in horizontal mode, arrow keys may behave differently.
-      rime_get_api()->set_option(_session, "_horizontal",
-                                 NSApp.squirrelAppDelegate.panel.horizontal);
       // inline preedit
       _inlinePreedit = NSApp.squirrelAppDelegate.panel.inlinePreedit &&
-          !rime_get_api()->get_option(_session, "no_inline") &&  // not disabled in app options
-          ![_schemaId isEqualToString:@".default"];  // in switcher app options are not accessible
+          !rime_get_api()->get_option(_session, "no_inline");  // not disabled in app options
       // if not inline, embed soft cursor in preedit string
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
     rime_get_api()->free_status(&status);
+
+    // in horizontal mode, arrow keys may behave differently.
+    rime_get_api()->set_option(_session, "_horizontal",
+                               NSApp.squirrelAppDelegate.panel.horizontal);
   }
 
   RIME_STRUCT(RimeContext, ctx);
