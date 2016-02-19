@@ -148,6 +148,12 @@
 {
   // TODO add special key event preprocessing here
 
+  // in horizontal mode, arrow keys may behave differently.
+  Bool is_horizontal_mode = NSApp.squirrelAppDelegate.panel.horizontal;
+  if (is_horizontal_mode != rime_get_api()->get_option(_session, "_horizontal")) {
+    rime_get_api()->set_option(_session, "_horizontal", is_horizontal_mode);
+  }
+
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
   //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
 
@@ -477,10 +483,6 @@
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
     rime_get_api()->free_status(&status);
-
-    // in horizontal mode, arrow keys may behave differently.
-    rime_get_api()->set_option(_session, "_horizontal",
-                               NSApp.squirrelAppDelegate.panel.horizontal);
   }
 
   RIME_STRUCT(RimeContext, ctx);
