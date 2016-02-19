@@ -4,7 +4,7 @@ all: release
 install: install-release
 
 LIBRIME = lib/librime.1.dylib
-LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a librime/thirdparty/lib/liblevel.a librime/thirdparty/lib/libopencc.a librime/thirdparty/lib/libyamlcpp.a
+LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a librime/thirdparty/lib/libleveldb.a librime/thirdparty/lib/libopencc.a librime/thirdparty/lib/libyaml-cpp.a
 BRISE = data/brise/default.yaml data/brise/symbols.yaml data/brise/essay.txt
 OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc/t2s.json
 DEPS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
