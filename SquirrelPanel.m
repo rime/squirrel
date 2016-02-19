@@ -410,6 +410,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       }
       if (index < numCandidates - 1) {
         highlightedRect.size.width += separatorWidth / 2;
+      } else if (preedit) {
+        // in case the preedit line is longer than the candidate list,
+        // the highlight region for the last candidate should include empty space on the right.
+        highlightedRect.size.width = text.size.width - highlightedRect.origin.x;
       }
     } else {
       NSSize fullSize = text.size;
