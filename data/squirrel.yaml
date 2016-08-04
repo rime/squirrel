@@ -165,6 +165,8 @@ preset_color_schemes:
     hilited_candidate_back_color: 0xeeeeee
 
 app_options:
+  com.apple.Spotlight:
+    ascii_mode: true
   com.alfredapp.Alfred:
     ascii_mode: true
   com.runningwithcrayons.Alfred-2:
