@@ -344,8 +344,12 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                         attributes:labelAttrs]];
     }
 
+    // Use left-to-right marks to prevent right-to-left text from changing the
+    // layout of non-candidate text.
+    NSString *candidate = [NSString stringWithFormat:@"\u200E%@\u200E", candidates[i]];
+
     [line appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:candidates[i]
+                                     initWithString:candidate
                                          attributes:attrs]];
 
     if (labelRange2.location != NSNotFound) {
