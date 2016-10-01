@@ -109,6 +109,9 @@ void notification_handler(void* context_object, RimeSessionId session_id,
       bool is_ascii_mode = (message_value[0] != '!');
       if (is_ascii_mode != was_ascii_mode) {
         was_ascii_mode = is_ascii_mode;
+
+        toggle_option_hook(context_object,session_id,message_value);
+
         show_status_message(message_value, message_type);
       }
     }
@@ -120,10 +123,25 @@ void notification_handler(void* context_object, RimeSessionId session_id,
              !strcmp(message_value, "!simplification") ||
              !strcmp(message_value, "extended_charset") ||
              !strcmp(message_value, "!extended_charset")) {
+      toggle_option_hook(context_object,session_id,message_value);
       show_status_message(message_value, message_type);
     }
   }
 }
+void toggle_option_hook(void* context_object, RimeSessionId session_id,
+                        const char* message_value) {
+  NSString *toggleHookCmd=(@"~/bin/squirrel_toggle_option").stringByStandardizingPath;
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+
+  if ([fileManager fileExistsAtPath:toggleHookCmd]){
+    [[NSTask launchedTaskWithLaunchPath:toggleHookCmd arguments:@[[NSString stringWithUTF8String:message_value]]] waitUntilExit];
+    // NSString *fullCmd=[NSString stringWithFormat:@"%@ %s" ,toggleHookCmd ,message_value];
+    // system([fullCmd cStringUsingEncoding:NSUTF8StringEncoding]);
+
+
+  }
+}
+
 
 -(void)setupRime
 {
@@ -288,4 +306,3 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
 }
 
 @end
-
