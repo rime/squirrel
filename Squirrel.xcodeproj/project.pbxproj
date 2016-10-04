@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1B4763F11DAA029B00C58621 /* SquirrelDomainServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */; };
+		1BC8F63A1DAA515700461284 /* squirrel_client in Resources */ = {isa = PBXBuildFile; fileRef = 1BC8F6391DAA515700461284 /* squirrel_client */; };
+		1BC8F63B1DAA516200461284 /* squirrel_client in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1BC8F6391DAA515700461284 /* squirrel_client */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
 		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4443A83A1828CC5100731305 /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 4443A8391828CC5100731305 /* input_source.m */; };
@@ -130,6 +133,7 @@
 			dstSubfolderSpec = 6;
 			files = (
 				442C64921F7A410A0027EFBE /* rime-install in CopyFiles */,
+				1BC8F63B1DAA516200461284 /* squirrel_client in CopyFiles */,
 				44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */,
 				44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */,
 			);
@@ -152,6 +156,9 @@
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelDomainServer.m; sourceTree = "<group>"; };
+		1B4763F21DAA03D100C58621 /* SquirrelDomainServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SquirrelDomainServer.h; sourceTree = "<group>"; };
+		1BC8F6391DAA515700461284 /* squirrel_client */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = squirrel_client; path = bin/squirrel_client; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -264,6 +271,8 @@
 				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
 				7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */,
 				7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */,
+				1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */,
+				1B4763F21DAA03D100C58621 /* SquirrelDomainServer.h */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -301,6 +310,9 @@
 			isa = PBXGroup;
 			children = (
 				442C648F1F7A40180027EFBE /* bin */,
+				1BC8F6391DAA515700461284 /* squirrel_client */,
+				44E21A8E16A653E700C2B08F /* rime_deployer */,
+				44E21A8F16A653E700C2B08F /* rime_dict_manager */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -476,6 +488,7 @@
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
+				1BC8F63A1DAA515700461284 /* squirrel_client in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
@@ -491,6 +504,7 @@
 			files = (
 				7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
+				1B4763F11DAA029B00C58621 /* SquirrelDomainServer.m in Sources */,
 				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,

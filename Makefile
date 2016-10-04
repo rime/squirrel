@@ -17,8 +17,8 @@ PLUM_DATA = bin/rime-install \
 OPENCC_DATA = data/opencc/TSCharacters.ocd \
 	data/opencc/TSPhrases.ocd \
 	data/opencc/t2s.json
-DEPS = $(LIBRIME) $(PLUM_DATA) $(OPENCC_DATA)
-
+SQUIRREL_CLIENT=squirrel_client
+DEPS = $(LIBRIME) $(PLUM_DATA) $(OPENCC_DATA) $(SQUIRREL_CLIENT)
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
 RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
 RIME_BIN_DEPLOYER = rime_deployer
@@ -51,6 +51,7 @@ librime: $(LIBRIME_DEPS)
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
 
 data: update-plum-data update-opencc-data
+	clang SquirrelClient.c -o ./bin/squirrel_client
 
 update-plum-data:
 	$(MAKE) -C plum minimal
@@ -63,7 +64,7 @@ update-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
-deps: librime data
+deps: librime data squirrel_client
 
 release: $(DEPS)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
