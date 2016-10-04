@@ -7,8 +7,8 @@ LIBRIME = lib/librime.1.dylib
 LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a librime/thirdparty/lib/libleveldb.a librime/thirdparty/lib/libopencc.a librime/thirdparty/lib/libyaml-cpp.a
 BRISE = data/brise/default.yaml data/brise/symbols.yaml data/brise/essay.txt
 OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc/t2s.json
-DEPS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
-
+SQUIRREL_CLIENT=squirrel_client
+DEPS = $(LIBRIME) $(BRISE) $(OPENCC_DATA) $(SQUIRREL_CLIENT)
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
 RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
 RIME_BIN_DEPLOYER = rime_deployer
@@ -40,6 +40,8 @@ librime: $(LIBRIME_DEPS)
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
 
 data: update_brise update_opencc_data
+squirrel_client:
+	clang SquirrelClient.c -o ./bin/squirrel_client
 
 update_brise:
 	mkdir -p data/brise
@@ -50,7 +52,7 @@ update_opencc_data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
-deps: librime data
+deps: librime data squirrel_client
 
 release: $(DEPS)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
