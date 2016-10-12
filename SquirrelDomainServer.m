@@ -102,10 +102,12 @@
 -(void)handleClient:(int)clifd{
   int n;
   char buf[512];
+  char output[512];
   char *ptr=NULL;
   char *token=NULL;
 
   memset(&buf, 0, sizeof(buf));
+  memset(&output, 0, sizeof(output));
 
   // while ((n = read(clifd, buf, sizeof(buf))) > 0) {
   n = read(clifd, buf, sizeof(buf)) ;
@@ -119,12 +121,24 @@
 
   if (_session) {
     ptr=buf;
-    token=strsep( &ptr,",");    // buf=a,b,c,d
+    token=strsep( &ptr,",");    // ptr=a,b,c,d, then first token=a
     while(token!=NULL){
       if (strcmp("--set" ,token)==0) { // set option
         token=strsep( &ptr,",");       // get next token
         if (token!=NULL) {
           rime_get_api()->set_option(_session, token, True);
+        }
+      }else if (strcmp("--get" ,token)==0) { // get option
+        token=strsep( &ptr,",");
+        if (token!=NULL) {
+          strcpy(output+strlen(output), token);
+          strcpy(output+strlen(output), "=");
+          if (rime_get_api()->get_option(_session, token)) {
+            strcpy(output+strlen(output), "true");
+          }else{
+            strcpy(output+strlen(output), "false");
+          }
+          strcpy(output+strlen(output), "\n");
         }
       }else if (strcmp("--unset" ,token)==0) { // unset option
         token=strsep( &ptr,",");
@@ -153,6 +167,11 @@
 
       token=strsep( &ptr,",");
     }
+    if (strlen(output)!=0) {
+       strcpy(output+strlen(output)-1, "\0"); // delete the last \n
+       write(clifd, output, strlen(output)) ;
+    }
+
     [_lastInputController rimeUpdate];
   }
 }
