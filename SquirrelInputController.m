@@ -1,5 +1,6 @@
 #import "SquirrelInputController.h"
 
+#import "SquirrelDomainServer.h"
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
@@ -32,6 +33,8 @@
   NSTimer *_chordTimer;
   NSTimeInterval _chordDuration;
   NSString *_currentApp;
+
+  SquirrelDomainServer *_domainServerInstance;
 }
 
 /*!
@@ -256,6 +259,7 @@
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
   _preeditString = @"";
+  [_domainServerInstance updateLastSession:self session:_session app:_currentApp];
 }
 
 -(instancetype)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
@@ -265,6 +269,8 @@
     _currentClient = inputClient;
     [self createSession];
   }
+
+  _domainServerInstance=[SquirrelDomainServer sharedInstance];
   return self;
 }
 
@@ -298,6 +304,16 @@
     [self rimeConsumeCommittedText];
   }
 }
+-(void)clearComposition
+{
+  if (_session) {
+    rime_get_api()->clear_composition(_session);
+  }
+
+  [NSApp.squirrelAppDelegate.panel hide];
+}
+
+
 
 // a piece of comment from SunPinyin's macos wrapper says:
 // > though we specified the showPrefPanel: in SunPinyinApplicationDelegate as the
@@ -423,7 +439,7 @@
   NSLog(@"createSession: %@", app);
   _currentApp = [app copy];
   _session = rime_get_api()->create_session();
-  
+
   _schemaId = nil;
 
   if (_session) {
@@ -450,6 +466,7 @@
   //NSLog(@"destroySession:");
   if (_session) {
     rime_get_api()->destroy_session(_session);
+    [_domainServerInstance destroySession:_session];
     _session = 0;
   }
   [self clearChord];
