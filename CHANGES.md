@@ -1,7 +1,7 @@
 【鼠鬚管】更新日誌
 ===
 
-RIME 主葉：https://rimeime.github.io
+RIME 主葉：http://rimeime.github.io
 
 鼠鬚管 0.9.26.2 <2014-12-23>
 ---

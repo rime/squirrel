@@ -579,7 +579,7 @@
         <f n="LICENSE.txt" o="root" g="wheel" p="33188"/>
         <f n="postflight" o="root" g="wheel" p="33261"/>
         <f n="preflight" o="root" g="wheel" p="33261"/>
-        <f n="README.txt" o="root" g="wheel" p="33188"/>
+        <f n="README.md" o="root" g="wheel" p="33188"/>
         <f n="rime.pdf" o="root" g="wheel" p="33188"/>
         <f n="squirrel-app.icns" o="root" g="wheel" p="33188"/>
         <f n="zh_CN.lproj" o="root" g="wheel" p="16877">

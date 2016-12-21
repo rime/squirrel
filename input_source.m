@@ -13,6 +13,7 @@ void RegisterInputSource() {
       NULL, kInstalledLocation, strlen((const char *)kInstalledLocation), NO);
   if (installedLocationURL) {
     TISRegisterInputSource(installedLocationURL);
+    CFRelease(installedLocationURL);
   }
 }
 
@@ -22,7 +23,7 @@ void ActivateInputSource() {
   for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"examining input source '%@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
@@ -37,6 +38,7 @@ void ActivateInputSource() {
       NSLog(@"'%@' should have been activated.", sourceID);
     }
   }
+  CFRelease(sourceList);
 }
 
 void DeactivateInputSource() {
@@ -45,7 +47,7 @@ void DeactivateInputSource() {
   for (int i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i - 1));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"examining input source '%@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
@@ -54,6 +56,7 @@ void DeactivateInputSource() {
       NSLog(@"'%@' should have been deactivated.", sourceID);
     }
   }
+  CFRelease(sourceList);
 }
 
 BOOL IsInputSourceActive() {
@@ -62,7 +65,7 @@ BOOL IsInputSourceActive() {
   for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
-    NSString *sourceID = (NSString *)(TISGetInputSourceProperty(
+    NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     NSLog(@"examining input source '%@'", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
@@ -74,6 +77,7 @@ BOOL IsInputSourceActive() {
       }
     }
   }
+  CFRelease(sourceList);
   NSLog(@"IsInputSourceActive: %d / 2", active);
   return active == 2;  // 1 active input method + 1 active input mode
 }
