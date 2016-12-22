@@ -14,7 +14,7 @@ RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
 RIME_BIN_DEPLOYER = rime_deployer
 RIME_BIN_DICT_MANAGER = rime_dict_manager
 OPENCC_DATA_OUTPUT = librime/thirdparty/data/opencc/*.*
-DATA_FILES = brise/default.yaml brise/symbols.yaml brise/essay.txt brise/preset/*.yaml brise/supplement/*.yaml
+DATA_FILES = brise/output/*.*
 
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
 INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
@@ -42,6 +42,7 @@ librime: $(LIBRIME_DEPS)
 data: update_brise update_opencc_data
 
 update_brise:
+	$(MAKE) -C brise preset
 	mkdir -p data/brise
 	cp $(DATA_FILES) data/brise/
 
