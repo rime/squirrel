@@ -8,17 +8,16 @@ static NSString *const kInputModeID =
     @"com.googlecode.rimeime.inputmethod.Squirrel.Rime";
 
 void RegisterInputSource() {
-  NSLog(@"RegisterInputSource.");
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
       NULL, kInstalledLocation, strlen((const char *)kInstalledLocation), NO);
   if (installedLocationURL) {
     TISRegisterInputSource(installedLocationURL);
     CFRelease(installedLocationURL);
+    NSLog(@"Registered input source from %s", kInstalledLocation);
   }
 }
 
 void ActivateInputSource() {
-  NSLog(@"ActivateInputSource.");
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
@@ -29,31 +28,30 @@ void ActivateInputSource() {
     if ([sourceID isEqualToString:kSourceID] ||
         [sourceID isEqualToString:kInputModeID]) {
       TISEnableInputSource(inputSource);
+      NSLog(@"Enabled input source: %@", sourceID);
       CFBooleanRef isSelectable = (CFBooleanRef)TISGetInputSourceProperty(
           inputSource, kTISPropertyInputSourceIsSelectCapable);
       if (CFBooleanGetValue(isSelectable)) {
-        NSLog(@"selecting input source '%@'.", sourceID);
         TISSelectInputSource(inputSource);
+        NSLog(@"Selected input source: %@", sourceID);
       }
-      NSLog(@"'%@' should have been activated.", sourceID);
     }
   }
   CFRelease(sourceList);
 }
 
 void DeactivateInputSource() {
-  NSLog(@"DeactivateInputSource.");
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (int i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i - 1));
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
-    //NSLog(@"examining input source '%@", sourceID);
+    //NSLog(@"Examining input source: %@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
         [sourceID isEqualToString:kInputModeID]) {
       TISDisableInputSource(inputSource);
-      NSLog(@"'%@' should have been deactivated.", sourceID);
+      NSLog(@"Disabled input source: %@", sourceID);
     }
   }
   CFRelease(sourceList);
@@ -67,7 +65,7 @@ BOOL IsInputSourceActive() {
         sourceList, i));
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
-    NSLog(@"examining input source '%@'", sourceID);
+    //NSLog(@"Examining input source: %@", sourceID);
     if ([sourceID isEqualToString:kSourceID] ||
         [sourceID isEqualToString:kInputModeID]) {
       CFBooleanRef isEnabled = (CFBooleanRef)(TISGetInputSourceProperty(
@@ -78,6 +76,6 @@ BOOL IsInputSourceActive() {
     }
   }
   CFRelease(sourceList);
-  NSLog(@"IsInputSourceActive: %d / 2", active);
+  //NSLog(@"IsInputSourceActive: %d", active);
   return active == 2;  // 1 active input method + 1 active input mode
 }
