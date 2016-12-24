@@ -176,9 +176,13 @@
 
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
-    bool is_basic_latin =
-        rime_keycode >= XK_space && rime_keycode <= XK_asciitilde && rime_modifiers == 0;
-    if (is_basic_latin && rime_get_api()->get_option(_session, "_chord_typing")) {
+    bool is_chording_key = rime_modifiers == 0 &&
+        ((rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
+         rime_keycode == XK_Tab ||
+         rime_keycode == XK_BackSpace ||
+         rime_keycode == XK_Return);
+    if (is_chording_key &&
+        rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode];
     }
     else {
@@ -189,20 +193,47 @@
   return handled;
 }
 
+static char keycode_to_char(int keycode) {
+  switch (keycode) {
+    case XK_Tab:
+      return '\t';
+    case XK_BackSpace:
+      return'\b';
+    case XK_Return:
+      return '\n';
+    default:
+      return (char)keycode;
+  }
+}
+
+static int char_to_keycode(char ch) {
+  switch (ch) {
+    case '\t':
+      return XK_Tab;
+    case '\b':
+      return XK_BackSpace;
+    case '\n':
+      return XK_Return;
+    default:
+      return ch;
+  }
+}
+
 -(void)onChordTimer:(NSTimer *)timer
 {
   if (_chord[0] && _session) {
     // simulate key-ups
     for (char *p = _chord; *p; ++p) {
-      rime_get_api()->process_key(_session, *p, kReleaseMask);
+      rime_get_api()->process_key(_session, char_to_keycode(*p), kReleaseMask);
     }
     [self rimeUpdate];
   }
   [self clearChord];
 }
 
--(void)updateChord:(int)ch
+-(void)updateChord:(int)keycode
 {
+  char ch = keycode_to_char(keycode);
   char *p = strchr(_chord, ch);
   if (p != NULL) {
     // just repeating
