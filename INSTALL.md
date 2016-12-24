@@ -2,15 +2,19 @@
 
 > Instructions to build Squirrel - the Rime frontend for macOS
 
-## Build Squirrel from Scratch
+## Manually build and install Squirrel
 
 ### Prerequisites
 
-You should already have installed **Xcode with Command Line Tools**.
+If you haven't already got the Xcode toolchain, install **Xcode Command Line Tools**:
+
+``` sh
+xcode-select --install
+```
 
 Install dependencies with [Homebrew](http://brew.sh/):
 
-Set the [USTC mirror](https://lug.ustc.edu.cn/wiki/mirrors/help/brew.git) of it can speed up process.
+Optional: set the [USTC mirror](https://lug.ustc.edu.cn/wiki/mirrors/help/brew.git) to speed up the `brew install` process in mainland China.
 
 ``` sh
 # dev tools:
@@ -28,7 +32,8 @@ port install cmake git
 port install boost -no_static
 ```
 
-> If you've built Boost manually instead of installing it with Homebrew or MacPorts, set `BOOST_ROOT` to its top level directory in the terminal.
+> If you've built Boost manually instead of installing it with Homebrew or
+> MacPorts, please set `BOOST_ROOT` to its top level directory in the terminal.
 
 ### Checkout the code
 
@@ -48,8 +53,6 @@ make deps
 
 ``` sh
 make
-# or:
-#make debug
 ```
 
 ## Install it on your Mac
@@ -58,8 +61,6 @@ Once built, you can install and try it live:
 
 ``` sh
 sudo make install
-# or:
-#sudo make install-debug
 ```
 
 That's it. Thanks for riming with Squirrel.

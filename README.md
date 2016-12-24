@@ -16,7 +16,7 @@
 
 授權條款：[GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-項目主頁：[http://rime.im](http://rime.im)
+項目主頁：[rime.im](http://rime.im)
 
 您可能還需要 Rime 用於其他操作系統的發行版：
 
