@@ -1,6 +1,6 @@
 # How to Rime with Squirrel
 
-> Instructions to build Squirrel - the Rime frontend for Mac OS X
+> Instructions to build Squirrel - the Rime frontend for macOS
 
 ## Build Squirrel from Scratch
 
@@ -8,7 +8,9 @@
 
 You should already have installed **Xcode with Command Line Tools**.
 
-Install dependencies with [Homebrew](http://mxcl.github.com/homebrew/):
+Install dependencies with [Homebrew](http://brew.sh/):
+
+Set the [USTC mirror](https://lug.ustc.edu.cn/wiki/mirrors/help/brew.git) of it can speed up process.
 
 ``` sh
 # dev tools:
