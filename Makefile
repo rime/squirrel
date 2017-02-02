@@ -51,6 +51,7 @@ librime: $(LIBRIME_DEPS)
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
 
 data: update-plum-data update-opencc-data
+squirrel_client:
 	clang SquirrelClient.c -o ./bin/squirrel_client
 
 update-plum-data:
