@@ -221,14 +221,18 @@ static int char_to_keycode(char ch) {
 
 -(void)onChordTimer:(NSTimer *)timer
 {
+  int processed_keys = 0;
   if (_chord[0] && _session) {
     // simulate key-ups
     for (char *p = _chord; *p; ++p) {
-      rime_get_api()->process_key(_session, char_to_keycode(*p), kReleaseMask);
+      if (rime_get_api()->process_key(_session, char_to_keycode(*p), kReleaseMask))
+        ++processed_keys;
     }
-    [self rimeUpdate];
   }
   [self clearChord];
+  if (processed_keys) {
+    [self rimeUpdate];
+  }
 }
 
 -(void)updateChord:(int)keycode
