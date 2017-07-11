@@ -155,9 +155,19 @@
   }
 
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
-  //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
+  // NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
 
   // TODO add special key event postprocessing here
+
+  // USER DEFINE LIST
+  NSSet *apps = [NSSet setWithObjects:
+                  @"com.jetbrains.intellij",
+                  @"com.microsoft.VSCode",
+                  @"com.google.android.studio-EAP",
+                  @"com.google.android.studio",
+                  @"com.googlecode.iterm2",
+                  @"org.vim.MacVim",
+                  nil];
 
   if (!handled) {
     BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
@@ -166,10 +176,12 @@
                                          rime_keycode == XK_bracketleft));
     if (isVimBackInCommandMode) {
       NSString* app = [_currentClient bundleIdentifier];
-      if ([app isEqualToString:@"org.vim.MacVim"] &&
+      BOOL isInVimMode = [apps containsObject:app];
+      // NSLog(@"Inputing...   %@   ...%s", app, isInVimMode ? "VimMode" : "balabala");
+      if (isInVimMode &&
           !rime_get_api()->get_option(_session, "ascii_mode")) {
         rime_get_api()->set_option(_session, "ascii_mode", True);
-        NSLog(@"disable conversion to Chinese in MacVim's command mode");
+        NSLog(@"disable conversion to Chinese in Vimmode's command mode");
       }
     }
   }
