@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.23"
+config_version: "0.24"
 
 us_keyboard_layout: false
 
@@ -186,6 +186,8 @@ app_options:
   #com.barebones.textwrangler:
   #  ascii_mode: true
   #com.macromates.TextMate.preview:
+  #  ascii_mode: true
+  #com.microsoft.VSCode
   #  ascii_mode: true
   #com.sublimetext.2:
   #  ascii_mode: true
