@@ -2,12 +2,12 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
     <title>【鼠鬚管】輸入法更新頻道</title>
-    <link>http://rimeime.github.io/release/squirrel/appcast.xml</link>
+    <link>http://rime.github.io/release/squirrel/appcast.xml</link>
     <description>鼠鬚管 Appcast 更新頻道</description>
     <language>zh</language>
     <item>
       <title>鼠鬚管 0.9.26.2</title>
-      <sparkle:releaseNotesLink>http://rimeime.github.io/release/squirrel/</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>http://rime.github.io/release/squirrel/</sparkle:releaseNotesLink>
       <sparkle:minimumSystemVersion>10.7.0</sparkle:minimumSystemVersion>
       <pubDate>Mon, 22 Dec 2014 12:00:00 +0800</pubDate>
       <enclosure url="http://dl.bintray.com/lotem/rime/Squirrel-0.9.26.2.zip"
