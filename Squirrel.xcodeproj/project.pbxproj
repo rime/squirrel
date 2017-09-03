@@ -616,7 +616,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = com.googlecode.rimeime.inputmethod.Squirrel;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
@@ -652,7 +652,7 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = com.googlecode.rimeime.inputmethod.Squirrel;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;

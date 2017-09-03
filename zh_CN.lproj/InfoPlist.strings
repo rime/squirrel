@@ -1,8 +1,8 @@
 /* Localized versions of Info.plist keys */
 
-NSHumanReadableCopyright = "Copyleft 2012, 式恕堂";
+NSHumanReadableCopyright = "Copyleft 2017, 式恕堂";
 
-com.googlecode.rimeime.inputmethod.Squirrel = "鼠须管";
+im.rime.inputmethod.Squirrel = "鼠须管";
 
 CFBundleName = "鼠须管";
 CFBundleDisplayName = "鼠须管";

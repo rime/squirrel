@@ -1,19 +1,19 @@
 #import <Carbon/Carbon.h>
 
-static const unsigned char kInstalledLocation[] =
+static const unsigned char kInstallLocation[] =
     "/Library/Input Methods/Squirrel.app";
 static NSString *const kSourceID =
-    @"com.googlecode.rimeime.inputmethod.Squirrel";
+    @"im.rime.inputmethod.Squirrel";
 static NSString *const kInputModeID =
-    @"com.googlecode.rimeime.inputmethod.Squirrel.Rime";
+    @"im.rime.inputmethod.Squirrel.Rime";
 
 void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
-      NULL, kInstalledLocation, strlen((const char *)kInstalledLocation), NO);
+      NULL, kInstallLocation, strlen((const char *)kInstallLocation), NO);
   if (installedLocationURL) {
     TISRegisterInputSource(installedLocationURL);
     CFRelease(installedLocationURL);
-    NSLog(@"Registered input source from %s", kInstalledLocation);
+    NSLog(@"Registered input source from %s", kInstallLocation);
   }
 }
 
