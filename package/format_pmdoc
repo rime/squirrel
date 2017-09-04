@@ -1,7 +1,0 @@
-#! /bin/bash
-xmllint --format Package.pmdoc/index.xml > Package.pmdoc/index.xml.1
-xmllint --format Package.pmdoc/01squirrel.xml > Package.pmdoc/01squirrel.xml.1
-xmllint --format Package.pmdoc/01squirrel-contents.xml > Package.pmdoc/01squirrel-contents.xml.1
-mv Package.pmdoc/index.xml.1 Package.pmdoc/index.xml
-mv Package.pmdoc/01squirrel.xml.1 Package.pmdoc/01squirrel.xml
-mv Package.pmdoc/01squirrel-contents.xml.1 Package.pmdoc/01squirrel-contents.xml

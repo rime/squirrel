@@ -14,7 +14,6 @@ if [ -e "${target}" ]; then
 fi
 
 zip -r ${target} Squirrel.pkg
-#zip -r archives/Package-backup-${version}.zip Package.pmdoc
 
 ruby sign/sign_update.rb ${target} sign/dsa_priv.pem >> ../update/appcast.xml
 ls -l ${target} >> ../update/appcast.xml
