@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.24"
+config_version: "0.27"
 
 us_keyboard_layout: false
 
@@ -11,10 +11,8 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
-# Show notifications via Notification Center instead of Growl.
-# (Only valid if OS version is at least 10.8 and
-#  'show_notifications_when' is NOT set to 'never'.)
-show_notifications_via_notification_center: false
+# DEPRECATED: since 0.27
+#show_notifications_via_notification_center: false
 
 style:
   color_scheme: native

@@ -1,6 +1,5 @@
 #import "SquirrelApplicationDelegate.h"
 
-#import <Growl/Growl.h>
 #import <rime_api.h>
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
@@ -33,23 +32,7 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:kRimeWikiURL]];
 }
 
-static void show_message_growl(const char* msg_text, const char* msg_id) {
-  @autoreleasepool {
-    [GrowlApplicationBridge
-         notifyWithTitle:NSLocalizedString(@"Squirrel", nil)
-             description:NSLocalizedString(@(msg_text), nil)
-        notificationName:@"Squirrel"
-                iconData:[NSData
-                             dataWithData:[NSImage imageNamed:@"squirrel-app"]
-                                              .TIFFRepresentation]
-                priority:0
-                isSticky:NO
-            clickContext:nil
-              identifier:@(msg_id)];
-  }
-}
-
-static void show_message_notification_center(const char* msg_text, const char* msg_id) {
+void show_message(const char* msg_text, const char* msg_id) {
   @autoreleasepool {
     id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];
     [notification performSelector:@selector(setTitle:)
@@ -70,8 +53,6 @@ static void show_status_message(const char* msg_text, const char* msg_id) {
     [panel updateStatus:NSLocalizedString(@(msg_text), nil)];
   }
 }
-
-void (*show_message)(const char* msg_text, const char* msg_id) = show_message_growl;
 
 void notification_handler(void* context_object, RimeSessionId session_id,
                           const char* message_type, const char* message_value) {
@@ -183,15 +164,6 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
 
   _enableNotifications =
       ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
-  [GrowlApplicationBridge setShouldUseBuiltInNotifications:_enableNotifications];
-
-  if ([_config getBool:@"show_notifications_via_notification_center"] &&
-      OSVersionIsEqualOrAbove(10, 8)) {
-    show_message = show_message_notification_center;
-  }
-  else {
-    show_message = show_message_growl;
-  }
 
   [self.panel updateConfig:_config];
 }

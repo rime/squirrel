@@ -118,7 +118,6 @@
   * darts-clone  (New BSD License)
   * google-glog  (New BSD License)
   * Google Test  (New BSD License)
-  * Growl  (BSD License)
   * LevelDB  (New BSD License)
   * librime  (New BSD License)
   * OpenCC / 開放中文轉換  (Apache License 2.0)
@@ -139,7 +138,5 @@ https://github.com/rime/home/issues
 
 技術交流，歡迎光臨 [Rime 代碼之家](https://github.com/rime/home)，
 或致信 Rime 開發者 <rimeime@gmail.com>。
-
-圍繞 Rime 的用法及相關話題，歡迎來訪 Rime 網站參加 [線上討論](http://rime.im/discuss/)。
 
 謝謝
