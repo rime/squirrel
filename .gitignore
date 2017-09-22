@@ -2,14 +2,15 @@ Squirrel.xcodeproj/*.mode1v3
 Squirrel.xcodeproj/*.pbxuser
 Squirrel.xcodeproj/project.xcworkspace/
 Squirrel.xcodeproj/xcuserdata/
-build
+build/
 build.log
 bin/*
 lib/*
 data/brise/
 data/opencc/
-package/archives/*
 package/Squirrel.pkg
+package/archives/*
 package/sign/*.pem
+package/test-*
 *~
 .*.swp

@@ -1,0 +1,10 @@
+#!/bin/bash
+LOGIN_USER_ID=`id -u "${USER}"`
+RIME_SHARED_DATA_PATH="${DSTROOT}/Squirrel.app/Contents/SharedSupport"
+pushd "$RIME_SHARED_DATA_PATH" > /dev/null
+../MacOS/Squirrel --quit
+if [ -z "${RIME_NO_PREBUILD}" ]; then
+    ../MacOS/Squirrel --build
+fi
+/bin/launchctl asuser "${LOGIN_USER_ID}" ../MacOS/Squirrel --install
+popd > /dev/null

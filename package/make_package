@@ -1,0 +1,20 @@
+#!/bin/bash
+
+BUNDLE_IDENTIFIER='im.rime.inputmethod.Squirrel'
+INSTALL_LOCATION='/Library/Input Methods'
+
+cd "$(dirname $0)"
+PROJECT_ROOT=$(cd ..; pwd)
+
+get_app_version() {
+    sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
+}
+
+pkgbuild \
+    --root "${PROJECT_ROOT}/build/Release" \
+    --component-plist Squirrel-component.plist \
+    --identifier "${BUNDLE_IDENTIFIER}" \
+    --version $(get_app_version "${PROJECT_ROOT}/Info.plist") \
+    --install-location "${INSTALL_LOCATION}" \
+    --scripts "${PROJECT_ROOT}/scripts" \
+    Squirrel.pkg

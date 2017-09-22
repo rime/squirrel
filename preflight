@@ -1,6 +1,0 @@
-#!/bin/bash
-SQUIRREL_APP_PATH="/Library/Input Methods/Squirrel.app"
-
-echo "uninstalling previous version."
-rm -Rf "$SQUIRREL_APP_PATH"
-/usr/bin/true

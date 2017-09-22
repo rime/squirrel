@@ -11,7 +11,6 @@
 		4443A83A1828CC5100731305 /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 4443A8391828CC5100731305 /* input_source.m */; };
 		448CCCDD166B2E0500337E78 /* Growl Registration Ticket.growlRegDict in Resources */ = {isa = PBXBuildFile; fileRef = 448CCCDC166B2E0500337E78 /* Growl Registration Ticket.growlRegDict */; };
 		4493402B158A4ABC0041A35A /* squirrel-app.icns in Resources */ = {isa = PBXBuildFile; fileRef = 4493402A158A4ABC0041A35A /* squirrel-app.icns */; };
-		44943BB815066A540005EE85 /* postflight in Resources */ = {isa = PBXBuildFile; fileRef = 44943BB715066A540005EE85 /* postflight */; };
 		44986A95184B421700B3278D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44986A93184B421700B3278D /* LICENSE.txt */; };
 		44986A96184B421700B3278D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 44986A94184B421700B3278D /* README.md */; };
 		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
@@ -27,7 +26,6 @@
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
-		44FED9BA1A48502900037B05 /* preflight in Resources */ = {isa = PBXBuildFile; fileRef = 44FED9B91A48502900037B05 /* preflight */; };
 		7B54888E1D2DAAF50056A1BE /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488761D2DAAF50056A1BE /* hk2s.json */; };
 		7B54888F1D2DAAF50056A1BE /* HKVariants.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488771D2DAAF50056A1BE /* HKVariants.ocd */; };
 		7B5488901D2DAAF50056A1BE /* HKVariantsPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488781D2DAAF50056A1BE /* HKVariantsPhrases.ocd */; };
@@ -186,7 +184,6 @@
 		446D18E114F0193100EC3116 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		448CCCDC166B2E0500337E78 /* Growl Registration Ticket.growlRegDict */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = "Growl Registration Ticket.growlRegDict"; sourceTree = "<group>"; };
 		4493402A158A4ABC0041A35A /* squirrel-app.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "squirrel-app.icns"; sourceTree = "<group>"; };
-		44943BB715066A540005EE85 /* postflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = postflight; sourceTree = "<group>"; };
 		44986A93184B421700B3278D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		44986A94184B421700B3278D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
@@ -212,7 +209,6 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
-		44FED9B91A48502900037B05 /* preflight */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = preflight; sourceTree = "<group>"; };
 		7B54881A1D2DAAD10056A1BE /* bopomofo_express.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = bopomofo_express.schema.yaml; path = data/brise/bopomofo_express.schema.yaml; sourceTree = "<group>"; };
 		7B54881B1D2DAAD10056A1BE /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = bopomofo_tw.schema.yaml; path = data/brise/bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
 		7B54881C1D2DAAD10056A1BE /* bopomofo.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = bopomofo.schema.yaml; path = data/brise/bopomofo.schema.yaml; sourceTree = "<group>"; };
@@ -355,12 +351,10 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				44FED9B91A48502900037B05 /* preflight */,
 				44986A93184B421700B3278D /* LICENSE.txt */,
 				44986A94184B421700B3278D /* README.md */,
 				44CD7D9E1828D981006E9222 /* rime.pdf */,
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
-				44943BB715066A540005EE85 /* postflight */,
 				4493402A158A4ABC0041A35A /* squirrel-app.icns */,
 				A4FC48C90F6530EF0069BE81 /* Localizable.strings */,
 				8D1107310486CEB800E47090 /* Info.plist */,
@@ -522,9 +516,7 @@
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
-				44943BB815066A540005EE85 /* postflight in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
-				44FED9BA1A48502900037B05 /* preflight in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
 				4493402B158A4ABC0041A35A /* squirrel-app.icns in Resources */,
 				448CCCDD166B2E0500337E78 /* Growl Registration Ticket.growlRegDict in Resources */,
