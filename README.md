@@ -97,18 +97,18 @@
 
 程序設計：
 
-  * 佛振 <chen.sst@gmail.com>
-  * Linghua Zhang <linghua.zhang@me.com>
-  * Chongyu Zhu <lembacon@gmail.com>
-  * 雪齋 <lyc20041@gmail.com>
-  * faberii <ofaberii@gmail.com>
-  * Chun-wei Kuo <Dendoh@gmail.com>
-  * Junlu Cheng <frank4565@gmail.com>
-  * Jak Wings <jakwings@gmail.com>
+  * 佛振
+  * Linghua Zhang
+  * Chongyu Zhu
+  * 雪齋
+  * faberii
+  * Chun-wei Kuo
+  * Junlu Cheng
+  * Jak Wings
 
 美術：
 
-  * 圖標設計 佛振、梁海
+  * 圖標設計 佛振、梁海、雨過之後
   * 配色方案 Aben、Chongyu Zhu、skoj、佛振
 
 本品引用了以下開源軟件：

@@ -14,3 +14,4 @@ package/sign/*.pem
 package/test-*
 *~
 .*.swp
+.DS_Store

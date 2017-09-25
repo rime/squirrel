@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Squirrel</string>
 	<key>CFBundleIconFile</key>
-	<string>squirrel-app.icns</string>
+	<string>RimeIcon.icns</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
