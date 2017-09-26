@@ -19,12 +19,6 @@
 				<key>BundleOverwriteAction</key>
 				<string>upgrade</string>
 				<key>RootRelativeBundlePath</key>
-				<string>Squirrel.app/Contents/Frameworks/Growl.framework</string>
-			</dict>
-			<dict>
-				<key>BundleOverwriteAction</key>
-				<string>upgrade</string>
-				<key>RootRelativeBundlePath</key>
 				<string>Squirrel.app/Contents/Frameworks/Sparkle.framework</string>
 			</dict>
 		</array>
