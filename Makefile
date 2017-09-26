@@ -1,4 +1,4 @@
-.PHONY: all install librime data update-brise update-opencc-data deps release debug package archive test-archive clean
+.PHONY: all install librime data update-brise update-opencc-data deps release debug package archive test-archive permission-check install-debug install-release clean
 
 all: release
 install: install-release
@@ -73,13 +73,15 @@ test-archive: package
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
 
-install-debug: debug
-	@echo 'sudo chown -R ${USER} "$(DSTROOT)"'
+permission-check:
+	[ -w "$(DSTROOT)" ] && [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(DSTROOT)"
+
+install-debug: debug permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
 	cp -R build/Debug/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" RIME_NO_PREBUILD=1 bash scripts/postinstall
 
-install-release: release
+install-release: release permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
 	cp -R build/Release/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
