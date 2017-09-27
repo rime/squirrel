@@ -1,11 +1,10 @@
 #!/bin/bash
 
-login_user_id=`id -u "${USER}"`
+login_user=`/usr/bin/stat -f%Su /dev/console`
 squirrel_app_root="${DSTROOT}/Squirrel.app"
 squirrel_executable="${squirrel_app_root}/Contents/MacOS/Squirrel"
 rime_package_installer="${squirrel_app_root}/Contents/MacOS/rime-install"
 rime_shared_data_path="${squirrel_app_root}/Contents/SharedSupport"
-rime_user_data_path="${HOME}/Library/Rime"
 
 "${squirrel_executable}" --quit
 
@@ -15,6 +14,4 @@ if [ -z "${RIME_NO_PREBUILD}" ]; then
     popd > /dev/null
 fi
 
-/bin/launchctl asuser "${login_user_id}" "${squirrel_executable}" --install
-
-/bin/launchctl asuser "${login_user_id}" bash -c "brise_dir=\"${rime_user_data_path}/brise\" \"${rime_package_installer}\" :preset"
+/usr/bin/sudo -u "${login_user}" "${squirrel_executable}" --install
