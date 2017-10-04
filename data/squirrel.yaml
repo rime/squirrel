@@ -195,3 +195,5 @@ app_options:
     ascii_mode: true
   org.gnu.Emacs:
     ascii_mode: true
+  co.zeit.hyper:
+    ascii_mode: true
