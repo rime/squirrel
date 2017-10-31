@@ -231,7 +231,7 @@
 
 #define OSX_VK_UK_SECTION 0xa
 
-// convertion functions
+// conversion functions
 
 int osx_modifiers_to_rime_modifiers(unsigned modifiers);
 int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift, int caps);
