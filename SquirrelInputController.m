@@ -163,6 +163,20 @@
   // TODO add special key event postprocessing here
 
   if (!handled) {
+    BOOL isEmacsBackInCommandMode = rime_keycode == XK_Escape ||
+      rime_keycode == XK_F17 ||
+    ((rime_modifiers & kControlMask) && (rime_keycode == XK_g ));
+    if (isEmacsBackInCommandMode) {
+      NSString* app = [_currentClient bundleIdentifier];
+      if (([app isEqualToString:@"org.gnu.Emacs"] ||
+           [app isEqualToString:@"com.googlecode.iterm2"] )&&
+          !rime_get_api()->get_option(_session, "ascii_mode")) {
+        [self clearComposition];
+        rime_get_api()->set_option(_session, "ascii_mode", True);
+        NSLog(@"disable conversion to Chinese in Emacs's command mode");
+      }
+    }
+
     BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
     ((rime_modifiers & kControlMask) && (rime_keycode == XK_c ||
                                          rime_keycode == XK_C ||
