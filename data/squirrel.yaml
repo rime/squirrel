@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.27"
+config_version: "0.28"
 
 us_keyboard_layout: false
 
@@ -30,6 +30,8 @@ style:
   #label_font_point: 18
 
 preset_color_schemes:
+  #native: {}  # system UI colors
+
   aqua:
     name: 碧水／Aqua
     author: 佛振 <chen.sst@gmail.com>
@@ -101,6 +103,32 @@ preset_color_schemes:
     hilited_candidate_back_color: 0x10000000  # 0x333333
     comment_text_color: 0x606cff
 
+  psionics:
+    name: 幽能／Psionics
+    author: 雨過之後、佛振
+    text_color: 0xc2c2c2
+    back_color: 0x444444
+    candidate_text_color: 0xeeeeee
+    hilited_text_color: 0xeeeeee
+    hilited_back_color: 0x444444
+    hilited_candidate_label_color: 0xfafafa
+    hilited_candidate_text_color: 0xfafafa
+    hilited_candidate_back_color: 0xd8bf00
+    comment_text_color: 0x808080
+    hilited_comment_text_color: 0x444444
+
+  purity_of_form:
+    name: 純粹的形式／Purity of Form
+    author: 雨過之後、佛振
+    text_color: 0xc2c2c2
+    back_color: 0x444444
+    candidate_text_color: 0xeeeeee
+    hilited_text_color: 0xeeeeee
+    hilited_back_color: 0x444444
+    hilited_candidate_text_color: 0x000000
+    hilited_candidate_back_color: 0xfafafa
+    comment_text_color: 0x808080
+
   starcraft:
     name: 星際我爭霸／StarCraft
     author: Contralisk <contralisk@gmail.com>, original artwork by Blizzard Entertainment
@@ -131,7 +159,7 @@ preset_color_schemes:
 
   solarized_rock:
     name: 曬經石／Solarized Rock
-    author: Aben <tntaben@gmail.com>, based on Ethan Schoonover's Solarized color scheme
+    author: "Aben <tntaben@gmail.com>, based on Ethan Schoonover's Solarized color scheme"
     back_color: 0x362b00
     border_color: 0x362b00
     text_color: 0x8236d3
