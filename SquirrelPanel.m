@@ -148,7 +148,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                                             backing:NSBackingStoreBuffered
                                               defer:YES];
     _window.alphaValue = 1.0;
-    _window.level = NSScreenSaverWindowLevel + 1;
+    // _window.level = NSScreenSaverWindowLevel + 1;
+    // 我不确定这么写有没有别的问题，但是全屏游戏里可以正常使用了。
+    _window.level = CGShieldingWindowLevel();
     _window.hasShadow = YES;
     _window.opaque = NO;
     _window.backgroundColor = [NSColor clearColor];
