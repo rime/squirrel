@@ -150,7 +150,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -160,8 +160,8 @@
 		442C64901F7A404A0027EFBE /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
 		4443A8391828CC5100731305 /* input_source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = input_source.m; sourceTree = "<group>"; };
 		446C01D61F767BD400A6C23E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		446D18E014F0191200EC3116 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		446D18E114F0193100EC3116 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		446D18E014F0191200EC3116 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		446D18E114F0193100EC3116 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		44986A93184B421700B3278D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
 		44986A94184B421700B3278D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
 		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
@@ -170,8 +170,8 @@
 		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
 		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
 		44CD7D9E1828D981006E9222 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
-		44DA191A152B8CB600FB8EF0 /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_CN; path = zh_CN.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		44DA191B152B8CBC00FB8EF0 /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = zh_TW; path = zh_TW.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		44DA191A152B8CB600FB8EF0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.xib"; sourceTree = "<group>"; };
+		44DA191B152B8CBC00FB8EF0 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hant"; path = "zh-Hant.lproj/MainMenu.xib"; sourceTree = "<group>"; };
 		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
 		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
 		44E98EA514AE16DD00847AD6 /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checked.h; sourceTree = "<group>"; };
@@ -184,8 +184,8 @@
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
-		44FA4D891685997300116C1F /* zh_CN */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_CN; path = zh_CN.lproj/Localizable.strings; sourceTree = "<group>"; };
-		44FA4D8E16859B2900116C1F /* zh_TW */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = zh_TW; path = zh_TW.lproj/Localizable.strings; sourceTree = "<group>"; };
+		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		7B5488211D2DAAD10056A1BE /* default.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = default.yaml; path = data/brise/default.yaml; sourceTree = "<group>"; };
 		7B5488291D2DAAD10056A1BE /* essay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = essay.txt; path = data/brise/essay.txt; sourceTree = "<group>"; };
 		7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_fluency.schema.yaml; path = data/brise/luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
@@ -221,12 +221,12 @@
 		7B54888D1D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRevPhrases.ocd; sourceTree = "<group>"; };
 		7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelConfig.h; sourceTree = "<group>"; };
 		7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelConfig.m; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
-		A485E5BB0DD28B8D00E472E5 /* English */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = English; path = English.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		A485E5BB0DD28B8D00E472E5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		A4B8E1B20F645B870094E08B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		A4FC48CA0F6530EF0069BE81 /* English */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = English; path = English.lproj/Localizable.strings; sourceTree = "<group>"; };
+		A4FC48CA0F6530EF0069BE81 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
@@ -450,15 +450,12 @@
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 1;
 			knownRegions = (
-				English,
-				Japanese,
-				French,
-				German,
-				zh_CN,
-				zh_TW,
+				en,
+				"zh-Hans",
+				"zh-Hant",
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Squirrel */;
 			projectDirPath = "";
@@ -509,9 +506,9 @@
 		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				089C165DFE840E0CC02AAC07 /* English */,
-				446D18E014F0191200EC3116 /* zh_CN */,
-				446D18E114F0193100EC3116 /* zh_TW */,
+				089C165DFE840E0CC02AAC07 /* en */,
+				446D18E014F0191200EC3116 /* zh-Hans */,
+				446D18E114F0193100EC3116 /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -519,9 +516,9 @@
 		A45578F41146A75200592C6E /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A485E5BB0DD28B8D00E472E5 /* English */,
-				44DA191A152B8CB600FB8EF0 /* zh_CN */,
-				44DA191B152B8CBC00FB8EF0 /* zh_TW */,
+				A485E5BB0DD28B8D00E472E5 /* en */,
+				44DA191A152B8CB600FB8EF0 /* zh-Hans */,
+				44DA191B152B8CBC00FB8EF0 /* zh-Hant */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -529,9 +526,9 @@
 		A4FC48C90F6530EF0069BE81 /* Localizable.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A4FC48CA0F6530EF0069BE81 /* English */,
-				44FA4D891685997300116C1F /* zh_CN */,
-				44FA4D8E16859B2900116C1F /* zh_TW */,
+				A4FC48CA0F6530EF0069BE81 /* en */,
+				44FA4D891685997300116C1F /* zh-Hans */,
+				44FA4D8E16859B2900116C1F /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
