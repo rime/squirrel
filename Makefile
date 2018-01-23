@@ -1,12 +1,22 @@
-.PHONY: all install librime data update-brise update-opencc-data deps release debug package archive test-archive permission-check install-debug install-release clean
+.PHONY: all install librime data update-brise update-opencc-data deps release debug \
+	package archive test-archive permission-check install-debug install-release \
+	clean clean-deps
 
 all: release
 install: install-release
 
 LIBRIME = lib/librime.1.dylib
-LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a librime/thirdparty/lib/libleveldb.a librime/thirdparty/lib/libopencc.a librime/thirdparty/lib/libyaml-cpp.a
-BRISE = bin/rime-install data/brise/default.yaml data/brise/symbols.yaml data/brise/essay.txt
-OPENCC_DATA = data/opencc/TSCharacters.ocd data/opencc/TSPhrases.ocd data/opencc/t2s.json
+LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a \
+	librime/thirdparty/lib/libleveldb.a \
+	librime/thirdparty/lib/libopencc.a \
+	librime/thirdparty/lib/libyaml-cpp.a
+BRISE = bin/rime-install \
+	data/brise/default.yaml \
+	data/brise/symbols.yaml \
+	data/brise/essay.txt
+OPENCC_DATA = data/opencc/TSCharacters.ocd \
+	data/opencc/TSPhrases.ocd \
+	data/opencc/t2s.json
 DEPS = $(LIBRIME) $(BRISE) $(OPENCC_DATA)
 
 LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
@@ -93,4 +103,7 @@ clean:
 	rm lib/* > /dev/null 2>&1 || true
 	rm data/brise/* > /dev/null 2>&1 || true
 	rm data/opencc/*.ocd > /dev/null 2>&1 || true
+
+clean-deps:
+	$(MAKE) -C brise clean
 	$(MAKE) -C librime -f Makefile.xcode clean
