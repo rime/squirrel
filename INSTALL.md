@@ -43,7 +43,13 @@ git clone --recursive https://github.com/rime/squirrel.git
 
 ### Build dependencies
 
-Build librime, dependent third-party libraries and data files:
+if you install `snappy` with HomeBrew.Please unlink it.
+
+```sh
+brew unlink snappy
+```
+
+Then,build librime, dependent third-party libraries and data files:
 
 ``` sh
 make deps
