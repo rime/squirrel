@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.28"
+config_version: "0.29"
 
 us_keyboard_layout: false
 
@@ -223,5 +223,6 @@ app_options:
     ascii_mode: true
   org.gnu.Emacs:
     ascii_mode: true
+    no_inline: true
   co.zeit.hyper:
     ascii_mode: true
