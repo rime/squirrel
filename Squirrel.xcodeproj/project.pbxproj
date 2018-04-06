@@ -186,15 +186,15 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		7B5488211D2DAAD10056A1BE /* default.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = default.yaml; path = data/brise/default.yaml; sourceTree = "<group>"; };
-		7B5488291D2DAAD10056A1BE /* essay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = essay.txt; path = data/brise/essay.txt; sourceTree = "<group>"; };
-		7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_fluency.schema.yaml; path = data/brise/luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
-		7B54882F1D2DAAD10056A1BE /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_simp.schema.yaml; path = data/brise/luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
-		7B5488301D2DAAD10056A1BE /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_tw.schema.yaml; path = data/brise/luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
-		7B5488311D2DAAD10056A1BE /* luna_pinyin.dict.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.dict.yaml; path = data/brise/luna_pinyin.dict.yaml; sourceTree = "<group>"; };
-		7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.schema.yaml; path = data/brise/luna_pinyin.schema.yaml; sourceTree = "<group>"; };
-		7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_quanpin.schema.yaml; path = data/brise/luna_quanpin.schema.yaml; sourceTree = "<group>"; };
-		7B54883B1D2DAAD10056A1BE /* symbols.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = symbols.yaml; path = data/brise/symbols.yaml; sourceTree = "<group>"; };
+		7B5488211D2DAAD10056A1BE /* default.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = default.yaml; path = data/plum/default.yaml; sourceTree = "<group>"; };
+		7B5488291D2DAAD10056A1BE /* essay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = essay.txt; path = data/plum/essay.txt; sourceTree = "<group>"; };
+		7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_fluency.schema.yaml; path = data/plum/luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
+		7B54882F1D2DAAD10056A1BE /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_simp.schema.yaml; path = data/plum/luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
+		7B5488301D2DAAD10056A1BE /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_tw.schema.yaml; path = data/plum/luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
+		7B5488311D2DAAD10056A1BE /* luna_pinyin.dict.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.dict.yaml; path = data/plum/luna_pinyin.dict.yaml; sourceTree = "<group>"; };
+		7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.schema.yaml; path = data/plum/luna_pinyin.schema.yaml; sourceTree = "<group>"; };
+		7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_quanpin.schema.yaml; path = data/plum/luna_quanpin.schema.yaml; sourceTree = "<group>"; };
+		7B54883B1D2DAAD10056A1BE /* symbols.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = symbols.yaml; path = data/plum/symbols.yaml; sourceTree = "<group>"; };
 		7B5488761D2DAAF50056A1BE /* hk2s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hk2s.json; sourceTree = "<group>"; };
 		7B5488771D2DAAF50056A1BE /* HKVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd; sourceTree = "<group>"; };
 		7B5488781D2DAAF50056A1BE /* HKVariantsPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsPhrases.ocd; sourceTree = "<group>"; };
@@ -383,7 +383,7 @@
 			isa = PBXGroup;
 			children = (
 				442B5B871570C37200370DEA /* squirrel.yaml */,
-				7B5488A71D2DAC9D0056A1BE /* brise */,
+				7B5488A71D2DAC9D0056A1BE /* plum */,
 				4407F39D14EC071E001329FE /* opencc */,
 			);
 			name = SharedSupport;
@@ -399,7 +399,7 @@
 			path = utf8;
 			sourceTree = "<group>";
 		};
-		7B5488A71D2DAC9D0056A1BE /* brise */ = {
+		7B5488A71D2DAC9D0056A1BE /* plum */ = {
 			isa = PBXGroup;
 			children = (
 				7B5488211D2DAAD10056A1BE /* default.yaml */,
@@ -412,7 +412,7 @@
 				7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */,
 				7B54883B1D2DAAD10056A1BE /* symbols.yaml */,
 			);
-			name = brise;
+			name = plum;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

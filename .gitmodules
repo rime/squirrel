@@ -2,7 +2,6 @@
 	path = librime
 	url = https://github.com/rime/librime.git
 	ignore = dirty
-[submodule "brise"]
-	path = brise
-	url = https://github.com/rime/brise.git
-	ignore = dirty
+[submodule "plum"]
+	path = plum
+	url = https://github.com/rime/plum.git

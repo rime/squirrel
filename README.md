@@ -114,13 +114,13 @@
 本品引用了以下開源軟件：
 
   * Boost C++ Libraries  (Boost Software License)
-  * brise / 東風破 (GNU General Public License 3.0)
   * darts-clone  (New BSD License)
   * google-glog  (New BSD License)
   * Google Test  (New BSD License)
   * LevelDB  (New BSD License)
   * librime  (New BSD License)
   * OpenCC / 開放中文轉換  (Apache License 2.0)
+  * plum / 東風破 (GNU Lesser General Public License 3.0)
   * Sparkle  (MIT License)
   * UTF8-CPP  (Boost Software License)
   * yaml-cpp  (MIT License)

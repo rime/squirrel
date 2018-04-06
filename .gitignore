@@ -6,8 +6,8 @@ build/
 build.log
 bin/*
 lib/*
-data/brise/
 data/opencc/
+data/plum/
 package/Squirrel.pkg
 package/archives/*
 package/sign/*.pem
