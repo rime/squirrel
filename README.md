@@ -21,7 +21,7 @@
 您可能還需要 Rime 用於其他操作系統的發行版：
 
   * ibus-rime 及 fcitx-rime 用於 Linux
-  * 【小狼毫】用於 Windows XP, 32/64 位 Windows 7
+  * 【小狼毫】用於 Windows XP, Windows 7 ~ Windows 10
 
 安裝輸入法
 ---
@@ -46,6 +46,11 @@
   * 選中「在線文檔」可打開以上網址
   * 編輯用戶設定後，選擇「重新部署」以令修改生效
 
+安裝輸入方案
+---
+
+使用 [/plum/](https://github.com/rime/plum) 配置管理器獲取更多輸入方案。
+
 致謝
 ---
 
@@ -54,46 +59,6 @@
   * 【朙月拼音】系列
 
     感謝 CC-CEDICT、Android 拼音、新酷音、opencc 等開源項目
-
-  * 【倉頡五代】
-
-    發明人 朱邦復先生
-    碼表源自 www.chinesecj.com
-
-  * 【五笔 86】
-
-    發明人 王永民先生
-    碼表源自 ibus-table
-
-  * 【注音／地球拼音】
-
-    作者 佛振
-
-  * 【粵拼】
-
-    採用 [《香港語言學學會粵語拼音方案》](http://www.lshk.org/cantonese.php)
-    碼表源自 ibus-table
-
-  * 【上海吳語】、【蘇州吳語】
-
-    採用 [《吳語拉丁式注音法》](http://input.foruto.com/wu/method.html)
-    作者 上海閒話abc、吳語越音、寒寒豆
-
-  * 【中古全拼／三拼】
-
-    採用 [中古漢語拼音](http://zh.wikipedia.org/wiki/User:Polyhedron/中古漢語拼音)，亦稱「古韻羅馬字」
-    作者 Polyhedron
-
-    參考 [韻典網·廣韻](http://ytenx.org/kyonh/)
-
-  * 【X-SAMPA】
-
-    [X-SAMPA](http://zh.wikipedia.org/wiki/X-SAMPA) 國際音標輸入法
-    作者 Patrick Tschang、佛振
-
-  * 【emoji表情】
-
-    作者 StarSasumi、雪齋
 
 程序設計：
 
@@ -109,7 +74,7 @@
 美術：
 
   * 圖標設計 佛振、梁海、雨過之後
-  * 配色方案 Aben、Chongyu Zhu、skoj、佛振
+  * 配色方案 Aben、Chongyu Zhu、skoj、Superoutman、佛振、梁海
 
 本品引用了以下開源軟件：
 
