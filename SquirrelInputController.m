@@ -34,6 +34,7 @@
   NSString *_currentApp;
 }
 
+extern BOOL _globalAsciiMode;
 /*!
  @method
  @abstract   Receive incoming event
@@ -108,7 +109,13 @@
         [self rimeUpdate];
       } break;
       case NSKeyDown: {
-        // ignore Command+X hotkeys.
+
+	if (rime_get_api()->get_option(_session, "ascii_mode") != _globalAsciiMode) {
+	  rime_get_api()->set_option(_session, "ascii_mode", _globalAsciiMode);
+	  NSLog(@"ascii_mode fucks");
+	}
+
+	// ignore Command+X hotkeys.
         if (modifiers & OSX_COMMAND_MASK)
           break;
 
