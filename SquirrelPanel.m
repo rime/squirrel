@@ -6,6 +6,9 @@ static const int kOffsetHeight = 5;
 static const int kDefaultFontSize = 24;
 static const NSTimeInterval kShowStatusDuration = 1.2;
 static NSString *const kDefaultCandidateFormat = @"%c. %@";
+static CGFloat separatorWidth = 0;
+static NSUInteger numCandidates = 0;
+static NSUInteger highlightedIndex = 0;
 
 @interface SquirrelView : NSView
 
@@ -29,7 +32,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   self = [super initWithFrame:frameRect];
   if (self) {
     self.wantsLayer = YES;
-    self.layer.masksToBounds = YES;
+    // self.layer.masksToBounds = YES;
   }
   return self;
 }
@@ -60,21 +63,15 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     CGFloat edgeWidth = self.edgeInset.width + 1;
     CGFloat edgeHeight = self.edgeInset.height + 1;
     NSRect stripRect = self.highlightedRect;
-    if (NSMinX(stripRect) - FLT_EPSILON < 0) {
+    stripRect.origin.x += edgeWidth;
+    stripRect.origin.x -= separatorWidth/2;
+    stripRect.size.height += edgeHeight*2;
+    if (highlightedIndex == 0) {
+      stripRect.origin.x = stripRect.origin.x - edgeWidth;
       stripRect.size.width += edgeWidth;
-    } else {
-      stripRect.origin.x += edgeWidth;
     }
-    if (NSMaxX(stripRect) + FLT_EPSILON > NSWidth(self.bounds) - edgeWidth) {
-      stripRect.size.width += edgeWidth;
-    }
-    if (NSMinY(stripRect) - FLT_EPSILON < 0) {
-      stripRect.size.height += edgeHeight;
-    } else {
-      stripRect.origin.y += edgeHeight;
-    }
-    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - edgeHeight) {
-      stripRect.size.height += edgeHeight;
+    if (highlightedIndex == numCandidates -1) {
+      stripRect.size.width += edgeWidth + separatorWidth/2;
     }
     [self.highlightedStripColor setFill];
     NSRectFill(stripRect);
@@ -214,7 +211,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
            comments:(NSArray *)comments
              labels:(NSString *)labels
         highlighted:(NSUInteger)index {
-  NSUInteger numCandidates = candidates.count;
+  highlightedIndex = index;
+  numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
     if (_statusTimer) {
@@ -321,7 +319,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   }
 
   NSRect highlightedRect = NSZeroRect;
-  CGFloat separatorWidth = 0;
 
   // candidates
   NSUInteger i;
