@@ -67,7 +67,7 @@ static NSUInteger highlightedIndex = 0;
     stripRect.origin.x -= separatorWidth/2;
     stripRect.size.height += edgeHeight*2;
     if (highlightedIndex == 0) {
-      stripRect.origin.x = stripRect.origin.x - edgeWidth + separatorWidth/2;
+      stripRect.origin.x = stripRect.origin.x - edgeWidth;
       stripRect.size.width += edgeWidth;
     }
     if (highlightedIndex == numCandidates -1) {
