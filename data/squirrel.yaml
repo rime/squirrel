@@ -247,6 +247,35 @@ preset_color_schemes:
     hilited_candidate_label_color: 0x555555            # 第一候选项编号颜色
     hilited_comment_text_color: 0x9e9e9e               # 注解文字高亮
 
+  mojave_dark:
+    name: 沙漠夜／Mojave Dark
+    author: xiehuc <xiehuc@gmail.com>
+    horizontal: true                        # 水平排列
+    inline_preedit: true                    # 单行显示，false双行显示
+    candidate_format: "%c\u2005%@"    # 用 1/6 em 空格 U+2005 来控制编号 %c 和候选词 %@ 前后的空间。
+    corner_radius: 5                        # 候选条圆角
+    hilited_corner_radius: 3                # 高亮圆角
+    border_height: 6                        # 窗口边界高度，大于圆角半径才生效
+    border_width: 6                         # 窗口边界宽度，大于圆角半径才生效
+    border_color_width: 0 
+    font_face: "PingFangSC"                 # 候选词字体
+    font_point: 16                          # 候选字词大小
+    label_font_point: 14                    # 候选编号大小
+
+    text_color: 0xdedddd                    # 拼音行文字颜色，24位色值，16进制，BGR顺序
+    back_color: 0x252320                    # 候选条背景色
+    label_color: 0x888785                   # 预选栏编号颜色
+    border_color: 0x020202                  # 边框色
+    candidate_text_color: 0xdedddd          # 预选项文字颜色
+    hilited_text_color: 0xdedddd            # 高亮拼音 (需要开启内嵌编码)
+    hilited_back_color: 0x252320            # 高亮拼音 (需要开启内嵌编码)
+    hilited_candidate_text_color: 0xffffff  # 第一候选项文字颜色
+    hilited_candidate_back_color: 0xcb5d00  # 第一候选项背景背景色
+    hilited_candidate_label_color: 0xffffff # 第一候选项编号颜色
+    comment_text_color: 0xdedddd            # 拼音等提示文字颜色
+    #hilited_comment_text_color: 0xdedddd    # 注解文字高亮
+
+
 app_options:
   com.apple.Spotlight:
     ascii_mode: true

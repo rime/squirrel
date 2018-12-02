@@ -15,6 +15,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 @property(nonatomic, strong) NSColor *backgroundColor;
 @property(nonatomic, assign) double cornerRadius;
+@property(nonatomic, assign) double hilitedCornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
 
@@ -57,27 +58,33 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 - (void)drawRect:(NSRect)dirtyRect {
   if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
-    CGFloat edgeWidth = self.edgeInset.width + 1;
-    CGFloat edgeHeight = self.edgeInset.height + 1;
+    CGFloat edgeWidth = self.edgeInset.width;
+    CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
     if (NSMinX(stripRect) - FLT_EPSILON < 0) {
-      stripRect.size.width += edgeWidth;
+      stripRect.size.width += edgeWidth - self.hilitedCornerRadius;
+      stripRect.origin.x += self.hilitedCornerRadius;
     } else {
       stripRect.origin.x += edgeWidth;
     }
-    if (NSMaxX(stripRect) + FLT_EPSILON > NSWidth(self.bounds) - edgeWidth) {
-      stripRect.size.width += edgeWidth;
+    if (NSMaxX(stripRect) + FLT_EPSILON > NSWidth(self.bounds) - edgeWidth - 1) {
+      stripRect.size.width += edgeWidth - self.hilitedCornerRadius;
     }
     if (NSMinY(stripRect) - FLT_EPSILON < 0) {
-      stripRect.size.height += edgeHeight;
+      stripRect.size.height += edgeHeight - self.hilitedCornerRadius;
+      stripRect.origin.y += self.hilitedCornerRadius;
     } else {
       stripRect.origin.y += edgeHeight;
     }
-    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - edgeHeight) {
-      stripRect.size.height += edgeHeight;
+    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - edgeHeight - 1) {
+      stripRect.size.height += edgeHeight - self.hilitedCornerRadius;
     }
     [self.highlightedStripColor setFill];
-    NSRectFill(stripRect);
+    if (self.hilitedCornerRadius > 0) {
+      [[NSBezierPath bezierPathWithRoundedRect:stripRect xRadius:self.hilitedCornerRadius yRadius:self.hilitedCornerRadius] fill];
+    } else {
+      NSRectFill(stripRect);
+    }
   }
 
   [_text drawAtPoint:NSMakePoint(self.edgeInset.width, self.edgeInset.height)];
@@ -545,6 +552,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSColor *highlightedCandidateLabelColor = [config getColor:@"style/label_hilited_color"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
+  CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
   CGFloat borderHeight = [config getDouble:@"style/border_height"];
   CGFloat borderWidth = [config getDouble:@"style/border_width"];
   CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
@@ -659,6 +667,11 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
           [config getOptionalDouble:[prefix stringByAppendingString:@"/corner_radius"]];
       if (cornerRadiusOverridden) {
         cornerRadius = cornerRadiusOverridden.doubleValue;
+      }
+      NSNumber *hilitedCornerRadiusOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/hilited_corner_radius"]];
+      if (hilitedCornerRadiusOverridden) {
+        hilitedCornerRadius = hilitedCornerRadiusOverridden.doubleValue;
       }
       NSNumber *borderHeightOverridden =
           [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
@@ -780,6 +793,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   }
 
   _view.cornerRadius = cornerRadius;
+  _view.hilitedCornerRadius = hilitedCornerRadius;
   _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
 
   _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
