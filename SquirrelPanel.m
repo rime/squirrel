@@ -58,30 +58,39 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 - (void)drawRect:(NSRect)dirtyRect {
   if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
+    // setFrame rounds up floating point numbers in window bounds.
+    // Add extra width and height to overcome rounding errors and ensure
+    // highlighted area fully covers paddings near right and top edges.
+    const CGFloat ROUND_UP = 1;
+    CGFloat cornerRadius = self.hilitedCornerRadius;
     CGFloat edgeWidth = self.edgeInset.width;
     CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
-    if (NSMinX(stripRect) - FLT_EPSILON < 0) {
-      stripRect.size.width += edgeWidth - self.hilitedCornerRadius;
-      stripRect.origin.x += self.hilitedCornerRadius;
+    if (cornerRadius == 0 && NSMinX(stripRect) < FLT_EPSILON) {
+      stripRect.size.width += edgeWidth;
     } else {
-      stripRect.origin.x += edgeWidth;
+      stripRect.size.width += cornerRadius;
+      stripRect.origin.x += edgeWidth - cornerRadius / 2;
     }
-    if (NSMaxX(stripRect) + FLT_EPSILON > NSWidth(self.bounds) - edgeWidth - 1) {
-      stripRect.size.width += edgeWidth - self.hilitedCornerRadius;
+    if (cornerRadius == 0 &&
+        NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
+      stripRect.size.width += edgeWidth + ROUND_UP;
     }
-    if (NSMinY(stripRect) - FLT_EPSILON < 0) {
-      stripRect.size.height += edgeHeight - self.hilitedCornerRadius;
-      stripRect.origin.y += self.hilitedCornerRadius;
+    if (cornerRadius == 0 && NSMinY(stripRect) < FLT_EPSILON) {
+      stripRect.size.height += edgeHeight;
     } else {
-      stripRect.origin.y += edgeHeight;
+      stripRect.size.height += cornerRadius;
+      stripRect.origin.y += edgeHeight - cornerRadius / 2;
     }
-    if (NSMaxY(stripRect) + FLT_EPSILON > NSHeight(self.bounds) - edgeHeight - 1) {
-      stripRect.size.height += edgeHeight - self.hilitedCornerRadius;
+    if (cornerRadius == 0 &&
+        NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
+      stripRect.size.height += edgeHeight + ROUND_UP;
     }
     [self.highlightedStripColor setFill];
     if (self.hilitedCornerRadius > 0) {
-      [[NSBezierPath bezierPathWithRoundedRect:stripRect xRadius:self.hilitedCornerRadius yRadius:self.hilitedCornerRadius] fill];
+      [[NSBezierPath bezierPathWithRoundedRect:stripRect
+                                       xRadius:self.hilitedCornerRadius
+                                       yRadius:self.hilitedCornerRadius] fill];
     } else {
       NSRectFill(stripRect);
     }
@@ -118,27 +127,27 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   _attrs = [[NSMutableDictionary alloc] init];
   _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
-  
+
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
   _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
   //_highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
   _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
-  
+
   _labelAttrs = [_attrs mutableCopy];
   _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
-  
+
   _commentAttrs = [[NSMutableDictionary alloc] init];
   _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
   _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
-  
+
   _commentHighlightedAttrs = [_commentAttrs mutableCopy];
   //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
   //    [NSColor selectedTextBackgroundColor];
-  
+
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
   _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
-  
+
   _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
   _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
