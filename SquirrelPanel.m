@@ -61,6 +61,13 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     CGFloat edgeWidth = self.edgeInset.width;
     CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
+    // line.size.width 是一个浮点数,
+    // 算得的window size 也是浮点数,
+    // 但是 setFrame 函数会扩充成整数,
+    // width = ceil(width) 或者 +1 都可以解决
+    // 选用ceil, 后面的计算都不会带有小数, 计算更简单
+    stripRect.size.width = ceil(stripRect.size.width);
+
     if (NSMinX(stripRect) - FLT_EPSILON < 0) {
       stripRect.size.width += edgeWidth - self.hilitedCornerRadius;
       stripRect.origin.x += self.hilitedCornerRadius;
