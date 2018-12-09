@@ -62,29 +62,43 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
     const CGFloat ROUND_UP = 1;
-    CGFloat cornerRadius = self.hilitedCornerRadius;
+    CGFloat corner = self.hilitedCornerRadius / 2;
     CGFloat edgeWidth = self.edgeInset.width;
     CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
-    if (cornerRadius == 0 && NSMinX(stripRect) < FLT_EPSILON) {
-      stripRect.size.width += edgeWidth;
+    if (NSMinX(stripRect) < FLT_EPSILON) {
+      if (corner == 0) {
+        stripRect.size.width += edgeWidth;
+      } else {
+        stripRect.size.width += corner;
+        stripRect.origin.x += edgeWidth - corner;
+      }
     } else {
-      stripRect.size.width += cornerRadius;
-      stripRect.origin.x += edgeWidth - cornerRadius / 2;
+      stripRect.origin.x += edgeWidth;
     }
-    if (cornerRadius == 0 &&
-        NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
-      stripRect.size.width += edgeWidth + ROUND_UP;
+    if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
+      if (corner == 0) {
+        stripRect.size.width += edgeWidth + ROUND_UP;
+      } else {
+        stripRect.size.width += corner;
+      }
     }
-    if (cornerRadius == 0 && NSMinY(stripRect) < FLT_EPSILON) {
-      stripRect.size.height += edgeHeight;
+    if (NSMinY(stripRect) < FLT_EPSILON) {
+      if (corner == 0) {
+        stripRect.size.height += edgeHeight;
+      } else {
+        stripRect.size.height += corner;
+        stripRect.origin.y += edgeHeight - corner;
+      }
     } else {
-      stripRect.size.height += cornerRadius;
-      stripRect.origin.y += edgeHeight - cornerRadius / 2;
+      stripRect.origin.y += edgeHeight;
     }
-    if (cornerRadius == 0 &&
-        NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
-      stripRect.size.height += edgeHeight + ROUND_UP;
+    if (NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
+      if (corner == 0) {
+        stripRect.size.height += edgeHeight + ROUND_UP;
+      } else {
+        stripRect.size.height += corner;
+      }
     }
     [self.highlightedStripColor setFill];
     if (self.hilitedCornerRadius > 0) {
