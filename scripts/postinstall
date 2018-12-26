@@ -15,3 +15,4 @@ if [ -z "${RIME_NO_PREBUILD}" ]; then
 fi
 
 /usr/bin/sudo -u "${login_user}" "${squirrel_executable}" --install
+/usr/bin/sudo -u "${login_user}" "${rime_package_installer}" :preset
