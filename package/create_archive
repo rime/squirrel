@@ -10,7 +10,7 @@ get_app_version() {
 
 appcast_file='appcast.xml'
 app_version=$(get_app_version "${PROJECT_ROOT}/Info.plist")
-download_url="http://dl.bintray.com/lotem/rime/Squirrel-${app_version}.zip"
+download_url="http://dl.bintray.com/rime/squirrel/Squirrel-${app_version}.zip"
 target_archive="archives/Squirrel-${app_version}.zip"
 
 if [ -n "${testing}" ]; then
