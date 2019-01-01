@@ -75,7 +75,7 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>http://rime.github.io/release/squirrel/appcast.xml</string>
+	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
 	<key>tsInputMethodCharacterRepertoireKey</key>

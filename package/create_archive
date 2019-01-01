@@ -36,12 +36,12 @@ cat > "${appcast_file}" << EOF
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
   <channel>
     <title>【鼠鬚管】輸入法更新頻道</title>
-    <link>http://rime.github.io/release/squirrel/appcast.xml</link>
+    <link>https://rime.github.io/release/squirrel/appcast.xml</link>
     <description>鼠鬚管 Appcast 更新頻道</description>
     <language>zh</language>
     <item>
       <title>鼠鬚管 ${app_version}</title>
-      <sparkle:releaseNotesLink>http://rime.github.io/release/squirrel/</sparkle:releaseNotesLink>
+      <sparkle:releaseNotesLink>https://rime.github.io/release/squirrel/</sparkle:releaseNotesLink>
       <sparkle:minimumSystemVersion>10.7.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
