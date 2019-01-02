@@ -5,7 +5,7 @@
 
 * 重新設計輸入法介面
 * 新增介面配色方案：
-  - 幽能／Psionics，作者：雨過之後、佛振，見於 [Rime 主頁](rime.im) 效果圖
+  - 幽能／Psionics，作者：雨過之後、佛振，見於 [Rime 主頁](https://rime.im) 效果圖
   - 純粹的形式／Purity of Form
   - 純粹的本質／Purity of Essence
   - 冷漠／Apathy, 作者：LIANG Hai
