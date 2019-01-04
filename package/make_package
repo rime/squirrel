@@ -11,6 +11,7 @@ get_app_version() {
 }
 
 pkgbuild \
+    --info PackageInfo \
     --root "${PROJECT_ROOT}/build/Release" \
     --component-plist Squirrel-component.plist \
     --identifier "${BUNDLE_IDENTIFIER}" \
