@@ -85,5 +85,7 @@
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>rime.pdf</string>
+	<key>NSRequiresAquaSystemAppearance</key>
+	<true/>
 </dict>
 </plist>
