@@ -39,6 +39,8 @@ port install boost -no_static
 
 ``` sh
 git clone --recursive https://github.com/rime/squirrel.git
+
+cd squirrel
 ```
 
 ### Build dependencies
