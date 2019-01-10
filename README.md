@@ -9,7 +9,7 @@
 今由　[中州韻輸入法引擎／Rime Input Method Engine](http://rime.im)
 及其他開源技術強力驅動
 
-【鼠鬚管】輸入法 0.9
+【鼠鬚管】輸入法 [![GitHub Tag](https://img.shields.io/github/tag/rime/squirrel.svg)](https://github.com/rime/squirrel)
 ===
 
 式恕堂 版權所無
@@ -26,7 +26,7 @@
 安裝輸入法
 ---
 
-本品適用於 64 位 Mac OS X 10.7+
+本品適用於 64 位 macOS 10.7+
 
 初次安裝，如果在部份應用程序中打不出字，請註銷並重新登錄。
 
