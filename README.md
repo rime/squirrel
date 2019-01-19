@@ -1,4 +1,3 @@
-
     鼠鬚管
     爲物雖微情不淺
     新詩醉墨時一揮
@@ -9,8 +8,10 @@
 今由　[中州韻輸入法引擎／Rime Input Method Engine](http://rime.im)
 及其他開源技術強力驅動
 
-【鼠鬚管】輸入法 [![GitHub Tag](https://img.shields.io/github/tag/rime/squirrel.svg)](https://github.com/rime/squirrel)
+【鼠鬚管】輸入法
 ===
+[![Build Status](https://travis-ci.org/rime/squirrel.svg)](https://travis-ci.org/rime/squirrel)
+[![GitHub Tag](https://img.shields.io/github/tag/rime/squirrel.svg)](https://github.com/rime/squirrel)
 
 式恕堂 版權所無
 
