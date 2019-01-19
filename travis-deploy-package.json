@@ -1,0 +1,16 @@
+{
+  "package": {
+    "name": "testing",
+    "repo": "squirrel",
+    "subject": "rime",
+    "vcs_url": "https://github.com/rime/squirrel.git",
+    "licenses": ["GPL-3.0", "BSD 3-Clause"]
+  },
+  "version": {
+    "name": "{{app_version}}+git{{git_hash}}"
+  },
+  "files": [
+    { "includePattern": "package/archives/(.*\\.zip)", "uploadPattern": "/$1" }
+  ],
+  "publish": true
+}

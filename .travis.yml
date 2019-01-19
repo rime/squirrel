@@ -1,0 +1,18 @@
+language: objective-c
+matrix:
+  include:
+  - os: osx
+    compiler: clang
+install: make deps
+script: make
+after_success: make archive
+before_deploy: "./travis-before-deploy.sh"
+deploy:
+  provider: bintray
+  file: travis-deploy-package.json
+  user: lotem
+  skip_cleanup: true
+  on:
+    all_branches: true
+  key:
+    secure: lZGl4cBqsKnaca4LV3ginJIYAmwa3FQl4zjPE6YmeHQUTnVb4DxmKD/h3vwtbXhk8E7Zd0wnJRVcm1A2Z7eCglkV/1iDPK8h9pNox3aO/rJbq3P1flRnulVgSGRNO2akkb/W1kR1a9Lgcb24yvQ7LJrCPIUTQQIFbDWtVYCbO3E=
