@@ -25,6 +25,18 @@ brew install git
 brew install boost
 ```
 
+> **Notice:**
+>
+> Starting from version 1.68, homebrewed `boost` libraries depends on `icu4c`,
+> which is not provided by macOS.
+>
+> The [`with-icu` branch](https://github.com/rime/librime/tree/with-icu) adds
+> support for linking to ICU libraries but the built app cannot run on machines
+> without ICU libraries installed.
+>
+> To make the build portable, either install an earlier version of `boost` via
+> homebrew, or build from source with bootstrap option `--without-icu`.
+
 You can also install them with [MacPorts](https://www.macports.org/):
 
 ``` sh
@@ -33,7 +45,7 @@ port install boost -no_static
 ```
 
 > If you've built Boost manually instead of installing it with Homebrew or
-> MacPorts, please set `BOOST_ROOT` to its top level directory in the terminal.
+> MacPorts, please set shell variable `BOOST_ROOT` to its top level directory.
 
 ### Checkout the code
 
