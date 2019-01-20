@@ -5,7 +5,7 @@
 
     　　——歐陽修
 
-今由　[中州韻輸入法引擎／Rime Input Method Engine](http://rime.im)
+今由　[中州韻輸入法引擎／Rime Input Method Engine](https://rime.im)
 及其他開源技術強力驅動
 
 【鼠鬚管】輸入法
@@ -17,7 +17,7 @@
 
 授權條款：[GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html)
 
-項目主頁：[rime.im](http://rime.im)
+項目主頁：[rime.im](https://rime.im)
 
 您可能還需要 Rime 用於其他操作系統的發行版：
 
@@ -40,7 +40,7 @@
 定製輸入法
 ---
 
-定製方法，請參考線上 [幫助文檔](http://rime.im/docs/)。
+定製方法，請參考線上 [幫助文檔](https://rime.im/docs/)。
 
 使用系統輸入法菜單：
 
