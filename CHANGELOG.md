@@ -1,3 +1,26 @@
+<a name="0.11.0"></a>
+## 0.11.0 (2019-01-20)
+
+#### 主要更新
+
+* 安裝完成要求退出登錄，以保證註冊輸入法生效
+* 修復升級、部署數據時發生的若干錯誤
+* 關閉候選窗對摸蝦未系統深色模式的自動適配，以消除多餘的黑色邊框
+* 新增 [拼寫糾錯](https://github.com/rime/librime/pull/228) 選項
+  當前僅限 QWERTY 鍵盤佈局及使用 `script_translator` 的方案
+
+#### Features
+
+* **librime:**  update to librime 1.4.0 ([1f07c63c](https://github.com/rime/squirrel/commit/1f07c63c51f60ea5514819c0f3a05c33ee9aba5d))
+* **pkg:**  logout after install ([c84001ea](https://github.com/rime/squirrel/commit/c84001ea4348b902543938d89d68306b1ea86b3f))
+* **travis-ci:**  add Travis CI automated build ([8855101c](https://github.com/rime/squirrel/commit/8855101c0d90c118d4d1d58b757d11d76354bcda))
+
+#### Bug Fixes
+
+* **app:**  opt out of dark mode ([083817cb](https://github.com/rime/squirrel/commit/083817cba5ccb1f5b9589b7e7a2fbeca4ec4d9dd), closes [#273](https://github.com/rime/squirrel/issues/273))
+
+
+
 <a name="0.10.0"></a>
 ## 0.10.0 (2019-01-01)
 
