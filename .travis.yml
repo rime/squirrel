@@ -6,7 +6,7 @@ matrix:
 install: make deps
 script: make
 after_success: make archive
-before_deploy: "./travis-before-deploy.sh"
+before_deploy: ./travis-before-deploy.sh
 deploy:
   provider: bintray
   file: travis-deploy-package.json
