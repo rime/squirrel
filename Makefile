@@ -80,6 +80,10 @@ archive: package
 test-archive: package
 	testing=1 bash package/create_archive
 
+sign-archive:
+	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
+	bash package/create_archive
+
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
 

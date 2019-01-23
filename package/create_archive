@@ -20,13 +20,23 @@ if [ -n "${testing}" ]; then
     rm -f "${target_archive}" > /dev/null 2>&1 || true
 fi
 
-if [ -e "${target_archive}" ]; then
-  echo "ERROR: target archive already exists: ${target_archive}"
-  exit 1
+if [ -n "${checksum}" ]; then
+    if ! [ -f "${target_archive}" ]; then
+        echo >&2 "ERROR: file does not exit: ${target_archive}"
+        exit 1
+    fi
+    echo 'sha256 checksum:'
+    echo "${checksum}  ${target_archive}"
+    shasum -a 256 -c <<<"${checksum}  ${target_archive}"
+else
+    if [ -e "${target_archive}" ]; then
+        echo >&2 "ERROR: target archive already exists: ${target_archive}"
+        exit 1
+    fi
+    zip -r "${target_archive}" Squirrel.pkg
+    echo 'sha256 checksum:'
+    shasum -a 256 "${target_archive}"
 fi
-
-zip -r "${target_archive}" Squirrel.pkg
-
 dsa_signature=$(ruby sign/sign_update.rb "${target_archive}" sign/dsa_priv.pem)
 file_length=$(stat -f%z "${target_archive}")
 pub_date=$(date -R)
