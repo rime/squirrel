@@ -19,11 +19,11 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd \
 	data/opencc/t2s.json
 DEPS = $(LIBRIME) $(PLUM_DATA) $(OPENCC_DATA)
 
-LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
-RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
+LIBRIME_OUTPUT = librime/build/lib/Release/librime.1.dylib
+RIME_BIN_BUILD_DIR = librime/build/bin/Release
 RIME_BIN_DEPLOYER = rime_deployer
 RIME_BIN_DICT_MANAGER = rime_dict_manager
-OPENCC_DATA_OUTPUT = librime/thirdparty/data/opencc/*.*
+OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
@@ -34,7 +34,7 @@ $(LIBRIME):
 	$(MAKE) librime
 
 $(LIBRIME_DEPS):
-	$(MAKE) -C librime -f Makefile.xcode thirdparty
+	$(MAKE) -C librime xcode/thirdparty
 
 $(PLUM_DATA):
 	$(MAKE) update-plum-data
@@ -43,7 +43,7 @@ $(OPENCC_DATA):
 	$(MAKE) update-opencc-data
 
 librime: $(LIBRIME_DEPS)
-	$(MAKE) -C librime -f Makefile.xcode release
+	$(MAKE) -C librime xcode/release
 	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
 	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
@@ -59,7 +59,7 @@ update-plum-data:
 	cp $(RIME_PACKAGE_INSTALLER) bin/
 
 update-opencc-data:
-	$(MAKE) -C librime -f Makefile.xcode thirdparty/opencc
+	$(MAKE) -C librime xcode/thirdparty/opencc
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
@@ -110,4 +110,4 @@ clean:
 
 clean-deps:
 	$(MAKE) -C plum clean
-	$(MAKE) -C librime -f Makefile.xcode clean
+	$(MAKE) -C librime xcode/clean

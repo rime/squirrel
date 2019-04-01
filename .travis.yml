@@ -3,7 +3,9 @@ matrix:
   include:
   - os: osx
     compiler: clang
-install: make deps
+install:
+  - librime/travis-install.sh
+  - make deps
 script: make
 after_success: make archive
 before_deploy: ./travis-before-deploy.sh

@@ -56,6 +56,12 @@ git clone --recursive https://github.com/rime/squirrel.git
 cd squirrel
 ```
 
+Optionally, checkout Rime plugins (a list of GitHub repo slugs):
+
+``` sh
+bash librime/install-plugins.sh rime/librime-sample # ...
+```
+
 ### Build dependencies
 
 Build librime, dependent third-party libraries and data files:
