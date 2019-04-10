@@ -1,0 +1,17 @@
+1.使用pkg包安装
+按提示进行安装，此处略
+2.添加五笔方案(86版五笔需要依赖于pinyin-simp输入法)
+cd /Library/Input Methods/Squirrel.app/Contents/MacOS
+sudo ./rime-install  wubi pinyin-simp
+cd ~/Library/Rime
+#添加一个默认自定义文件:default.custom.yaml,内容如下：
+patch:
+  schema_list:
+    - schema: wubi86 
+    - schema: wubi_pinyin
+3.将配置文件复制到~/Library/Rime目录下
+cp /Library/Input Methods/Squirrel.app/Contents/MacOS/plum/package/rime/{pinyin-simp,wubi}/*.yaml ~/Library/Rime/
+4.图形化界面重新部署一下即可
+5.切换到鼠须管输入法，使用ctrl + ~即可切换鼠须管的输入法
+6.其它自定义（皮肤，输入快捷键等）
+略
