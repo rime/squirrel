@@ -13,7 +13,7 @@
 -(void)createSession;
 -(void)destroySession;
 -(void)rimeConsumeCommittedText;
-// -(void)rimeUpdate;
+-(void)rimeUpdate;
 -(void)updateAppOptions;
 @end
 
@@ -161,7 +161,7 @@
   //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
 
   // TODO add special key event postprocessing here
-
+/*
   if (!handled) {
     BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
     ((rime_modifiers & kControlMask) && (rime_keycode == XK_c ||
@@ -176,7 +176,7 @@
       }
     }
   }
-
+*/
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
     bool is_chording_key = rime_modifiers == 0 &&
@@ -509,6 +509,7 @@
   }
 }
 
+
 @end // SquirrelController
 
 
@@ -521,9 +522,9 @@
   NSLog(@"createSession: %@", app);
   _currentApp = [app copy];
   _session = rime_get_api()->create_session();
-
+  
   _schemaId = nil;
-
+  
   if (_session) {
     [self updateAppOptions];
   }
@@ -563,6 +564,4 @@
     rime_get_api()->free_commit(&commit);
   }
 }
-
-
 @end // SquirrelController(Private)
