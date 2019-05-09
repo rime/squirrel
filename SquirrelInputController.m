@@ -1,5 +1,6 @@
 #import "SquirrelInputController.h"
 
+#import "SquirrelDomainServer.h"
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
@@ -12,7 +13,7 @@
 -(void)createSession;
 -(void)destroySession;
 -(void)rimeConsumeCommittedText;
--(void)rimeUpdate;
+// -(void)rimeUpdate;
 -(void)updateAppOptions;
 @end
 
@@ -32,6 +33,8 @@
   NSTimer *_chordTimer;
   NSTimeInterval _chordDuration;
   NSString *_currentApp;
+
+  SquirrelDomainServer *_domainServerInstance;
 }
 
 /*!
@@ -262,6 +265,7 @@
     [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
   }
   _preeditString = @"";
+  [_domainServerInstance updateLastSession:self session:_session app:_currentApp];
 }
 
 -(instancetype)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
@@ -271,6 +275,8 @@
     _currentClient = inputClient;
     [self createSession];
   }
+
+  _domainServerInstance=[SquirrelDomainServer sharedInstance];
   return self;
 }
 
@@ -300,10 +306,27 @@
   /* if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
     return; */
   // force committing existing Rime composition
-  if (_session && rime_get_api()->commit_composition(_session)) {
-    [self rimeConsumeCommittedText];
-  }
+  BOOL o = rime_get_api()->get_option(_session, "ascii_mode");
+   if(!o){
+     rime_get_api()->set_option(_session, "ascii_mode", True);
+   }
+   if (_session && rime_get_api()->commit_composition(_session)) {
+     [self rimeConsumeCommittedText];
+   }
+   if(!o){
+     rime_get_api()->set_option(_session, "ascii_mode", False);
+   }
 }
+-(void)clearComposition
+{
+  if (_session) {
+    rime_get_api()->clear_composition(_session);
+  }
+
+  [NSApp.squirrelAppDelegate.panel hide];
+}
+
+
 
 // a piece of comment from SunPinyin's macos wrapper says:
 // > though we specified the showPrefPanel: in SunPinyinApplicationDelegate as the
@@ -416,61 +439,6 @@
               labels:labels
          highlighted:index];
 }
-
-@end // SquirrelController
-
-
-// implementation of private interface
-@implementation SquirrelInputController(Private)
-
--(void)createSession
-{
-  NSString* app = [_currentClient bundleIdentifier];
-  NSLog(@"createSession: %@", app);
-  _currentApp = [app copy];
-  _session = rime_get_api()->create_session();
-
-  _schemaId = nil;
-
-  if (_session) {
-    [self updateAppOptions];
-  }
-}
-
--(void)updateAppOptions
-{
-  if (!_currentApp)
-    return;
-  SquirrelAppOptions* appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
-  if (appOptions) {
-    for (NSString* key in appOptions) {
-      BOOL value = appOptions[key].boolValue;
-      NSLog(@"set app option: %@ = %d", key, value);
-      rime_get_api()->set_option(_session, key.UTF8String, value);
-    }
-  }
-}
-
--(void)destroySession
-{
-  //NSLog(@"destroySession:");
-  if (_session) {
-    rime_get_api()->destroy_session(_session);
-    _session = 0;
-  }
-  [self clearChord];
-}
-
--(void)rimeConsumeCommittedText
-{
-  RIME_STRUCT(RimeCommit, commit);
-  if (rime_get_api()->get_commit(_session, &commit)) {
-    NSString *commitText = @(commit.text);
-    [self commitString: commitText];
-    rime_get_api()->free_commit(&commit);
-  }
-}
-
 -(void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
@@ -540,5 +508,61 @@
     [NSApp.squirrelAppDelegate.panel hide];
   }
 }
+
+@end // SquirrelController
+
+
+// implementation of private interface
+@implementation SquirrelInputController(Private)
+
+-(void)createSession
+{
+  NSString* app = [_currentClient bundleIdentifier];
+  NSLog(@"createSession: %@", app);
+  _currentApp = [app copy];
+  _session = rime_get_api()->create_session();
+
+  _schemaId = nil;
+
+  if (_session) {
+    [self updateAppOptions];
+  }
+}
+
+-(void)updateAppOptions
+{
+  if (!_currentApp)
+    return;
+  SquirrelAppOptions* appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
+  if (appOptions) {
+    for (NSString* key in appOptions) {
+      BOOL value = appOptions[key].boolValue;
+      NSLog(@"set app option: %@ = %d", key, value);
+      rime_get_api()->set_option(_session, key.UTF8String, value);
+    }
+  }
+}
+
+-(void)destroySession
+{
+  //NSLog(@"destroySession:");
+  if (_session) {
+    rime_get_api()->destroy_session(_session);
+    [_domainServerInstance destroySession:_session];
+    _session = 0;
+  }
+  [self clearChord];
+}
+
+-(void)rimeConsumeCommittedText
+{
+  RIME_STRUCT(RimeCommit, commit);
+  if (rime_get_api()->get_commit(_session, &commit)) {
+    NSString *commitText = @(commit.text);
+    [self commitString: commitText];
+    rime_get_api()->free_commit(&commit);
+  }
+}
+
 
 @end // SquirrelController(Private)
