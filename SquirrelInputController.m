@@ -184,7 +184,9 @@
       // NSLog(@"Inputing...   %@   ...%s", app, isInVimMode ? "VimMode" : "balabala");
       if (isInVimMode &&
           !rime_get_api()->get_option(_session, "ascii_mode")) {
-        rime_get_api()->set_option(_session, "ascii_mode", True);
+         rime_get_api()->set_option(_session, "ascii_mode", True);
+         [self clearComposition];
+         //[self commitComposition:_currentClient];
         NSLog(@"disable conversion to Chinese in VimMode command mode");
       }
     }
