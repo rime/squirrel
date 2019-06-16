@@ -1,5 +1,30 @@
+<a name="0.12.0"></a>
+## 0.12.0 (2019-06-16)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.1](https://github.com/rime/librime/blob/master/CHANGELOG.md#151-2019-06-16)
+  * 建設全自動構建、發佈流程
+  * 更新第三方庫
+  * 將Rime插件納入自動化構建流程。本次發行包含兩款插件：
+    - [lbrime-lua](https://github.com/hchunhui/librime-lua)
+    - [librime-octagram](https://github.com/lotem/librime-octagram)
+
+#### Bug Fixes
+
+* **squirrel.yaml:**  duplicate YAML key in color scheme dust ([44a4d7ee](https://github.com/rime/squirrel/commit/44a4d7ee3cad94c170616b7c8d9415a4f92c86d5))
+
+#### Features
+
+* **squirrel.yaml:**  udpate UI settings ([d8b1dc56](https://github.com/rime/squirrel/commit/d8b1dc569cc2c168f0fc5e8240ff6e049142fc24))
+* **travis-ci:**  deploy release package ([c367b675](https://github.com/rime/squirrel/commit/c367b675bbca4f7e4467b71b9f42adbb888b77a5))
+
+
+
 <a name="0.11.0"></a>
 ## 0.11.0 (2019-01-21)
+
 
 #### 主要更新
 
@@ -23,6 +48,7 @@
 
 <a name="0.10.0"></a>
 ## 0.10.0 (2019-01-01)
+
 
 #### 主要更新
 
