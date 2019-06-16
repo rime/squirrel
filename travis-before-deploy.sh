@@ -1,12 +1,23 @@
 #!/bin/bash
+
 package_name="${package:-testing}"
 publish="${publish:-true}"
+
 get_app_version() {
     sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
 }
 app_version="$(get_app_version 'Info.plist')"
 version_name="${app_version}"
+
+if [[ "${TRAVIS_TAG}" =~ [[:digit:]]+\..* ]]
+then
+    package_name='release'
+    version_name="${TRAVIS_TAG}"
+    publish=false
+fi
+
 version_desc="鼠鬚管 ${version_name}"
+
 if [[ "${package_name}" = 'testing' ]]
 then
     git_hash="$(git rev-parse HEAD | cut -c -7)"
@@ -16,6 +27,7 @@ then
     upload_archive="package/archives/Squirrel-${version_name}.zip"
     mv "${built_archive}" "${upload_archive}"
 fi
+
 sed "{
   s/{{package_name}}/${package_name}/g
   s/{{version_name}}/${version_name}/g
