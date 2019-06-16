@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.32"
+config_version: "0.33"
 
 us_keyboard_layout: false
 
@@ -23,14 +23,14 @@ style:
   border_width: 0
   line_spacing: 5
   spacing: 10  # space between preedit and candidates in non-inline mode
-  #candidate_format: '%c. %@'
-  font_face: 'Lucida Grande'  # supporting soft cursor '›'
-  #font_point: 21
-  #label_font_face: 'STHeitiTC-Medium'
-  #label_font_point: 18
+  # candidate_format: '%c. %@'
+  font_face: Lucida Grande
+  font_point: 21
+  # label_font_face: Monaco
+  label_font_point: 18
 
 preset_color_schemes:
-  #native: {}  # system UI colors
+  # native: {}  # system UI colors
 
   aqua:
     name: 碧水／Aqua
@@ -289,6 +289,7 @@ app_options:
     no_inline: true
   com.googlecode.iterm2:
     ascii_mode: true
+    no_inline: true
   org.vim.MacVim:
     ascii_mode: true
     no_inline: true
