@@ -53,7 +53,7 @@ librime: $(LIBRIME_DEPS)
 data: update-plum-data update-opencc-data
 
 update-plum-data:
-	$(MAKE) -C plum minimal
+	$(MAKE) -C plum
 	mkdir -p data/plum
 	cp $(PLUM_DATA_OUTPUT) data/plum/
 	cp $(RIME_PACKAGE_INSTALLER) bin/
