@@ -1,3 +1,20 @@
+<a name="0.13"></a>
+## 0.13 (2019-06-17)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.2](https://github.com/rime/librime/blob/master/CHANGELOG.md#152-2019-06-17)
+  * 修復用戶詞的權重，穩定造句質量、平衡翻譯器優先級 [librime#287](https://github.com/rime/librime/issues/287)
+
+* 安裝預設輸入方案集，避免大多數方案依賴問題 [#279](https://github.com/rime/squirrel/issues/279)
+
+#### Features
+
+* **plum:**  bundle preset recipes ([7885c5fa](https://github.com/rime/squirrel/commit/7885c5fa6006e999c5a07ac1800e9afa15d629a8))
+
+
+
 <a name="0.12.0"></a>
 ## 0.12.0 (2019-06-16)
 
