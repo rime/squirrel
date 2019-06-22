@@ -1,12 +1,15 @@
-.PHONY: all install librime data update-plum-data update-opencc-data deps release debug \
-	package archive test-archive permission-check install-debug install-release \
-	clean clean-deps
+.PHONY: all install deps release debug
 
 all: release
 install: install-release
 
-LIBRIME = lib/librime.1.dylib
-LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a \
+RIME_BIN_DIR = librime/dist/bin
+RIME_LIB_DIR = librime/dist/lib
+
+RIME_LIBRARY_FILE_NAME = librime.1.dylib
+RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
+
+RIME_DEPS = librime/thirdparty/lib/libmarisa.a \
 	librime/thirdparty/lib/libleveldb.a \
 	librime/thirdparty/lib/libopencc.a \
 	librime/thirdparty/lib/libyaml-cpp.a
@@ -17,12 +20,8 @@ PLUM_DATA = bin/rime-install \
 OPENCC_DATA = data/opencc/TSCharacters.ocd \
 	data/opencc/TSPhrases.ocd \
 	data/opencc/t2s.json
-DEPS = $(LIBRIME) $(PLUM_DATA) $(OPENCC_DATA)
+DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
 
-LIBRIME_OUTPUT = librime/build/lib/Release/librime.1.dylib
-RIME_BIN_BUILD_DIR = librime/build/bin/Release
-RIME_BIN_DEPLOYER = rime_deployer
-RIME_BIN_DICT_MANAGER = rime_dict_manager
 OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
@@ -30,46 +29,61 @@ RIME_PACKAGE_INSTALLER = plum/rime-install
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
 INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
 
-$(LIBRIME):
+.PHONY: librime copy-rime-binaries
+
+$(RIME_LIBRARY):
 	$(MAKE) librime
 
-$(LIBRIME_DEPS):
+$(RIME_DEPS):
 	$(MAKE) -C librime xcode/thirdparty
 
+librime: $(RIME_DEPS)
+	$(MAKE) -C librime xcode/dist
+	$(MAKE) copy-rime-binaries
+
+copy-rime-binaries:
+	cp -L $(RIME_LIB_DIR)/$(RIME_LIBRARY_FILE_NAME) lib/
+	cp $(RIME_BIN_DIR)/rime_deployer bin/
+	cp $(RIME_BIN_DIR)/rime_dict_manager bin/
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_deployer
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_dict_manager
+
+.PHONY: data plum-data opencc-data copy-plum-data copy-opencc-data
+
+data: plum-data opencc-data
+
 $(PLUM_DATA):
-	$(MAKE) update-plum-data
+	$(MAKE) plum-data
 
 $(OPENCC_DATA):
-	$(MAKE) update-opencc-data
+	$(MAKE) opencc-data
 
-librime: $(LIBRIME_DEPS)
-	$(MAKE) -C librime xcode/release
-	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
-	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
-	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
-	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DEPLOYER)
-	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
-
-data: update-plum-data update-opencc-data
-
-update-plum-data:
+plum-data:
 	$(MAKE) -C plum
+	$(MAKE) copy-plum-data
+
+opencc-data:
+	$(MAKE) -C librime xcode/thirdparty/opencc
+	$(MAKE) copy-opencc-data
+
+copy-plum-data:
 	mkdir -p data/plum
 	cp $(PLUM_DATA_OUTPUT) data/plum/
 	cp $(RIME_PACKAGE_INSTALLER) bin/
 
-update-opencc-data:
-	$(MAKE) -C librime xcode/thirdparty/opencc
+copy-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
 deps: librime data
 
-release: $(DEPS)
+release: $(DEPS_CHECK)
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
-debug: $(DEPS)
+debug: $(DEPS_CHECK)
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
+
+.PHONY: package archive test-archive sign-archive
 
 package: release
 	bash package/make_package
@@ -87,6 +101,8 @@ sign-archive:
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
 
+.PHONY: permission-check install-debug install-release
+
 permission-check:
 	[ -w "$(DSTROOT)" ] && [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(DSTROOT)"
 
@@ -99,6 +115,8 @@ install-release: release permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
 	cp -R build/Release/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
+
+.PHONY: clean clean-deps
 
 clean:
 	rm -rf build > /dev/null 2>&1 || true
