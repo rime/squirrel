@@ -1,20 +1,25 @@
 language: objective-c
-matrix:
-  include:
-  - os: osx
-    compiler: clang
-install:
-  - librime/travis-install.sh
-  - make deps
+os: osx
+compiler: clang
+install: ./travis-install.sh
 script: make
 after_success: make archive
 before_deploy: ./travis-before-deploy.sh
 deploy:
-  provider: bintray
-  file: travis-deploy-package.json
+- provider: bintray
+  file: travis-deploy-package-release.json
   user: lotem
+  key: &bintray_api_key
+    secure: lZGl4cBqsKnaca4LV3ginJIYAmwa3FQl4zjPE6YmeHQUTnVb4DxmKD/h3vwtbXhk8E7Zd0wnJRVcm1A2Z7eCglkV/1iDPK8h9pNox3aO/rJbq3P1flRnulVgSGRNO2akkb/W1kR1a9Lgcb24yvQ7LJrCPIUTQQIFbDWtVYCbO3E=
   skip_cleanup: true
   on:
-    all_branches: true
-  key:
-    secure: lZGl4cBqsKnaca4LV3ginJIYAmwa3FQl4zjPE6YmeHQUTnVb4DxmKD/h3vwtbXhk8E7Zd0wnJRVcm1A2Z7eCglkV/1iDPK8h9pNox3aO/rJbq3P1flRnulVgSGRNO2akkb/W1kR1a9Lgcb24yvQ7LJrCPIUTQQIFbDWtVYCbO3E=
+    repo: rime/squirrel
+    tags: true
+- provider: bintray
+  file: travis-deploy-package-testing.json
+  user: lotem
+  key: *bintray_api_key
+  skip_cleanup: true
+  on:
+    repo: rime/squirrel
+    branch: master

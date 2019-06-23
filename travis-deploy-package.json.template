@@ -11,7 +11,7 @@
     "desc": "{{version_desc}}"
   },
   "files": [
-    { "includePattern": "package/archives/(.*\\.zip)", "uploadPattern": "/$1" }
+    { "includePattern": "package/archives/(.*\\.zip)", "uploadPattern": "$1" }
   ],
   "publish": {{publish}}
 }
