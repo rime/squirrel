@@ -81,9 +81,11 @@ copy-opencc-data:
 deps: librime data
 
 release: $(DEPS_CHECK)
+	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
+	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive test-archive sign-archive
