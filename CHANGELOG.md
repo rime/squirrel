@@ -1,3 +1,23 @@
+<a name="0.14.0"></a>
+## 0.14.0 (2019-06-23)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.3](https://github.com/rime/librime/blob/master/CHANGELOG.md#153-2019-06-22)
+  * 修復 `single_char_filter` 組件
+
+* 建設安全、可靠、快速的全自動構建、發佈流程
+
+* 安裝「八股文」語法數據庫（傳承字），可依照 [配方](https://github.com/lotem/rime-octagram-data) 在方案裏啓用
+
+#### Features
+
+* **package/add_data_files:**  update xcode project to install all files under data/plum ([2ab1810e](https://github.com/rime/squirrel/commit/2ab1810e94b963df27e6fd2e399465ccdabba138))
+* **travis-ci:**  fetch latest rime binaries in install script, install extra recipes ([027679d5](https://github.com/rime/squirrel/commit/027679d58974845a83a393a313bbd63462a795b1))
+
+
+
 <a name="0.13"></a>
 ## 0.13 (2019-06-17)
 
