@@ -88,20 +88,17 @@ debug: $(DEPS_CHECK)
 	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 
-.PHONY: package archive test-archive sign-archive
+.PHONY: package archive sign-archive
 
 package: release
 	bash package/make_package
 
 archive: package
-	bash package/create_archive
-
-test-archive: package
-	testing=1 bash package/create_archive
+	bash package/make_archive
 
 sign-archive:
 	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
-	bash package/create_archive
+	bash package/make_archive
 
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
