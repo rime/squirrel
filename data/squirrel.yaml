@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: "0.33"
+config_version: '0.34'
 
 us_keyboard_layout: false
 
@@ -293,6 +293,7 @@ app_options:
   org.vim.MacVim:
     ascii_mode: true
     no_inline: true
+    vim_mode: true
   com.apple.dt.Xcode:
     ascii_mode: true
   com.barebones.textwrangler:
