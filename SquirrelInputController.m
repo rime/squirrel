@@ -166,10 +166,11 @@
                                          rime_keycode == XK_bracketleft));
     if (isVimBackInCommandMode) {
       NSString* app = [_currentClient bundleIdentifier];
-      if ([app isEqualToString:@"org.vim.MacVim"] &&
-          !rime_get_api()->get_option(_session, "ascii_mode")) {
+      SquirrelAppOptions *appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:app.copy];
+      BOOL vimMode = appOptions[@"vim_mode"].boolValue;
+      if (vimMode && !rime_get_api()->get_option(_session, "ascii_mode")) {
         rime_get_api()->set_option(_session, "ascii_mode", True);
-        NSLog(@"disable conversion to Chinese in MacVim's command mode");
+        NSLog(@"disable conversion to Chinese in Editor's command mode when vim_mode are set");
       }
     }
   }
