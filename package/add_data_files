@@ -69,7 +69,7 @@ add_file() {
 }
 
 data_files=(
-    $(ls data/plum/* | xargs basename)
+    $(ls data/plum/* | xargs -n 1 basename)
 )
 
 for file in "${data_files[@]}"
