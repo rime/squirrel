@@ -80,6 +80,8 @@
 	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
+	<key>TICapsLockLanguageSwitchCapable</key>
+	<true/>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>zh-Hans</string>
