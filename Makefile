@@ -14,20 +14,9 @@ RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
 
 RIME_DEPS = librime/thirdparty/lib/libmarisa.a \
 	librime/thirdparty/lib/libleveldb.a \
-	librime/thirdparty/lib/libopencc.a \
 	librime/thirdparty/lib/libyaml-cpp.a
-PLUM_DATA = bin/rime-install \
-	data/plum/default.yaml \
-	data/plum/symbols.yaml \
-	data/plum/essay.txt
-OPENCC_DATA = data/opencc/TSCharacters.ocd \
-	data/opencc/TSPhrases.ocd \
-	data/opencc/t2s.json
-DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
 
-OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
-PLUM_DATA_OUTPUT = plum/output/*.*
-RIME_PACKAGE_INSTALLER = plum/rime-install
+DEPS_CHECK = $(RIME_LIBRARY)
 
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
 INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
@@ -51,41 +40,12 @@ copy-rime-binaries:
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_deployer
 	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_dict_manager
 
-.PHONY: data plum-data opencc-data copy-plum-data copy-opencc-data
-
-data: plum-data opencc-data
-
-$(PLUM_DATA):
-	$(MAKE) plum-data
-
-$(OPENCC_DATA):
-	$(MAKE) opencc-data
-
-plum-data:
-	$(MAKE) -C plum
-	$(MAKE) copy-plum-data
-
-opencc-data:
-	$(MAKE) -C librime xcode/thirdparty/opencc
-	$(MAKE) copy-opencc-data
-
-copy-plum-data:
-	mkdir -p data/plum
-	cp $(PLUM_DATA_OUTPUT) data/plum/
-	cp $(RIME_PACKAGE_INSTALLER) bin/
-
-copy-opencc-data:
-	mkdir -p data/opencc
-	cp $(OPENCC_DATA_OUTPUT) data/opencc/
-
-deps: librime data
+deps: librime
 
 release: $(DEPS_CHECK)
-	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
-	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive sign-archive
