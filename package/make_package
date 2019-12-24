@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUNDLE_IDENTIFIER='im.rime.inputmethod.Squirrel'
+BUNDLE_IDENTIFIER='im.rime.inputmethod.ThoanTaigi'
 INSTALL_LOCATION='/Library/Input Methods'
 
 cd "$(dirname $0)"
@@ -18,4 +18,4 @@ pkgbuild \
     --version $(get_app_version "${PROJECT_ROOT}/Info.plist") \
     --install-location "${INSTALL_LOCATION}" \
     --scripts "${PROJECT_ROOT}/scripts" \
-    Squirrel.pkg
+    ThoanTaigi.pkg

@@ -24,7 +24,7 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 -(IBAction)configure:(id)sender
 {
-  [[NSWorkspace sharedWorkspace] openFile:(@"~/Library/Rime").stringByStandardizingPath];
+  [[NSWorkspace sharedWorkspace] openFile:(@"~/Library/ThoanTaigi").stringByStandardizingPath];
 }
 
 -(IBAction)openWiki:(id)sender
@@ -108,7 +108,7 @@ void notification_handler(void* context_object, RimeSessionId session_id,
 
 -(void)setupRime
 {
-  NSString* userDataDir = (@"~/Library/Rime").stringByStandardizingPath;
+  NSString* userDataDir = (@"~/Library/ThoanTaigi").stringByStandardizingPath;
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (![fileManager fileExistsAtPath:userDataDir]) {
     if (![fileManager createDirectoryAtPath:userDataDir
@@ -122,11 +122,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   RIME_STRUCT(RimeTraits, squirrel_traits);
   squirrel_traits.shared_data_dir = [NSBundle mainBundle].sharedSupportPath.UTF8String;
   squirrel_traits.user_data_dir = userDataDir.UTF8String;
-  squirrel_traits.distribution_code_name = "Squirrel";
-  squirrel_traits.distribution_name = "鼠鬚管";
+  squirrel_traits.distribution_code_name = "ThoanTaigi";
+  squirrel_traits.distribution_name = "ThoanTaigi";
   squirrel_traits.distribution_version =
       [[NSBundle mainBundle].infoDictionary[@"CFBundleVersion"] UTF8String];
-  squirrel_traits.app_name = "rime.squirrel";
+  squirrel_traits.app_name = "rime.ThoanTaigi";
   rime_get_api()->setup(&squirrel_traits);
 }
 

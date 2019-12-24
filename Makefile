@@ -43,10 +43,10 @@ copy-rime-binaries:
 deps: librime
 
 release: $(DEPS_CHECK)
-	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
+	xcodebuild -project ThoanTaigi.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
-	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
+	xcodebuild -project ThoanTaigi.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive sign-archive
 
@@ -61,7 +61,7 @@ sign-archive:
 	bash package/make_archive
 
 DSTROOT = /Library/Input Methods
-SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
+SQUIRREL_APP_ROOT = $(DSTROOT)/ThoanTaigi.app
 
 .PHONY: permission-check install-debug install-release
 
@@ -70,12 +70,12 @@ permission-check:
 
 install-debug: debug permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
-	cp -R build/Debug/Squirrel.app "$(DSTROOT)"
+	cp -R build/Debug/ThoanTaigi.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" RIME_NO_PREBUILD=1 bash scripts/postinstall
 
 install-release: release permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
-	cp -R build/Release/Squirrel.app "$(DSTROOT)"
+	cp -R build/Release/ThoanTaigi.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
 
 .PHONY: clean clean-deps
