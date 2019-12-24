@@ -111,7 +111,7 @@
 		44E98EC114AE1AC900847AD6 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
 		44F01492152AF6AF00EFDAC3 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
-		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44F1EB381431F8270015FD04 /* ThoanTaigi.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ThoanTaigi.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
@@ -190,7 +190,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				44F1EB381431F8270015FD04 /* Squirrel.app */,
+				44F1EB381431F8270015FD04 /* ThoanTaigi.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -265,9 +265,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* Squirrel */ = {
+		8D1107260486CEB800E47090 /* ThoanTaigi */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Squirrel" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ThoanTaigi" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -281,10 +281,10 @@
 			);
 			dependencies = (
 			);
-			name = Squirrel;
+			name = ThoanTaigi;
 			productInstallPath = "$(HOME)/Applications";
 			productName = Squirrel;
-			productReference = 44F1EB381431F8270015FD04 /* Squirrel.app */;
+			productReference = 44F1EB381431F8270015FD04 /* ThoanTaigi.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -295,7 +295,7 @@
 			attributes = {
 				LastUpgradeCheck = 0720;
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ThoanTaigi" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = en;
 			hasScannedForEncodings = 1;
@@ -308,7 +308,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* Squirrel */,
+				8D1107260486CEB800E47090 /* ThoanTaigi */,
 			);
 		};
 /* End PBXProject section */
@@ -416,7 +416,7 @@
 				);
 				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				PRODUCT_NAME = ThoanTaigi;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
@@ -453,7 +453,7 @@
 				);
 				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				PRODUCT_NAME = ThoanTaigi;
 				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
@@ -504,7 +504,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Squirrel" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "ThoanTaigi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -513,7 +513,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "ThoanTaigi" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
