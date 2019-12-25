@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Volumes/Data/SourceCode/iThoan/squirrel/ThoanTaigi.xcodeproj">
+      location = "group:/Volumes/Data/SourceCode/iThoan/squirrel/menubar18.png">
+   </FileRef>
+   <FileRef
+      location = "self:">
    </FileRef>
 </Workspace>

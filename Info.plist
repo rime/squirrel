@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
-	<string>RimeIcon.icns</string>
+	<string>menubar18.png</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -31,7 +31,7 @@
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hant</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>zh-Hans</string>
@@ -44,9 +44,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -86,6 +86,6 @@
 		<string>zh-Hant</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime.pdf</string>
+	<string>menubar18.png</string>
 </dict>
 </plist>
