@@ -5,15 +5,15 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Squirrel</string>
+	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconFile</key>
-	<string>RimeIcon.icns</string>
+	<string>menubar18.png</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Squirrel</string>
+	<string>$(PRODUCT_NAME)</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
@@ -24,14 +24,14 @@
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>im.rime.inputmethod.Squirrel</key>
+			<key>tw.ithoan.inputmethod.ThoanTaigi</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>im.rime.inputmethod.Squirrel.Rime</string>
+				<string>tw.ithoan.inputmethod.ThoanTaigi.Rime</string>
 				<key>TISIntendedLanguage</key>
-				<string>zh</string>
+				<string>zh-Hant</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>zh-Hans</string>
@@ -44,9 +44,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>menubar18.png</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -55,11 +55,11 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>im.rime.inputmethod.Squirrel.Rime</string>
+			<string>tw.ithoan.inputmethod.ThoanTaigi.Rime</string>
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>
-	<string>Squirrel_1_Connection</string>
+	<string>ThoanTaigi_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>SquirrelInputController</string>
 	<key>InputMethodServerDelegateClass</key>
@@ -77,9 +77,9 @@
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
+	<string></string>
 	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
+	<string></string>
 	<key>TICapsLockLanguageSwitchCapable</key>
 	<true/>
 	<key>tsInputMethodCharacterRepertoireKey</key>
@@ -88,6 +88,6 @@
 		<string>zh-Hant</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime.pdf</string>
+	<string>menubar18.png</string>
 </dict>
 </plist>

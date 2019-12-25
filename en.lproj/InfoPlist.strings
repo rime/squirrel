@@ -1,8 +1,8 @@
 /* Localized versions of Info.plist keys */
 
-NSHumanReadableCopyright = "Copyleft 2017, RIME Developers";
 
-im.rime.inputmethod.Squirrel = "Squirrel";
 
-CFBundleName = "Squirrel";
-CFBundleDisplayName = "Squirrel";
+tw.ithoan.inputmethod.ThoanTaigi = "ThoanTaigi";
+
+CFBundleName = "ThoanTaigi";
+CFBundleDisplayName = "ThoanTaigi";

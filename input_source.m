@@ -1,11 +1,11 @@
 #import <Carbon/Carbon.h>
 
 static const unsigned char kInstallLocation[] =
-    "/Library/Input Methods/Squirrel.app";
+    "/Library/Input Methods/ThoanTaigi.app";
 static NSString *const kSourceID =
-    @"im.rime.inputmethod.Squirrel";
+    @"tw.ithoan.inputmethod.ThoanTaigi";
 static NSString *const kInputModeID =
-    @"im.rime.inputmethod.Squirrel.Rime";
+    @"tw.ithoan.inputmethod.ThoanTaigi.Rime";
 
 void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(

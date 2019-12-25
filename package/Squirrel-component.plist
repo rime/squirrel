@@ -4,7 +4,7 @@
 <array>
 	<dict>
 		<key>RootRelativeBundlePath</key>
-		<string>Squirrel.app</string>
+		<string>ThoanTaigi.app</string>
 		<key>BundleHasStrictIdentifier</key>
 		<false/>
 		<key>BundleIsRelocatable</key>
@@ -19,7 +19,7 @@
 				<key>BundleOverwriteAction</key>
 				<string>upgrade</string>
 				<key>RootRelativeBundlePath</key>
-				<string>Squirrel.app/Contents/Frameworks/Sparkle.framework</string>
+				<string>ThoanTaigi.app/Contents/Frameworks/Sparkle.framework</string>
 			</dict>
 		</array>
 	</dict>
