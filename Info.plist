@@ -80,6 +80,8 @@
 	<string></string>
 	<key>SUPublicDSAKeyFile</key>
 	<string></string>
+	<key>TICapsLockLanguageSwitchCapable</key>
+	<true/>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>zh-Hans</string>
