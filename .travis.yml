@@ -15,7 +15,7 @@ script:
 - sed -i "" 's/Squirrel.xcodeproj/ThoanTaigi.xcodeproj/g' package/add_data_files
 - bash -x package/add_data_files
 - sed -i "" '/terra_pinyin.schema.yaml/d' ThoanTaigi.xcodeproj/project.pbxproj
-- nl ThoanTaigi.xcodeproj/project.pbxproj
+- nl -b a ThoanTaigi.xcodeproj/project.pbxproj
 - make
 after_success:
 - make package
