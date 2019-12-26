@@ -10,9 +10,11 @@ script:
 - make copy-rime-binaries
 # rime_taigi_poj_hanlo/taigi_pojhanlo_sujiphoat/*
 - git clone https://github.com/i3thuan5/rime_taigi_poj_hanlo.git
-- sed -i "" 's/data\/plum/rime_taigi_poj_hanlo\/taigi_pojhanlo_sujiphoat/g' package/add_data_files
+- mv rime_taigi_poj_hanlo/taigi_pojhanlo_sujiphoat data/plum
 - sed -i "" 's/Squirrel.xcodeproj/ThoanTaigi.xcodeproj/g' package/add_data_files
 - bash -x package/add_data_files
+- sed -i "" '/terra_pinyin.schema.yaml/d' ThoanTaigi.xcodeproj/project.pbxproj
+- nl -b a ThoanTaigi.xcodeproj/project.pbxproj
 - make
 after_success:
 - make package
