@@ -1,25 +1,20 @@
 language: objective-c
 os: osx
 compiler: clang
-install: ./travis-install.sh
-script: make
-after_success: make archive
-before_deploy: ./travis-before-deploy.sh
+script:
+- make deps
+- make
+after_success:
+- make package
+#- make archive  # app store
+before_deploy:
+- mkdir pkg
+- cp package/ThoanTaigi.pkg pkg/
 deploy:
-- provider: bintray
-  file: travis-deploy-package-release.json
-  user: lotem
-  key: &bintray_api_key
-    secure: lZGl4cBqsKnaca4LV3ginJIYAmwa3FQl4zjPE6YmeHQUTnVb4DxmKD/h3vwtbXhk8E7Zd0wnJRVcm1A2Z7eCglkV/1iDPK8h9pNox3aO/rJbq3P1flRnulVgSGRNO2akkb/W1kR1a9Lgcb24yvQ7LJrCPIUTQQIFbDWtVYCbO3E=
+  provider: pages
   skip_cleanup: true
+  github_token:
+    secure: H3bH9AFzizdYB+j9cWiEqTIirQWl3pEfabN582gaeVgWZS9RB7OuqUcCiH/87eEumGEFgH8vKERLoKErHsR357+BVb66vLnobxdzO0ZZVKcibS6V8VEWwneQVG7MeaNamKySWdOCkqi59oEBx/C2xypBP1xsvVoXb3fiDAAPUk+LgF6W91ebSBTOX2PjZ1L1gDvc50EAdCWY6u5Vhdk/zYcBmgl+EXEFm54S/gQXLiXOntseB/2cIne85LPSbN+9EhO0CSwxw6Z8h/w8EHtG9KsLsJ5zHqopUuD1vBh8zvl8Gn/hBORfT7qO5zBMlrDGf3ubTnpbTsg/VTIHjUzniMc9IJyJNLmE20xyMD+8mW6ELdmE1V+8CxHI70dCkdW5gO0WxUyaotY+W7s6x3Ts47NSZatqjUcCkBykt7I3+LW1djRONijV4TO47A/8+ReW/oI7vUjdcIanuvHXMl9eB3q+YkkXeJ1p929YfRsSvTFSaHCwhBcu9y+ve+pLb7vhLAtYn3dHOR7ncufmoQY2iDBlJj6MRGd54qxdZwtu747xGLDsGeSzz9+bmH7s210BdjkbP/vJPQfayc5txpH1xqp+lE2BtCglpeUspNo/XIqRpSv3k6xLjeTIFSZ4uWvj6bKLihXsh1LrnqQQ4wpHRIXFC9AYbzWXOH63F7BzFeA=
+  local_dir: pkg/
   on:
-    repo: rime/squirrel
-    tags: true
-- provider: bintray
-  file: travis-deploy-package-testing.json
-  user: lotem
-  key: *bintray_api_key
-  skip_cleanup: true
-  on:
-    repo: rime/squirrel
     branch: master
