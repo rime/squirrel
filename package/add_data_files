@@ -2,7 +2,7 @@
 
 set -e
 
-project_file=Squirrel.xcodeproj/project.pbxproj
+project_file=ThoanTaigi.xcodeproj/project.pbxproj
 test -f "${project_file}"
 
 anchor=(80 65 terra_pinyin.schema.yaml)
