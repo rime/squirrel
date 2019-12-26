@@ -268,6 +268,7 @@
 			isa = PBXGroup;
 			children = (
 				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
+			);
 			name = plum;
 			sourceTree = "<group>";
 		};
