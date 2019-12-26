@@ -43,11 +43,11 @@ copy-rime-binaries:
 deps: librime
 
 release: $(DEPS_CHECK)
-    bash package/add_data_files
+	bash package/add_data_files
 	xcodebuild -project ThoanTaigi.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
-    bash package/add_data_files
+	bash package/add_data_files
 	xcodebuild -project ThoanTaigi.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive sign-archive
