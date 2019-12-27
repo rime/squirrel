@@ -7,9 +7,9 @@
 */
 "Squirrel" = "傳台語";
 
-"deploy_update" = "更新輸入法引擎…";
-"deploy_start" = "部署輸入法引擎…";
-"deploy_success" = "部署完成。";
+"deploy_update" = "更新輸入法…";
+"deploy_start" = "重起動輸入法…";
+"deploy_success" = "輸入法起動完成。";
 "deploy_failure" = "有錯誤！請查看日誌 $TMPDIR/rime.ThoanTaigi.INFO";
 "ascii_mode" = "Ａ";
 "!ascii_mode" = "台";
