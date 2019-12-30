@@ -8,11 +8,9 @@ script:
 - curl -LO "https://github.com/rime/librime/releases/download/${rime_version}/${download_archive}"
 - unzip -n "${download_archive}" -d librime
 - make copy-rime-binaries
-# rime_taigi_poj_hanlo/taigi_pojhanlo_sujiphoat/*
 - git clone https://github.com/i3thuan5/rime_taigi_poj_hanlo.git
 - mv rime_taigi_poj_hanlo/taigi_pojhanlo_sujiphoat data/plum
 - bash -x package/add_data_files
-- sed -i "" '/terra_pinyin.schema.yaml/d' ThoanTaigi.xcodeproj/project.pbxproj
 - nl -b a ThoanTaigi.xcodeproj/project.pbxproj
 - make
 after_success:

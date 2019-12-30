@@ -5,36 +5,42 @@ set -e
 project_file=ThoanTaigi.xcodeproj/project.pbxproj
 test -f "${project_file}"
 
-anchor=(80 65 terra_pinyin.schema.yaml)
+# id:  441E63{80}22B7E96F006DCCDD /* terra_pinyin.schema.yaml 
+# ref: 441E63{65}22B7E90C006DCCDD /* terra_pinyin.schema.yaml
+# anchor=(80 65 terra_pinyin.schema.yaml)
+# lastid=80
 
-lastid=80
+# id:  442B5B{88}1570C37200370DEA /* squirrel.yaml
+# ref: 442B5B{87}1570C37200370DEA /* squirrel.yaml
+anchor=(88 87 squirrel.yaml)
+lastid=88
 
 obj_entry() {
     local id=$1
     local ref=$2
     local file="$3"
-    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E63${ref}22B7E90C006DCCDD /* ${file} */; };"
+    echo "442B5B${id}1570C37200370DEA /* ${file} in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B${ref}1570C37200370DEA /* ${file} */; };"
 }
 
 copy_files_entry() {
     local id=$1
     local ref=$2
     local file="$3"
-    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */,"
+    echo "442B5B${id}1570C37200370DEA /* ${file} in Copy Shared Support Files */,"
 }
 
 file_ref_entry() {
     local id=$1
     local ref=$2
     local file="$3"
-    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ${file}; path = data/plum/${file}; sourceTree = \"<group>\"; };"
+    echo "442B5B${ref}1570C37200370DEA /* ${file} */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ${file}; path = data/${file}; sourceTree = \"<group>\"; };"
 }
 
 group_entry() {
     local id=$1
     local ref=$2
     local file="$3"
-    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */,"
+    echo "442B5B${ref}1570C37200370DEA /* ${file} */,"
 }
 
 add_line() {
@@ -60,7 +66,7 @@ add_file() {
     add_line "${anchor_line}" "${new_line}"
 
     anchor_line="$(file_ref_entry ${anchor[@]})"
-    new_line="$(file_ref_entry ${new_id} ${new_refid} "${file}")"
+    new_line="$(file_ref_entry ${new_id} ${new_refid} "plum/${file}")"
     add_line "${anchor_line}" "${new_line}"
 
     anchor_line="$(group_entry ${anchor[@]})"
