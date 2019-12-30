@@ -2,7 +2,7 @@
 
 
 
-im.rime.inputmethod.Squirrel = "鼠须管";
+tw.ithoan.inputmethod.ThoanTaigi = "傳台語";
 
-CFBundleName = "鼠须管";
-CFBundleDisplayName = "鼠须管";
+CFBundleName = "傳台語";
+CFBundleDisplayName = "傳台語";
