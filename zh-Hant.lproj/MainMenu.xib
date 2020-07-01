@@ -34,22 +34,10 @@
                         <action selector="syncUserData:" target="252" id="805"/>
                     </connections>
                 </menuItem>
-                <menuItem title="用戶設定..." hidden="YES" id="799">
+                <menuItem title="使用者設定" hidden="YES" id="799">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="configure:" target="252" id="800"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="在線文檔..." tag="2" hidden="YES" id="797">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="openWiki:" target="252" id="798"/>
-                    </connections>
-                </menuItem>
-                <menuItem title="檢查新版本..." tag="1" hidden="YES" id="776">
-                    <modifierMask key="keyEquivalentModifierMask"/>
-                    <connections>
-                        <action selector="checkForUpdates:" target="772" id="796"/>
                     </connections>
                 </menuItem>
             </items>
