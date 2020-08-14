@@ -70,43 +70,32 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     NSRect stripRect = self.highlightedRect;
     if (!_horizontal) {
       stripRect.origin.x = dirtyRect.origin.x;
-      stripRect.size.width = dirtyRect.size.width - self.edgeInset.width * 2;
     }
-    if (NSMinX(stripRect) < FLT_EPSILON) {
-      if (corner == 0) {
+
+    if (corner == 0) {
+      // fill in small gaps between highlighted rect and the bounding rect.
+      if (NSMinX(stripRect) < FLT_EPSILON) {
+        stripRect.origin.x -= edgeWidth;
         stripRect.size.width += edgeWidth;
-      } else {
-        stripRect.size.width += corner;
-        stripRect.origin.x += edgeWidth - corner;
       }
-    } else {
-      stripRect.size.width += corner;
-      stripRect.origin.x += edgeWidth - corner;
-    }
-    if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
-      if (corner == 0) {
+      if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
         stripRect.size.width += edgeWidth + ROUND_UP;
-      } else {
-        stripRect.size.width += corner;
       }
-    }
-    if (NSMinY(stripRect) < FLT_EPSILON) {
-      if (corner == 0) {
+      if (NSMinY(stripRect) < FLT_EPSILON) {
+        stripRect.origin.y -= edgeHeight;
         stripRect.size.height += edgeHeight;
-      } else {
-        stripRect.size.height += corner;
-        stripRect.origin.y += edgeHeight - corner;
+      }
+      if (NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
+        stripRect.size.height += edgeHeight + ROUND_UP;
       }
     } else {
-      stripRect.origin.y += edgeHeight;
+      // leave a small gap between highlighted rect and the bounding rect
+      stripRect.size.width -= corner * 2;
+      stripRect.origin.x += corner;
+      stripRect.size.height -= corner * 2;
+      stripRect.origin.y += corner;
     }
-    if (NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
-      if (corner == 0) {
-        stripRect.size.height += edgeHeight + ROUND_UP;
-      } else {
-        stripRect.size.height += corner;
-      }
-    }
+
     [self.highlightedStripColor setFill];
     if (self.hilitedCornerRadius > 0) {
       [[NSBezierPath bezierPathWithRoundedRect:stripRect
@@ -141,13 +130,16 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSMutableDictionary *_preeditHighlightedAttrs;
   NSMutableParagraphStyle *_paragraphStyle;
   NSMutableParagraphStyle *_preeditParagraphStyle;
+  NSSize preeditSize;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
 }
 
 - (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText {
-  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"　" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
+  // Use the width of the character to determin if they should be upright in vertical writing mode.
+  // Adjust font base line for better alignment.
+  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
   const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
   const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
@@ -209,7 +201,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                                               defer:YES];
     _window.alphaValue = 1.0;
     // _window.level = NSScreenSaverWindowLevel + 1;
-    // 我不确定这么写有没有别的问题，但是全屏游戏里可以正常使用了。
+    // ^ May fix visibility issue in fullscreen games.
     _window.level = CGShieldingWindowLevel();
     _window.hasShadow = YES;
     _window.opaque = NO;
@@ -224,6 +216,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 - (void)show {
   NSRect windowRect;
+  // in vertical mode, the width and height are interchanged
   if (_vertical) {
     windowRect.size = NSMakeSize(_view.contentSize.height + _view.edgeInset.height * 2,
                                  _view.contentSize.width + _view.edgeInset.width * 2);
@@ -246,10 +239,19 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
   }
 
-  if (_vertical && (windowRect.size.height > NSHeight(screenRect) / 3)) {
-    windowRect.size.height = NSHeight(screenRect) / 3;
-    windowRect.size.width = [_view.text boundingRectWithSize:NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2) options:NSStringDrawingUsesLineFragmentOrigin].size.height + _view.edgeInset.height * 2;
+  if (_vertical) {
+    // if the height is too large, it's hard to read, so need to put limit on the height.
+    if (windowRect.size.height > NSHeight(screenRect) / 3) {
+      windowRect.size.height = NSHeight(screenRect) / 3;
+      windowRect.size.width = [_view.text boundingRectWithSize:NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2) options:NSStringDrawingUsesLineFragmentOrigin].size.height + _view.edgeInset.height * 2;
+    }
+    if (_inlinePreedit) {
+      windowRect.origin.x -= windowRect.size.width;
+    } else {
+      windowRect.origin.x -= windowRect.size.width - preeditSize.height - _view.edgeInset.width;
+    }
   }
+
   if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
     windowRect.origin.x = NSMaxX(screenRect) - NSWidth(windowRect);
   }
@@ -266,6 +268,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     windowRect.origin.y = NSMinY(screenRect);
   }
   // voila !
+  // rotate the view, the core in vertical mode!
   if (_vertical) {
     _view.boundsRotation = -90.0;
     [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width + _view.edgeInset.width * 2, _view.edgeInset.height * 2)];
@@ -361,6 +364,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
 
+  // needed to calculate line-broken candidate box size.
   NSRect screenRect = [NSScreen mainScreen].frame;
   CGFloat height = 0.0;
   
@@ -403,7 +407,14 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
     candidateStartPos = text.length;
   }
-
+  // get the size of preedit zone, to position the candidate box accordingly in vertical mode
+  height = text.size.width;
+  if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
+    height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+  }
+  preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  preeditSize.height -= text.size.height / 2;
+  
   NSRect highlightedRect = NSZeroRect;
   CGFloat separatorWidth = 0;
   // candidates
@@ -428,6 +439,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                     initWithString:[NSString stringWithFormat:labelFormat,
                                                               label_character]
                         attributes:labelAttrs]];
+      // get the label size for indent
       if (_vertical) {
         [self convertToVerticalGlyph:line];
         labelWidth = [line boundingRectWithSize:NSMakeSize(0.0, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size.width;
@@ -483,11 +495,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       CGFloat left = 0;
       CGFloat bottom = 0;
       
+      // calculate line-broken candidate box size
       height = text.size.width;
       if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
         height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
       }
-      
       NSSize lineSize = [line boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       NSSize textSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       
@@ -498,7 +510,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         height = line.size.height;
       } else if (_vertical) {
         height = lineSize.height;
-        bottom = -textSize.height + _view.edgeInset.width * 2;
+        bottom = -textSize.height;
       } else {
         height = line.size.height;
         bottom = -text.size.height;
@@ -510,19 +522,29 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   if (!NSIsEmptyRect(highlightedRect)) {
     if (_horizontal) {
       if (preedit) {
-        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing;
+        highlightedRect.origin.y -= _preeditParagraphStyle.paragraphSpacing;
+        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing + _paragraphStyle.paragraphSpacing;
+      } else {
+        highlightedRect.size.height += _view.edgeInset.height;
       }
       if (index > 0) {
-        highlightedRect.origin.x -= separatorWidth / 2;
+        highlightedRect.origin.x -= separatorWidth / 2 - _view.edgeInset.width;
         highlightedRect.size.width += separatorWidth / 2;
+      } else {
+        highlightedRect.size.width += _view.edgeInset.width;
       }
       if (index < numCandidates - 1) {
         highlightedRect.size.width += separatorWidth / 2;
-      } else if (preedit) {
-        // in case the preedit line is longer than the candidate list,
-        // the highlight region for the last candidate should include empty space on the right.
-        highlightedRect.size.width = text.size.width - highlightedRect.origin.x;
       }
+      if (index == numCandidates - 1) {
+        if (preedit) {
+          // in case the preedit line is longer than the candidate list,
+          // the highlight region for the last candidate should include empty space on the right.
+          highlightedRect.size.width = text.size.width - highlightedRect.origin.x + _view.edgeInset.width;
+        }
+        highlightedRect.size.width += _view.edgeInset.width;
+      }
+      highlightedRect.size.height += _view.edgeInset.height;
     } else {
       NSSize fullSize = text.size;
       if (_vertical) {
@@ -531,13 +553,19 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
           height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
         }
         fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+        highlightedRect.origin.y += fullSize.height + _view.edgeInset.width * 3;
+        highlightedRect.size.width = height + _view.edgeInset.width * 2;
+      } else {
+        highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
+        highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
       }
       
-      highlightedRect.origin.y += fullSize.height;
       if (index == 0) {
         if (preedit) {
-          highlightedRect.size.height += MIN(_preeditParagraphStyle.paragraphSpacing,
-                                             _paragraphStyle.paragraphSpacing);
+          highlightedRect.origin.y -= _preeditParagraphStyle.paragraphSpacing;
+          highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing + _paragraphStyle.paragraphSpacing;
+        } else {
+          highlightedRect.size.height += _view.edgeInset.width;
         }
       } else {
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
@@ -545,13 +573,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       if (index < numCandidates - 1) {
         highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing;
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
-        if (!_vertical && !_horizontal) {
-          highlightedRect.origin.y -= _view.cornerRadius / 4;
-          highlightedRect.size.height -= _view.cornerRadius / 4;
-        }
-      } else if (_vertical) {
-        highlightedRect.origin.y -= _view.cornerRadius / 4;
-        highlightedRect.size.height += _view.cornerRadius / 4;
+      } else {
+        highlightedRect.origin.y -= _view.edgeInset.width;
+        highlightedRect.size.height += _view.edgeInset.width;
       }
     }
   }
