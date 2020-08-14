@@ -19,6 +19,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, assign) NSSize edgeInset;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
 @property(nonatomic, assign) CGFloat baseOffset;
+@property(nonatomic, assign) Boolean horizontal;
 
 - (void)setText:(NSAttributedString *)text
   hilightedRect:(NSRect)rect;
@@ -67,8 +68,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     CGFloat edgeWidth = self.edgeInset.width;
     CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
-    stripRect.origin.x = dirtyRect.origin.x;
-    stripRect.size.width = dirtyRect.size.width - self.edgeInset.width * 2;
+    if (!_horizontal) {
+      stripRect.origin.x = dirtyRect.origin.x;
+      stripRect.size.width = dirtyRect.size.width - self.edgeInset.width * 2;
+    }
     if (NSMinX(stripRect) < FLT_EPSILON) {
       if (corner == 0) {
         stripRect.size.width += edgeWidth;
@@ -221,8 +224,13 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 - (void)show {
   NSRect windowRect;
-  windowRect.size = NSMakeSize(_view.contentSize.height + _view.edgeInset.height * 2,
-                               _view.contentSize.width + _view.edgeInset.width * 2);
+  if (_vertical) {
+    windowRect.size = NSMakeSize(_view.contentSize.height + _view.edgeInset.height * 2,
+                                 _view.contentSize.width + _view.edgeInset.width * 2);
+  } else {
+    windowRect.size = NSMakeSize(_view.contentSize.width + _view.edgeInset.width * 2,
+                                 _view.contentSize.height + _view.edgeInset.height * 2);
+  }
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   // fit in current screen
@@ -238,7 +246,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
   }
 
-  if (windowRect.size.height > NSHeight(screenRect) / 3) {
+  if (_vertical && (windowRect.size.height > NSHeight(screenRect) / 3)) {
     windowRect.size.height = NSHeight(screenRect) / 3;
     windowRect.size.width = [_view.text boundingRectWithSize:NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2) options:NSStringDrawingUsesLineFragmentOrigin].size.height + _view.edgeInset.height * 2;
   }
@@ -258,8 +266,13 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     windowRect.origin.y = NSMinY(screenRect);
   }
   // voila !
-  _view.boundsRotation = -90.0;
-  [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width + _view.edgeInset.width * 2, _view.edgeInset.height * 2)];
+  if (_vertical) {
+    _view.boundsRotation = -90.0;
+    [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width + _view.edgeInset.width * 2, _view.edgeInset.height * 2)];
+  } else {
+    _view.boundsRotation = 0;
+    [_view setBoundsOrigin:NSMakePoint(0, 0)];
+  }
   [_window setFrame:windowRect display:YES];
   [_window orderFront:nil];
 }
@@ -381,7 +394,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                                        initWithString:@"\n"
                                            attributes:_preeditAttrs]];
     }
-    [self convertToVerticalGlyph:text];
+    if (_vertical) {
+      [self convertToVerticalGlyph:text];
+    }
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
@@ -453,7 +468,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       [text appendAttributedString:separator];
     }
     
-    [self convertToVerticalGlyph:line];
+    if (_vertical) {
+      [self convertToVerticalGlyph:line];
+    }
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
@@ -472,15 +489,19 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       NSSize lineSize = [line boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       NSSize textSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       
-      NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
       if (_horizontal) {
+        NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
         NSAttributedString *candidateText = [text attributedSubstringFromRange:candidateRange];
         left = candidateText.size.width - line.size.width;
-      } else {
+        height = line.size.height;
+      } else if (_vertical) {
+        height = lineSize.height;
         bottom = -textSize.height + _view.edgeInset.width * 2;
+      } else {
+        height = line.size.height;
+        bottom = -text.size.height;
       }
-      
-      highlightedRect = NSMakeRect(left, bottom, line.size.width, lineSize.height);
+      highlightedRect = NSMakeRect(left, bottom, line.size.width, height);
     }
   }
 
@@ -501,11 +522,14 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.size.width = text.size.width - highlightedRect.origin.x;
       }
     } else {
-      height = text.size.width;
-      if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
-        height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+      NSSize fullSize = text.size;
+      if (_vertical) {
+        height = fullSize.width;
+        if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
+          height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+        }
+        fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       }
-      NSSize fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
       
       highlightedRect.origin.y += fullSize.height;
       if (index == 0) {
@@ -519,13 +543,19 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       if (index < numCandidates - 1) {
         highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing;
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
-      } else {
+        if (!_vertical && !_horizontal) {
+          highlightedRect.origin.y -= _view.cornerRadius / 4;
+          highlightedRect.size.height -= _view.cornerRadius / 4;
+        }
+      } else if (_vertical) {
         highlightedRect.origin.y -= _view.cornerRadius / 4;
         highlightedRect.size.height += _view.cornerRadius / 4;
       }
     }
   }
-  
+  if (!_vertical) {
+    [text addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:NSMakeRange(0, text.length)];
+  }
   [_view setText:text hilightedRect:highlightedRect];
   [self show];
 }
@@ -620,6 +650,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 
 -(void)updateConfig:(SquirrelConfig *)config {
   _horizontal = [config getBool:@"style/horizontal"];
+  _vertical = [config getBool:@"style/vertical"];
   _inlinePreedit = [config getBool:@"style/inline_preedit"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
   _candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
@@ -691,6 +722,11 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
           [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
       if (horizontalOverridden) {
         _horizontal = horizontalOverridden.boolValue;
+      }
+      NSNumber *verticalOverridden =
+          [config getOptionalBool:[prefix stringByAppendingString:@"/vertical"]];
+      if (verticalOverridden) {
+        _vertical = verticalOverridden.boolValue;
       }
       NSNumber *inlinePreeditOverridden =
           [config getOptionalBool:[prefix stringByAppendingString:@"/inline_preedit"]];
@@ -882,6 +918,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _view.hilitedCornerRadius = hilitedCornerRadius;
   _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
   _view.baseOffset = baseOffset;
+  _view.horizontal = _horizontal;
 
   _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
 

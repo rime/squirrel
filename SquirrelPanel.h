@@ -5,6 +5,7 @@
 @interface SquirrelPanel : NSObject
 
 @property(nonatomic, assign) BOOL horizontal;
+@property(nonatomic, assign) BOOL vertical;
 @property(nonatomic, assign) BOOL inlinePreedit;
 
 // position of input caret on screen.
