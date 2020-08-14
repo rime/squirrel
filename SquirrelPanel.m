@@ -18,6 +18,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, assign) double hilitedCornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
+@property(nonatomic, assign) CGFloat baseOffset;
 
 - (void)setText:(NSAttributedString *)text
   hilightedRect:(NSRect)rect;
@@ -47,7 +48,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor {
-  _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
+  NSColor * _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
   self.layer.backgroundColor = _backgroundColor.CGColor;
 }
 
@@ -66,6 +67,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     CGFloat edgeWidth = self.edgeInset.width;
     CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
+    stripRect.origin.x = dirtyRect.origin.x;
+    stripRect.size.width = dirtyRect.size.width - self.edgeInset.width * 2;
     if (NSMinX(stripRect) < FLT_EPSILON) {
       if (corner == 0) {
         stripRect.size.width += edgeWidth;
@@ -74,7 +77,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         stripRect.origin.x += edgeWidth - corner;
       }
     } else {
-      stripRect.origin.x += edgeWidth;
+      stripRect.size.width += corner;
+      stripRect.origin.x += edgeWidth - corner;
     }
     if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
       if (corner == 0) {
@@ -110,7 +114,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
   }
 
-  [_text drawAtPoint:NSMakePoint(self.edgeInset.width, self.edgeInset.height)];
+  NSRect textField = NSZeroRect;
+  textField.origin = NSMakePoint(dirtyRect.origin.x + self.edgeInset.width, dirtyRect.origin.y - self.edgeInset.height);
+  textField.size = NSMakeSize(dirtyRect.size.width - self.edgeInset.width * 2,
+                             dirtyRect.size.height);
+  [_text drawInRect:textField];
 }
 
 @end
@@ -128,13 +136,32 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSMutableDictionary *_commentHighlightedAttrs;
   NSMutableDictionary *_preeditAttrs;
   NSMutableDictionary *_preeditHighlightedAttrs;
-  NSParagraphStyle *_paragraphStyle;
-  NSParagraphStyle *_preeditParagraphStyle;
+  NSMutableParagraphStyle *_paragraphStyle;
+  NSMutableParagraphStyle *_preeditParagraphStyle;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
 }
 
+- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText {
+  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"　" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
+  const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
+  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  NSUInteger i = 0;
+  while (i < originalText.length) {
+    NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
+    i = range.location + range.length;
+    NSSize charSize = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+    if ((charSize.width >= cjkSize.width) || (charSize.width >= hangulSize.width)) {
+      [originalText addAttributes:@{NSVerticalGlyphFormAttributeName:@(1), NSBaselineOffsetAttributeName:@(_view.baseOffset - (charSize.width - cjkSize.width) / cjkSize.width * 7)
+      } range:range];
+    } else {
+      [originalText addAttributes:@{NSBaselineOffsetAttributeName:@(_view.baseOffset * 0.3 + (charSize.width - cjkSize.width) / cjkSize.width * 4)} range:range];
+    }
+  }
+}
+ 
 - (void)initializeUIStyle {
   _candidateFormat = kDefaultCandidateFormat;
 
@@ -166,15 +193,15 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
-  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+  _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  _preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 }
 
 - (instancetype)init {
   self = [super init];
   if (self) {
     _window = [[NSWindow alloc] initWithContentRect:_position
-                                          styleMask:NSBorderlessWindowMask
+                                          styleMask:NSWindowStyleMaskBorderless
                                             backing:NSBackingStoreBuffered
                                               defer:YES];
     _window.alphaValue = 1.0;
@@ -194,13 +221,14 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 - (void)show {
   NSRect windowRect;
-  windowRect.size = NSMakeSize(_view.contentSize.width + _view.edgeInset.width * 2,
-                               _view.contentSize.height + _view.edgeInset.height * 2);
+  windowRect.size = NSMakeSize(_view.contentSize.height + _view.edgeInset.height * 2,
+                               _view.contentSize.width + _view.edgeInset.width * 2);
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   // fit in current screen
   NSRect screenRect = [NSScreen mainScreen].frame;
   NSArray *screens = [NSScreen screens];
+  
   NSUInteger i;
   for (i = 0; i < screens.count; ++i) {
     NSRect rect = [screens[i] frame];
@@ -208,6 +236,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       screenRect = rect;
       break;
     }
+  }
+
+  if (windowRect.size.height > NSHeight(screenRect) / 3) {
+    windowRect.size.height = NSHeight(screenRect) / 3;
+    windowRect.size.width = [_view.text boundingRectWithSize:NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2) options:NSStringDrawingUsesLineFragmentOrigin].size.height + _view.edgeInset.height * 2;
   }
   if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
     windowRect.origin.x = NSMaxX(screenRect) - NSWidth(windowRect);
@@ -225,6 +258,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     windowRect.origin.y = NSMinY(screenRect);
   }
   // voila !
+  _view.boundsRotation = -90.0;
+  [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width + _view.edgeInset.width * 2, _view.edgeInset.height * 2)];
   [_window setFrame:windowRect display:YES];
   [_window orderFront:nil];
 }
@@ -313,6 +348,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
 
+  NSRect screenRect = [NSScreen mainScreen].frame;
+  CGFloat height = 0.0;
+  
   // preedit
   if (preedit) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -343,16 +381,17 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                                        initWithString:@"\n"
                                            attributes:_preeditAttrs]];
     }
+    [self convertToVerticalGlyph:text];
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
 
     candidateStartPos = text.length;
   }
-
+  
   NSRect highlightedRect = NSZeroRect;
   CGFloat separatorWidth = 0;
-
+  NSMutableParagraphStyle *paragraphStyleCandidate = [_paragraphStyle mutableCopy];
   // candidates
   NSUInteger i;
   for (i = 0; i < candidates.count; ++i) {
@@ -368,12 +407,15 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     NSDictionary *commentAttrs =
         (i == index) ? _commentHighlightedAttrs : _commentAttrs;
 
+    CGFloat labelWidth = 0.0;
     if (labelRange.location != NSNotFound) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:[NSString stringWithFormat:labelFormat,
                                                               label_character]
                         attributes:labelAttrs]];
+      [self convertToVerticalGlyph:line];
+      labelWidth = [line boundingRectWithSize:NSMakeSize(0.0, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size.width;
     }
 
     // Use left-to-right marks to prevent right-to-left text from changing the
@@ -402,7 +444,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
 
     if (i > 0) {
-      NSAttributedString *separator = [[NSAttributedString alloc]
+      NSMutableAttributedString *separator = [[NSMutableAttributedString alloc]
                                           initWithString:(_horizontal ? @"  " : @"\n")
                                               attributes:_attrs];
       if (_horizontal && separatorWidth == 0) {
@@ -410,35 +452,42 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       }
       [text appendAttributedString:separator];
     }
-
+    
+    [self convertToVerticalGlyph:line];
+    paragraphStyleCandidate.headIndent = labelWidth;
+    [line addAttribute:NSParagraphStyleAttributeName
+                 value:paragraphStyleCandidate
+                 range:NSMakeRange(0, line.length)];
     [text appendAttributedString:line];
 
     if (i == index) {
       CGFloat left = 0;
       CGFloat bottom = 0;
+      
+      height = text.size.width;
+      if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
+        height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+      }
+      
+      NSSize lineSize = [line boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+      NSSize textSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+      
       NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
       if (_horizontal) {
         NSAttributedString *candidateText = [text attributedSubstringFromRange:candidateRange];
         left = candidateText.size.width - line.size.width;
       } else {
-        [text addAttribute:NSParagraphStyleAttributeName
-                     value:_paragraphStyle
-                     range:candidateRange];
-        bottom = -text.size.height;
-        [text removeAttribute:NSParagraphStyleAttributeName range:candidateRange];
+        bottom = -textSize.height + _view.edgeInset.width * 2;
       }
-      highlightedRect = NSMakeRect(left, bottom, line.size.width, line.size.height);
+      
+      highlightedRect = NSMakeRect(left, bottom, line.size.width, lineSize.height);
     }
   }
-  [text addAttribute:NSParagraphStyleAttributeName
-               value:_paragraphStyle
-               range:NSMakeRange(candidateStartPos,
-                                 text.length - candidateStartPos)];
 
   if (!NSIsEmptyRect(highlightedRect)) {
     if (_horizontal) {
       if (preedit) {
-        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing;
       }
       if (index > 0) {
         highlightedRect.origin.x -= separatorWidth / 2;
@@ -452,23 +501,31 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.size.width = text.size.width - highlightedRect.origin.x;
       }
     } else {
-      NSSize fullSize = text.size;
+      height = text.size.width;
+      if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
+        height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+      }
+      NSSize fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+      
       highlightedRect.origin.y += fullSize.height;
-      highlightedRect.size.width = fullSize.width;
       if (index == 0) {
         if (preedit) {
           highlightedRect.size.height += MIN(_preeditParagraphStyle.paragraphSpacing,
-                                             _paragraphStyle.paragraphSpacing) / 2;
+                                             _paragraphStyle.paragraphSpacing);
         }
       } else {
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
       }
       if (index < numCandidates - 1) {
-        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
+      } else {
+        highlightedRect.origin.y -= _view.cornerRadius / 4;
+        highlightedRect.size.height += _view.cornerRadius / 4;
       }
     }
   }
+  
   [_view setText:text hilightedRect:highlightedRect];
   [self show];
 }
@@ -508,14 +565,14 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
     CGFloat r, g, b, a;
   } f, b;
 
-  [[foregroundColor colorUsingColorSpaceName:NSDeviceRGBColorSpace]
+  [[foregroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
       getRed:&f.r
        green:&f.g
         blue:&f.b
        alpha:&f.a];
   //NSLog(@"fg: %f %f %f %f", f.r, f.g, f.b, f.a);
 
-  [[backgroundColor colorUsingColorSpaceName:NSDeviceRGBColorSpace]
+  [[backgroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
       getRed:&b.r
        green:&b.g
         blue:&b.b
@@ -580,6 +637,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   CGFloat borderWidth = [config getDouble:@"style/border_width"];
   CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
   CGFloat spacing = [config getDouble:@"style/spacing"];
+  CGFloat baseOffset = [config getDouble:@"style/base_offset"];
 
   NSColor *backgroundColor;
   NSColor *textColor;
@@ -716,6 +774,11 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       if (spacingOverridden) {
         spacing = spacingOverridden.doubleValue;
       }
+      NSNumber *baseOffsetOverridden =
+          [config getOptionalDouble:[prefix stringByAppendingString:@"/base_offset"]];
+      if (baseOffsetOverridden) {
+        baseOffset = baseOffsetOverridden.doubleValue;
+      }
   }
 
   if (fontSize == 0) { // default size
@@ -818,17 +881,20 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _view.cornerRadius = cornerRadius;
   _view.hilitedCornerRadius = hilitedCornerRadius;
   _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
+  _view.baseOffset = baseOffset;
 
   _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.paragraphSpacing = lineSpacing;
+  paragraphStyle.paragraphSpacing = lineSpacing / 2;
+  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
   _paragraphStyle = paragraphStyle;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.paragraphSpacing = spacing;
+  preeditParagraphStyle.paragraphSpacing = spacing / 2;
+  preeditParagraphStyle.paragraphSpacingBefore = spacing / 2;
   _preeditParagraphStyle = preeditParagraphStyle;
 }
 
