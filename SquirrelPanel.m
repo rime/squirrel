@@ -403,10 +403,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
     candidateStartPos = text.length;
   }
-  
+
   NSRect highlightedRect = NSZeroRect;
   CGFloat separatorWidth = 0;
-  NSMutableParagraphStyle *paragraphStyleCandidate = [_paragraphStyle mutableCopy];
   // candidates
   NSUInteger i;
   for (i = 0; i < candidates.count; ++i) {
@@ -473,6 +472,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     if (_vertical) {
       [self convertToVerticalGlyph:line];
     }
+    NSMutableParagraphStyle *paragraphStyleCandidate = [_paragraphStyle mutableCopy];
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
