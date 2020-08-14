@@ -429,8 +429,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                     initWithString:[NSString stringWithFormat:labelFormat,
                                                               label_character]
                         attributes:labelAttrs]];
-      [self convertToVerticalGlyph:line];
-      labelWidth = [line boundingRectWithSize:NSMakeSize(0.0, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size.width;
+      if (_vertical) {
+        [self convertToVerticalGlyph:line];
+        labelWidth = [line boundingRectWithSize:NSMakeSize(0.0, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size.width;
+      }
     }
 
     // Use left-to-right marks to prevent right-to-left text from changing the
