@@ -11,17 +11,22 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 @property(nonatomic, readonly) NSAttributedString *text;
 @property(nonatomic, readonly) NSRect highlightedRect;
+@property(nonatomic, readonly) NSRect preeditRect;
 @property(nonatomic, readonly) NSSize contentSize;
 
 @property(nonatomic, assign) double cornerRadius;
 @property(nonatomic, assign) double hilitedCornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
+@property(nonatomic, strong) NSColor *preeditBackgroundColor;
 @property(nonatomic, assign) CGFloat baseOffset;
 @property(nonatomic, assign) Boolean horizontal;
 
 - (void)setText:(NSAttributedString *)text
-  hilightedRect:(NSRect)rect;
+  hilightedRect:(NSRect)rect
+  preeditRect:(NSRect)preedit;
+- (void)setBorderColor:(NSColor *)borderColor
+  width:(CGFloat)borderWidth;
 
 @end
 
@@ -41,9 +46,12 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)setText:(NSAttributedString *)text
-  hilightedRect:(NSRect)rect {
+  hilightedRect:(NSRect)rect
+  preeditRect:(NSRect)preedit
+  {
   _text = [text copy];
   _highlightedRect = rect;
+  _preeditRect = preedit;
   self.needsDisplay = YES;
 }
 
@@ -57,6 +65,40 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   self.layer.cornerRadius = _cornerRadius;
 }
 
+- (void) setBorderColor:(NSColor *)borderColor width:(CGFloat)borderWidth {
+  if (borderColor != nil) {
+    self.layer.borderColor = borderColor.CGColor;
+    self.layer.borderWidth = borderWidth;
+    self.edgeInset = NSMakeSize(MAX(self.cornerRadius, self.edgeInset.width - borderWidth),
+                                MAX(self.cornerRadius, self.edgeInset.height - borderWidth));
+  }
+}
+
+void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edgeHeight) {
+  const CGFloat ROUND_UP = 1;
+  if (NSMinX(*rect) < FLT_EPSILON) {
+    rect->origin.x -= edgeWidth;
+    rect->size.width += edgeWidth;
+  }
+  if (NSMaxX(*rect) + edgeWidth + ROUND_UP > NSWidth(boundary)) {
+    rect->size.width += edgeWidth + ROUND_UP;
+  }
+  if (NSMinY(*rect) < FLT_EPSILON) {
+    rect->origin.y -= edgeHeight;
+    rect->size.height += edgeHeight;
+  }
+  if (NSMaxY(*rect) + edgeHeight + ROUND_UP > NSHeight(boundary)) {
+    rect->size.height += edgeHeight + ROUND_UP;
+  }
+}
+
+void makeRoomForConor(NSRect *rect, CGFloat corner) {
+  rect->size.width -= corner * 2;
+  rect->origin.x += corner;
+  rect->size.height -= corner * 2;
+  rect->origin.y += corner;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
   CGFloat edgeWidth = self.edgeInset.width;
   CGFloat edgeHeight = self.edgeInset.height;
@@ -64,37 +106,25 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     // setFrame rounds up floating point numbers in window bounds.
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
-    const CGFloat ROUND_UP = 1;
     CGFloat corner = self.hilitedCornerRadius / 2;
     NSRect stripRect = self.highlightedRect;
+    NSRect preeditRect = self.preeditRect;
     if (!_horizontal) {
       stripRect.origin.x = dirtyRect.origin.x;
+      preeditRect.origin.x = dirtyRect.origin.x;
     }
-
+    checkBorders(&preeditRect, self.bounds, edgeWidth, edgeHeight);
     if (corner == 0) {
       // fill in small gaps between highlighted rect and the bounding rect.
-      if (NSMinX(stripRect) < FLT_EPSILON) {
-        stripRect.origin.x -= edgeWidth;
-        stripRect.size.width += edgeWidth;
-      }
-      if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
-        stripRect.size.width += edgeWidth + ROUND_UP;
-      }
-      if (NSMinY(stripRect) < FLT_EPSILON) {
-        stripRect.origin.y -= edgeHeight;
-        stripRect.size.height += edgeHeight;
-      }
-      if (NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
-        stripRect.size.height += edgeHeight + ROUND_UP;
-      }
+      checkBorders(&stripRect, self.bounds, edgeWidth, edgeHeight);
     } else {
       // leave a small gap between highlighted rect and the bounding rect
-      stripRect.size.width -= corner * 2;
-      stripRect.origin.x += corner;
-      stripRect.size.height -= corner * 2;
-      stripRect.origin.y += corner;
+      makeRoomForConor(&stripRect, corner);
     }
-
+    if (self.preeditBackgroundColor != nil) {
+      [self.preeditBackgroundColor setFill];
+      NSRectFill(preeditRect);
+    }
     [self.highlightedStripColor setFill];
     if (self.hilitedCornerRadius > 0) {
       [[NSBezierPath bezierPathWithRoundedRect:stripRect
@@ -140,7 +170,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
   const NSRect cjkRect = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:_attrs];
-  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NULL].size;
+  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
   NSUInteger i = 0;
   while (i < originalText.length) {
     NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
@@ -149,7 +179,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     if ((charRect.size.width >= cjkRect.size.width) || (charRect.size.width >= hangulSize.width)) {
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
       charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
-      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height-charRect.size.height)/2+(cjkRect.origin.y-charRect.origin.y)+_view.baseOffset) range:range];
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height - charRect.size.height)/2+(cjkRect.origin.y-charRect.origin.y)+_view.baseOffset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:range];
     }
@@ -365,6 +395,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
+  NSRect preeditRect = NSZeroRect;
+  preeditSize = NSMakeSize(0, 0);
 
   // needed to calculate line-broken candidate box size.
   NSRect screenRect = [NSScreen mainScreen].frame;
@@ -407,7 +439,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     if (_vertical && (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3)) {
       height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
     }
-    preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NULL].size;
+    preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+    preeditRect.size.height = preeditSize.height;
+    preeditRect.origin.y = -preeditSize.height;
     
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc]
@@ -525,6 +559,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     if (_horizontal) {
       if (preedit) {
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+        preeditRect.origin.y += text.size.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.width = text.size.width + _view.edgeInset.width * 2;
       } else {
         highlightedRect.size.height += _view.edgeInset.height;
       }
@@ -558,6 +595,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
       }
       highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
+      if (preedit) {
+        preeditRect.origin.y += fullSize.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.width = fullSize.width + _view.edgeInset.width * 2;
+      }
       
       if (index == 0) {
         if (preedit) {
@@ -572,12 +614,12 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
       } else {
-        highlightedRect.origin.y -= _view.edgeInset.height;
-        highlightedRect.size.height += _view.edgeInset.height;
+        highlightedRect.origin.y -= _view.edgeInset.width;
+        highlightedRect.size.height += _view.edgeInset.width;
       }
     }
   }
-  [_view setText:text hilightedRect:highlightedRect];
+  [_view setText:text hilightedRect:highlightedRect preeditRect:preeditRect];
   [self show];
 }
 
@@ -588,7 +630,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 - (void)showStatus:(NSString *)message {
   NSAttributedString *text = [[NSAttributedString alloc] initWithString:message
                                                              attributes:_commentAttrs];
-  [_view setText:text hilightedRect:NSZeroRect];
+  [_view setText:text hilightedRect:NSZeroRect preeditRect:NSZeroRect];
   [self show];
 
   if (_statusTimer) {
@@ -692,6 +734,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   CGFloat baseOffset = [config getDouble:@"style/base_offset"];
 
   NSColor *backgroundColor;
+  NSColor *borderColor;
+  NSColor *preeditBackgroundColor;
   NSColor *textColor;
   NSColor *highlightedTextColor;
   NSColor *highlightedBackColor;
@@ -706,6 +750,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
 
       backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
+      borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
+      preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
       textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
       highlightedTextColor =
           [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
@@ -896,6 +942,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 
   // can be nil.
   _view.backgroundColor = backgroundColor;
+  [_view setBorderColor:borderColor width:MIN(borderHeight, borderWidth)];
+  _view.preeditBackgroundColor = preeditBackgroundColor;
 
   _attrs[NSForegroundColorAttributeName] =
       candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
