@@ -562,20 +562,22 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       
       if (index == 0) {
         if (preedit) {
-          highlightedRect.origin.y -= _preeditParagraphStyle.paragraphSpacing;
-          highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing + _paragraphStyle.paragraphSpacing;
+          highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
         } else {
           highlightedRect.size.height += _view.edgeInset.width;
         }
       } else {
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
       }
       if (index < numCandidates - 1) {
-        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing;
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing;
+        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
       } else {
         highlightedRect.origin.y -= _view.edgeInset.width;
         highlightedRect.size.height += _view.edgeInset.width;
+      }
+      if (!_vertical) {
+        highlightedRect.origin.y -= (_paragraphStyle.paragraphSpacing) * (numCandidates - 1 - index);
       }
     }
   }
