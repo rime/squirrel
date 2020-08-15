@@ -110,7 +110,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   textField.origin = NSMakePoint(dirtyRect.origin.x + self.edgeInset.width, dirtyRect.origin.y - self.edgeInset.height);
   textField.size = NSMakeSize(dirtyRect.size.width - self.edgeInset.width * 2,
                              dirtyRect.size.height);
-  [_text drawInRect:textField];
+  [_text drawWithRect:textField options:NSStringDrawingUsesLineFragmentOrigin];
 }
 
 @end
@@ -139,9 +139,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 - (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText {
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
-  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
+  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
   const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-  const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:[originalText attributesAtIndex:originalText.length-1 effectiveRange:NULL]];
+  const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:_attrs];
   const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
   NSUInteger i = 0;
   while (i < originalText.length) {
@@ -149,10 +149,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     i = range.location + range.length;
     NSSize charSize = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
     if ((charSize.width >= cjkSize.width) || (charSize.width >= hangulSize.width)) {
-      [originalText addAttributes:@{NSVerticalGlyphFormAttributeName:@(1), NSBaselineOffsetAttributeName:@(_view.baseOffset - (charSize.width - cjkSize.width) / cjkSize.width * 7)
-      } range:range];
+      [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
+      charSize = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@(cjkSize.height - charSize.height + _view.baseOffset) range:range];
     } else {
-      [originalText addAttributes:@{NSBaselineOffsetAttributeName:@(_view.baseOffset * 0.3 + (charSize.width - cjkSize.width) / cjkSize.width * 4)} range:range];
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:range];
     }
   }
 }
@@ -446,13 +447,13 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       }
     }
 
+    NSUInteger candidateStart = line.length;
+    [line appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:candidates[i]
+                                         attributes:attrs]];
     // Use left-to-right marks to prevent right-to-left text from changing the
     // layout of non-candidate text.
-    NSString *candidate = [NSString stringWithFormat:@"\u200E%@\u200E", candidates[i]];
-
-    [line appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:candidate
-                                         attributes:attrs]];
+    [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
 
     if (labelRange2.location != NSNotFound) {
       [line appendAttributedString:
@@ -491,6 +492,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                  range:NSMakeRange(0, line.length)];
     [text appendAttributedString:line];
 
+    if (!_vertical) {
+      [text addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:NSMakeRange(0, text.length)];
+    }
+    
     if (i == index) {
       CGFloat left = 0;
       CGFloat bottom = 0;
@@ -580,9 +585,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.origin.y -= (_paragraphStyle.paragraphSpacing) * (numCandidates - 1 - index);
       }
     }
-  }
-  if (!_vertical) {
-    [text addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:NSMakeRange(0, text.length)];
   }
   [_view setText:text hilightedRect:highlightedRect];
   [self show];
@@ -950,16 +952,23 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 
   _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
 
+  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
+  const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
   paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
+  paragraphStyle.minimumLineHeight = cjkSize.height;
+  paragraphStyle.maximumLineHeight = cjkSize.height;
+  paragraphStyle.lineSpacing = 0.0;
   _paragraphStyle = paragraphStyle;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.paragraphSpacing = spacing / 2;
   preeditParagraphStyle.paragraphSpacingBefore = spacing / 2;
+  preeditParagraphStyle.lineSpacing = 0.0;
   _preeditParagraphStyle = preeditParagraphStyle;
 }
 
