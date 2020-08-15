@@ -13,7 +13,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, readonly) NSRect highlightedRect;
 @property(nonatomic, readonly) NSSize contentSize;
 
-@property(nonatomic, strong) NSColor *backgroundColor;
 @property(nonatomic, assign) double cornerRadius;
 @property(nonatomic, assign) double hilitedCornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
@@ -49,8 +48,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor {
-  NSColor * _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
-  self.layer.backgroundColor = _backgroundColor.CGColor;
+  backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
+  self.layer.backgroundColor = backgroundColor.CGColor;
 }
 
 - (void) setCornerRadius:(double)cornerRadius {
