@@ -58,14 +58,14 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
+  CGFloat edgeWidth = self.edgeInset.width;
+  CGFloat edgeHeight = self.edgeInset.height;
   if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
     // setFrame rounds up floating point numbers in window bounds.
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
     const CGFloat ROUND_UP = 1;
     CGFloat corner = self.hilitedCornerRadius / 2;
-    CGFloat edgeWidth = self.edgeInset.width;
-    CGFloat edgeHeight = self.edgeInset.height;
     NSRect stripRect = self.highlightedRect;
     if (!_horizontal) {
       stripRect.origin.x = dirtyRect.origin.x;
@@ -106,9 +106,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   }
 
   NSRect textField = NSZeroRect;
-  textField.origin = NSMakePoint(dirtyRect.origin.x + self.edgeInset.width, dirtyRect.origin.y - self.edgeInset.height);
-  textField.size = NSMakeSize(dirtyRect.size.width - self.edgeInset.width * 2,
-                             dirtyRect.size.height);
+  textField.origin = NSMakePoint(dirtyRect.origin.x + edgeWidth, dirtyRect.origin.y - edgeHeight);
+  textField.size = NSMakeSize(dirtyRect.size.width - edgeWidth * 2, dirtyRect.size.height);
   [_text drawWithRect:textField options:NSStringDrawingUsesLineFragmentOrigin];
 }
 
@@ -139,18 +138,18 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
   const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
-  const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  const NSRect cjkRect = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:_attrs];
-  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
+  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NULL].size;
   NSUInteger i = 0;
   while (i < originalText.length) {
     NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
     i = range.location + range.length;
-    NSSize charSize = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-    if ((charSize.width >= cjkSize.width) || (charSize.width >= hangulSize.width)) {
+    NSRect charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
+    if ((charRect.size.width >= cjkRect.size.width) || (charRect.size.width >= hangulSize.width)) {
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
-      charSize = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-      [originalText addAttribute:NSBaselineOffsetAttributeName value:@(cjkSize.height - charSize.height + _view.baseOffset) range:range];
+      charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height-charRect.size.height)/2+(cjkRect.origin.y-charRect.origin.y)+_view.baseOffset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:range];
     }
@@ -396,11 +395,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
     [text appendAttributedString:line];
 
-    if (numCandidates) {
-      [text appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:@"\n"
-                                           attributes:_preeditAttrs]];
-    }
     if (_vertical) {
       [self convertToVerticalGlyph:text];
     }
@@ -408,15 +402,20 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                  value:_preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
 
+    // get the size of preedit zone, to position the candidate box accordingly in vertical mode
+    height = text.size.width;
+    if (_vertical && (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3)) {
+      height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
+    }
+    preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NULL].size;
+    
+    if (numCandidates) {
+      [text appendAttributedString:[[NSAttributedString alloc]
+                    initWithString:@"\n"
+                        attributes:_preeditAttrs]];
+    }
     candidateStartPos = text.length;
   }
-  // get the size of preedit zone, to position the candidate box accordingly in vertical mode
-  height = text.size.width;
-  if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
-    height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
-  }
-  preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-  preeditSize.height -= text.size.height / 2;
   
   NSRect highlightedRect = NSZeroRect;
   CGFloat separatorWidth = 0;
@@ -493,10 +492,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
                  value:paragraphStyleCandidate
                  range:NSMakeRange(0, line.length)];
     [text appendAttributedString:line];
-
-    if (!_vertical) {
-      [text addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:NSMakeRange(0, text.length)];
-    }
     
     if (i == index) {
       CGFloat left = 0;
@@ -529,8 +524,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   if (!NSIsEmptyRect(highlightedRect)) {
     if (_horizontal) {
       if (preedit) {
-        highlightedRect.origin.y -= _preeditParagraphStyle.paragraphSpacing;
-        highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing + _paragraphStyle.paragraphSpacing;
+        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
       } else {
         highlightedRect.size.height += _view.edgeInset.height;
       }
@@ -542,8 +536,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       }
       if (index < numCandidates - 1) {
         highlightedRect.size.width += separatorWidth / 2;
-      }
-      if (index == numCandidates - 1) {
+      } else {
         if (preedit) {
           // in case the preedit line is longer than the candidate list,
           // the highlight region for the last candidate should include empty space on the right.
@@ -579,11 +572,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
         highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
       } else {
-        highlightedRect.origin.y -= _view.edgeInset.width;
-        highlightedRect.size.height += _view.edgeInset.width;
-      }
-      if (!_vertical) {
-        highlightedRect.origin.y -= (_paragraphStyle.paragraphSpacing) * (numCandidates - 1 - index);
+        highlightedRect.origin.y -= _view.edgeInset.height;
+        highlightedRect.size.height += _view.edgeInset.height;
       }
     }
   }
@@ -892,6 +882,17 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _commentHighlightedAttrs[NSFontAttributeName] = font;
   _preeditAttrs[NSFontAttributeName] = font;
   _preeditHighlightedAttrs[NSFontAttributeName] = font;
+  
+  if (!_vertical) {
+    _attrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _highlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _labelAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _commentAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _preeditAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+  }
 
   // can be nil.
   _view.backgroundColor = backgroundColor;
