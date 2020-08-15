@@ -242,6 +242,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   if (_vertical) {
     // if the height is too large, it's hard to read, so need to put limit on the height.
     if (windowRect.size.height > NSHeight(screenRect) / 3) {
+      windowRect.origin.y += windowRect.size.height - NSHeight(screenRect) / 3;
       windowRect.size.height = NSHeight(screenRect) / 3;
       NSSize innerSize = NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2);
       NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize
