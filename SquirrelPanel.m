@@ -128,8 +128,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSMutableDictionary *_commentHighlightedAttrs;
   NSMutableDictionary *_preeditAttrs;
   NSMutableDictionary *_preeditHighlightedAttrs;
-  NSMutableParagraphStyle *_paragraphStyle;
-  NSMutableParagraphStyle *_preeditParagraphStyle;
+  NSParagraphStyle *_paragraphStyle;
+  NSParagraphStyle *_preeditParagraphStyle;
   NSSize preeditSize;
 
   NSString *_statusMessage;
@@ -189,8 +189,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  _preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  _paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
 }
 
 - (instancetype)init {
@@ -244,12 +244,14 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     // if the height is too large, it's hard to read, so need to put limit on the height.
     if (windowRect.size.height > NSHeight(screenRect) / 3) {
       windowRect.size.height = NSHeight(screenRect) / 3;
-      windowRect.size.width = [_view.text boundingRectWithSize:NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2) options:NSStringDrawingUsesLineFragmentOrigin].size.height + _view.edgeInset.height * 2;
+      NSSize innerSize = NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2);
+      NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize
+                                                            options:NSStringDrawingUsesLineFragmentOrigin];
+      windowRect.size.width = newTextBoundingRect.size.height + _view.edgeInset.height * 2;
     }
-    if (_inlinePreedit) {
-      windowRect.origin.x -= windowRect.size.width;
-    } else {
-      windowRect.origin.x -= windowRect.size.width - preeditSize.height - _view.edgeInset.width;
+    windowRect.origin.x -= windowRect.size.width;
+    if (!_inlinePreedit) {
+      windowRect.origin.x += preeditSize.height + _view.edgeInset.width;
     }
   }
 
@@ -268,7 +270,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
     windowRect.origin.y = NSMinY(screenRect);
   }
-  // voila !
   // rotate the view, the core in vertical mode!
   if (_vertical) {
     _view.boundsRotation = -90.0;
@@ -279,6 +280,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   }
   [_window setFrame:windowRect display:YES];
   [_window orderFront:nil];
+  // voila !
 }
 
 - (void)hide {
@@ -473,7 +475,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     }
 
     if (i > 0) {
-      NSMutableAttributedString *separator = [[NSMutableAttributedString alloc]
+      NSAttributedString *separator = [[NSMutableAttributedString alloc]
                                           initWithString:(_horizontal ? @"  " : @"\n")
                                               attributes:_attrs];
       if (_horizontal && separatorWidth == 0) {
@@ -959,16 +961,16 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
   paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
-  paragraphStyle.minimumLineHeight = cjkSize.height;
-  paragraphStyle.maximumLineHeight = cjkSize.height;
-  paragraphStyle.lineSpacing = 0.0;
+  if (_vertical) {
+    paragraphStyle.minimumLineHeight = cjkSize.height;
+    paragraphStyle.maximumLineHeight = cjkSize.height;
+  }
   _paragraphStyle = paragraphStyle;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.paragraphSpacing = spacing / 2;
   preeditParagraphStyle.paragraphSpacingBefore = spacing / 2;
-  preeditParagraphStyle.lineSpacing = 0.0;
   _preeditParagraphStyle = preeditParagraphStyle;
 }
 
