@@ -273,7 +273,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   // rotate the view, the core in vertical mode!
   if (_vertical) {
     _view.boundsRotation = -90.0;
-    [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width + _view.edgeInset.width * 2, _view.edgeInset.height * 2)];
+    [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width, 0)];
   } else {
     _view.boundsRotation = 0;
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
@@ -560,12 +560,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
           height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
         }
         fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-        highlightedRect.origin.y += fullSize.height + _view.edgeInset.width * 3;
         highlightedRect.size.width = height + _view.edgeInset.width * 2;
       } else {
-        highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
         highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
       }
+      highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
       
       if (index == 0) {
         if (preedit) {
