@@ -64,7 +64,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     // setFrame rounds up floating point numbers in window bounds.
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
-    const CGFloat ROUND_UP = 1;
+    const CGFloat ROUND_UP = 1.1;
     CGFloat corner = self.hilitedCornerRadius / 2;
     NSRect stripRect = self.highlightedRect;
     if (!_horizontal) {
@@ -73,19 +73,19 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
     if (corner == 0) {
       // fill in small gaps between highlighted rect and the bounding rect.
-      if (NSMinX(stripRect) < FLT_EPSILON) {
-        stripRect.origin.x -= edgeWidth;
-        stripRect.size.width += edgeWidth;
+      if (NSMinX(stripRect) - ROUND_UP < NSMinX(dirtyRect)) {
+        stripRect.origin.x -= ROUND_UP;
+        stripRect.size.width += ROUND_UP;
       }
-      if (NSMaxX(stripRect) + edgeWidth + ROUND_UP > NSWidth(self.bounds)) {
-        stripRect.size.width += edgeWidth + ROUND_UP;
+      if (NSMaxX(stripRect) + ROUND_UP > NSMaxX(dirtyRect)) {
+        stripRect.size.width += ROUND_UP;
       }
-      if (NSMinY(stripRect) < FLT_EPSILON) {
-        stripRect.origin.y -= edgeHeight;
-        stripRect.size.height += edgeHeight;
+      if (NSMinY(stripRect) - ROUND_UP  < NSMinY(dirtyRect)) {
+        stripRect.origin.y -= ROUND_UP;
+        stripRect.size.height += ROUND_UP;
       }
-      if (NSMaxY(stripRect) + edgeHeight + ROUND_UP > NSHeight(self.bounds)) {
-        stripRect.size.height += edgeHeight + ROUND_UP;
+      if (NSMaxY(stripRect) + ROUND_UP > NSMaxY(dirtyRect)) {
+        stripRect.size.height += ROUND_UP;
       }
     } else {
       // leave a small gap between highlighted rect and the bounding rect
