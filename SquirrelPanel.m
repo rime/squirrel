@@ -678,7 +678,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
       if (preedit) {
         preeditRect.origin.y += fullSize.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
         preeditRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.width = fullSize.width + _view.edgeInset.width * 2;
+        preeditRect.size.width = highlightedRect.size.width;
       }
       
       if (index == 0) {
