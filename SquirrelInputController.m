@@ -401,7 +401,7 @@
                    caretPos:(NSUInteger)caretPos
                  candidates:(NSArray*)candidates
                    comments:(NSArray*)comments
-                     labels:(NSString*)labels
+                     labels:(NSArray*)labels
                 highlighted:(NSUInteger)index
 {
   //NSLog(@"showPanelWithPreedit:...:");
@@ -526,9 +526,18 @@
         [comments addObject:@""];
       }
     }
-    NSString* labels = @"";
+    NSArray* labels;
     if (ctx.menu.select_keys) {
-      labels = @(ctx.menu.select_keys);
+      labels = @[@(ctx.menu.select_keys)];
+    } else if (ctx.select_labels) {
+      NSMutableArray *selectLabels = [NSMutableArray array];
+      for (i = 0; i < ctx.menu.page_size; ++i) {
+        char* label_str = ctx.select_labels[i];
+        [selectLabels addObject:@(label_str)];
+      }
+      labels = selectLabels;
+    } else {
+      labels = @[];
     }
     [self showPanelWithPreedit:(_inlinePreedit ? nil : preeditText)
                       selRange:selRange

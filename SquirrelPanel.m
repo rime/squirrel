@@ -299,7 +299,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
            caretPos:(NSUInteger)caretPos
          candidates:(NSArray *)candidates
            comments:(NSArray *)comments
-             labels:(NSString *)labels
+             labels:(NSArray *)labels
         highlighted:(NSUInteger)index {
   [self getCurrentScreen];
   NSUInteger numCandidates = candidates.count;
@@ -428,10 +428,20 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   for (i = 0; i < candidates.count; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
 
-    // default: 1. 2. 3... custom: A. B. C...
-    char label_character = (i < labels.length) ? [labels characterAtIndex:i]
-                                               : ((i + 1) % 10 + '0');
-
+    NSString *labelString;
+    if (labels.count > 1 && i < labels.count) {
+      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+      labelString = [NSString stringWithFormat:labelFormat, labels[i]];
+    } else if (labels.count == 1 && i < [labels[0] length]) {
+      // custom: A. B. C...
+      char labelCharacter = [labels[0] characterAtIndex:i];
+      labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
+    } else {
+      // default: 1. 2. 3...
+      char labelDigit = (i + 1) % 10 + '0';
+      labelString = [NSString stringWithFormat:labelFormat, labelDigit];
+    }
+    
     NSDictionary *attrs = (i == index) ? _highlightedAttrs : _attrs;
     NSDictionary *labelAttrs =
         (i == index) ? _labelHighlightedAttrs : _labelAttrs;
@@ -442,8 +452,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     if (labelRange.location != NSNotFound) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:[NSString stringWithFormat:labelFormat,
-                                                              label_character]
+                    initWithString:labelString
                         attributes:labelAttrs]];
       // get the label size for indent
       if (_vertical) {
@@ -461,10 +470,22 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
 
     if (labelRange2.location != NSNotFound) {
+      NSString *labelString2;
+      if (labels.count > 1 && i < labels.count) {
+        labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]];
+      } else if (labels.count == 1 && i < [labels[0] length]) {
+        // custom: A. B. C...
+        char labelCharacter = [labels[0] characterAtIndex:i];
+        labelString2 = [NSString stringWithFormat:labelFormat2, labelCharacter];
+      } else {
+        // default: 1. 2. 3...
+        char labelDigit = (i + 1) % 10 + '0';
+        labelString2 = [NSString stringWithFormat:labelFormat2, labelDigit];
+      }
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:[NSString stringWithFormat:labelFormat2,
-                                                              label_character]
+                    initWithString:labelString2
                         attributes:labelAttrs]];
     }
 
