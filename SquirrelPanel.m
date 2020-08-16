@@ -17,8 +17,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, assign) double cornerRadius;
 @property(nonatomic, assign) double hilitedCornerRadius;
 @property(nonatomic, assign) NSSize edgeInset;
+@property(nonatomic, strong) NSColor *backgroundColor;
 @property(nonatomic, strong) NSColor *highlightedStripColor;
 @property(nonatomic, strong) NSColor *preeditBackgroundColor;
+@property(nonatomic, strong) NSColor *borderColor;
+@property(nonatomic, assign) CGFloat borderWidth;
 @property(nonatomic, assign) CGFloat baseOffset;
 @property(nonatomic, assign) Boolean horizontal;
 
@@ -56,19 +59,18 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor {
-  backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
-  self.layer.backgroundColor = backgroundColor.CGColor;
+  _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
+  self.layer.backgroundColor = [NSColor clearColor].CGColor;
 }
 
 - (void) setCornerRadius:(double)cornerRadius {
   _cornerRadius = cornerRadius;
-  self.layer.cornerRadius = _cornerRadius;
 }
 
 - (void) setBorderColor:(NSColor *)borderColor width:(CGFloat)borderWidth {
-  if (borderColor != nil) {
-    self.layer.borderColor = borderColor.CGColor;
-    self.layer.borderWidth = borderWidth;
+  _borderColor = borderColor;
+  _borderWidth = borderWidth;
+  if (borderColor) {
     self.edgeInset = NSMakeSize(MAX(self.cornerRadius, self.edgeInset.width - borderWidth),
                                 MAX(self.cornerRadius, self.edgeInset.height - borderWidth));
   }
@@ -81,14 +83,14 @@ void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edge
     rect->size.width += edgeWidth;
   }
   if (NSMaxX(*rect) + edgeWidth + ROUND_UP > NSWidth(boundary)) {
-    rect->size.width += edgeWidth + ROUND_UP;
+    rect->size.width += edgeWidth;
   }
   if (NSMinY(*rect) < FLT_EPSILON) {
     rect->origin.y -= edgeHeight;
     rect->size.height += edgeHeight;
   }
   if (NSMaxY(*rect) + edgeHeight + ROUND_UP > NSHeight(boundary)) {
-    rect->size.height += edgeHeight + ROUND_UP;
+    rect->size.height += edgeHeight;
   }
 }
 
@@ -99,21 +101,84 @@ void makeRoomForConor(NSRect *rect, CGFloat corner) {
   rect->origin.y += corner;
 }
 
+NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat alpha, CGFloat beta) {
+  NSBezierPath *path = [NSBezierPath bezierPath];
+  NSAffineTransform *transform = [NSAffineTransform transform];
+  if (cornerRadius > 0) {
+    [path moveToPoint:NSMakePoint(0, cornerRadius*beta)];
+    [path lineToPoint:NSMakePoint(0, bounds.size.height-cornerRadius*beta)];
+    [path curveToPoint:NSMakePoint(cornerRadius*beta, bounds.size.height)
+         controlPoint1:NSMakePoint(0, bounds.size.height-cornerRadius*alpha)
+         controlPoint2:NSMakePoint(cornerRadius*alpha, bounds.size.height)];
+    [path lineToPoint:NSMakePoint(bounds.size.width-cornerRadius*beta, bounds.size.height)];
+    [path curveToPoint:NSMakePoint(bounds.size.width, bounds.size.height-cornerRadius*beta)
+         controlPoint1:NSMakePoint(bounds.size.width-cornerRadius*alpha, bounds.size.height)
+         controlPoint2:NSMakePoint(bounds.size.width, bounds.size.height-cornerRadius*alpha)];
+    [path lineToPoint:NSMakePoint(bounds.size.width, cornerRadius*beta)];
+    [path curveToPoint:NSMakePoint(bounds.size.width-cornerRadius*beta, 0)
+         controlPoint1:NSMakePoint(bounds.size.width, cornerRadius*alpha)
+         controlPoint2:NSMakePoint(bounds.size.width-cornerRadius*alpha, 0)];
+    [path lineToPoint:NSMakePoint(cornerRadius*beta, 0)];
+    [path curveToPoint:NSMakePoint(0, cornerRadius*beta)
+         controlPoint1:NSMakePoint(cornerRadius*alpha, 0)
+         controlPoint2:NSMakePoint(0, cornerRadius*alpha)];
+    [path closePath];
+  } else {
+    [path moveToPoint:NSMakePoint(0, 0)];
+    [path lineToPoint:NSMakePoint(0, bounds.size.height)];
+    [path lineToPoint:NSMakePoint(bounds.size.width, bounds.size.height)];
+    [path lineToPoint:NSMakePoint(bounds.size.width, 0)];
+    [path lineToPoint:NSMakePoint(0, 0)];
+    [path closePath];
+  }
+  [transform translateXBy: bounds.origin.x yBy: bounds.origin.y];
+  [path transformUsingAffineTransform: transform];
+  return path;
+}
+
 - (void)drawRect:(NSRect)dirtyRect {
   CGFloat edgeWidth = self.edgeInset.width;
   CGFloat edgeHeight = self.edgeInset.height;
+  NSBezierPath *backgroundPath;
+  NSBezierPath *boarderPath;
+  NSBezierPath *hilightedPath;
+  NSBezierPath *reverseHilightedPath;
+  NSBezierPath *preeditPath;
+  NSBezierPath *reversePreeditPath;
+  
+  NSRect backgroundRect = NSZeroRect;
+  backgroundRect.size = self.bounds.size;
+  backgroundRect.origin = NSMakePoint(dirtyRect.origin.x, 0);
+  backgroundPath = drawSmoothRoundRect(backgroundRect, _cornerRadius, 0.3, 1.4);
+  self.layer.shadowPath = (__bridge CGPathRef _Nullable)(backgroundPath);
+  [backgroundPath addClip];
+  if (_borderColor) {
+    boarderPath = [backgroundPath copy];
+  }
+
+  if (self.preeditBackgroundColor && !NSIsEmptyRect(self.preeditRect)) {
+    NSRect preeditRect = self.preeditRect;
+    if (!_horizontal) {
+      preeditRect.origin.x = dirtyRect.origin.x;
+    }
+    checkBorders(&preeditRect, self.bounds, edgeWidth, edgeHeight);
+    preeditPath = drawSmoothRoundRect(preeditRect, 0, 0, 0);
+    [_preeditBackgroundColor setFill];
+    [preeditPath fill];
+    reversePreeditPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
+    [reversePreeditPath appendBezierPath:preeditPath];
+    reversePreeditPath.windingRule = NSEvenOddWindingRule;
+  }
+  
   if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
     // setFrame rounds up floating point numbers in window bounds.
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
     CGFloat corner = self.hilitedCornerRadius / 2;
     NSRect stripRect = self.highlightedRect;
-    NSRect preeditRect = self.preeditRect;
     if (!_horizontal) {
       stripRect.origin.x = dirtyRect.origin.x;
-      preeditRect.origin.x = dirtyRect.origin.x;
     }
-    checkBorders(&preeditRect, self.bounds, edgeWidth, edgeHeight);
     if (corner == 0) {
       // fill in small gaps between highlighted rect and the bounding rect.
       checkBorders(&stripRect, self.bounds, edgeWidth, edgeHeight);
@@ -121,20 +186,30 @@ void makeRoomForConor(NSRect *rect, CGFloat corner) {
       // leave a small gap between highlighted rect and the bounding rect
       makeRoomForConor(&stripRect, corner);
     }
-    if (self.preeditBackgroundColor != nil) {
-      [self.preeditBackgroundColor setFill];
-      NSRectFill(preeditRect);
-    }
+    hilightedPath = drawSmoothRoundRect(stripRect, self.hilitedCornerRadius, 0.3, 1.4);
     [self.highlightedStripColor setFill];
-    if (self.hilitedCornerRadius > 0) {
-      [[NSBezierPath bezierPathWithRoundedRect:stripRect
-                                       xRadius:self.hilitedCornerRadius
-                                       yRadius:self.hilitedCornerRadius] fill];
-    } else {
-      NSRectFill(stripRect);
-    }
+    [hilightedPath fill];
+    reverseHilightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
+    [reverseHilightedPath appendBezierPath:hilightedPath];
+    reverseHilightedPath.windingRule = NSEvenOddWindingRule;
   }
-
+  
+  CGContextSaveGState(NSGraphicsContext.currentContext.CGContext); {
+    if (reversePreeditPath) {
+      [reversePreeditPath addClip];
+    }
+    if (reverseHilightedPath) {
+      [reverseHilightedPath addClip];
+    }
+    [_backgroundColor setFill];
+    [backgroundPath fill];
+  } CGContextRestoreGState(NSGraphicsContext.currentContext.CGContext);
+  if (boarderPath) {
+    [_borderColor setStroke];
+    backgroundPath.lineWidth = _borderWidth;
+    [backgroundPath stroke];
+  }
+  
   NSRect textField = NSZeroRect;
   textField.origin = NSMakePoint(dirtyRect.origin.x + edgeWidth, dirtyRect.origin.y - edgeHeight);
   textField.size = NSMakeSize(dirtyRect.size.width - edgeWidth * 2, dirtyRect.size.height);
