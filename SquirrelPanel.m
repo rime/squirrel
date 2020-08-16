@@ -101,38 +101,48 @@ void makeRoomForConor(NSRect *rect, CGFloat corner) {
   rect->origin.y += corner;
 }
 
-NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat alpha, CGFloat beta) {
-  NSBezierPath *path = [NSBezierPath bezierPath];
-  NSAffineTransform *transform = [NSAffineTransform transform];
-  if (cornerRadius > 0) {
-    [path moveToPoint:NSMakePoint(0, cornerRadius*beta)];
-    [path lineToPoint:NSMakePoint(0, bounds.size.height-cornerRadius*beta)];
-    [path curveToPoint:NSMakePoint(cornerRadius*beta, bounds.size.height)
-         controlPoint1:NSMakePoint(0, bounds.size.height-cornerRadius*alpha)
-         controlPoint2:NSMakePoint(cornerRadius*alpha, bounds.size.height)];
-    [path lineToPoint:NSMakePoint(bounds.size.width-cornerRadius*beta, bounds.size.height)];
-    [path curveToPoint:NSMakePoint(bounds.size.width, bounds.size.height-cornerRadius*beta)
-         controlPoint1:NSMakePoint(bounds.size.width-cornerRadius*alpha, bounds.size.height)
-         controlPoint2:NSMakePoint(bounds.size.width, bounds.size.height-cornerRadius*alpha)];
-    [path lineToPoint:NSMakePoint(bounds.size.width, cornerRadius*beta)];
-    [path curveToPoint:NSMakePoint(bounds.size.width-cornerRadius*beta, 0)
-         controlPoint1:NSMakePoint(bounds.size.width, cornerRadius*alpha)
-         controlPoint2:NSMakePoint(bounds.size.width-cornerRadius*alpha, 0)];
-    [path lineToPoint:NSMakePoint(cornerRadius*beta, 0)];
-    [path curveToPoint:NSMakePoint(0, cornerRadius*beta)
-         controlPoint1:NSMakePoint(cornerRadius*alpha, 0)
-         controlPoint2:NSMakePoint(0, cornerRadius*alpha)];
-    [path closePath];
+CGFloat sign(CGFloat x) {
+  if (x > 0) {
+    return 1.0;
+  } else if (x < 0) {
+    return -1.0;
   } else {
-    [path moveToPoint:NSMakePoint(0, 0)];
-    [path lineToPoint:NSMakePoint(0, bounds.size.height)];
-    [path lineToPoint:NSMakePoint(bounds.size.width, bounds.size.height)];
-    [path lineToPoint:NSMakePoint(bounds.size.width, 0)];
-    [path lineToPoint:NSMakePoint(0, 0)];
-    [path closePath];
+    return 0;
   }
-  [transform translateXBy: bounds.origin.x yBy: bounds.origin.y];
-  [path transformUsingAffineTransform: transform];
+}
+
+NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat beta) {
+  NSBezierPath *path = [NSBezierPath bezierPath];
+  NSPoint previousPoint = [vertex[vertex.count-1] pointValue];
+  NSPoint point = [vertex[0] pointValue];
+  NSPoint nextPoint;
+  NSPoint control1;
+  NSPoint control2;
+  if (previousPoint.x != point.x && previousPoint.y == point.y) {
+    [path moveToPoint:NSMakePoint(previousPoint.x+sign(point.x-previousPoint.x)*beta, previousPoint.y)];
+  } else if (previousPoint.x == point.x && previousPoint.y != point.y) {
+    [path moveToPoint:NSMakePoint(previousPoint.x, previousPoint.y+sign(point.y-previousPoint.y)*beta)];
+  }
+  for (NSUInteger i = 0; i < vertex.count; i += 1) {
+    previousPoint = [vertex[(i-1)%vertex.count] pointValue];
+    point = [vertex[i] pointValue];
+    nextPoint = [vertex[(i+1)%vertex.count] pointValue];
+    if (point.x != previousPoint.x && point.y == previousPoint.y) {
+      [path lineToPoint:NSMakePoint(point.x-sign(point.x-previousPoint.x)*beta, point.y)];
+      control1 = NSMakePoint(point.x-sign(point.x-previousPoint.x)*alpha, point.y);
+    } else if (point.x == previousPoint.x && point.y != previousPoint.y) {
+      [path lineToPoint:NSMakePoint(point.x, point.y-sign(point.y-previousPoint.y)*beta)];
+      control1 = NSMakePoint(point.x, point.y-sign(point.y-previousPoint.y)*alpha);
+    }
+    if (nextPoint.x != point.x && nextPoint.y == point.y) {
+      control2 = NSMakePoint(point.x+sign(nextPoint.x-point.x)*alpha, point.y);
+      [path curveToPoint:NSMakePoint(point.x+sign(nextPoint.x-point.x)*beta, point.y) controlPoint1:control1 controlPoint2:control2];
+    } else if (nextPoint.x == point.x && nextPoint.y != point.y) {
+      control2 = NSMakePoint(point.x, point.y+sign(nextPoint.y-point.y)*alpha);
+      [path curveToPoint:NSMakePoint(point.x, point.y+sign(nextPoint.y-point.y)*beta) controlPoint1:control1 controlPoint2:control2];
+    }
+  }
+  [path closePath];
   return path;
 }
 
@@ -149,7 +159,12 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   NSRect backgroundRect = NSZeroRect;
   backgroundRect.size = self.bounds.size;
   backgroundRect.origin = NSMakePoint(dirtyRect.origin.x, 0);
-  backgroundPath = drawSmoothRoundRect(backgroundRect, _cornerRadius, 0.3, 1.4);
+  backgroundPath = drawSmoothLines(@[
+    @(backgroundRect.origin),
+    @(NSMakePoint(backgroundRect.origin.x, backgroundRect.origin.y+backgroundRect.size.height)),
+    @(NSMakePoint(backgroundRect.origin.x+backgroundRect.size.width, backgroundRect.origin.y+backgroundRect.size.height)),
+    @(NSMakePoint(backgroundRect.origin.x+backgroundRect.size.width, backgroundRect.origin.y))],
+                                   _cornerRadius*0.3, _cornerRadius*1.4);
   self.layer.shadowPath = (__bridge CGPathRef _Nullable)(backgroundPath);
   [backgroundPath addClip];
   if (_borderColor) {
@@ -162,7 +177,12 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
       preeditRect.origin.x = dirtyRect.origin.x;
     }
     checkBorders(&preeditRect, dirtyRect, edgeWidth, edgeHeight);
-    preeditPath = drawSmoothRoundRect(preeditRect, 0, 0, 0);
+    preeditPath = drawSmoothLines(@[
+    @(preeditRect.origin),
+    @(NSMakePoint(preeditRect.origin.x, preeditRect.origin.y+preeditRect.size.height)),
+    @(NSMakePoint(preeditRect.origin.x+preeditRect.size.width, preeditRect.origin.y+preeditRect.size.height)),
+    @(NSMakePoint(preeditRect.origin.x+preeditRect.size.width, preeditRect.origin.y))],
+                                   0, 0);
     [_preeditBackgroundColor setFill];
     [preeditPath fill];
     reversePreeditPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
@@ -186,7 +206,12 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
       // leave a small gap between highlighted rect and the bounding rect
       makeRoomForConor(&stripRect, corner);
     }
-    hilightedPath = drawSmoothRoundRect(stripRect, self.hilitedCornerRadius, 0.3, 1.4);
+    hilightedPath = drawSmoothLines(@[
+    @(stripRect.origin),
+    @(NSMakePoint(stripRect.origin.x, stripRect.origin.y+stripRect.size.height)),
+    @(NSMakePoint(stripRect.origin.x+stripRect.size.width, stripRect.origin.y+stripRect.size.height)),
+    @(NSMakePoint(stripRect.origin.x+stripRect.size.width, stripRect.origin.y))],
+                                    self.hilitedCornerRadius*0.3, self.hilitedCornerRadius*1.4);
     [self.highlightedStripColor setFill];
     [hilightedPath fill];
     reverseHilightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
