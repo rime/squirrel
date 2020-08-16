@@ -234,6 +234,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   NSParagraphStyle *_paragraphStyle;
   NSParagraphStyle *_preeditParagraphStyle;
   NSSize preeditSize;
+  NSRect screenRect;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -318,7 +319,23 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   return self;
 }
 
+- (void)getCurrentScreen {
+  // get current screen
+  screenRect = [NSScreen mainScreen].frame;
+  NSArray *screens = [NSScreen screens];
+  
+  NSUInteger i;
+  for (i = 0; i < screens.count; ++i) {
+    NSRect rect = [screens[i] frame];
+    if (NSPointInRect(_position.origin, rect)) {
+      screenRect = rect;
+      break;
+    }
+  }
+}
+
 - (void)show {
+  [self getCurrentScreen];
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   if (_vertical) {
@@ -330,18 +347,6 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   }
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
-  // fit in current screen
-  NSRect screenRect = [NSScreen mainScreen].frame;
-  NSArray *screens = [NSScreen screens];
-  
-  NSUInteger i;
-  for (i = 0; i < screens.count; ++i) {
-    NSRect rect = [screens[i] frame];
-    if (NSPointInRect(_position.origin, rect)) {
-      screenRect = rect;
-      break;
-    }
-  }
 
   if (_vertical) {
     // if the height is too large, it's hard to read, so need to put limit on the height.
@@ -402,6 +407,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
            comments:(NSArray *)comments
              labels:(NSString *)labels
         highlighted:(NSUInteger)index {
+  [self getCurrentScreen];
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
@@ -474,7 +480,6 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   preeditSize = NSMakeSize(0, 0);
 
   // needed to calculate line-broken candidate box size.
-  NSRect screenRect = [NSScreen mainScreen].frame;
   CGFloat height = 0.0;
   
   // preedit
