@@ -77,20 +77,20 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edgeHeight) {
-  const CGFloat ROUND_UP = 1;
-  if (NSMinX(*rect) < FLT_EPSILON) {
-    rect->origin.x -= edgeWidth;
-    rect->size.width += edgeWidth;
+  const CGFloat ROUND_UP = 1.1;
+  if (NSMinX(*rect) - ROUND_UP < NSMinX(boundary)) {
+    rect->origin.x -= ROUND_UP;
+    rect->size.width += ROUND_UP;
   }
-  if (NSMaxX(*rect) + edgeWidth + ROUND_UP > NSWidth(boundary)) {
-    rect->size.width += edgeWidth;
+  if (NSMaxX(*rect) + ROUND_UP > NSMaxX(boundary)) {
+    rect->size.width += ROUND_UP;
   }
-  if (NSMinY(*rect) < FLT_EPSILON) {
-    rect->origin.y -= edgeHeight;
-    rect->size.height += edgeHeight;
+  if (NSMinY(*rect) - ROUND_UP  < NSMinY(boundary)) {
+    rect->origin.y -= ROUND_UP;
+    rect->size.height += ROUND_UP;
   }
-  if (NSMaxY(*rect) + edgeHeight + ROUND_UP > NSHeight(boundary)) {
-    rect->size.height += edgeHeight;
+  if (NSMaxY(*rect) + ROUND_UP > NSMaxY(boundary)) {
+    rect->size.height += ROUND_UP;
   }
 }
 
@@ -161,7 +161,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     if (!_horizontal) {
       preeditRect.origin.x = dirtyRect.origin.x;
     }
-    checkBorders(&preeditRect, self.bounds, edgeWidth, edgeHeight);
+    checkBorders(&preeditRect, dirtyRect, edgeWidth, edgeHeight);
     preeditPath = drawSmoothRoundRect(preeditRect, 0, 0, 0);
     [_preeditBackgroundColor setFill];
     [preeditPath fill];
@@ -181,7 +181,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     }
     if (corner == 0) {
       // fill in small gaps between highlighted rect and the bounding rect.
-      checkBorders(&stripRect, self.bounds, edgeWidth, edgeHeight);
+      checkBorders(&stripRect, dirtyRect, edgeWidth, edgeHeight);
     } else {
       // leave a small gap between highlighted rect and the bounding rect
       makeRoomForConor(&stripRect, corner);
@@ -240,15 +240,16 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   NSTimer *_statusTimer;
 }
 
-- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText {
+- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText inRange:(NSRange)stringRange {
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
   const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
   const NSRect cjkRect = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:_attrs];
   const NSSize hangulSize = [hangulChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-  NSUInteger i = 0;
-  while (i < originalText.length) {
+  stringRange = [originalText.string rangeOfComposedCharacterSequencesForRange:stringRange];
+  NSUInteger i = stringRange.location;
+  while (i < stringRange.location+stringRange.length) {
     NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
     i = range.location + range.length;
     NSRect charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
@@ -507,7 +508,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     [text appendAttributedString:line];
 
     if (_vertical) {
-      [self convertToVerticalGlyph:text];
+      [self convertToVerticalGlyph:text inRange:NSMakeRange(0, line.length)];
     }
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
@@ -556,7 +557,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
                         attributes:labelAttrs]];
       // get the label size for indent
       if (_vertical) {
-        [self convertToVerticalGlyph:line];
+        [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length)];
         labelWidth = [line boundingRectWithSize:NSMakeSize(0.0, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
     }
@@ -597,7 +598,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     }
     
     if (_vertical) {
-      [self convertToVerticalGlyph:line];
+      [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart)];
     }
     NSMutableParagraphStyle *paragraphStyleCandidate = [_paragraphStyle mutableCopy];
     paragraphStyleCandidate.headIndent = labelWidth;
