@@ -153,6 +153,11 @@
   if (is_horizontal_mode != rime_get_api()->get_option(_session, "_horizontal")) {
     rime_get_api()->set_option(_session, "_horizontal", is_horizontal_mode);
   }
+  // in vertical mode, arrow keys may behave differently.
+  Bool is_vertical_mode = NSApp.squirrelAppDelegate.panel.vertical;
+  if (is_vertical_mode != rime_get_api()->get_option(_session, "_vertical")) {
+    rime_get_api()->set_option(_session, "_vertical", is_vertical_mode);
+  }
 
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
   //NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d", rime_keycode, rime_modifiers, handled);
