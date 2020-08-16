@@ -16,7 +16,7 @@
           caretPos:(NSUInteger)caretPos
         candidates:(NSArray*)candidates
           comments:(NSArray*)comments
-            labels:(NSString*)labels
+            labels:(NSArray*)labels
        highlighted:(NSUInteger)index;
 
 -(void)hide;
