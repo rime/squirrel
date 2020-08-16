@@ -246,12 +246,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   if (_vertical) {
     // if the height is too large, it's hard to read, so need to put limit on the height.
     if (windowRect.size.height > NSHeight(screenRect) / 3) {
-      windowRect.origin.y += windowRect.size.height - NSHeight(screenRect) / 3;
       windowRect.size.height = NSHeight(screenRect) / 3;
       NSSize innerSize = NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2);
-      NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize
-                                                            options:NSStringDrawingUsesLineFragmentOrigin];
-      windowRect.size.width = newTextBoundingRect.size.height + _view.edgeInset.height * 2;
+      NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize options:NSStringDrawingUsesLineFragmentOrigin];
+      windowRect.size = NSMakeSize(newTextBoundingRect.size.height + _view.edgeInset.height * 2, newTextBoundingRect.size.width + _view.edgeInset.width * 2);
+      windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
     }
     windowRect.origin.x -= windowRect.size.width;
     if (!_inlinePreedit) {
@@ -558,10 +557,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
           height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
         }
         fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-        highlightedRect.size.width = height + _view.edgeInset.width * 2;
-      } else {
-        highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
       }
+      highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
       highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
       
       if (index == 0) {
