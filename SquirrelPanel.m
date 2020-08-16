@@ -129,6 +129,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSParagraphStyle *_paragraphStyle;
   NSParagraphStyle *_preeditParagraphStyle;
   NSSize preeditSize;
+  NSRect screenRect;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -213,7 +214,23 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   return self;
 }
 
+- (void)getCurrentScreen {
+  // get current screen
+  screenRect = [NSScreen mainScreen].frame;
+  NSArray *screens = [NSScreen screens];
+  
+  NSUInteger i;
+  for (i = 0; i < screens.count; ++i) {
+    NSRect rect = [screens[i] frame];
+    if (NSPointInRect(_position.origin, rect)) {
+      screenRect = rect;
+      break;
+    }
+  }
+}
+
 - (void)show {
+  [self getCurrentScreen];
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   if (_vertical) {
@@ -225,18 +242,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   }
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
-  // fit in current screen
-  NSRect screenRect = [NSScreen mainScreen].frame;
-  NSArray *screens = [NSScreen screens];
-  
-  NSUInteger i;
-  for (i = 0; i < screens.count; ++i) {
-    NSRect rect = [screens[i] frame];
-    if (NSPointInRect(_position.origin, rect)) {
-      screenRect = rect;
-      break;
-    }
-  }
 
   if (_vertical) {
     // if the height is too large, it's hard to read, so need to put limit on the height.
@@ -297,6 +302,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
            comments:(NSArray *)comments
              labels:(NSString *)labels
         highlighted:(NSUInteger)index {
+  [self getCurrentScreen];
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
@@ -367,7 +373,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   NSUInteger candidateStartPos = 0;
 
   // needed to calculate line-broken candidate box size.
-  NSRect screenRect = [NSScreen mainScreen].frame;
   CGFloat height = 0.0;
   
   // preedit
