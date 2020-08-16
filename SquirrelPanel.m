@@ -638,9 +638,9 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   if (!NSIsEmptyRect(highlightedRect)) {
     if (_horizontal) {
       if (preedit) {
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
+        highlightedRect.size.height += (_preeditParagraphStyle.paragraphSpacing+_paragraphStyle.paragraphSpacing) / 2;
         preeditRect.origin.y += text.size.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.height += _view.edgeInset.width + _preeditParagraphStyle.paragraphSpacing / 2;
         preeditRect.size.width = text.size.width + _view.edgeInset.width * 2;
       } else {
         highlightedRect.size.height += _view.edgeInset.height;
@@ -675,7 +675,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
       highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
       if (preedit) {
         preeditRect.origin.y += fullSize.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
+        preeditRect.size.height += _view.edgeInset.width + _preeditParagraphStyle.paragraphSpacing / 2;
         preeditRect.size.width = highlightedRect.size.width;
       }
       
