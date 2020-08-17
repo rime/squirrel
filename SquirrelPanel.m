@@ -251,7 +251,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
       NSSize innerSize = NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2);
       NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize options:NSStringDrawingUsesLineFragmentOrigin];
       windowRect.size = NSMakeSize(newTextBoundingRect.size.height + _view.edgeInset.height * 2, newTextBoundingRect.size.width + _view.edgeInset.width * 2);
+    }
+    if (NSMidY(_position) / NSHeight(screenRect) >= 0.5) {
       windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
+    } else {
+      windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
     }
     windowRect.origin.x -= windowRect.size.width;
     if (!_inlinePreedit) {
@@ -266,7 +270,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     windowRect.origin.x = NSMinX(screenRect);
   }
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
-    windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
+    if (_vertical) {
+      windowRect.origin.y = NSMinY(screenRect);
+    } else {
+      windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
+    }
   }
   if (NSMaxY(windowRect) > NSMaxY(screenRect)) {
     windowRect.origin.y = NSMaxY(screenRect) - NSHeight(windowRect);
@@ -610,8 +618,9 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 }
 
 - (void)showStatus:(NSString *)message {
-  NSAttributedString *text = [[NSAttributedString alloc] initWithString:message
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message
                                                              attributes:_commentAttrs];
+  [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length)];
   [_view setText:text hilightedRect:NSZeroRect];
   [self show];
 
