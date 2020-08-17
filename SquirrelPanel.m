@@ -150,8 +150,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     NSRect charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
     if ((charRect.size.width >= cjkRect.size.width) || (charRect.size.width >= hangulSize.width)) {
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
-      charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
-      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height-charRect.size.height)/2+(cjkRect.origin.y-charRect.origin.y)+_view.baseOffset) range:range];
+      NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSMakeSize(0, 0) options:NULL];
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height - uprightCharRect.size.height)/2+(cjkRect.origin.y-uprightCharRect.origin.y)-(charRect.size.width-cjkChar.size.width)/2+_view.baseOffset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(_view.baseOffset) range:range];
     }
