@@ -9,10 +9,11 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
 @interface SquirrelView : NSView
 
-@property(nonatomic, readonly) NSAttributedString *text;
-@property(nonatomic, readonly) NSRect highlightedRect;
-@property(nonatomic, readonly) NSRect preeditRect;
-@property(nonatomic, readonly) NSSize contentSize;
+@property(nonatomic, readonly) NSTextStorage *text;
+@property(nonatomic, readonly) NSRange highlightedRange;
+@property(nonatomic, readonly) NSRange preeditRange;
+@property(nonatomic, readonly) NSRect contentRect;
+@property(nonatomic, readonly) double textFrameWidth;
 
 @property(nonatomic, assign) double cornerRadius;
 @property(nonatomic, assign) double hilitedCornerRadius;
@@ -21,19 +22,29 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, strong) NSColor *highlightedStripColor;
 @property(nonatomic, strong) NSColor *preeditBackgroundColor;
 @property(nonatomic, strong) NSColor *borderColor;
-@property(nonatomic, assign) CGFloat borderWidth;
-@property(nonatomic, assign) CGFloat baseOffset;
-@property(nonatomic, assign) Boolean horizontal;
+@property(nonatomic, assign) double borderWidth;
+@property(nonatomic, assign) double baseOffset;
+@property(nonatomic, assign) double linespace;
+@property(nonatomic, assign) double preeditLinespace;
+@property(nonatomic, assign) double seperatorWidth;
+@property(nonatomic, assign) BOOL horizontal;
+@property(nonatomic, assign) BOOL vertical;
+@property(nonatomic, assign) BOOL inlineEdit;
 
-- (void)setText:(NSAttributedString *)text
-  hilightedRect:(NSRect)rect
-  preeditRect:(NSRect)preedit;
+- (BOOL)isFlipped;
+- (void)setText:(NSAttributedString *)text;
+- (void)drawViewWith:(NSRange)hilightedRange
+         preeditRect:(NSRange)preeditRange;
 - (void)setBorderColor:(NSColor *)borderColor
-  width:(CGFloat)borderWidth;
+                 width:(CGFloat)borderWidth;
 
 @end
 
 @implementation SquirrelView
+
+- (BOOL)isFlipped {
+  return YES;
+}
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
@@ -41,20 +52,34 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
     self.wantsLayer = YES;
     self.layer.masksToBounds = YES;
   }
+  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(0, 0)];
+  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+  [layoutManager addTextContainer:textContainer];
+  _text = [[NSTextStorage alloc] init];
+  [_text addLayoutManager:layoutManager];
   return self;
 }
 
-- (NSSize)contentSize {
-  return _text ? _text.size : NSMakeSize(0, 0);
+- (CGFloat)textFrameWidth {
+  return [_text.layoutManagers[0] boundingRectForGlyphRange:NSMakeRange(0, 0) inTextContainer:_text.layoutManagers[0].textContainers[0]].origin.x;
 }
 
-- (void)setText:(NSAttributedString *)text
-  hilightedRect:(NSRect)rect
-  preeditRect:(NSRect)preedit
-  {
-  _text = [text copy];
-  _highlightedRect = rect;
-  _preeditRect = preedit;
+- (NSRect)contentRect {
+  NSRect rect = [_text.layoutManagers[0] boundingRectForGlyphRange:NSMakeRange(0, _text.length) inTextContainer:_text.layoutManagers[0].textContainers[0]];
+  CGFloat frameWidth = self.textFrameWidth;
+  rect.origin.x -= frameWidth * 2;
+  rect.size.width += frameWidth * 2;
+  return rect;
+}
+
+- (void)setText:(NSAttributedString *)text {
+  [_text setAttributedString:[text copy]];
+}
+
+- (void)drawViewWith:(NSRange)hilightedRange
+         preeditRect:(NSRange)preeditRange {
+  _highlightedRange = hilightedRange;
+  _preeditRange = preeditRange;
   self.needsDisplay = YES;
 }
 
@@ -76,7 +101,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   }
 }
 
-void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edgeHeight) {
+void checkBorders(NSRect *rect, NSRect boundary) {
   const CGFloat ROUND_UP = 1.1;
   if (NSMinX(*rect) - ROUND_UP < NSMinX(boundary)) {
     rect->origin.x -= ROUND_UP;
@@ -85,7 +110,7 @@ void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edge
   if (NSMaxX(*rect) + ROUND_UP > NSMaxX(boundary)) {
     rect->size.width += ROUND_UP;
   }
-  if (NSMinY(*rect) - ROUND_UP  < NSMinY(boundary)) {
+  if (NSMinY(*rect) - ROUND_UP < NSMinY(boundary)) {
     rect->origin.y -= ROUND_UP;
     rect->size.height += ROUND_UP;
   }
@@ -94,11 +119,22 @@ void checkBorders(NSRect *rect, NSRect boundary, CGFloat edgeWidth, CGFloat edge
   }
 }
 
-void makeRoomForConor(NSRect *rect, CGFloat corner) {
-  rect->size.width -= corner * 2;
-  rect->origin.x += corner;
-  rect->size.height -= corner * 2;
-  rect->origin.y += corner;
+void makeRoomForConor(NSRect *rect, NSRect boundary, CGFloat corner) {
+  const CGFloat ROUND_UP = 1.1;
+  if (NSMinX(*rect) - ROUND_UP < NSMinX(boundary)) {
+    rect->size.width -= corner;
+    rect->origin.x += corner;
+  }
+  if (NSMaxX(*rect) + ROUND_UP > NSMaxX(boundary)) {
+    rect->size.width -= corner;
+  }
+  if (NSMinY(*rect) - ROUND_UP < NSMinY(boundary)) {
+    rect->size.height -= corner;
+    rect->origin.y += corner;
+  }
+  if (NSMaxY(*rect) + ROUND_UP > NSMaxY(boundary)) {
+    rect->size.height -= corner;
+  }
 }
 
 NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat alpha, CGFloat beta) {
@@ -140,28 +176,87 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   CGFloat edgeWidth = self.edgeInset.width;
   CGFloat edgeHeight = self.edgeInset.height;
   NSBezierPath *backgroundPath;
-  NSBezierPath *boarderPath;
+  NSBezierPath *borderPath;
   NSBezierPath *hilightedPath;
   NSBezierPath *reverseHilightedPath;
   NSBezierPath *preeditPath;
   NSBezierPath *reversePreeditPath;
   
-  NSRect backgroundRect = NSZeroRect;
-  backgroundRect.size = self.bounds.size;
-  backgroundRect.origin = NSMakePoint(dirtyRect.origin.x, 0);
-  backgroundPath = drawSmoothRoundRect(backgroundRect, _cornerRadius, 0.3, 1.4);
+  NSRect textField = dirtyRect;
+  textField.origin.y += edgeHeight;
+  textField.origin.x += edgeHeight;
+  
+  // Draw preedit Rect
+  NSRect preeditRect = NSZeroRect;
+  if (_preeditRange.length > 0) {
+    preeditRect = [_text.layoutManagers[0] boundingRectForGlyphRange:_preeditRange inTextContainer:_text.layoutManagers[0].textContainers[0]];
+    preeditRect.size.width = textField.size.width;
+    preeditRect.size.height += _preeditLinespace;
+    preeditRect.origin = NSMakePoint(textField.origin.x - edgeWidth, textField.origin.y - edgeHeight);
+    preeditRect.size.height += edgeHeight;
+    if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
+      if (!_inlineEdit && !_horizontal) {
+        preeditRect.size.height -= self.hilitedCornerRadius / 2;
+      }
+    }
+  }
+  
+  // Draw highlighted Rect
+  NSRect highlightedRect = NSZeroRect;
+  if (_highlightedRange.length > 0) {
+    highlightedRect = [_text.layoutManagers[0] boundingRectForGlyphRange:_highlightedRange inTextContainer:_text.layoutManagers[0].textContainers[0]];
+    if (_horizontal){
+      highlightedRect.size.height += edgeHeight + _linespace;
+      highlightedRect.size.width += _seperatorWidth;
+      highlightedRect.origin.x += edgeWidth - _seperatorWidth / 2;
+      highlightedRect.origin.y += edgeWidth - _linespace;
+      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
+        highlightedRect.size.width += edgeWidth - _seperatorWidth / 2 + self.textFrameWidth;
+        if (NSMaxX(preeditRect) > NSMaxX(highlightedRect)) {
+          highlightedRect.size.width += NSMaxX(preeditRect) - NSMaxX(highlightedRect);
+        }
+      }
+      if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
+        highlightedRect.size.width += edgeWidth - _seperatorWidth / 2 + self.textFrameWidth;
+        highlightedRect.origin.x -= edgeWidth - _seperatorWidth / 2 + self.textFrameWidth;
+      }
+      if (_inlineEdit) {
+        highlightedRect.size.height += edgeHeight - _linespace;
+        highlightedRect.origin.y -= edgeHeight - _linespace;
+      }
+    } else {
+      highlightedRect.size.width = textField.size.width;
+      highlightedRect.size.height += _linespace * 2;
+      highlightedRect.origin = NSMakePoint(textField.origin.x - edgeWidth, highlightedRect.origin.y + edgeHeight - _linespace);
+      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
+        highlightedRect.size.height += edgeHeight;
+        highlightedRect.size.height -= _linespace;
+      }
+      if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
+        if (_inlineEdit) {
+          highlightedRect.size.height += edgeHeight - _linespace;
+          highlightedRect.origin.y -= edgeHeight - _linespace;
+        } else {
+          highlightedRect.size.height += self.hilitedCornerRadius / 2;
+          highlightedRect.origin.y -= self.hilitedCornerRadius / 2;
+        }
+      }
+    }
+  }
+
+  NSRect backgroundRect = textField;
+  backgroundRect.origin.x -= edgeWidth;
+  backgroundRect.origin.y -= edgeHeight;
+  
+  backgroundPath = drawSmoothRoundRect(backgroundRect, self.cornerRadius, 0.3, 1.4);
   self.layer.shadowPath = (__bridge CGPathRef _Nullable)(backgroundPath);
   [backgroundPath addClip];
   if (_borderColor) {
-    boarderPath = [backgroundPath copy];
+    borderPath = [backgroundPath copy];
   }
 
-  if (self.preeditBackgroundColor && !NSIsEmptyRect(self.preeditRect)) {
-    NSRect preeditRect = self.preeditRect;
-    if (!_horizontal) {
-      preeditRect.origin.x = dirtyRect.origin.x;
-    }
-    checkBorders(&preeditRect, dirtyRect, edgeWidth, edgeHeight);
+  if (self.preeditBackgroundColor && !NSIsEmptyRect(preeditRect)) {
+    checkBorders(&preeditRect, backgroundRect);
     preeditPath = drawSmoothRoundRect(preeditRect, 0, 0, 0);
     [_preeditBackgroundColor setFill];
     [preeditPath fill];
@@ -170,23 +265,21 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     reversePreeditPath.windingRule = NSEvenOddWindingRule;
   }
   
-  if (self.highlightedStripColor && !NSIsEmptyRect(self.highlightedRect)) {
+  if (self.highlightedStripColor && !NSIsEmptyRect(highlightedRect)) {
     // setFrame rounds up floating point numbers in window bounds.
     // Add extra width and height to overcome rounding errors and ensure
     // highlighted area fully covers paddings near right and top edges.
-    CGFloat corner = self.hilitedCornerRadius / 2;
-    NSRect stripRect = self.highlightedRect;
-    if (!_horizontal) {
-      stripRect.origin.x = dirtyRect.origin.x;
-    }
-    if (corner == 0) {
+    if (self.hilitedCornerRadius == 0) {
       // fill in small gaps between highlighted rect and the bounding rect.
-      checkBorders(&stripRect, dirtyRect, edgeWidth, edgeHeight);
+      checkBorders(&highlightedRect, backgroundRect);
     } else {
       // leave a small gap between highlighted rect and the bounding rect
-      makeRoomForConor(&stripRect, corner);
+      NSRect candidateRect = backgroundRect;
+      candidateRect.size.height -= preeditRect.size.height;
+      candidateRect.origin.y += preeditRect.size.height;
+      makeRoomForConor(&highlightedRect, candidateRect, self.hilitedCornerRadius / 2);
     }
-    hilightedPath = drawSmoothRoundRect(stripRect, self.hilitedCornerRadius, 0.3, 1.4);
+    hilightedPath = drawSmoothRoundRect(highlightedRect, self.hilitedCornerRadius, 0.3, 1.4);
     [self.highlightedStripColor setFill];
     [hilightedPath fill];
     reverseHilightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
@@ -204,16 +297,13 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     [_backgroundColor setFill];
     [backgroundPath fill];
   } CGContextRestoreGState(NSGraphicsContext.currentContext.CGContext);
-  if (boarderPath) {
+  if (borderPath) {
     [_borderColor setStroke];
     backgroundPath.lineWidth = _borderWidth;
     [backgroundPath stroke];
   }
-  
-  NSRect textField = NSZeroRect;
-  textField.origin = NSMakePoint(dirtyRect.origin.x + edgeWidth, dirtyRect.origin.y - edgeHeight);
-  textField.size = NSMakeSize(dirtyRect.size.width - edgeWidth * 2, dirtyRect.size.height);
-  [_text drawWithRect:textField options:NSStringDrawingUsesLineFragmentOrigin];
+
+  [_text.layoutManagers[0] drawGlyphsForGlyphRange:NSMakeRange(0, _text.length) atPoint:textField.origin];
 }
 
 @end
@@ -233,7 +323,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   NSMutableDictionary *_preeditHighlightedAttrs;
   NSParagraphStyle *_paragraphStyle;
   NSParagraphStyle *_preeditParagraphStyle;
-  NSSize preeditSize;
+  NSRange preeditRange;
   NSRect screenRect;
 
   NSString *_statusMessage;
@@ -339,24 +429,18 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   [self getCurrentScreen];
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
+  NSRect contentRect = _view.contentRect;
   if (_vertical) {
-    windowRect.size = NSMakeSize(_view.contentSize.height + _view.edgeInset.height * 2,
-                                 _view.contentSize.width + _view.edgeInset.width * 2);
+    windowRect.size = NSMakeSize(contentRect.size.height + _view.edgeInset.height * 2,
+                                 contentRect.size.width + _view.edgeInset.width * 2);
   } else {
-    windowRect.size = NSMakeSize(_view.contentSize.width + _view.edgeInset.width * 2,
-                                 _view.contentSize.height + _view.edgeInset.height * 2);
+    windowRect.size = NSMakeSize(contentRect.size.width + _view.edgeInset.width * 2,
+                                 contentRect.size.height + _view.edgeInset.height * 2);
   }
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
 
   if (_vertical) {
-    // if the height is too large, it's hard to read, so need to put limit on the height.
-    if (windowRect.size.height > NSHeight(screenRect) / 3) {
-      windowRect.size.height = NSHeight(screenRect) / 3;
-      NSSize innerSize = NSMakeSize(windowRect.size.height - _view.edgeInset.height * 2, windowRect.size.width - _view.edgeInset.width * 2);
-      NSRect newTextBoundingRect = [_view.text boundingRectWithSize:innerSize options:NSStringDrawingUsesLineFragmentOrigin];
-      windowRect.size = NSMakeSize(newTextBoundingRect.size.height + _view.edgeInset.height * 2, newTextBoundingRect.size.width + _view.edgeInset.width * 2);
-    }
     if (NSMidY(_position) / NSHeight(screenRect) >= 0.5) {
       windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
     } else {
@@ -364,6 +448,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     }
     windowRect.origin.x -= windowRect.size.width;
     if (!_inlinePreedit) {
+      NSSize preeditSize = [_view.text.layoutManagers[0] boundingRectForGlyphRange:preeditRange inTextContainer:_view.text.layoutManagers[0].textContainers[0]].size;
       windowRect.origin.x += preeditSize.height + _view.edgeInset.width;
     }
   }
@@ -389,8 +474,8 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   }
   // rotate the view, the core in vertical mode!
   if (_vertical) {
-    _view.boundsRotation = -90.0;
-    [_view setBoundsOrigin:NSMakePoint(_view.contentSize.width, 0)];
+    _view.boundsRotation = 90.0;
+    [_view setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
   } else {
     _view.boundsRotation = 0;
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
@@ -481,15 +566,10 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
       }
     }
   }
-
+  
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
-  NSRect preeditRect = NSZeroRect;
-  preeditSize = NSMakeSize(0, 0);
-
-  // needed to calculate line-broken candidate box size.
-  CGFloat height = 0.0;
-  
+  preeditRange = NSMakeRange(0, 0);
   // preedit
   if (preedit) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -521,16 +601,8 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     [text addAttribute:NSParagraphStyleAttributeName
                  value:_preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
-
-    // get the size of preedit zone, to position the candidate box accordingly in vertical mode
-    height = text.size.width;
-    if (_vertical && (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3)) {
-      height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
-    }
-    preeditSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-    preeditRect.size.height = preeditSize.height;
-    preeditRect.origin.y = -preeditSize.height;
     
+    preeditRange = NSMakeRange(0, text.length);
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc]
                     initWithString:@"\n"
@@ -539,8 +611,7 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     candidateStartPos = text.length;
   }
   
-  NSRect highlightedRect = NSZeroRect;
-  CGFloat separatorWidth = 0;
+  NSRange highlightedRange;
   // candidates
   NSUInteger i;
   for (i = 0; i < candidates.count; ++i) {
@@ -615,14 +686,13 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
                                        initWithString:comments[i]
                                            attributes:commentAttrs]];
     }
-
+    
+    
+    NSAttributedString *separator = [[NSMutableAttributedString alloc]
+                                        initWithString:(_horizontal ? @"  " : @"\n")
+                                            attributes:_attrs];
+    _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
     if (i > 0) {
-      NSAttributedString *separator = [[NSMutableAttributedString alloc]
-                                          initWithString:(_horizontal ? @"  " : @"\n")
-                                              attributes:_attrs];
-      if (_horizontal && separatorWidth == 0) {
-        separatorWidth = separator.size.width;
-      }
       [text appendAttributedString:separator];
     }
     
@@ -634,99 +704,22 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
                  range:NSMakeRange(0, line.length)];
-    [text appendAttributedString:line];
     
     if (i == index) {
-      CGFloat left = 0;
-      CGFloat bottom = 0;
-      
-      // calculate line-broken candidate box size
-      height = text.size.width;
-      if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
-        height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
-      }
-      NSSize lineSize = [line boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-      NSSize textSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-      
-      if (_horizontal) {
-        NSRange candidateRange = NSMakeRange(candidateStartPos, text.length - candidateStartPos);
-        NSAttributedString *candidateText = [text attributedSubstringFromRange:candidateRange];
-        left = candidateText.size.width - line.size.width;
-        height = line.size.height;
-      } else if (_vertical) {
-        height = lineSize.height;
-        bottom = -textSize.height;
-      } else {
-        height = line.size.height;
-        bottom = -text.size.height;
-      }
-      highlightedRect = NSMakeRect(left, bottom, line.size.width, height);
+      highlightedRange = NSMakeRange(text.length, line.length);
     }
+    [text appendAttributedString:line];
   }
-
-  if (!NSIsEmptyRect(highlightedRect)) {
-    if (_horizontal) {
-      if (preedit) {
-        highlightedRect.size.height += (_preeditParagraphStyle.paragraphSpacing+_paragraphStyle.paragraphSpacing) / 2;
-        preeditRect.origin.y += text.size.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.height += _view.edgeInset.width + _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.width = text.size.width + _view.edgeInset.width * 2;
-      } else {
-        highlightedRect.size.height += _view.edgeInset.height;
-      }
-      if (index > 0) {
-        highlightedRect.origin.x -= separatorWidth / 2 - _view.edgeInset.width;
-        highlightedRect.size.width += separatorWidth / 2;
-      } else {
-        highlightedRect.size.width += _view.edgeInset.width;
-      }
-      if (index < numCandidates - 1) {
-        highlightedRect.size.width += separatorWidth / 2;
-      } else {
-        if (preedit) {
-          // in case the preedit line is longer than the candidate list,
-          // the highlight region for the last candidate should include empty space on the right.
-          highlightedRect.size.width = text.size.width - highlightedRect.origin.x + _view.edgeInset.width;
-        }
-        highlightedRect.size.width += _view.edgeInset.width;
-      }
-      highlightedRect.size.height += _view.edgeInset.height;
-    } else {
-      NSSize fullSize = text.size;
-      if (_vertical) {
-        height = fullSize.width;
-        if (height + _view.edgeInset.width * 2 > NSHeight(screenRect) / 3) {
-          height = NSHeight(screenRect) / 3 - _view.edgeInset.width * 2;
-        }
-        fullSize = [text boundingRectWithSize:NSMakeSize(height, 0.0) options:NSStringDrawingUsesLineFragmentOrigin].size;
-      }
-      highlightedRect.size.width = fullSize.width + _view.edgeInset.width * 2;
-      highlightedRect.origin.y += fullSize.height + _view.edgeInset.width;
-      if (preedit) {
-        preeditRect.origin.y += fullSize.height + _view.edgeInset.width - _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.height += _view.edgeInset.width + _preeditParagraphStyle.paragraphSpacing / 2;
-        preeditRect.size.width = highlightedRect.size.width;
-      }
-      
-      if (index == 0) {
-        if (preedit) {
-          highlightedRect.size.height += _preeditParagraphStyle.paragraphSpacing / 2;
-        } else {
-          highlightedRect.size.height += _view.edgeInset.width;
-        }
-      } else {
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
-      }
-      if (index < numCandidates - 1) {
-        highlightedRect.origin.y -= _paragraphStyle.paragraphSpacing / 2;
-        highlightedRect.size.height += _paragraphStyle.paragraphSpacing / 2;
-      } else {
-        highlightedRect.origin.y -= _view.edgeInset.width;
-        highlightedRect.size.height += _view.edgeInset.width;
-      }
-    }
+  // text done!
+  [_view setText:text];
+  
+  CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
+  if (_vertical && (textWidth > NSHeight(screenRect) / 3 - _view.edgeInset.height * 2)) {
+    textWidth = NSHeight(screenRect) / 3 - _view.edgeInset.height * 2;
   }
-  [_view setText:text hilightedRect:highlightedRect preeditRect:preeditRect];
+  _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
+  
+  [_view drawViewWith:highlightedRange preeditRect:preeditRange];
   [self show];
 }
 
@@ -738,7 +731,8 @@ NSBezierPath *drawSmoothRoundRect(NSRect bounds, CGFloat cornerRadius, CGFloat a
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message
                                                              attributes:_commentAttrs];
   [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length)];
-  [_view setText:text hilightedRect:NSZeroRect preeditRect:NSZeroRect];
+  [_view setText:text];
+  [_view drawViewWith:NSMakeRange(0, 0) preeditRect:NSMakeRange(0, 0)];
   [self show];
 
   if (_statusTimer) {
@@ -805,7 +799,6 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
                                                                           size:0.0]];
     }
   }
-
   if (validFontDescriptors.count == 0) {
     return nil;
   } else if (validFontDescriptors.count == 1) {
@@ -1038,14 +1031,14 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _preeditHighlightedAttrs[NSFontAttributeName] = font;
   
   if (!_vertical) {
-    _attrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _highlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _labelAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _commentAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _preeditAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
-    _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(_view.baseOffset);
+    _attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   }
 
   // can be nil.
@@ -1105,22 +1098,19 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _view.cornerRadius = cornerRadius;
   _view.hilitedCornerRadius = hilitedCornerRadius;
   _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
+  _view.linespace = lineSpacing / 2;
+  _view.preeditLinespace = spacing / 2;
   _view.baseOffset = baseOffset;
   _view.horizontal = _horizontal;
+  _view.vertical = _vertical;
+  _view.inlineEdit = _inlinePreedit;
 
   _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
-
-  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
-  const NSSize cjkSize = [cjkChar boundingRectWithSize:NSMakeSize(0, 0) options:NSStringDrawingUsesLineFragmentOrigin].size;
   
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
   paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
-  if (_vertical) {
-    paragraphStyle.minimumLineHeight = cjkSize.height;
-    paragraphStyle.maximumLineHeight = cjkSize.height;
-  }
   _paragraphStyle = paragraphStyle;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
