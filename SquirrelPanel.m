@@ -950,8 +950,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
   if (_vertical && (textWidth > NSHeight(screenRect) / 3 - _view.edgeInset.height * 2)) {
     textWidth = NSHeight(screenRect) / 3 - _view.edgeInset.height * 2;
-  } else if (!_vertical && (textWidth > NSHeight(screenRect) / 2 - _view.edgeInset.height * 2)) {
-    textWidth = NSHeight(screenRect) / 2 - _view.edgeInset.height * 2;
+  } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
+    textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
   }
   _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
   
