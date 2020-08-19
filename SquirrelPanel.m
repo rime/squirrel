@@ -620,6 +620,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   NSParagraphStyle *_preeditParagraphStyle;
   NSRange preeditRange;
   NSRect screenRect;
+  double tempHeight;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -703,8 +704,9 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     _window.backgroundColor = [NSColor clearColor];
     _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
     _window.contentView = _view;
-
+  
     [self initializeUIStyle];
+    tempHeight = 0;
   }
   return self;
 }
@@ -729,6 +731,11 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     textWidth = NSHeight(screenRect) / 3 - _view.edgeInset.height * 2;
   } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
+  }
+  if (textWidth >= tempHeight) {
+    tempHeight = textWidth;
+  } else {
+    textWidth = tempHeight;
   }
   _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
   
@@ -798,6 +805,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     _statusTimer = nil;
   }
   [_window orderOut:nil];
+  tempHeight = 0;
 }
 
 // Main function to add attributes to text output from librime
