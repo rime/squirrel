@@ -912,8 +912,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
       labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
     } else {
       // default: 1. 2. 3...
-      char labelDigit = (i + 1) % 10 + '0';
-      labelString = [NSString stringWithFormat:labelFormat, labelDigit];
+      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+      labelString = [NSString stringWithFormat:labelFormat, i+1];
     }
 
     NSDictionary *attrs = (i == index) ? _highlightedAttrs : _attrs;
