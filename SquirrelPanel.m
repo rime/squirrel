@@ -515,7 +515,6 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
 
   [NSBezierPath setDefaultLineWidth:0];
   backgroundPath = drawSmoothLines(rectVertex(backgroundRect), _cornerRadius*0.3, _cornerRadius*1.4);
-  self.layer.shadowPath = (__bridge CGPathRef _Nullable)(backgroundPath);
   // Nothing should extend beyond backgroundPath
   borderPath = [backgroundPath copy];
   [borderPath addClip];
@@ -765,6 +764,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
   }
   [_window setFrame:windowRect display:YES];
+  [_window invalidateShadow];
   [_window orderFront:nil];
   // voila !
 }
