@@ -261,10 +261,20 @@ BOOL nearEmptyRect(NSRect rect) {
       bodyRect->size.height -= trailingRect->size.height;
     }
   }
+  leadingRect->origin.x += _edgeInset.width;
+  leadingRect->origin.y += _edgeInset.height;
+  bodyRect->origin.x += _edgeInset.width;
+  bodyRect->origin.y += _edgeInset.height;
+  trailingRect->origin.x += _edgeInset.width;
+  trailingRect->origin.y += _edgeInset.height;
 }
 
 NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyRect, NSRect trailingRect) {
-  if (nearEmptyRect(leadingRect) && nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
+  if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && nearEmptyRect(trailingRect)) {
+    return rectVertex(leadingRect);
+  } else if (nearEmptyRect(bodyRect) && nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect)) {
+    return rectVertex(trailingRect);
+  } else if (nearEmptyRect(leadingRect) && nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
     return rectVertex(bodyRect);
   } else if (nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
     NSArray<NSValue *> * leadingVertex = rectVertex(leadingRect);
@@ -309,11 +319,13 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   NSBezierPath *backgroundPath;
   NSBezierPath *borderPath;
   NSBezierPath *hilightedPath;
+  NSBezierPath *hilightedPath2;
   NSBezierPath *highlightedPreeditPath;
   NSBezierPath *highlightedPreeditPath2;
   NSBezierPath *reverseHighlightedPreeditPath;
   NSBezierPath *reverseHighlightedPreeditPath2;
   NSBezierPath *reverseHilightedPath;
+  NSBezierPath *reverseHilightedPath2;
   NSBezierPath *preeditPath;
   NSBezierPath *reversePreeditPath;
   
@@ -347,23 +359,39 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   if (_highlightedRange.length > 0 && _highlightedStripColor != nil) {
     highlightedRect = [self contentRectForRange:_highlightedRange];
     if (_horizontal){
-      highlightedRect.size.height += edgeHeight + _linespace;
-      highlightedRect.size.width += _seperatorWidth;
-      highlightedRect.origin.x += edgeWidth - _seperatorWidth / 2;
-      highlightedRect.origin.y += edgeWidth - _linespace;
-      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
-        highlightedRect.size.width += edgeWidth - _seperatorWidth / 2 + textFrameWidth;
-        if (NSMaxX(preeditRect) > NSMaxX(highlightedRect)) {
-          highlightedRect.size.width += NSMaxX(preeditRect) - NSMaxX(highlightedRect);
-        }
+      NSRect leadingRect;
+      NSRect bodyRect;
+      NSRect trailingRect;
+      [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
+
+      NSRect innerBox = backgroundRect;
+      innerBox.size.width -= (edgeWidth + 1 + textFrameWidth) * 2;
+      innerBox.origin.x += edgeWidth + 1 + textFrameWidth;
+      innerBox.origin.y += preeditRect.size.height + _linespace + 1;
+      innerBox.size.height -= edgeHeight + preeditRect.size.height + _linespace + 2;
+      NSRect outerBox = backgroundRect;
+      outerBox.size.height -= _hilitedCornerRadius + preeditRect.size.height;
+      outerBox.size.width -= _hilitedCornerRadius;
+      outerBox.origin.x += _hilitedCornerRadius / 2;
+      outerBox.origin.y += _hilitedCornerRadius / 2 + preeditRect.size.height;
+      
+      NSMutableArray<NSValue *> *highlightedPoints;
+      NSMutableArray<NSValue *> *highlightedPoints2;
+      if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
+        highlightedPoints = [rectVertex(leadingRect) mutableCopy];
+        highlightedPoints2 = [rectVertex(trailingRect) mutableCopy];
+      } else {
+        highlightedPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
       }
-      if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-        highlightedRect.size.width += edgeWidth - _seperatorWidth / 2 + textFrameWidth;
-        highlightedRect.origin.x -= edgeWidth - _seperatorWidth / 2 + textFrameWidth;
+      for (NSUInteger i = 0; i < highlightedPoints.count; i += 1) {
+        highlightedPoints[i] = @(expand([highlightedPoints[i] pointValue], innerBox, outerBox));
       }
-      if (_inlineEdit) {
-        highlightedRect.size.height += edgeHeight - _linespace;
-        highlightedRect.origin.y -= edgeHeight - _linespace;
+      for (NSUInteger i = 0; i < highlightedPoints2.count; i += 1) {
+        highlightedPoints2[i] = @(expand([highlightedPoints2[i] pointValue], innerBox, outerBox));
+      }
+      hilightedPath = drawSmoothLines(highlightedPoints, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
+      if (highlightedPoints2.count > 0) {
+        hilightedPath2 = drawSmoothLines(highlightedPoints2, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
       }
     } else {
       highlightedRect.size.width = textField.size.width;
@@ -381,19 +409,17 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
           highlightedRect.origin.y -= _hilitedCornerRadius / 2;
         }
       }
-    }
-    // setFrame rounds up floating point numbers in window bounds.
-    // Add extra width and height to overcome rounding errors and ensure
-    // highlighted area fully covers paddings near right and top edges.
-    if (self.hilitedCornerRadius == 0) {
-      // fill in small gaps between highlighted rect and the bounding rect.
-      checkBorders(&highlightedRect, backgroundRect);
-    } else {
-      // leave a small gap between highlighted rect and the bounding rect
-      NSRect candidateRect = backgroundRect;
-      candidateRect.size.height -= preeditRect.size.height;
-      candidateRect.origin.y += preeditRect.size.height;
-      makeRoomForConor(&highlightedRect, candidateRect, _hilitedCornerRadius / 2);
+      if (self.hilitedCornerRadius == 0) {
+        // fill in small gaps between highlighted rect and the bounding rect.
+        checkBorders(&highlightedRect, backgroundRect);
+      } else {
+        // leave a small gap between highlighted rect and the bounding rect
+        NSRect candidateRect = backgroundRect;
+        candidateRect.size.height -= preeditRect.size.height;
+        candidateRect.origin.y += preeditRect.size.height;
+        makeRoomForConor(&highlightedRect, candidateRect, _hilitedCornerRadius / 2);
+      }
+      hilightedPath = drawSmoothLines(rectVertex(highlightedRect), _hilitedCornerRadius*0.3, _hilitedCornerRadius*1.4);
     }
   }
   
@@ -402,12 +428,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     NSRect bodyRect;
     NSRect trailingRect;
     [self multilineRectForRange:_highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-    leadingRect.origin.x += edgeWidth;
-    leadingRect.origin.y += edgeHeight;
-    bodyRect.origin.x += edgeWidth;
-    bodyRect.origin.y += edgeHeight;
-    trailingRect.origin.x += edgeWidth;
-    trailingRect.origin.y += edgeHeight;
+
     NSRect innerBox = preeditRect;
     innerBox.size.width -= (edgeWidth + 1 + textFrameWidth) * 2;
     innerBox.origin.x += edgeWidth + 1 + textFrameWidth;
@@ -428,10 +449,6 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
       highlightedPreeditPoints = [rectVertex(leadingRect) mutableCopy];
       highlightedPreeditPoints2 = [rectVertex(trailingRect) mutableCopy];
-    } else if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && nearEmptyRect(trailingRect)) {
-      highlightedPreeditPoints = [rectVertex(leadingRect) mutableCopy];
-    } else if (nearEmptyRect(bodyRect) && nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect)) {
-      highlightedPreeditPoints = [rectVertex(trailingRect) mutableCopy];
     } else {
       highlightedPreeditPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
     }
@@ -455,12 +472,17 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   }
 
   if (self.highlightedStripColor && !NSIsEmptyRect(highlightedRect)) {
-    hilightedPath = drawSmoothLines(rectVertex(highlightedRect), _hilitedCornerRadius*0.3, _hilitedCornerRadius*1.4);
     [self.highlightedStripColor setFill];
     [hilightedPath fill];
     reverseHilightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
     [reverseHilightedPath appendBezierPath:hilightedPath];
     reverseHilightedPath.windingRule = NSEvenOddWindingRule;
+    if (hilightedPath2) {
+      [hilightedPath2 fill];
+      reverseHilightedPath2 = [NSBezierPath bezierPathWithRect:CGRectInfinite];
+      [reverseHilightedPath2 appendBezierPath:hilightedPath2];
+      reverseHilightedPath2.windingRule = NSEvenOddWindingRule;
+    }
   }
 
   if (_highlightedPreeditColor != nil && ![highlightedPreeditPath isEmpty]) {
@@ -499,6 +521,9 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
       }
       if (reverseHilightedPath) {
         [reverseHilightedPath addClip];
+      }
+      if (reverseHilightedPath2) {
+        [reverseHilightedPath2 addClip];
       }
       [_backgroundColor setFill];
       [backgroundPath fill];
@@ -925,6 +950,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
   if (_vertical && (textWidth > NSHeight(screenRect) / 3 - _view.edgeInset.height * 2)) {
     textWidth = NSHeight(screenRect) / 3 - _view.edgeInset.height * 2;
+  } else if (!_vertical && (textWidth > NSHeight(screenRect) / 2 - _view.edgeInset.height * 2)) {
+    textWidth = NSHeight(screenRect) / 2 - _view.edgeInset.height * 2;
   }
   _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
   
