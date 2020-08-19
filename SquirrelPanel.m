@@ -328,12 +328,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   NSBezierPath *highlightedPath2;
   NSBezierPath *highlightedPreeditPath;
   NSBezierPath *highlightedPreeditPath2;
-  NSBezierPath *reverseHighlightedPreeditPath;
-  NSBezierPath *reverseHighlightedPreeditPath2;
-  NSBezierPath *reversehighlightedPath;
-  NSBezierPath *reversehighlightedPath2;
   NSBezierPath *preeditPath;
-  NSBezierPath *reversePreeditPath;
   
   NSRect textField = dirtyRect;
   textField.origin.y += _edgeInset.height;
@@ -358,6 +353,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     if (_highlightedRange.length == 0) {
       preeditRect.size.height += _edgeInset.height - _preeditLinespace;
     }
+    checkBorders(&preeditRect, backgroundRect);
+    preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
   }
   
   // Draw highlighted Rect
@@ -371,43 +368,41 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
       [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
 
       // Add gap between horizontal candidates
-      if (_horizontal) {
-        if (_highlightedRange.location+_highlightedRange.length == _text.length) {
-          if (!nearEmptyRect(leadingRect)) {
-            leadingRect.size.width += _seperatorWidth / 2;
-            leadingRect.origin.x -= _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(bodyRect)) {
-            bodyRect.size.width += _seperatorWidth / 2;
-            bodyRect.origin.x -= _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(trailingRect)) {
-            trailingRect.size.width += _seperatorWidth / 2;
-            trailingRect.origin.x -= _seperatorWidth / 2;
-          }
-        } else if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-          if (!nearEmptyRect(leadingRect)) {
-            leadingRect.size.width += _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(bodyRect)) {
-            bodyRect.size.width += _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(trailingRect)) {
-            trailingRect.size.width += _seperatorWidth / 2;
-          }
-        } else {
-          if (!nearEmptyRect(leadingRect)) {
-            leadingRect.size.width += _seperatorWidth;
-            leadingRect.origin.x -= _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(bodyRect)) {
-            bodyRect.size.width += _seperatorWidth;
-            bodyRect.origin.x -= _seperatorWidth / 2;
-          }
-          if (!nearEmptyRect(trailingRect)) {
-            trailingRect.size.width += _seperatorWidth;
-            trailingRect.origin.x -= _seperatorWidth / 2;
-          }
+      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
+        if (!nearEmptyRect(leadingRect)) {
+          leadingRect.size.width += _seperatorWidth / 2;
+          leadingRect.origin.x -= _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(bodyRect)) {
+          bodyRect.size.width += _seperatorWidth / 2;
+          bodyRect.origin.x -= _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(trailingRect)) {
+          trailingRect.size.width += _seperatorWidth / 2;
+          trailingRect.origin.x -= _seperatorWidth / 2;
+        }
+      } else if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
+        if (!nearEmptyRect(leadingRect)) {
+          leadingRect.size.width += _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(bodyRect)) {
+          bodyRect.size.width += _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(trailingRect)) {
+          trailingRect.size.width += _seperatorWidth / 2;
+        }
+      } else {
+        if (!nearEmptyRect(leadingRect)) {
+          leadingRect.size.width += _seperatorWidth;
+          leadingRect.origin.x -= _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(bodyRect)) {
+          bodyRect.size.width += _seperatorWidth;
+          bodyRect.origin.x -= _seperatorWidth / 2;
+        }
+        if (!nearEmptyRect(trailingRect)) {
+          trailingRect.size.width += _seperatorWidth;
+          trailingRect.origin.x -= _seperatorWidth / 2;
         }
       }
       
@@ -521,90 +516,59 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     }
   }
 
+  [NSBezierPath setDefaultLineWidth:0];
   backgroundPath = drawSmoothLines(rectVertex(backgroundRect), _cornerRadius*0.3, _cornerRadius*1.4);
   self.layer.shadowPath = (__bridge CGPathRef _Nullable)(backgroundPath);
   // Nothing should extend beyond backgroundPath
-  [backgroundPath addClip];
-  if (_borderColor) {
-    borderPath = [backgroundPath copy];
-  }
+  borderPath = [backgroundPath copy];
+  [borderPath addClip];
 
-  // Start to fill everything
-  if (_highlightedStripColor && !NSIsEmptyRect(highlightedRect)) {
-    [_highlightedStripColor setFill];
-    [_highlightedStripColor setStroke];
-    [highlightedPath fill];
-    highlightedPath.lineWidth = 1;
-    [highlightedPath stroke];
-    // Use this to exclude the foreground shape from background shape, to make transparancy work properly
-    reversehighlightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
-    [reversehighlightedPath appendBezierPath:highlightedPath];
-    reversehighlightedPath.windingRule = NSEvenOddWindingRule;
-    if (highlightedPath2) {
-      [highlightedPath2 fill];
-      reversehighlightedPath2 = [NSBezierPath bezierPathWithRect:CGRectInfinite];
-      [reversehighlightedPath2 appendBezierPath:highlightedPath2];
-      reversehighlightedPath2.windingRule = NSEvenOddWindingRule;
+  // Calculate intersections
+  if (![highlightedPath isEmpty]) {
+    [backgroundPath appendBezierPath:[highlightedPath copy]];
+    if (![highlightedPath2 isEmpty]) {
+      [backgroundPath appendBezierPath:[highlightedPath2 copy]];
     }
   }
+  
+  if (![preeditPath isEmpty]) {
+    [backgroundPath appendBezierPath:[preeditPath copy]];
+  }
+  
+  if (![highlightedPreeditPath isEmpty]) {
+    [preeditPath appendBezierPath:[highlightedPreeditPath copy]];
+    if (![highlightedPreeditPath2 isEmpty]) {
+      [preeditPath appendBezierPath:[highlightedPreeditPath2 copy]];
+    }
+  }
+  [backgroundPath setWindingRule:NSEvenOddWindingRule];
+  [preeditPath setWindingRule:NSEvenOddWindingRule];
 
-  if (_highlightedPreeditColor != nil && ![highlightedPreeditPath isEmpty]) {
+  [_backgroundColor setFill];
+  [backgroundPath fill];
+  if (_preeditBackgroundColor && ![preeditPath isEmpty]) {
+    [_preeditBackgroundColor setFill];
+    [preeditPath fill];
+  }
+  if (_highlightedStripColor && ![highlightedPath isEmpty]) {
+    [_highlightedStripColor setFill];
+    [highlightedPath fill];
+    if (![highlightedPath2 isEmpty]) {
+     [highlightedPath2 fill];
+    }
+  }
+  if (_highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
     [_highlightedPreeditColor setFill];
-    [_highlightedPreeditColor setStroke];
     [highlightedPreeditPath fill];
-    highlightedPreeditPath.lineWidth = 1;
-    [highlightedPreeditPath stroke];
-    reverseHighlightedPreeditPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
-    [reverseHighlightedPreeditPath appendBezierPath:highlightedPreeditPath];
-    reverseHighlightedPreeditPath.windingRule = NSEvenOddWindingRule;
     if (![highlightedPreeditPath2 isEmpty]) {
       [highlightedPreeditPath2 fill];
-      reverseHighlightedPreeditPath2 = [NSBezierPath bezierPathWithRect:CGRectInfinite];
-      [reverseHighlightedPreeditPath2 appendBezierPath:highlightedPreeditPath2];
-      reverseHighlightedPreeditPath2.windingRule = NSEvenOddWindingRule;
-      [highlightedPreeditPath2 fill];
-      highlightedPreeditPath2.lineWidth = 1;
-      [highlightedPreeditPath2 stroke];
     }
   }
 
-  // Use CGContext to reverse cliping after filling background is done
-  CGContextSaveGState(NSGraphicsContext.currentContext.CGContext); {
-    if (_preeditBackgroundColor && !NSIsEmptyRect(preeditRect)) {
-      checkBorders(&preeditRect, backgroundRect);
-      preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
-      [_preeditBackgroundColor setFill];
-      if (reverseHighlightedPreeditPath) {
-        [reverseHighlightedPreeditPath addClip];
-      }
-      if (reverseHighlightedPreeditPath2) {
-        [reverseHighlightedPreeditPath2 addClip];
-      }
-      [preeditPath fill];
-      reversePreeditPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
-      [reversePreeditPath appendBezierPath:preeditPath];
-      reversePreeditPath.windingRule = NSEvenOddWindingRule;
-    }
-    CGContextSaveGState(NSGraphicsContext.currentContext.CGContext); {
-      if (reversePreeditPath) {
-        [reversePreeditPath addClip];
-      }
-      if (reversehighlightedPath) {
-        [reversehighlightedPath addClip];
-      }
-      if (reversehighlightedPath2) {
-        [reversehighlightedPath2 addClip];
-      }
-      [_backgroundColor setFill];
-      [backgroundPath fill];
-    } CGContextRestoreGState(NSGraphicsContext.currentContext.CGContext);
-  } CGContextRestoreGState(NSGraphicsContext.currentContext.CGContext);
-
-  
-  if (borderPath) {
+  if (_borderColor) {
     [_borderColor setStroke];
-    backgroundPath.lineWidth = _borderWidth;
-    [backgroundPath stroke];
+    borderPath.lineWidth = _borderWidth;
+    [borderPath stroke];
   }
   NSRange glyphRange = [_text.layoutManagers[0] glyphRangeForTextContainer:_text.layoutManagers[0].textContainers[0]];
   [_text.layoutManagers[0] drawGlyphsForGlyphRange:glyphRange atPoint:textField.origin];
