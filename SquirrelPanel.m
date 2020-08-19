@@ -530,9 +530,12 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   }
 
   // Start to fill everything
-  if (self.highlightedStripColor && !NSIsEmptyRect(highlightedRect)) {
-    [self.highlightedStripColor setFill];
+  if (_highlightedStripColor && !NSIsEmptyRect(highlightedRect)) {
+    [_highlightedStripColor setFill];
+    [_highlightedStripColor setStroke];
     [highlightedPath fill];
+    highlightedPath.lineWidth = 1;
+    [highlightedPath stroke];
     // Use this to exclude the foreground shape from background shape, to make transparancy work properly
     reversehighlightedPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
     [reversehighlightedPath appendBezierPath:highlightedPath];
@@ -547,7 +550,10 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
 
   if (_highlightedPreeditColor != nil && ![highlightedPreeditPath isEmpty]) {
     [_highlightedPreeditColor setFill];
+    [_highlightedPreeditColor setStroke];
     [highlightedPreeditPath fill];
+    highlightedPreeditPath.lineWidth = 1;
+    [highlightedPreeditPath stroke];
     reverseHighlightedPreeditPath = [NSBezierPath bezierPathWithRect:CGRectInfinite];
     [reverseHighlightedPreeditPath appendBezierPath:highlightedPreeditPath];
     reverseHighlightedPreeditPath.windingRule = NSEvenOddWindingRule;
@@ -556,12 +562,15 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
       reverseHighlightedPreeditPath2 = [NSBezierPath bezierPathWithRect:CGRectInfinite];
       [reverseHighlightedPreeditPath2 appendBezierPath:highlightedPreeditPath2];
       reverseHighlightedPreeditPath2.windingRule = NSEvenOddWindingRule;
+      [highlightedPreeditPath2 fill];
+      highlightedPreeditPath2.lineWidth = 1;
+      [highlightedPreeditPath2 stroke];
     }
   }
 
   // Use CGContext to reverse cliping after filling background is done
   CGContextSaveGState(NSGraphicsContext.currentContext.CGContext); {
-    if (self.preeditBackgroundColor && !NSIsEmptyRect(preeditRect)) {
+    if (_preeditBackgroundColor && !NSIsEmptyRect(preeditRect)) {
       checkBorders(&preeditRect, backgroundRect);
       preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
       [_preeditBackgroundColor setFill];
