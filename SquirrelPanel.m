@@ -110,10 +110,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 - (void) setBorderColor:(NSColor *)borderColor width:(CGFloat)borderWidth {
   _borderColor = borderColor;
   _borderWidth = borderWidth;
-  if (borderColor) {
-    self.edgeInset = NSMakeSize(MAX(self.cornerRadius, self.edgeInset.width - borderWidth),
-                                MAX(self.cornerRadius, self.edgeInset.height - borderWidth));
-  }
+  self.edgeInset = NSMakeSize(MAX(self.cornerRadius, borderWidth), MAX(self.cornerRadius, borderWidth));
 }
 
 // If an edge is close to border, will use border instead. To fix rounding errors
@@ -522,6 +519,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   // Nothing should extend beyond backgroundPath
   borderPath = [backgroundPath copy];
   [borderPath addClip];
+  borderPath.lineWidth = _borderWidth;
 
   // Calculate intersections
   if (![highlightedPath isEmpty]) {
@@ -554,7 +552,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
     [_highlightedStripColor setFill];
     [highlightedPath fill];
     if (![highlightedPath2 isEmpty]) {
-     [highlightedPath2 fill];
+      [highlightedPath2 fill];
     }
   }
   if (_highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
@@ -567,7 +565,6 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
 
   if (_borderColor) {
     [_borderColor setStroke];
-    borderPath.lineWidth = _borderWidth;
     [borderPath stroke];
   }
   NSRange glyphRange = [_text.layoutManagers[0] glyphRangeForTextContainer:_text.layoutManagers[0].textContainers[0]];
@@ -1379,7 +1376,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   _view.hilitedCornerRadius = hilitedCornerRadius;
   _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
   _view.linespace = lineSpacing / 2;
-  _view.preeditLinespace = spacing / 2;
+  _view.preeditLinespace = spacing;
   _view.horizontal = _horizontal;
   _view.vertical = _vertical;
   _view.inlineEdit = _inlinePreedit;
@@ -1394,8 +1391,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.paragraphSpacing = spacing / 2;
-  preeditParagraphStyle.paragraphSpacingBefore = spacing / 2;
+  preeditParagraphStyle.paragraphSpacing = spacing;
   _preeditParagraphStyle = preeditParagraphStyle;
 }
 
