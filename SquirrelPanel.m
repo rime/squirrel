@@ -703,7 +703,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
   }
-  if (_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) {
+  if ((_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!_vertical && NSMinX(_position)+textWidth > NSMaxX(screenRect))) {
     if (textWidth >= tempHeight) {
       tempHeight = textWidth;
     } else {
@@ -933,7 +933,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
                     initWithString:labelString
                         attributes:labelAttrs]];
       // get the label size for indent
-      if (_vertical) {
+      if (!_horizontal) {
         [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length)];
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
