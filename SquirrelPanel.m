@@ -237,7 +237,7 @@ BOOL nearEmptyRect(NSRect rect) {
   *leadingRect = NSZeroRect;
   *bodyRect = boundingRect;
   *trailingRect = NSZeroRect;
-  if (fullRangeInBoundingRect.location < glyphRange.location) {
+  if (boundingRect.origin.x <= self.textFrameWidth +1 && fullRangeInBoundingRect.location < glyphRange.location) {
     *leadingRect = [layoutManager boundingRectForGlyphRange:NSMakeRange(fullRangeInBoundingRect.location, glyphRange.location-fullRangeInBoundingRect.location) inTextContainer:textContainer];
     if (!nearEmptyRect(*leadingRect)) {
       bodyRect->size.height -= leadingRect->size.height;
@@ -263,6 +263,19 @@ BOOL nearEmptyRect(NSRect rect) {
       *trailingRect = NSZeroRect;
     } else if (!nearEmptyRect(*trailingRect)) {
       bodyRect->size.height -= trailingRect->size.height;
+    }
+  }
+  NSRect lastLineRect = nearEmptyRect(*trailingRect) ? *bodyRect : *trailingRect;
+  lastLineRect.size.width = textContainer.containerSize.width - lastLineRect.origin.x;
+  NSRange lastLineRange = [layoutManager glyphRangeForBoundingRect:lastLineRect inTextContainer:textContainer];
+  while (lastLineRange.length>0 && [layoutManager propertyForGlyphAtIndex:lastLineRange.location+lastLineRange.length-1] == NSGlyphPropertyElastic) {
+    lastLineRange.length -= 1;
+  }
+  if (lastLineRange.location+lastLineRange.length == glyphRange.location+glyphRange.length) {
+    if (!nearEmptyRect(*trailingRect)) {
+      *trailingRect = lastLineRect;
+    } else {
+      *bodyRect = lastLineRect;
     }
   }
   leadingRect->origin.x += _edgeInset.width;
@@ -357,15 +370,12 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   }
   
   // Draw highlighted Rect
-  NSRect highlightedRect = NSZeroRect;
   if (_highlightedRange.length > 0 && _highlightedStripColor != nil) {
-    highlightedRect = [self contentRectForRange:_highlightedRange];
     if (_horizontal){
       NSRect leadingRect;
       NSRect bodyRect;
       NSRect trailingRect;
       [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-
       // Add gap between horizontal candidates
       if (_highlightedRange.location+_highlightedRange.length == _text.length) {
         if (!nearEmptyRect(leadingRect)) {
@@ -442,6 +452,7 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
         highlightedPath2 = drawSmoothLines(highlightedPoints2, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
       }
     } else {
+      NSRect highlightedRect = [self contentRectForRange:_highlightedRange];
       highlightedRect.size.width = textField.size.width;
       highlightedRect.size.height += _linespace * 2;
       highlightedRect.origin = NSMakePoint(textField.origin.x - _edgeInset.width, highlightedRect.origin.y + _edgeInset.height - _linespace);
