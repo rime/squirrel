@@ -110,7 +110,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 - (void) setBorderColor:(NSColor *)borderColor width:(CGFloat)borderWidth {
   _borderColor = borderColor;
   _borderWidth = borderWidth;
-  self.edgeInset = NSMakeSize(MAX(self.cornerRadius, borderWidth), MAX(self.cornerRadius, borderWidth));
 }
 
 // If an edge is close to border, will use border instead. To fix rounding errors
@@ -319,18 +318,21 @@ NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyRect, NS
 }
 
 // If the point is outside the innerBox, will extend to reach the outerBox
-NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
-  if (target.x < innerBorder.origin.x) {
-    target.x = outerBorder.origin.x;
-  } else if (target.x > innerBorder.origin.x+innerBorder.size.width) {
-    target.x = outerBorder.origin.x+outerBorder.size.width;
+void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerBorder) {
+  for (NSUInteger i = 0; i < vertex.count; i += 1){
+    NSPoint point = [vertex[i] pointValue];
+    if (point.x < innerBorder.origin.x) {
+      point.x = outerBorder.origin.x;
+    } else if (point.x > innerBorder.origin.x+innerBorder.size.width) {
+      point.x = outerBorder.origin.x+outerBorder.size.width;
+    }
+    if (point.y < innerBorder.origin.y) {
+      point.y = outerBorder.origin.y;
+    } else if (point.y > innerBorder.origin.y+innerBorder.size.height) {
+      point.y = outerBorder.origin.y+outerBorder.size.height;
+    }
+    [vertex replaceObjectAtIndex:i withObject:@(point)];
   }
-  if (target.y < innerBorder.origin.y) {
-    target.y = outerBorder.origin.y;
-  } else if (target.y > innerBorder.origin.y+innerBorder.size.height) {
-    target.y = outerBorder.origin.y+outerBorder.size.height;
-  }
-  return target;
 }
 
 // All draws happen here
@@ -443,12 +445,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
         highlightedPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
       }
       // Expand the boxes to reach proper border
-      for (NSUInteger i = 0; i < highlightedPoints.count; i += 1) {
-        highlightedPoints[i] = @(expand([highlightedPoints[i] pointValue], innerBox, outerBox));
-      }
-      for (NSUInteger i = 0; i < highlightedPoints2.count; i += 1) {
-        highlightedPoints2[i] = @(expand([highlightedPoints2[i] pointValue], innerBox, outerBox));
-      }
+      expand(highlightedPoints, innerBox, outerBox);
+      expand(highlightedPoints2, innerBox, outerBox);
       highlightedPath = drawSmoothLines(highlightedPoints, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
       if (highlightedPoints2.count > 0) {
         highlightedPath2 = drawSmoothLines(highlightedPoints2, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
@@ -516,12 +514,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
       highlightedPreeditPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
     }
     // Expand the boxes to reach proper border
-    for (NSUInteger i = 0; i < highlightedPreeditPoints.count; i += 1) {
-      highlightedPreeditPoints[i] = @(expand([highlightedPreeditPoints[i] pointValue], innerBox, outerBox));
-    }
-    for (NSUInteger i = 0; i < highlightedPreeditPoints2.count; i += 1) {
-      highlightedPreeditPoints2[i] = @(expand([highlightedPreeditPoints2[i] pointValue], innerBox, outerBox));
-    }
+    expand(highlightedPreeditPoints, innerBox, outerBox);
+    expand(highlightedPreeditPoints2, innerBox, outerBox);
     highlightedPreeditPath = drawSmoothLines(highlightedPreeditPoints, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
     if (highlightedPreeditPoints2.count > 0) {
       highlightedPreeditPath2 = drawSmoothLines(highlightedPreeditPoints2, 0.3*_hilitedCornerRadius, 1.4*_hilitedCornerRadius);
@@ -973,8 +967,8 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
         labelString2 = [NSString stringWithFormat:labelFormat2, labelCharacter];
       } else {
         // default: 1. 2. 3...
-        char labelDigit = (i + 1) % 10 + '0';
-        labelString2 = [NSString stringWithFormat:labelFormat2, labelDigit];
+        labelFormat2 = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString2 = [NSString stringWithFormat:labelFormat, i+1];
       }
       [line appendAttributedString:
                 [[NSAttributedString alloc]
@@ -1393,7 +1387,11 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 
   _view.cornerRadius = cornerRadius;
   _view.hilitedCornerRadius = hilitedCornerRadius;
-  _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
+  if (_vertical) {
+    _view.edgeInset = NSMakeSize(MAX(borderHeight, cornerRadius), MAX(borderWidth, cornerRadius));
+  } else {
+    _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
+  }
   _view.linespace = lineSpacing / 2;
   _view.preeditLinespace = spacing;
   _view.horizontal = _horizontal;
