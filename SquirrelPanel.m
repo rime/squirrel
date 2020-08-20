@@ -703,10 +703,12 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
   } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
   }
-  if (textWidth >= tempHeight) {
-    tempHeight = textWidth;
-  } else {
-    textWidth = tempHeight;
+  if (_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) {
+    if (textWidth >= tempHeight) {
+      tempHeight = textWidth;
+    } else {
+      textWidth = tempHeight;
+    }
   }
   _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
   
