@@ -946,8 +946,10 @@ NSPoint expand(NSPoint target, NSRect innerBorder, NSRect outerBorder) {
                     initWithString:labelString
                         attributes:labelAttrs]];
       // get the label size for indent
-      if (!_horizontal) {
+      if (_vertical) {
         [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length)];
+      }
+      if (!_horizontal) {
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
     }
