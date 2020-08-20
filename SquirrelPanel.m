@@ -335,6 +335,25 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
 }
 
+// Add gap between horizontal candidates
+- (void)addGapBetweenHorizontalCandidates:(NSRect *)rect {
+  if (_highlightedRange.location+_highlightedRange.length == _text.length) {
+    if (!nearEmptyRect(*rect)) {
+      rect->size.width += _seperatorWidth / 2;
+      rect->origin.x -= _seperatorWidth / 2;
+    }
+  } else if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
+    if (!nearEmptyRect(*rect)) {
+      rect->size.width += _seperatorWidth / 2;
+    }
+  } else {
+    if (!nearEmptyRect(*rect)) {
+      rect->size.width += _seperatorWidth;
+      rect->origin.x -= _seperatorWidth / 2;
+    }
+  }
+}
+
 // All draws happen here
 - (void)drawRect:(NSRect)dirtyRect {
   double textFrameWidth = self.textFrameWidth;
@@ -380,44 +399,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       NSRect bodyRect;
       NSRect trailingRect;
       [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-      // Add gap between horizontal candidates
-      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
-        if (!nearEmptyRect(leadingRect)) {
-          leadingRect.size.width += _seperatorWidth / 2;
-          leadingRect.origin.x -= _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(bodyRect)) {
-          bodyRect.size.width += _seperatorWidth / 2;
-          bodyRect.origin.x -= _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(trailingRect)) {
-          trailingRect.size.width += _seperatorWidth / 2;
-          trailingRect.origin.x -= _seperatorWidth / 2;
-        }
-      } else if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-        if (!nearEmptyRect(leadingRect)) {
-          leadingRect.size.width += _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(bodyRect)) {
-          bodyRect.size.width += _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(trailingRect)) {
-          trailingRect.size.width += _seperatorWidth / 2;
-        }
-      } else {
-        if (!nearEmptyRect(leadingRect)) {
-          leadingRect.size.width += _seperatorWidth;
-          leadingRect.origin.x -= _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(bodyRect)) {
-          bodyRect.size.width += _seperatorWidth;
-          bodyRect.origin.x -= _seperatorWidth / 2;
-        }
-        if (!nearEmptyRect(trailingRect)) {
-          trailingRect.size.width += _seperatorWidth;
-          trailingRect.origin.x -= _seperatorWidth / 2;
-        }
-      }
+      
+      [self addGapBetweenHorizontalCandidates:&leadingRect];
+      [self addGapBetweenHorizontalCandidates:&bodyRect];
+      [self addGapBetweenHorizontalCandidates:&trailingRect];
       
       NSRect innerBox = backgroundRect;
       innerBox.size.width -= (_edgeInset.width + 1 + textFrameWidth) * 2;
