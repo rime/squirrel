@@ -229,14 +229,16 @@ BOOL nearEmptyRect(NSRect rect) {
 // Calculate 3 boxes containing the text in range. leadingRect and trailingRect are incomplete line rectangle
 // bodyRect is complete lines in the middle
 - (void)multilineRectForRange:(NSRange)charRange leadingRect:(NSRect *)leadingRect bodyRect:(NSRect *)bodyRect trailingRect:(NSRect *)trailingRect {
-  NSRange glyphRange = [_text.layoutManagers[0] glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
-  NSRect boundingRect = [_text.layoutManagers[0] boundingRectForGlyphRange:glyphRange inTextContainer:_text.layoutManagers[0].textContainers[0]];
-  NSRange fullRangeInBoundingRect = [_text.layoutManagers[0] glyphRangeForBoundingRect:boundingRect inTextContainer:_text.layoutManagers[0].textContainers[0]];
+  NSLayoutManager *layoutManager = _text.layoutManagers[0];
+  NSTextContainer *textContainer = layoutManager.textContainers[0];
+  NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
+  NSRect boundingRect = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+  NSRange fullRangeInBoundingRect = [layoutManager glyphRangeForBoundingRect:boundingRect inTextContainer:textContainer];
   *leadingRect = NSZeroRect;
   *bodyRect = boundingRect;
   *trailingRect = NSZeroRect;
   if (fullRangeInBoundingRect.location < glyphRange.location) {
-    *leadingRect = [_text.layoutManagers[0] boundingRectForGlyphRange:NSMakeRange(fullRangeInBoundingRect.location, glyphRange.location-fullRangeInBoundingRect.location) inTextContainer:_text.layoutManagers[0].textContainers[0]];
+    *leadingRect = [layoutManager boundingRectForGlyphRange:NSMakeRange(fullRangeInBoundingRect.location, glyphRange.location-fullRangeInBoundingRect.location) inTextContainer:textContainer];
     if (!nearEmptyRect(*leadingRect)) {
       bodyRect->size.height -= leadingRect->size.height;
       bodyRect->origin.y += leadingRect->size.height;
@@ -246,9 +248,9 @@ BOOL nearEmptyRect(NSRect rect) {
     leadingRect->size.width = bodyRect->origin.x + bodyRect->size.width - rightEdge;
   }
   if (fullRangeInBoundingRect.location+fullRangeInBoundingRect.length > glyphRange.location+glyphRange.length) {
-    *trailingRect = [_text.layoutManagers[0] boundingRectForGlyphRange:
+    *trailingRect = [layoutManager boundingRectForGlyphRange:
                     NSMakeRange(glyphRange.location+glyphRange.length, fullRangeInBoundingRect.location+fullRangeInBoundingRect.length-glyphRange.location-glyphRange.length)
-                                                      inTextContainer:_text.layoutManagers[0].textContainers[0]];
+                                                      inTextContainer:textContainer];
     if (!nearEmptyRect(*trailingRect)) {
       bodyRect->size.height -= trailingRect->size.height;
     }
@@ -256,7 +258,7 @@ BOOL nearEmptyRect(NSRect rect) {
     trailingRect->origin.x = bodyRect->origin.x;
     trailingRect->size.width = leftEdge - bodyRect->origin.x;
   } else if (fullRangeInBoundingRect.location+fullRangeInBoundingRect.length == glyphRange.location+glyphRange.length) {
-    *trailingRect = [_text.layoutManagers[0] lineFragmentUsedRectForGlyphAtIndex:glyphRange.location+glyphRange.length-1 effectiveRange:NULL];
+    *trailingRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location+glyphRange.length-1 effectiveRange:NULL];
     if (NSMaxX(*trailingRect) >= NSMaxX(boundingRect) - 1) {
       *trailingRect = NSZeroRect;
     } else if (!nearEmptyRect(*trailingRect)) {
