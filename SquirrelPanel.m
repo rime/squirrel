@@ -268,8 +268,10 @@ BOOL nearEmptyRect(NSRect rect) {
   NSRect lastLineRect = nearEmptyRect(*trailingRect) ? *bodyRect : *trailingRect;
   lastLineRect.size.width = textContainer.containerSize.width - lastLineRect.origin.x;
   NSRange lastLineRange = [layoutManager glyphRangeForBoundingRect:lastLineRect inTextContainer:textContainer];
-  while (lastLineRange.length>0 && [layoutManager propertyForGlyphAtIndex:lastLineRange.location+lastLineRange.length-1] == NSGlyphPropertyElastic) {
+  NSGlyphProperty glyphProperty = [layoutManager propertyForGlyphAtIndex:lastLineRange.location+lastLineRange.length-1];
+  while (lastLineRange.length>0 && (glyphProperty == NSGlyphPropertyElastic || glyphProperty == NSGlyphPropertyControlCharacter)) {
     lastLineRange.length -= 1;
+    glyphProperty = [layoutManager propertyForGlyphAtIndex:lastLineRange.location+lastLineRange.length-1];
   }
   if (lastLineRange.location+lastLineRange.length == glyphRange.location+glyphRange.length) {
     if (!nearEmptyRect(*trailingRect)) {
