@@ -14,23 +14,21 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, readonly) NSRange preeditRange;
 @property(nonatomic, readonly) NSRange highlightedPreeditRange;
 @property(nonatomic, readonly) NSRect contentRect;
+@property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, readonly) double textFrameWidth;
-
-@property(nonatomic, assign) double cornerRadius;
-@property(nonatomic, assign) double hilitedCornerRadius;
-@property(nonatomic, assign) NSSize edgeInset;
-@property(nonatomic, strong) NSColor *backgroundColor;
-@property(nonatomic, strong) NSColor *highlightedStripColor;
-@property(nonatomic, strong) NSColor *highlightedPreeditColor;
-@property(nonatomic, strong) NSColor *preeditBackgroundColor;
-@property(nonatomic, strong) NSColor *borderColor;
-@property(nonatomic, assign) double borderWidth;
-@property(nonatomic, assign) double linespace;
-@property(nonatomic, assign) double preeditLinespace;
+@property(nonatomic, strong, readonly) NSColor *backgroundColor;
+@property(nonatomic, strong, readonly) NSColor *highlightedStripColor;
+@property(nonatomic, strong, readonly) NSColor *highlightedPreeditColor;
+@property(nonatomic, strong, readonly) NSColor *preeditBackgroundColor;
+@property(nonatomic, strong, readonly) NSColor *borderColor;
+@property(nonatomic, strong, readonly) NSColor *backgroundColorDark;
+@property(nonatomic, strong, readonly) NSColor *highlightedStripColorDark;
+@property(nonatomic, strong, readonly) NSColor *highlightedPreeditColorDark;
+@property(nonatomic, strong, readonly) NSColor *preeditBackgroundColorDark;
+@property(nonatomic, strong, readonly) NSColor *borderColorDark;
+@property(nonatomic, strong, readonly) NSMutableDictionary *styles;
+@property(nonatomic, strong, readonly) NSMutableDictionary *darkStyles;
 @property(nonatomic, assign) double seperatorWidth;
-@property(nonatomic, assign) BOOL horizontal;
-@property(nonatomic, assign) BOOL vertical;
-@property(nonatomic, assign) BOOL inlineEdit;
 
 - (BOOL)isFlipped;
 - (void)setText:(NSAttributedString *)text;
@@ -38,8 +36,22 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
         preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange;
 - (NSRect)contentRectForRange:(NSRange)range;
-- (void)setBorderColor:(NSColor *)borderColor
-                 width:(CGFloat)borderWidth;
+- (void)setBackgroundColor:(NSColor *)backgroundColor
+     highlightedStripColor:(NSColor *)highlightedStripColor
+   highlightedPreeditColor:(NSColor *)highlightedPreeditColor
+    preeditBackgroundColor:(NSColor *)preeditBackgroundColor
+               borderColor:(NSColor *)borderColor
+                    isDark:(BOOL)isDark;
+- (void)setCornerRadius:(double)cornerRadius
+hilitedCornerRadius:(double)hilitedCornerRadius
+          edgeInset:(NSSize)edgeInset
+        borderWidth:(double)borderWidth
+          linespace:(double)linespace
+   preeditLinespace:(double)preeditLinespace
+         horizontal:(BOOL)horizontal
+           vertical:(BOOL)vertical
+         inlineEdit:(BOOL)inlineEdit
+             isDark:(BOOL)isDark;
 
 @end
 
@@ -48,6 +60,16 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 // Need flipped coordinate system, as required by textStorage
 - (BOOL)isFlipped {
   return YES;
+}
+
+- (BOOL)isDark {
+  BOOL dark = NO;
+  if (@available(macOS 10.14, *)) {
+    if ([self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
+      dark = YES;
+    }
+  }
+  return dark;
 }
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
@@ -63,6 +85,8 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   _text = [[NSTextStorage alloc] init];
   [_text addLayoutManager:layoutManager];
   layoutManager.backgroundLayoutEnabled = YES;
+  _styles = [NSMutableDictionary dictionaryWithCapacity:9];
+  _darkStyles = [NSMutableDictionary dictionaryWithCapacity:9];
   return self;
 }
 
@@ -102,14 +126,50 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
   self.needsDisplay = YES;
 }
 
-- (void)setBackgroundColor:(NSColor *)backgroundColor {
-  _backgroundColor = (backgroundColor != nil ? backgroundColor : [NSColor windowBackgroundColor]);
-  self.layer.backgroundColor = [NSColor clearColor].CGColor;
+- (void)setBackgroundColor:(NSColor *)backgroundColor
+     highlightedStripColor:(NSColor *)highlightedStripColor
+   highlightedPreeditColor:(NSColor *)highlightedPreeditColor
+    preeditBackgroundColor:(NSColor *)preeditBackgroundColor
+               borderColor:(NSColor *)borderColor
+                    isDark:(BOOL)isDark {
+  if (isDark) {
+    _backgroundColorDark = backgroundColor;
+    _highlightedStripColorDark = highlightedStripColor;
+    _highlightedPreeditColorDark = highlightedPreeditColor;
+    _preeditBackgroundColorDark = preeditBackgroundColor;
+    _borderColorDark = borderColor;
+  } else {
+    _backgroundColor = backgroundColor;
+    _highlightedStripColor = highlightedStripColor;
+    _highlightedPreeditColor = highlightedPreeditColor;
+    _preeditBackgroundColor = preeditBackgroundColor;
+    _borderColor = borderColor;
+  }
 }
 
-- (void) setBorderColor:(NSColor *)borderColor width:(CGFloat)borderWidth {
-  _borderColor = borderColor;
-  _borderWidth = borderWidth;
+- (void)setCornerRadius:(double)cornerRadius
+    hilitedCornerRadius:(double)hilitedCornerRadius
+              edgeInset:(NSSize)edgeInset
+            borderWidth:(double)borderWidth
+              linespace:(double)linespace
+       preeditLinespace:(double)preeditLinespace
+             horizontal:(BOOL)horizontal
+               vertical:(BOOL)vertical
+             inlineEdit:(BOOL)inlineEdit
+                 isDark:(BOOL)isDark {
+  NSMutableDictionary *workingStyle = _styles;
+  if (isDark) {
+    workingStyle = _darkStyles;
+  }
+  workingStyle[@"cornerRadius"] = @(cornerRadius);
+  workingStyle[@"hilitedCornerRadius"] = @(hilitedCornerRadius);
+  workingStyle[@"edgeInset"] = @(edgeInset);
+  workingStyle[@"borderWidth"] = @(borderWidth);
+  workingStyle[@"linespace"] = @(linespace);
+  workingStyle[@"preeditLinespace"] = @(preeditLinespace);
+  workingStyle[@"horizontal"] = @(horizontal);
+  workingStyle[@"vertical"] = @(vertical);
+  workingStyle[@"inlineEdit"] = @(inlineEdit);
 }
 
 // If an edge is close to border, will use border instead. To fix rounding errors
@@ -279,12 +339,16 @@ BOOL nearEmptyRect(NSRect rect) {
       *bodyRect = lastLineRect;
     }
   }
-  leadingRect->origin.x += _edgeInset.width;
-  leadingRect->origin.y += _edgeInset.height;
-  bodyRect->origin.x += _edgeInset.width;
-  bodyRect->origin.y += _edgeInset.height;
-  trailingRect->origin.x += _edgeInset.width;
-  trailingRect->origin.y += _edgeInset.height;
+  NSSize edgeInset = [_styles[@"edgeInset"] sizeValue];
+  if (self.isDark) {
+    edgeInset = [_darkStyles[@"edgeInset"] sizeValue];
+  }
+  leadingRect->origin.x += edgeInset.width;
+  leadingRect->origin.y += edgeInset.height;
+  bodyRect->origin.x += edgeInset.width;
+  bodyRect->origin.y += edgeInset.height;
+  trailingRect->origin.x += edgeInset.width;
+  trailingRect->origin.y += edgeInset.height;
 }
 
 // Based on the 3 boxes from multilineRectForRange, calculate the vertex of the polygon containing the text in range
@@ -364,6 +428,36 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSBezierPath *highlightedPreeditPath;
   NSBezierPath *highlightedPreeditPath2;
   NSBezierPath *preeditPath;
+  NSColor *backgroundColor = _backgroundColor;
+  NSColor *highlightedStripColor = _highlightedStripColor;
+  NSColor *highlightedPreeditColor = _highlightedPreeditColor;
+  NSColor *preeditBackgroundColor = _preeditBackgroundColor;
+  NSColor *borderColor = _borderColor;
+  double _cornerRadius = [_styles[@"cornerRadius"] doubleValue];
+  double _hilitedCornerRadius = [_styles[@"hilitedCornerRadius"] doubleValue];
+  NSSize _edgeInset = [_styles[@"edgeInset"] sizeValue];
+  double _borderWidth = [_styles[@"borderWidth"] doubleValue];
+  double _linespace = [_styles[@"linespace"] doubleValue];
+  double _preeditLinespace = [_styles[@"preeditLinespace"] doubleValue];
+  BOOL _horizontal = [_styles[@"horizontal"] boolValue];
+  BOOL _vertical = [_styles[@"vertical"] boolValue];
+  BOOL _inlineEdit = [_styles[@"inlineEdit"] boolValue];
+  if (self.isDark) {
+    backgroundColor = _backgroundColorDark;
+    highlightedStripColor = _highlightedStripColorDark;
+    highlightedPreeditColor = _highlightedPreeditColorDark;
+    preeditBackgroundColor = _preeditBackgroundColorDark;
+    borderColor = _borderColorDark;
+    _cornerRadius = [_darkStyles[@"cornerRadius"] doubleValue];
+    _hilitedCornerRadius = [_darkStyles[@"hilitedCornerRadius"] doubleValue];
+    _edgeInset = [_darkStyles[@"edgeInset"] sizeValue];
+    _borderWidth = [_darkStyles[@"borderWidth"] doubleValue];
+    _linespace = [_darkStyles[@"linespace"] doubleValue];
+    _preeditLinespace = [_darkStyles[@"preeditLinespace"] doubleValue];
+    _horizontal = [_darkStyles[@"horizontal"] boolValue];
+    _vertical = [_darkStyles[@"vertical"] boolValue];
+    _inlineEdit = [_darkStyles[@"inlineEdit"] boolValue];
+  }
   
   NSRect textField = dirtyRect;
   textField.origin.y += _edgeInset.height;
@@ -374,7 +468,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   
   // Draw preedit Rect
   NSRect preeditRect = NSZeroRect;
-  if (_preeditRange.length > 0 && _preeditBackgroundColor != nil) {
+  if (_preeditRange.length > 0 && preeditBackgroundColor != nil) {
     preeditRect = [self contentRectForRange:_preeditRange];
     preeditRect.size.width = textField.size.width;
     preeditRect.size.height += _preeditLinespace;
@@ -393,7 +487,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   
   // Draw highlighted Rect
-  if (_highlightedRange.length > 0 && _highlightedStripColor != nil) {
+  if (_highlightedRange.length > 0 && highlightedStripColor != nil) {
     if (_horizontal){
       NSRect leadingRect;
       NSRect bodyRect;
@@ -453,7 +547,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
           highlightedRect.origin.y -= _hilitedCornerRadius / 2;
         }
       }
-      if (self.hilitedCornerRadius == 0) {
+      if (_hilitedCornerRadius == 0) {
         // fill in small gaps between highlighted rect and the bounding rect.
         checkBorders(&highlightedRect, backgroundRect);
       } else {
@@ -468,7 +562,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   
   // Draw highlighted part of preedit text
-  if (_highlightedPreeditRange.length > 0 && _highlightedPreeditColor != nil) {
+  if (_highlightedPreeditRange.length > 0 && highlightedPreeditColor != nil) {
     NSRect leadingRect;
     NSRect bodyRect;
     NSRect trailingRect;
@@ -535,29 +629,29 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   [backgroundPath setWindingRule:NSEvenOddWindingRule];
   [preeditPath setWindingRule:NSEvenOddWindingRule];
 
-  [_backgroundColor setFill];
+  [backgroundColor setFill];
   [backgroundPath fill];
-  if (_preeditBackgroundColor && ![preeditPath isEmpty]) {
-    [_preeditBackgroundColor setFill];
+  if (preeditBackgroundColor && ![preeditPath isEmpty]) {
+    [preeditBackgroundColor setFill];
     [preeditPath fill];
   }
-  if (_highlightedStripColor && ![highlightedPath isEmpty]) {
-    [_highlightedStripColor setFill];
+  if (highlightedStripColor && ![highlightedPath isEmpty]) {
+    [highlightedStripColor setFill];
     [highlightedPath fill];
     if (![highlightedPath2 isEmpty]) {
       [highlightedPath2 fill];
     }
   }
-  if (_highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
-    [_highlightedPreeditColor setFill];
+  if (highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
+    [highlightedPreeditColor setFill];
     [highlightedPreeditPath fill];
     if (![highlightedPreeditPath2 isEmpty]) {
       [highlightedPreeditPath2 fill];
     }
   }
 
-  if (_borderColor) {
-    [_borderColor setStroke];
+  if (borderColor) {
+    [borderColor setStroke];
     [borderPath stroke];
   }
   NSRange glyphRange = [_text.layoutManagers[0] glyphRangeForTextContainer:_text.layoutManagers[0].textContainers[0]];
@@ -579,11 +673,23 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSMutableDictionary *_commentHighlightedAttrs;
   NSMutableDictionary *_preeditAttrs;
   NSMutableDictionary *_preeditHighlightedAttrs;
-  NSParagraphStyle *_paragraphStyle;
+  NSParagraphStyle *_paragraphStyle ;
   NSParagraphStyle *_preeditParagraphStyle;
+  CGFloat alphaValue;
+  NSMutableDictionary *_attrsDark;
+  NSMutableDictionary *_highlightedAttrsDark;
+  NSMutableDictionary *_labelAttrsDark;
+  NSMutableDictionary *_labelHighlightedAttrsDark;
+  NSMutableDictionary *_commentAttrsDark;
+  NSMutableDictionary *_commentHighlightedAttrsDark;
+  NSMutableDictionary *_preeditAttrsDark;
+  NSMutableDictionary *_preeditHighlightedAttrsDark;
+  NSParagraphStyle *_paragraphStyleDark;
+  NSParagraphStyle *_preeditParagraphStyleDark;
+  CGFloat alphaValueDark;
   NSRange preeditRange;
   NSRect screenRect;
-  double tempHeight;
+  CGFloat tempHeight;
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -591,13 +697,13 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 // Use this method to convert charcters to upright position
 // Based on the width of the chacter, relative font size matters
-- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText inRange:(NSRange)stringRange {
-  double baseOffset = [_attrs[NSBaselineOffsetAttributeName] doubleValue];
+- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText inRange:(NSRange)stringRange attribute:(NSDictionary *)attribute {
+  double baseOffset = [attribute[NSBaselineOffsetAttributeName] doubleValue];
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
-  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:_attrs];
+  const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:attribute];
   const NSRect cjkRect = [cjkChar boundingRectWithSize:NSZeroSize options:NULL];
-  const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:_attrs];
+  const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:attribute];
   const NSSize hangulSize = [hangulChar boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size;
   stringRange = [originalText.string rangeOfComposedCharacterSequencesForRange:stringRange];
   NSUInteger i = stringRange.location;
@@ -615,17 +721,45 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
   }
 }
- 
-- (void)initializeUIStyle {
-  _candidateFormat = kDefaultCandidateFormat;
 
+- (void)initializeUIStyle{
+  _candidateFormat = kDefaultCandidateFormat;
+  //Dark
+  _attrsDark = [[NSMutableDictionary alloc] init];
+  _attrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+  _attrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+
+  _highlightedAttrsDark = [[NSMutableDictionary alloc] init];
+  _highlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
+  _highlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+
+  _labelAttrsDark = [_attrsDark mutableCopy];
+  _labelHighlightedAttrsDark = [_highlightedAttrsDark mutableCopy];
+
+  _commentAttrsDark = [[NSMutableDictionary alloc] init];
+  _commentAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  _commentAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+
+  _commentHighlightedAttrsDark = [_commentAttrsDark mutableCopy];
+
+  _preeditAttrsDark = [[NSMutableDictionary alloc] init];
+  _preeditAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  _preeditAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+
+  _preeditHighlightedAttrsDark = [[NSMutableDictionary alloc] init];
+  _preeditHighlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+  _preeditHighlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+
+  _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
+  _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
+  
+  //Light
   _attrs = [[NSMutableDictionary alloc] init];
   _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   _highlightedAttrs = [[NSMutableDictionary alloc] init];
   _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
-  //_highlightedAttrs[NSBackgroundColorAttributeName] = [NSColor selectedTextBackgroundColor];
   _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   _labelAttrs = [_attrs mutableCopy];
@@ -636,8 +770,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   _commentHighlightedAttrs = [_commentAttrs mutableCopy];
-  //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
-  //    [NSColor selectedTextBackgroundColor];
 
   _preeditAttrs = [[NSMutableDictionary alloc] init];
   _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
@@ -647,7 +779,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
   _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
 }
 
@@ -667,7 +799,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     _window.backgroundColor = [NSColor clearColor];
     _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
     _window.contentView = _view;
-  
     [self initializeUIStyle];
     tempHeight = 0;
   }
@@ -688,14 +819,21 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       break;
     }
   }
+  
+  NSSize edgeInset = [_view.styles[@"edgeInset"] sizeValue];
+  BOOL vertical = [_view.styles[@"vertical"] boolValue];
+  if (_view.isDark) {
+    edgeInset = [_view.darkStyles[@"edgeInset"] sizeValue];
+  }
+
   //Break line if the text is too long, based on screen size.
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
-  if (_vertical && (textWidth > NSHeight(screenRect) / 3 - _view.edgeInset.height * 2)) {
-    textWidth = NSHeight(screenRect) / 3 - _view.edgeInset.height * 2;
-  } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
-    textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
+  if (vertical && (textWidth > NSHeight(screenRect) / 3 - edgeInset.height * 2)) {
+    textWidth = NSHeight(screenRect) / 3 - edgeInset.height * 2;
+  } else if (!vertical && (textWidth > NSWidth(screenRect) / 2 - edgeInset.height * 2)) {
+    textWidth = NSWidth(screenRect) / 2 - edgeInset.height * 2;
   }
-  if ((_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!_vertical && NSMinX(_position)+MAX(textWidth, tempHeight)+_view.edgeInset.width*2 > NSMaxX(screenRect))) {
+  if ((vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!vertical && NSMinX(_position)+MAX(textWidth, tempHeight)+edgeInset.width*2 > NSMaxX(screenRect))) {
     if (textWidth >= tempHeight) {
       tempHeight = textWidth;
     } else {
@@ -707,18 +845,18 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   NSRect contentRect = _view.contentRect;
-  if (_vertical) {
-    windowRect.size = NSMakeSize(contentRect.size.height + _view.edgeInset.height * 2,
-                                 contentRect.size.width + _view.edgeInset.width * 2);
+  if (vertical) {
+    windowRect.size = NSMakeSize(contentRect.size.height + edgeInset.height * 2,
+                                 contentRect.size.width + edgeInset.width * 2);
   } else {
-    windowRect.size = NSMakeSize(contentRect.size.width + _view.edgeInset.width * 2,
-                                 contentRect.size.height + _view.edgeInset.height * 2);
+    windowRect.size = NSMakeSize(contentRect.size.width + edgeInset.width * 2,
+                                 contentRect.size.height + edgeInset.height * 2);
   }
   windowRect.origin = NSMakePoint(NSMinX(_position),
                                   NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
 
   // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
-  if (_vertical) {
+  if (vertical) {
     if (NSMidY(_position) / NSHeight(screenRect) >= 0.5) {
       windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
     } else {
@@ -728,7 +866,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     windowRect.origin.x -= windowRect.size.width;
     if (!_inlinePreedit) {
       NSSize preeditSize = [_view contentRectForRange:preeditRange].size;
-      windowRect.origin.x += preeditSize.height + _view.edgeInset.width;
+      windowRect.origin.x += preeditSize.height + edgeInset.width;
     }
   }
 
@@ -739,7 +877,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     windowRect.origin.x = NSMinX(screenRect);
   }
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
-    if (_vertical) {
+    if (vertical) {
       windowRect.origin.y = NSMinY(screenRect);
     } else {
       windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
@@ -752,12 +890,16 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     windowRect.origin.y = NSMinY(screenRect);
   }
   // rotate the view, the core in vertical mode!
-  if (_vertical) {
+  if (vertical) {
     _view.boundsRotation = 90.0;
     [_view setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
   } else {
     _view.boundsRotation = 0;
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
+  }
+  _window.alphaValue = alphaValue;
+  if (_view.isDark) {
+    _window.alphaValue = alphaValueDark;
   }
   [_window setFrame:windowRect display:YES];
   [_window invalidateShadow];
@@ -848,6 +990,33 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
   }
   
+  NSDictionary *attrs = _attrs;
+  NSDictionary *highlightedAttrs = _highlightedAttrs;
+  NSDictionary *labelAttrs = _labelAttrs;
+  NSDictionary *labelHighlightedAttrs = _labelHighlightedAttrs;
+  NSDictionary *commentAttrs = _commentAttrs;
+  NSDictionary *commentHighlightedAttrs = _commentHighlightedAttrs;
+  NSDictionary *preeditAttrs = _preeditAttrs;
+  NSDictionary *preeditHighlightedAttrs = _preeditHighlightedAttrs;
+  NSParagraphStyle *paragraphStyle = _paragraphStyle;
+  NSParagraphStyle *preeditParagraphStyle = _preeditParagraphStyle;
+  BOOL horizontal = [_view.styles[@"horizontal"] boolValue];
+  BOOL vertical = [_view.styles[@"vertical"] boolValue];
+  if (_view.isDark) {
+    attrs = _attrsDark;
+    highlightedAttrs = _highlightedAttrsDark;
+    labelAttrs = _labelAttrsDark;
+    labelHighlightedAttrs = _labelHighlightedAttrsDark;
+    commentAttrs = _commentAttrsDark;
+    commentHighlightedAttrs = _commentHighlightedAttrsDark;
+    preeditAttrs = _preeditAttrsDark;
+    preeditHighlightedAttrs = _preeditHighlightedAttrsDark;
+    paragraphStyle = _paragraphStyleDark;
+    preeditParagraphStyle = _preeditParagraphStyleDark;
+    horizontal = [_view.darkStyles[@"horizontal"] boolValue];
+    vertical = [_view.darkStyles[@"vertical"] boolValue];
+  }
+  
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
   preeditRange = NSMakeRange(NSNotFound, 0);
@@ -859,14 +1028,14 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                  initWithString:[preedit substringToIndex:selRange.location].precomposedStringWithCanonicalMapping
-                        attributes:_preeditAttrs]];
+                        attributes:preeditAttrs]];
     }
     if (selRange.length > 0) {
       NSUInteger highlightedPreeditStart = line.length;
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
-                        attributes:_preeditHighlightedAttrs]];
+                        attributes:preeditHighlightedAttrs]];
       highlightedPreeditRange = NSMakeRange(highlightedPreeditStart, line.length - highlightedPreeditStart);
     }
     if (selRange.location + selRange.length < preedit.length) {
@@ -875,22 +1044,22 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
               [[NSAttributedString alloc]
                   initWithString:[preedit substringFromIndex:selRange.location +
                                                              selRange.length].precomposedStringWithCanonicalMapping
-                      attributes:_preeditAttrs]];
+                      attributes:preeditAttrs]];
     }
     [text appendAttributedString:line];
 
-    if (_vertical) {
-      [self convertToVerticalGlyph:text inRange:NSMakeRange(0, line.length)];
+    if (vertical) {
+      [self convertToVerticalGlyph:text inRange:NSMakeRange(0, line.length) attribute:preeditAttrs];
     }
     [text addAttribute:NSParagraphStyleAttributeName
-                 value:_preeditParagraphStyle
+                 value:preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
     
     preeditRange = NSMakeRange(0, text.length);
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc]
                     initWithString:@"\n"
-                        attributes:_preeditAttrs]];
+                        attributes:preeditAttrs]];
     }
     candidateStartPos = text.length;
   }
@@ -915,23 +1084,23 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       labelString = [NSString stringWithFormat:labelFormat, i+1];
     }
 
-    NSDictionary *attrs = (i == index) ? _highlightedAttrs : _attrs;
-    NSDictionary *labelAttrs =
-        (i == index) ? _labelHighlightedAttrs : _labelAttrs;
-    NSDictionary *commentAttrs =
-        (i == index) ? _commentHighlightedAttrs : _commentAttrs;
+    NSDictionary *attrsCan = (i == index) ? highlightedAttrs : attrs;
+    NSDictionary *labelAttrsCan =
+        (i == index) ? labelHighlightedAttrs : labelAttrs;
+    NSDictionary *commentAttrsCan =
+        (i == index) ? commentHighlightedAttrs : commentAttrs;
 
     CGFloat labelWidth = 0.0;
     if (labelRange.location != NSNotFound) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
-                        attributes:labelAttrs]];
+                        attributes:labelAttrsCan]];
       // get the label size for indent
-      if (_vertical) {
-        [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length)];
+      if (vertical) {
+        [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length) attribute:labelAttrsCan];
       }
-      if (!_horizontal) {
+      if (!horizontal) {
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
     }
@@ -940,7 +1109,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     NSString *candidate = candidates[i];
     [line appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:candidate.precomposedStringWithCanonicalMapping
-                                         attributes:attrs]];
+                                         attributes:attrsCan]];
     // Use left-to-right marks to prevent right-to-left text from changing the
     // layout of non-candidate text.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
@@ -962,32 +1131,32 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString2
-                        attributes:labelAttrs]];
+                        attributes:labelAttrsCan]];
     }
 
     if (i < comments.count && [comments[i] length] != 0) {
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@" "
-                                           attributes:_attrs]];
+                                           attributes:attrsCan]];
       NSString *comment = comments[i];
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:comment.precomposedStringWithCanonicalMapping
-                                           attributes:commentAttrs]];
+                                           attributes:commentAttrsCan]];
     }
     
     
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
-                                        initWithString:(_horizontal ? @"  " : @"\n")
-                                            attributes:_attrs];
+                                        initWithString:(horizontal ? @"  " : @"\n")
+                                            attributes:attrsCan];
     _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
     if (i > 0) {
       [text appendAttributedString:separator];
     }
     
-    if (_vertical) {
-      [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart)];
+    if (vertical) {
+      [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart) attribute:attrsCan];
     }
-    NSMutableParagraphStyle *paragraphStyleCandidate = [_paragraphStyle mutableCopy];
+    NSMutableParagraphStyle *paragraphStyleCandidate = [paragraphStyle mutableCopy];
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
@@ -1009,10 +1178,16 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 }
 
 - (void)showStatus:(NSString *)message {
+  NSDictionary *commentAttrs = _commentAttrs;
+  BOOL vertical = [_view.styles[@"vertical"] boolValue];
+  if (_view.isDark) {
+    commentAttrs = _commentAttrsDark;
+    vertical = [_view.darkStyles[@"vertical"] boolValue];
+  }
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message
-                                                             attributes:_commentAttrs];
-  if (_vertical) {
-    [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length)];
+                                                             attributes:commentAttrs];
+  if (vertical) {
+    [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length) attribute:commentAttrs];
   }
   [_view setText:text];
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
@@ -1096,7 +1271,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
 
--(void)updateConfig:(SquirrelConfig *)config {
+-(void)updateConfig:(SquirrelConfig *)config forDarkMode:(BOOL)isDark {
   _horizontal = [config getBool:@"style/horizontal"];
   _vertical = [config getBool:@"style/vertical"];
   _inlinePreedit = [config getBool:@"style/inline_preedit"];
@@ -1107,8 +1282,6 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSInteger fontSize = [config getInt:@"style/font_point"];
   NSString *labelFontName = [config getString:@"style/label_font_face"];
   NSInteger labelFontSize = [config getInt:@"style/label_font_point"];
-  NSColor *candidateLabelColor = [config getColor:@"style/label_color"];
-  NSColor *highlightedCandidateLabelColor = [config getColor:@"style/label_hilited_color"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
   CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
@@ -1121,6 +1294,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSColor *backgroundColor;
   NSColor *borderColor;
   NSColor *preeditBackgroundColor;
+  NSColor *candidateLabelColor;
+  NSColor *highlightedCandidateLabelColor;
   NSColor *textColor;
   NSColor *highlightedTextColor;
   NSColor *highlightedBackColor;
@@ -1129,8 +1304,14 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSColor *highlightedCandidateBackColor;
   NSColor *commentTextColor;
   NSColor *highlightedCommentTextColor;
-
-  NSString *colorScheme = [config getString:@"style/color_scheme"];
+  
+  NSString *colorScheme;
+  if (isDark) {
+    colorScheme = [config getString:@"style/color_scheme_dark"];
+  }
+  if (!isDark || !colorScheme) {
+    colorScheme = [config getString:@"style/color_scheme"];
+  }
   if (colorScheme) {
       NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
 
@@ -1305,101 +1486,115 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       labelFont = [NSFont fontWithName:font.fontName size:labelFontSize];
     }
   }
-  _attrs[NSFontAttributeName] = font;
-  _highlightedAttrs[NSFontAttributeName] = font;
-  _labelAttrs[NSFontAttributeName] = labelFont;
-  _labelHighlightedAttrs[NSFontAttributeName] = labelFont;
-  _commentAttrs[NSFontAttributeName] = font;
-  _commentHighlightedAttrs[NSFontAttributeName] = font;
-  _preeditAttrs[NSFontAttributeName] = font;
-  _preeditHighlightedAttrs[NSFontAttributeName] = font;
-  
-  if (!_vertical) {
-    _attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  }
-
-  // can be nil.
-  _view.backgroundColor = backgroundColor;
-  [_view setBorderColor:borderColor width:MIN(borderHeight, borderWidth)];
-  _view.preeditBackgroundColor = preeditBackgroundColor;
-
-  _attrs[NSForegroundColorAttributeName] =
-      candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
-
-  _labelAttrs[NSForegroundColorAttributeName] =
-      candidateLabelColor ? candidateLabelColor
-          : blendColors(_attrs[NSForegroundColorAttributeName], backgroundColor);
-
-  _highlightedAttrs[NSForegroundColorAttributeName] =
-      highlightedCandidateTextColor ? highlightedCandidateTextColor
-                                    : [NSColor selectedControlTextColor];
-
-  //_highlightedAttrs[NSBackgroundColorAttributeName] =
-  //    highlightedCandidateBackColor ? highlightedCandidateBackColor
-  //                                  : [NSColor selectedTextBackgroundColor];
-
-  _view.highlightedStripColor =
-      highlightedCandidateBackColor ? highlightedCandidateBackColor
-                                    : [NSColor selectedTextBackgroundColor];
-
-  _labelHighlightedAttrs[NSForegroundColorAttributeName] =
-      highlightedCandidateLabelColor ? highlightedCandidateLabelColor
-          : blendColors(_highlightedAttrs[NSForegroundColorAttributeName],
-                        _highlightedAttrs[NSBackgroundColorAttributeName]);
-
-  //_labelHighlightedAttrs[NSBackgroundColorAttributeName] =
-  //    _highlightedAttrs[NSBackgroundColorAttributeName];
-
-  _commentAttrs[NSForegroundColorAttributeName] =
-      commentTextColor ? commentTextColor : [NSColor disabledControlTextColor];
-
-  _commentHighlightedAttrs[NSForegroundColorAttributeName] =
-      highlightedCommentTextColor ? highlightedCommentTextColor
-                                  : _commentAttrs[NSForegroundColorAttributeName];
-
-  //_commentHighlightedAttrs[NSBackgroundColorAttributeName] =
-  //    _highlightedAttrs[NSBackgroundColorAttributeName];
-
-  _preeditAttrs[NSForegroundColorAttributeName] =
-      textColor ? textColor : [NSColor disabledControlTextColor];
-
-  _preeditHighlightedAttrs[NSForegroundColorAttributeName] =
-      highlightedTextColor ? highlightedTextColor : [NSColor controlTextColor];
-
-  _view.highlightedPreeditColor = highlightedBackColor;
-
-  _view.cornerRadius = cornerRadius;
-  _view.hilitedCornerRadius = hilitedCornerRadius;
-  if (_vertical) {
-    _view.edgeInset = NSMakeSize(MAX(borderHeight, cornerRadius), MAX(borderWidth, cornerRadius));
-  } else {
-    _view.edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
-  }
-  _view.linespace = lineSpacing / 2;
-  _view.preeditLinespace = spacing;
-  _view.horizontal = _horizontal;
-  _view.vertical = _vertical;
-  _view.inlineEdit = _inlinePreedit;
-
-  _window.alphaValue = (alpha == 0) ? 1.0 : alpha;
   
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
   paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
-  _paragraphStyle = paragraphStyle;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.paragraphSpacing = spacing;
-  _preeditParagraphStyle = preeditParagraphStyle;
-}
 
+  if (isDark) {
+    _attrsDark[NSFontAttributeName] = font;
+    _highlightedAttrsDark[NSFontAttributeName] = font;
+    _labelAttrsDark[NSFontAttributeName] = labelFont;
+    _labelHighlightedAttrsDark[NSFontAttributeName] = labelFont;
+    _commentAttrsDark[NSFontAttributeName] = font;
+    _commentHighlightedAttrsDark[NSFontAttributeName] = font;
+    _preeditAttrsDark[NSFontAttributeName] = font;
+    _preeditHighlightedAttrsDark[NSFontAttributeName] = font;
+    if (!_vertical) {
+      _attrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _highlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _labelAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _labelHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _commentAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _commentHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _preeditAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _preeditHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    }
+    _paragraphStyleDark = paragraphStyle;
+    _preeditParagraphStyleDark = preeditParagraphStyle;
+  } else {
+    _attrs[NSFontAttributeName] = font;
+    _highlightedAttrs[NSFontAttributeName] = font;
+    _labelAttrs[NSFontAttributeName] = labelFont;
+    _labelHighlightedAttrs[NSFontAttributeName] = labelFont;
+    _commentAttrs[NSFontAttributeName] = font;
+    _commentHighlightedAttrs[NSFontAttributeName] = font;
+    _preeditAttrs[NSFontAttributeName] = font;
+    _preeditHighlightedAttrs[NSFontAttributeName] = font;
+    if (!_vertical) {
+      _attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+      _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    }
+    _paragraphStyle = paragraphStyle;
+    _preeditParagraphStyle = preeditParagraphStyle;
+  }
+
+  candidateTextColor = candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
+  candidateLabelColor = candidateLabelColor ? candidateLabelColor : blendColors(candidateTextColor, backgroundColor);
+  highlightedCandidateTextColor = highlightedCandidateTextColor ? highlightedCandidateTextColor : [NSColor selectedControlTextColor];
+  highlightedCandidateLabelColor = highlightedCandidateLabelColor ? highlightedCandidateLabelColor
+    : blendColors(highlightedCandidateTextColor, highlightedCandidateBackColor);
+  commentTextColor = commentTextColor ? commentTextColor : [NSColor disabledControlTextColor];
+  highlightedCommentTextColor = highlightedCommentTextColor ? highlightedCommentTextColor : commentTextColor;
+  textColor = textColor ? textColor : [NSColor disabledControlTextColor];
+  highlightedTextColor = highlightedTextColor ? highlightedTextColor : [NSColor controlTextColor];
+  
+  if (isDark) {
+    _attrsDark[NSForegroundColorAttributeName] = candidateTextColor;
+    _labelAttrsDark[NSForegroundColorAttributeName] = candidateLabelColor;
+    _highlightedAttrsDark[NSForegroundColorAttributeName] = highlightedCandidateTextColor;
+    _labelHighlightedAttrsDark[NSForegroundColorAttributeName] = highlightedCandidateLabelColor;
+    _commentAttrsDark[NSForegroundColorAttributeName] = commentTextColor;
+    _commentHighlightedAttrsDark[NSForegroundColorAttributeName] = highlightedCommentTextColor;
+    _preeditAttrsDark[NSForegroundColorAttributeName] = textColor;
+    _preeditHighlightedAttrsDark[NSForegroundColorAttributeName] = highlightedTextColor;
+  } else {
+    _attrs[NSForegroundColorAttributeName] = candidateTextColor;
+    _labelAttrs[NSForegroundColorAttributeName] = candidateLabelColor;
+    _highlightedAttrs[NSForegroundColorAttributeName] = highlightedCandidateTextColor;
+    _labelHighlightedAttrs[NSForegroundColorAttributeName] = highlightedCandidateLabelColor;
+    _commentAttrs[NSForegroundColorAttributeName] = commentTextColor;
+    _commentHighlightedAttrs[NSForegroundColorAttributeName] = highlightedCommentTextColor;
+    _preeditAttrs[NSForegroundColorAttributeName] = textColor;
+    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = highlightedTextColor;
+  }
+  [_view setBackgroundColor:backgroundColor
+    highlightedStripColor:highlightedCandidateBackColor ? highlightedCandidateBackColor : [NSColor selectedTextBackgroundColor]
+  highlightedPreeditColor:highlightedBackColor
+   preeditBackgroundColor:preeditBackgroundColor
+              borderColor:borderColor
+                   isDark:isDark];
+  NSSize edgeInset;
+  if (_vertical) {
+    edgeInset = NSMakeSize(MAX(borderHeight, cornerRadius), MAX(borderWidth, cornerRadius));
+  } else {
+    edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
+  }
+  [_view setCornerRadius:cornerRadius
+     hilitedCornerRadius:hilitedCornerRadius
+               edgeInset:edgeInset
+             borderWidth:MIN(borderHeight, borderWidth)
+               linespace:lineSpacing / 2
+        preeditLinespace:spacing
+              horizontal:_horizontal
+                vertical:_vertical
+              inlineEdit:_inlinePreedit
+                  isDark:isDark];
+  if (isDark) {
+    alphaValueDark = (alpha == 0) ? 1.0 : alpha;
+  } else {
+    alphaValue = (alpha == 0) ? 1.0 : alpha;
+  }
+}
 @end
