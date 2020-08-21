@@ -851,6 +851,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
   preeditRange = NSMakeRange(NSNotFound, 0);
+  NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
   // preedit
   if (preedit) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -861,10 +862,12 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
                         attributes:_preeditAttrs]];
     }
     if (selRange.length > 0) {
+      NSUInteger highlightedPreeditStart = line.length;
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
                         attributes:_preeditHighlightedAttrs]];
+      highlightedPreeditRange = NSMakeRange(highlightedPreeditStart, line.length - highlightedPreeditStart);
     }
     if (selRange.location + selRange.length < preedit.length) {
       [line
@@ -997,7 +1000,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   // text done!
   [_view setText:text];
-  [_view drawViewWith:highlightedRange preeditRange:preeditRange highlightedPreeditRange:selRange];
+  [_view drawViewWith:highlightedRange preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange];
   [self show];
 }
 
