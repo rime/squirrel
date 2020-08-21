@@ -527,9 +527,17 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   
   if (![highlightedPreeditPath isEmpty]) {
-    [preeditPath appendBezierPath:[highlightedPreeditPath copy]];
+    if (![preeditPath isEmpty]) {
+      [preeditPath appendBezierPath:[highlightedPreeditPath copy]];
+    } else {
+      [backgroundPath appendBezierPath:[highlightedPreeditPath copy]];
+    }
     if (![highlightedPreeditPath2 isEmpty]) {
-      [preeditPath appendBezierPath:[highlightedPreeditPath2 copy]];
+      if (![preeditPath isEmpty]) {
+        [preeditPath appendBezierPath:[highlightedPreeditPath2 copy]];
+      } else {
+        [backgroundPath appendBezierPath:[highlightedPreeditPath2 copy]];
+      }
     }
   }
   [backgroundPath setWindingRule:NSEvenOddWindingRule];
