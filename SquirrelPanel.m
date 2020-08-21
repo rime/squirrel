@@ -722,65 +722,66 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
 }
 
-- (void)initializeUIStyle{
+- (void)initializeUIStyleForDarkMode:(BOOL)isDark{
   _candidateFormat = kDefaultCandidateFormat;
-  //Dark
-  _attrsDark = [[NSMutableDictionary alloc] init];
-  _attrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _attrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+  if (isDark) {
+    _attrsDark = [[NSMutableDictionary alloc] init];
+    _attrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+    _attrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _highlightedAttrsDark = [[NSMutableDictionary alloc] init];
-  _highlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
-  _highlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _highlightedAttrsDark = [[NSMutableDictionary alloc] init];
+    _highlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
+    _highlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _labelAttrsDark = [_attrsDark mutableCopy];
-  _labelHighlightedAttrsDark = [_highlightedAttrsDark mutableCopy];
+    _labelAttrsDark = [_attrsDark mutableCopy];
+    _labelHighlightedAttrsDark = [_highlightedAttrsDark mutableCopy];
 
-  _commentAttrsDark = [[NSMutableDictionary alloc] init];
-  _commentAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _commentAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _commentAttrsDark = [[NSMutableDictionary alloc] init];
+    _commentAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+    _commentAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _commentHighlightedAttrsDark = [_commentAttrsDark mutableCopy];
+    _commentHighlightedAttrsDark = [_commentAttrsDark mutableCopy];
 
-  _preeditAttrsDark = [[NSMutableDictionary alloc] init];
-  _preeditAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _preeditAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _preeditAttrsDark = [[NSMutableDictionary alloc] init];
+    _preeditAttrsDark[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+    _preeditAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _preeditHighlightedAttrsDark = [[NSMutableDictionary alloc] init];
-  _preeditHighlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _preeditHighlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _preeditHighlightedAttrsDark = [[NSMutableDictionary alloc] init];
+    _preeditHighlightedAttrsDark[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+    _preeditHighlightedAttrsDark[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
-  _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
-  
-  //Light
-  _attrs = [[NSMutableDictionary alloc] init];
-  _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
+    _preeditParagraphStyleDark = [NSParagraphStyle defaultParagraphStyle];
+  } else {
+    //Light
+    _attrs = [[NSMutableDictionary alloc] init];
+    _attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+    _attrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _highlightedAttrs = [[NSMutableDictionary alloc] init];
-  _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
-  _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _highlightedAttrs = [[NSMutableDictionary alloc] init];
+    _highlightedAttrs[NSForegroundColorAttributeName] = [NSColor selectedControlTextColor];
+    _highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _labelAttrs = [_attrs mutableCopy];
-  _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
+    _labelAttrs = [_attrs mutableCopy];
+    _labelHighlightedAttrs = [_highlightedAttrs mutableCopy];
 
-  _commentAttrs = [[NSMutableDictionary alloc] init];
-  _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _commentAttrs = [[NSMutableDictionary alloc] init];
+    _commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+    _commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _commentHighlightedAttrs = [_commentAttrs mutableCopy];
+    _commentHighlightedAttrs = [_commentAttrs mutableCopy];
 
-  _preeditAttrs = [[NSMutableDictionary alloc] init];
-  _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
-  _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _preeditAttrs = [[NSMutableDictionary alloc] init];
+    _preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+    _preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
-  _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
-  _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
+    _preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
+    _preeditHighlightedAttrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
+    _preeditHighlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
-  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
-  _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    _preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
+  }
 }
 
 - (instancetype)init {
@@ -799,7 +800,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     _window.backgroundColor = [NSColor clearColor];
     _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
     _window.contentView = _view;
-    [self initializeUIStyle];
+    [self initializeUIStyleForDarkMode:NO];
+    if (_view.isDark) {
+      [self initializeUIStyleForDarkMode:YES];
+    }
     tempHeight = 0;
   }
   return self;
@@ -1308,8 +1312,10 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   NSString *colorScheme;
   if (isDark) {
     colorScheme = [config getString:@"style/color_scheme_dark"];
-  }
-  if (!isDark || !colorScheme) {
+    if (!colorScheme) {
+      _view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+    }
+  } else {
     colorScheme = [config getString:@"style/color_scheme"];
   }
   if (colorScheme) {
