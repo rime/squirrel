@@ -695,7 +695,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - _view.edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - _view.edgeInset.height * 2;
   }
-  if ((_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!_vertical && NSMinX(_position)+textWidth > NSMaxX(screenRect))) {
+  if ((_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!_vertical && NSMinX(_position)+MAX(textWidth, tempHeight)+_view.edgeInset.width*2 > NSMaxX(screenRect))) {
     if (textWidth >= tempHeight) {
       tempHeight = textWidth;
     } else {
