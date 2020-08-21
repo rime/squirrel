@@ -164,13 +164,12 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
 
   _enableNotifications =
       ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
-  BOOL isDark = NO;
+  [self.panel updateConfig:_config forDarkMode:NO];
   if (@available(macOS 10.14, *)) {
     if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-      isDark = YES;
+      [self.panel updateConfig:_config forDarkMode:YES];
     }
   }
-  [self.panel updateConfig:_config forDarkMode:isDark];
 }
 
 -(void)loadSchemaSpecificSettings:(NSString *)schemaId {
@@ -178,17 +177,21 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
     return;
   }
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
-  BOOL isDark = NO;
+    if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+      [schema hasSection:@"style"]) {
+    [self.panel updateConfig:schema forDarkMode:NO];
+  } else {
+    [self.panel updateConfig:self.config forDarkMode:NO];
+  }
   if (@available(macOS 10.14, *)) {
     if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-      isDark = YES;
+        if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+          [schema hasSection:@"style"]) {
+        [self.panel updateConfig:schema forDarkMode:YES];
+      } else {
+        [self.panel updateConfig:self.config forDarkMode:YES];
+      }
     }
-  }
-  if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
-      [schema hasSection:@"style"]) {
-    [self.panel updateConfig:schema forDarkMode:isDark];
-  } else {
-    [self.panel updateConfig:self.config forDarkMode:isDark];
   }
   [schema close];
 }
