@@ -857,13 +857,13 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     if (selRange.location > 0) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:[preedit substringToIndex:selRange.location]
+                 initWithString:[preedit substringToIndex:selRange.location].precomposedStringWithCanonicalMapping
                         attributes:_preeditAttrs]];
     }
     if (selRange.length > 0) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:[preedit substringWithRange:selRange]
+                    initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
                         attributes:_preeditHighlightedAttrs]];
     }
     if (selRange.location + selRange.length < preedit.length) {
@@ -871,7 +871,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
           appendAttributedString:
               [[NSAttributedString alloc]
                   initWithString:[preedit substringFromIndex:selRange.location +
-                                                             selRange.length]
+                                                             selRange.length].precomposedStringWithCanonicalMapping
                       attributes:_preeditAttrs]];
     }
     [text appendAttributedString:line];
@@ -901,7 +901,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     NSString *labelString;
     if (labels.count > 1 && i < labels.count) {
       labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-      labelString = [NSString stringWithFormat:labelFormat, labels[i]];
+      labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
     } else if (labels.count == 1 && i < [labels[0] length]) {
       // custom: A. B. C...
       char labelCharacter = [labels[0] characterAtIndex:i];
@@ -934,8 +934,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
 
     NSUInteger candidateStart = line.length;
+    NSString *candidate = candidates[i];
     [line appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:candidates[i]
+                                     initWithString:candidate.precomposedStringWithCanonicalMapping
                                          attributes:attrs]];
     // Use left-to-right marks to prevent right-to-left text from changing the
     // layout of non-candidate text.
@@ -945,7 +946,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       NSString *labelString2;
       if (labels.count > 1 && i < labels.count) {
         labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-        labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]];
+        labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]].precomposedStringWithCanonicalMapping;
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
@@ -965,8 +966,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@" "
                                            attributes:_attrs]];
+      NSString *comment = comments[i];
       [line appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:comments[i]
+                                       initWithString:comment.precomposedStringWithCanonicalMapping
                                            attributes:commentAttrs]];
     }
     
