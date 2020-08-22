@@ -374,7 +374,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   
   // Draw preedit Rect
   NSRect preeditRect = NSZeroRect;
-  if (_preeditRange.length > 0 && _preeditBackgroundColor != nil) {
+  if (_preeditRange.length > 0) {
     preeditRect = [self contentRectForRange:_preeditRange];
     preeditRect.size.width = textField.size.width;
     preeditRect.size.height += _preeditLinespace;
@@ -389,7 +389,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       preeditRect.size.height += _edgeInset.height - _preeditLinespace;
     }
     checkBorders(&preeditRect, backgroundRect);
-    preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
+    if (_preeditBackgroundColor != nil) {
+      preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
+    }
   }
   
   // Draw highlighted Rect
@@ -527,13 +529,13 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   
   if (![highlightedPreeditPath isEmpty]) {
-    if (![preeditPath isEmpty]) {
+    if (preeditPath != nil) {
       [preeditPath appendBezierPath:[highlightedPreeditPath copy]];
     } else {
       [backgroundPath appendBezierPath:[highlightedPreeditPath copy]];
     }
     if (![highlightedPreeditPath2 isEmpty]) {
-      if (![preeditPath isEmpty]) {
+      if (preeditPath != nil) {
         [preeditPath appendBezierPath:[highlightedPreeditPath2 copy]];
       } else {
         [backgroundPath appendBezierPath:[highlightedPreeditPath2 copy]];
