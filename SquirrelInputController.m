@@ -68,7 +68,7 @@
     }
 
     switch (event.type) {
-      case NSFlagsChanged: {
+      case NSEventTypeFlagsChanged: {
         if (_lastModifier == modifiers) {
           handled = YES;
           break;
@@ -107,7 +107,7 @@
         }
         [self rimeUpdate];
       } break;
-      case NSKeyDown: {
+      case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
         if (modifiers & OSX_COMMAND_MASK)
           break;
@@ -130,7 +130,7 @@
           [self rimeUpdate];
         }
       } break;
-      case NSLeftMouseDown: {
+      case NSEventTypeLeftMouseDown: {
         [self commitComposition:_currentClient];
       } break;
       default:
@@ -255,7 +255,7 @@
 -(NSUInteger)recognizedEvents:(id)sender
 {
   //NSLog(@"recognizedEvents:");
-  return NSKeyDownMask | NSFlagsChangedMask | NSLeftMouseDownMask;
+  return NSEventMaskKeyDown | NSEventMaskFlagsChanged | NSEventMaskLeftMouseDown;
 }
 
 -(void)activateServer:(id)sender
