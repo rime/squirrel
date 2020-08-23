@@ -811,7 +811,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
     _window.contentView = _view;
     [self initializeUIStyleForDarkMode:NO];
-    if (_view.isDark) {
+    if (@available(macOS 10.14, *)) {
       [self initializeUIStyleForDarkMode:YES];
     }
     tempHeight = 0;

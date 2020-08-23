@@ -166,9 +166,7 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
       ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
   [self.panel updateConfig:_config forDarkMode:NO];
   if (@available(macOS 10.14, *)) {
-    if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-      [self.panel updateConfig:_config forDarkMode:YES];
-    }
+    [self.panel updateConfig:_config forDarkMode:YES];
   }
 }
 
@@ -184,13 +182,11 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
     [self.panel updateConfig:self.config forDarkMode:NO];
   }
   if (@available(macOS 10.14, *)) {
-    if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-        if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
-          [schema hasSection:@"style"]) {
-        [self.panel updateConfig:schema forDarkMode:YES];
-      } else {
-        [self.panel updateConfig:self.config forDarkMode:YES];
-      }
+      if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+        [schema hasSection:@"style"]) {
+      [self.panel updateConfig:schema forDarkMode:YES];
+    } else {
+      [self.panel updateConfig:self.config forDarkMode:YES];
     }
   }
   [schema close];
