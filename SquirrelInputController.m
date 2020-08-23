@@ -16,6 +16,8 @@
 -(void)updateAppOptions;
 @end
 
+const int N_KEY_ROLL_OVER = 50;
+
 @implementation SquirrelInputController {
   id _currentClient;
   NSString *_preeditString;
@@ -28,7 +30,9 @@
   NSString *_schemaId;
   BOOL _inlinePreedit;
   // for chord-typing
-  char _chord[128];
+  int _chordKeyCodes[N_KEY_ROLL_OVER];
+  int _chordModifiers[N_KEY_ROLL_OVER];
+  int _chordKeyCount;
   NSTimer *_chordTimer;
   NSTimeInterval _chordDuration;
   NSString *_currentApp;
@@ -174,13 +178,15 @@
 
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
-    bool is_chording_key = rime_modifiers == 0 &&
-        rime_keycode >= XK_space && rime_keycode <= XK_asciitilde;
+    bool is_chording_key = (rime_modifiers & ~kShiftMask) == 0 &&
+    ((rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
+     rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R);
     if (is_chording_key &&
         rime_get_api()->get_option(_session, "_chord_typing")) {
-      [self updateChord:rime_keycode];
+      [self updateChord:rime_keycode modifiers:rime_modifiers];
     }
-    else {
+    else if ((rime_modifiers & kReleaseMask) == 0) {
+      // non-chording key pressed
       [self clearChord];
     }
   }
@@ -190,11 +196,14 @@
 
 -(void)onChordTimer:(NSTimer *)timer
 {
+  // chord release triggered by timer
   int processed_keys = 0;
-  if (_chord[0] && _session) {
+  if (_chordKeyCount && _session) {
     // simulate key-ups
-    for (char *p = _chord; *p; ++p) {
-      if (rime_get_api()->process_key(_session, *p, kReleaseMask))
+    for (int i = 0; i < _chordKeyCount; ++i) {
+      if (rime_get_api()->process_key(_session,
+                                      _chordKeyCodes[i],
+                                      (_chordModifiers[i] | kReleaseMask)))
         ++processed_keys;
     }
   }
@@ -204,20 +213,20 @@
   }
 }
 
--(void)updateChord:(int)keycode
+-(void)updateChord:(int)keycode modifiers:(int)modifiers
 {
-  char ch = (char)keycode;
-  char *p = strchr(_chord, ch);
-  if (p != NULL) {
-    // just repeating
+  //NSLog(@"update chord: {%s} << %x", _chord, keycode);
+  for (int i = 0; i < _chordKeyCount; ++i) {
+    if (_chordKeyCodes[i] == keycode)
+      return;
+  }
+  if (_chordKeyCount >= N_KEY_ROLL_OVER) {
+    // you are cheating. only one human typist (fingers <= 10) is supported.
     return;
   }
-  else {
-    // append ch to _chord
-    p = strchr(_chord, '\0');
-    *p++ = ch;
-    *p = '\0';
-  }
+  _chordKeyCodes[_chordKeyCount] = keycode;
+  _chordModifiers[_chordKeyCount] = modifiers;
+  ++_chordKeyCount;
   // reset timer
   if (_chordTimer && _chordTimer.valid) {
     [_chordTimer invalidate];
@@ -236,9 +245,7 @@
 
 -(void)clearChord
 {
-  if (_chord[0]) {
-    _chord[0] = '\0';
-  }
+  _chordKeyCount = 0;
   if (_chordTimer) {
     if (_chordTimer.valid) {
       [_chordTimer invalidate];
