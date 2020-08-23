@@ -942,7 +942,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
            comments:(NSArray *)comments
              labels:(NSArray *)labels
         highlighted:(NSUInteger)index {
-  [self getCurrentScreen];
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
