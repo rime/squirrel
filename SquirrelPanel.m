@@ -558,6 +558,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
         candidateRect.size.height -= preeditRect.size.height;
         candidateRect.origin.y += preeditRect.size.height;
         makeRoomForConor(&highlightedRect, candidateRect, _hilitedCornerRadius / 2);
+
       }
       highlightedPath = drawSmoothLines(rectVertex(highlightedRect), _hilitedCornerRadius*0.3, _hilitedCornerRadius*1.4);
     }
@@ -685,6 +686,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSMutableDictionary *_preeditHighlightedAttrs;
   NSParagraphStyle *_paragraphStyle ;
   NSParagraphStyle *_preeditParagraphStyle;
+
   CGFloat alphaValue;
   NSMutableDictionary *_attrsDark;
   NSMutableDictionary *_highlightedAttrsDark;
@@ -704,6 +706,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSString *_statusMessage;
   NSTimer *_statusTimer;
 }
+
 
 // Use this method to convert charcters to upright position
 // Based on the width of the chacter, relative font size matters
@@ -838,6 +841,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   BOOL vertical = [_view.styles[@"vertical"] boolValue];
   if (_view.isDark) {
     edgeInset = [_view.darkStyles[@"edgeInset"] sizeValue];
+    vertical = [_view.darkStyles[@"vertical"] boolValue];
   }
 
   //Break line if the text is too long, based on screen size.
@@ -938,6 +942,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
            comments:(NSArray *)comments
              labels:(NSArray *)labels
         highlighted:(NSUInteger)index {
+  [self getCurrentScreen];
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
@@ -1166,7 +1171,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     if (i > 0) {
       [text appendAttributedString:separator];
     }
-    
+
     if (vertical) {
       [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart) attribute:attrsCan];
     }
