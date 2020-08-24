@@ -838,19 +838,20 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
   
   NSSize edgeInset = [_view.styles[@"edgeInset"] sizeValue];
-  BOOL vertical = [_view.styles[@"vertical"] boolValue];
-  BOOL inlineEdit = [_view.styles[@"inlineEdit"] boolValue];
   if (_view.isDark) {
     edgeInset = [_view.darkStyles[@"edgeInset"] sizeValue];
-    vertical = [_view.darkStyles[@"vertical"] boolValue];
-    inlineEdit = [_view.darkStyles[@"inlineEdit"] boolValue];
+    _vertical = [_view.darkStyles[@"vertical"] boolValue];
+    _inlinePreedit = [_view.darkStyles[@"inlineEdit"] boolValue];
+  } else {
+    _vertical = [_view.styles[@"vertical"] boolValue];
+    _inlinePreedit = [_view.styles[@"inlineEdit"] boolValue];
   }
 
   //Break line if the text is too long, based on screen size.
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
-  if (vertical && (textWidth > NSHeight(screenRect) / 3 - edgeInset.height * 2)) {
+  if (_vertical && (textWidth > NSHeight(screenRect) / 3 - edgeInset.height * 2)) {
     textWidth = NSHeight(screenRect) / 3 - edgeInset.height * 2;
-  } else if (!vertical && (textWidth > NSWidth(screenRect) / 2 - edgeInset.height * 2)) {
+  } else if (!_vertical && (textWidth > NSWidth(screenRect) / 2 - edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - edgeInset.height * 2;
   }
   _view.text.layoutManagers[0].textContainers[0].containerSize = NSMakeSize(textWidth, 0);
@@ -858,8 +859,8 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   NSRect contentRect = _view.contentRect;
-  if ((vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) ||
-      (!vertical && NSMinX(_position)+MAX(contentRect.size.width, tempHeight)+edgeInset.width*2 > NSMaxX(screenRect))) {
+  if ((_vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) ||
+      (!_vertical && NSMinX(_position)+MAX(contentRect.size.width, tempHeight)+edgeInset.width*2 > NSMaxX(screenRect))) {
     if (contentRect.size.width >= tempHeight) {
       tempHeight = contentRect.size.width;
     } else {
@@ -868,7 +869,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
   }
   
-  if (vertical) {
+  if (_vertical) {
     windowRect.size = NSMakeSize(contentRect.size.height + edgeInset.height * 2,
                                  contentRect.size.width + edgeInset.width * 2);
     // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
@@ -879,7 +880,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
-    if (!inlineEdit) {
+    if (!_inlinePreedit) {
       NSSize preeditSize = [_view contentRectForRange:preeditRange].size;
       windowRect.origin.x += preeditSize.height + edgeInset.width;
     }
@@ -897,7 +898,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     windowRect.origin.x = NSMinX(screenRect);
   }
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
-    if (vertical) {
+    if (_vertical) {
       windowRect.origin.y = NSMinY(screenRect);
     } else {
       windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
@@ -910,7 +911,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     windowRect.origin.y = NSMinY(screenRect);
   }
   // rotate the view, the core in vertical mode!
-  if (vertical) {
+  if (_vertical) {
     _view.boundsRotation = 90.0;
     [_view setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
   } else {
@@ -1020,8 +1021,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSDictionary *preeditHighlightedAttrs = _preeditHighlightedAttrs;
   NSParagraphStyle *paragraphStyle = _paragraphStyle;
   NSParagraphStyle *preeditParagraphStyle = _preeditParagraphStyle;
-  BOOL horizontal = [_view.styles[@"horizontal"] boolValue];
-  BOOL vertical = [_view.styles[@"vertical"] boolValue];
   if (_view.isDark) {
     attrs = _attrsDark;
     highlightedAttrs = _highlightedAttrsDark;
@@ -1033,8 +1032,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     preeditHighlightedAttrs = _preeditHighlightedAttrsDark;
     paragraphStyle = _paragraphStyleDark;
     preeditParagraphStyle = _preeditParagraphStyleDark;
-    horizontal = [_view.darkStyles[@"horizontal"] boolValue];
-    vertical = [_view.darkStyles[@"vertical"] boolValue];
+    _horizontal = [_view.darkStyles[@"horizontal"] boolValue];
+    _vertical = [_view.darkStyles[@"vertical"] boolValue];
+  } else {
+    _horizontal = [_view.styles[@"horizontal"] boolValue];
+    _vertical = [_view.styles[@"vertical"] boolValue];
   }
   
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
@@ -1068,7 +1070,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
     [text appendAttributedString:line];
 
-    if (vertical) {
+    if (_vertical) {
       [self convertToVerticalGlyph:text inRange:NSMakeRange(0, line.length) attribute:preeditAttrs];
     }
     [text addAttribute:NSParagraphStyleAttributeName
@@ -1117,10 +1119,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
                     initWithString:labelString
                         attributes:labelAttrsCan]];
       // get the label size for indent
-      if (vertical) {
+      if (_vertical) {
         [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length) attribute:labelAttrsCan];
       }
-      if (!horizontal) {
+      if (!_horizontal) {
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
     }
@@ -1166,14 +1168,14 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     
     
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
-                                        initWithString:(horizontal ? @"  " : @"\n")
+                                        initWithString:(_horizontal ? @"  " : @"\n")
                                             attributes:attrsCan];
     _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
     if (i > 0) {
       [text appendAttributedString:separator];
     }
 
-    if (vertical) {
+    if (_vertical) {
       [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart) attribute:attrsCan];
     }
     NSMutableParagraphStyle *paragraphStyleCandidate = [paragraphStyle mutableCopy];
@@ -1199,14 +1201,15 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 - (void)showStatus:(NSString *)message {
   NSDictionary *commentAttrs = _commentAttrs;
-  BOOL vertical = [_view.styles[@"vertical"] boolValue];
   if (_view.isDark) {
     commentAttrs = _commentAttrsDark;
-    vertical = [_view.darkStyles[@"vertical"] boolValue];
+    _vertical = [_view.darkStyles[@"vertical"] boolValue];
+  } else {
+    _vertical = [_view.styles[@"vertical"] boolValue];
   }
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message
                                                              attributes:commentAttrs];
-  if (vertical) {
+  if (_vertical) {
     [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length) attribute:commentAttrs];
   }
   [_view setText:text];
