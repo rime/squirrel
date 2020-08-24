@@ -871,26 +871,23 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   if (vertical) {
     windowRect.size = NSMakeSize(contentRect.size.height + edgeInset.height * 2,
                                  contentRect.size.width + edgeInset.width * 2);
-  } else {
-    windowRect.size = NSMakeSize(contentRect.size.width + edgeInset.width * 2,
-                                 contentRect.size.height + edgeInset.height * 2);
-  }
-  windowRect.origin = NSMakePoint(NSMinX(_position),
-                                  NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
-
-  // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
-  if (vertical) {
+    // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
     if (NSMidY(_position) / NSHeight(screenRect) >= 0.5) {
       windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
     } else {
       windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
     }
     // Make the first candidate fixed at the left of cursor
-    windowRect.origin.x -= windowRect.size.width;
+    windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
     if (!inlineEdit) {
       NSSize preeditSize = [_view contentRectForRange:preeditRange].size;
       windowRect.origin.x += preeditSize.height + edgeInset.width;
     }
+  } else {
+    windowRect.size = NSMakeSize(contentRect.size.width + edgeInset.width * 2,
+                                 contentRect.size.height + edgeInset.height * 2);
+    windowRect.origin = NSMakePoint(NSMinX(_position),
+                                    NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   }
 
   if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
