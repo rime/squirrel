@@ -839,9 +839,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   
   NSSize edgeInset = [_view.styles[@"edgeInset"] sizeValue];
   BOOL vertical = [_view.styles[@"vertical"] boolValue];
+  BOOL inlineEdit = [_view.styles[@"inlineEdit"] boolValue];
   if (_view.isDark) {
     edgeInset = [_view.darkStyles[@"edgeInset"] sizeValue];
     vertical = [_view.darkStyles[@"vertical"] boolValue];
+    inlineEdit = [_view.darkStyles[@"inlineEdit"] boolValue];
   }
 
   //Break line if the text is too long, based on screen size.
@@ -851,18 +853,21 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   } else if (!vertical && (textWidth > NSWidth(screenRect) / 2 - edgeInset.height * 2)) {
     textWidth = NSWidth(screenRect) / 2 - edgeInset.height * 2;
   }
-  if ((vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) || (!vertical && NSMinX(_position)+MAX(textWidth, tempHeight)+edgeInset.width*2 > NSMaxX(screenRect))) {
-    if (textWidth >= tempHeight) {
-      tempHeight = textWidth;
-    } else {
-      textWidth = tempHeight;
-    }
-  }
-  _view.text.layoutManagers[0].textContainers[0].size = NSMakeSize(textWidth, 0);
+  _view.text.layoutManagers[0].textContainers[0].containerSize = NSMakeSize(textWidth, 0);
   
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   NSRect contentRect = _view.contentRect;
+  if ((vertical && NSMidY(_position) / NSHeight(screenRect) < 0.5) ||
+      (!vertical && NSMinX(_position)+MAX(contentRect.size.width, tempHeight)+edgeInset.width*2 > NSMaxX(screenRect))) {
+    if (contentRect.size.width >= tempHeight) {
+      tempHeight = contentRect.size.width;
+    } else {
+      contentRect.size.width = tempHeight;
+      _view.text.layoutManagers[0].textContainers[0].containerSize = NSMakeSize(tempHeight, 0);
+    }
+  }
+  
   if (vertical) {
     windowRect.size = NSMakeSize(contentRect.size.height + edgeInset.height * 2,
                                  contentRect.size.width + edgeInset.width * 2);
@@ -882,7 +887,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x -= windowRect.size.width;
-    if (!_inlinePreedit) {
+    if (!inlineEdit) {
       NSSize preeditSize = [_view contentRectForRange:preeditRange].size;
       windowRect.origin.x += preeditSize.height + edgeInset.width;
     }
