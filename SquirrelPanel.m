@@ -1560,16 +1560,14 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     _commentHighlightedAttrs[NSFontAttributeName] = font;
     _preeditAttrs[NSFontAttributeName] = font;
     _preeditHighlightedAttrs[NSFontAttributeName] = font;
-    if (!_vertical) {
-      _attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-    }
+    _attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
     _paragraphStyle = paragraphStyle;
     _preeditParagraphStyle = preeditParagraphStyle;
   }
