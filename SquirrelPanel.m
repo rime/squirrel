@@ -441,7 +441,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   double _preeditLinespace = [_styles[@"preeditLinespace"] doubleValue];
   BOOL _horizontal = [_styles[@"horizontal"] boolValue];
   BOOL _vertical = [_styles[@"vertical"] boolValue];
-  BOOL _inlineEdit = [_styles[@"inlineEdit"] boolValue];
   if (self.isDark) {
     backgroundColor = _backgroundColorDark;
     highlightedStripColor = _highlightedStripColorDark;
@@ -456,7 +455,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     _preeditLinespace = [_darkStyles[@"preeditLinespace"] doubleValue];
     _horizontal = [_darkStyles[@"horizontal"] boolValue];
     _vertical = [_darkStyles[@"vertical"] boolValue];
-    _inlineEdit = [_darkStyles[@"inlineEdit"] boolValue];
   }
   
   NSRect textField = dirtyRect;
@@ -475,7 +473,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     preeditRect.origin = NSMakePoint(textField.origin.x - _edgeInset.width, textField.origin.y - _edgeInset.height);
     preeditRect.size.height += _edgeInset.height;
     if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
-      if (!_inlineEdit && !_horizontal) {
+      if (_preeditRange.length > 0 && !_horizontal) {
         preeditRect.size.height -= _hilitedCornerRadius / 2;
       }
     }
@@ -541,7 +539,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
         highlightedRect.size.height += _edgeInset.height - _linespace;
       }
       if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-        if (_inlineEdit) {
+        if (_preeditRange.length == 0) {
           highlightedRect.size.height += _edgeInset.height - _linespace;
           highlightedRect.origin.y -= _edgeInset.height - _linespace;
         } else {
@@ -840,11 +838,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSSize edgeInset = [_view.styles[@"edgeInset"] sizeValue];
   if (_view.isDark) {
     edgeInset = [_view.darkStyles[@"edgeInset"] sizeValue];
-    _vertical = [_view.darkStyles[@"vertical"] boolValue];
-    _inlinePreedit = [_view.darkStyles[@"inlineEdit"] boolValue];
-  } else {
-    _vertical = [_view.styles[@"vertical"] boolValue];
-    _inlinePreedit = [_view.styles[@"inlineEdit"] boolValue];
   }
 
   //Break line if the text is too long, based on screen size.
@@ -880,7 +873,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
-    if (!_inlinePreedit) {
+    if (preeditRange.length > 0) {
       NSSize preeditSize = [_view contentRectForRange:preeditRange].size;
       windowRect.origin.x += preeditSize.height + edgeInset.width;
     }
@@ -918,9 +911,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     _view.boundsRotation = 0;
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
   }
-  _window.alphaValue = alphaValue;
   if (_view.isDark) {
     _window.alphaValue = alphaValueDark;
+  } else {
+    _window.alphaValue = alphaValue;
   }
   [_window setFrame:windowRect display:YES];
   [_window invalidateShadow];
@@ -1034,9 +1028,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     preeditParagraphStyle = _preeditParagraphStyleDark;
     _horizontal = [_view.darkStyles[@"horizontal"] boolValue];
     _vertical = [_view.darkStyles[@"vertical"] boolValue];
+    _inlinePreedit = [_view.darkStyles[@"inlineEdit"] boolValue];
   } else {
     _horizontal = [_view.styles[@"horizontal"] boolValue];
     _vertical = [_view.styles[@"vertical"] boolValue];
+    _inlinePreedit = [_view.styles[@"inlineEdit"] boolValue];
   }
   
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
@@ -1302,9 +1298,9 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
 }
 
 -(void)updateConfig:(SquirrelConfig *)config forDarkMode:(BOOL)isDark {
-  _horizontal = [config getBool:@"style/horizontal"];
-  _vertical = [config getBool:@"style/vertical"];
-  _inlinePreedit = [config getBool:@"style/inline_preedit"];
+  BOOL horizontal = [config getBool:@"style/horizontal"];
+  BOOL vertical = [config getBool:@"style/vertical"];
+  BOOL inlinePreedit = [config getBool:@"style/inline_preedit"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
   _candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
 
@@ -1345,143 +1341,143 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     colorScheme = [config getString:@"style/color_scheme"];
   }
   if (colorScheme) {
-      NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
-      if (@available(macOS 10.12, *)) {
-        config.useP3 = [config getBool:[prefix stringByAppendingString:@"/in_display_p3"]];
-      }
-      backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
-      borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
-      preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
-      textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
-      highlightedTextColor =
-          [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
-      if (highlightedTextColor == nil) {
-        highlightedTextColor = textColor;
-      }
-      highlightedBackColor =
-          [config getColor:[prefix stringByAppendingString:@"/hilited_back_color"]];
-      candidateTextColor =
-          [config getColor:[prefix stringByAppendingString:@"/candidate_text_color"]];
-      if (candidateTextColor == nil) {
-        // in non-inline mode, 'text_color' is for rendering preedit text.
-        // if not otherwise specified, candidate text is also rendered in this color.
-        candidateTextColor = textColor;
-      }
-      highlightedCandidateTextColor =
-          [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_text_color"]];
-      if (highlightedCandidateTextColor == nil) {
-        highlightedCandidateTextColor = highlightedTextColor;
-      }
-      highlightedCandidateBackColor =
-          [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_back_color"]];
-      if (highlightedCandidateBackColor == nil) {
-        highlightedCandidateBackColor = highlightedBackColor;
-      }
-      commentTextColor =
-          [config getColor:[prefix stringByAppendingString:@"/comment_text_color"]];
-      highlightedCommentTextColor =
-          [config getColor:[prefix stringByAppendingString:@"/hilited_comment_text_color"]];
+    NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
+    if (@available(macOS 10.12, *)) {
+      config.useP3 = [config getBool:[prefix stringByAppendingString:@"/in_display_p3"]];
+    }
+    backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
+    borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
+    preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
+    textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
+    highlightedTextColor =
+        [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
+    if (highlightedTextColor == nil) {
+      highlightedTextColor = textColor;
+    }
+    highlightedBackColor =
+        [config getColor:[prefix stringByAppendingString:@"/hilited_back_color"]];
+    candidateTextColor =
+        [config getColor:[prefix stringByAppendingString:@"/candidate_text_color"]];
+    if (candidateTextColor == nil) {
+      // in non-inline mode, 'text_color' is for rendering preedit text.
+      // if not otherwise specified, candidate text is also rendered in this color.
+      candidateTextColor = textColor;
+    }
+    highlightedCandidateTextColor =
+        [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_text_color"]];
+    if (highlightedCandidateTextColor == nil) {
+      highlightedCandidateTextColor = highlightedTextColor;
+    }
+    highlightedCandidateBackColor =
+        [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_back_color"]];
+    if (highlightedCandidateBackColor == nil) {
+      highlightedCandidateBackColor = highlightedBackColor;
+    }
+    commentTextColor =
+        [config getColor:[prefix stringByAppendingString:@"/comment_text_color"]];
+    highlightedCommentTextColor =
+        [config getColor:[prefix stringByAppendingString:@"/hilited_comment_text_color"]];
 
-      // the following per-color-scheme configurations, if exist, will
-      // override configurations with the same name under the global 'style' section
+    // the following per-color-scheme configurations, if exist, will
+    // override configurations with the same name under the global 'style' section
 
-      NSNumber *horizontalOverridden =
-          [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
-      if (horizontalOverridden) {
-        _horizontal = horizontalOverridden.boolValue;
-      }
-      NSNumber *verticalOverridden =
-          [config getOptionalBool:[prefix stringByAppendingString:@"/vertical"]];
-      if (verticalOverridden) {
-        _vertical = verticalOverridden.boolValue;
-      }
-      NSNumber *inlinePreeditOverridden =
-          [config getOptionalBool:[prefix stringByAppendingString:@"/inline_preedit"]];
-      if (inlinePreeditOverridden) {
-        _inlinePreedit = inlinePreeditOverridden.boolValue;
-      }
-      NSString *candidateFormatOverridden =
-          [config getString:[prefix stringByAppendingString:@"/candidate_format"]];
-      if (candidateFormatOverridden) {
-        _candidateFormat = candidateFormatOverridden;
-      }
+    NSNumber *horizontalOverridden =
+        [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
+    if (horizontalOverridden) {
+      horizontal = horizontalOverridden.boolValue;
+    }
+    NSNumber *verticalOverridden =
+        [config getOptionalBool:[prefix stringByAppendingString:@"/vertical"]];
+    if (verticalOverridden) {
+      vertical = verticalOverridden.boolValue;
+    }
+    NSNumber *inlinePreeditOverridden =
+        [config getOptionalBool:[prefix stringByAppendingString:@"/inline_preedit"]];
+    if (inlinePreeditOverridden) {
+      inlinePreedit = inlinePreeditOverridden.boolValue;
+    }
+    NSString *candidateFormatOverridden =
+        [config getString:[prefix stringByAppendingString:@"/candidate_format"]];
+    if (candidateFormatOverridden) {
+      _candidateFormat = candidateFormatOverridden;
+    }
 
-      NSString *fontNameOverridden =
-          [config getString:[prefix stringByAppendingString:@"/font_face"]];
-      if (fontNameOverridden) {
-        fontName = fontNameOverridden;
-      }
-      NSNumber *fontSizeOverridden =
-          [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
-      if (fontSizeOverridden) {
-        fontSize = fontSizeOverridden.integerValue;
-      }
-      NSString *labelFontNameOverridden =
-          [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
-      if (labelFontNameOverridden) {
-        labelFontName = labelFontNameOverridden;
-      }
-      NSNumber *labelFontSizeOverridden =
-          [config getOptionalInt:[prefix stringByAppendingString:@"/label_font_point"]];
-      if (labelFontSizeOverridden) {
-        labelFontSize = labelFontSizeOverridden.integerValue;
-      }
-      NSColor *candidateLabelColorOverridden =
-          [config getColor:[prefix stringByAppendingString:@"/label_color"]];
-      if (candidateLabelColorOverridden) {
-        candidateLabelColor = candidateLabelColorOverridden;
-      }
-      NSColor *highlightedCandidateLabelColorOverridden =
-          [config getColor:[prefix stringByAppendingString:@"/label_hilited_color"]];
-      if (!highlightedCandidateLabelColorOverridden) {
-        // for backward compatibility, 'label_hilited_color' and 'hilited_candidate_label_color'
-        // are both valid
-        highlightedCandidateLabelColorOverridden =
-            [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_label_color"]];
-      }
-      if (highlightedCandidateLabelColorOverridden) {
-        highlightedCandidateLabelColor = highlightedCandidateLabelColorOverridden;
-      }
-      NSNumber *alphaOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/alpha"]];
-      if (alphaOverridden) {
-        alpha = fmin(fmax(alphaOverridden.doubleValue, 0.0), 1.0);
-      }
-      NSNumber *cornerRadiusOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/corner_radius"]];
-      if (cornerRadiusOverridden) {
-        cornerRadius = cornerRadiusOverridden.doubleValue;
-      }
-      NSNumber *hilitedCornerRadiusOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/hilited_corner_radius"]];
-      if (hilitedCornerRadiusOverridden) {
-        hilitedCornerRadius = hilitedCornerRadiusOverridden.doubleValue;
-      }
-      NSNumber *borderHeightOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
-      if (borderHeightOverridden) {
-        borderHeight = borderHeightOverridden.doubleValue;
-      }
-      NSNumber *borderWidthOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/border_width"]];
-      if (borderWidthOverridden) {
-        borderWidth = borderWidthOverridden.doubleValue;
-      }
-      NSNumber *lineSpacingOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/line_spacing"]];
-      if (lineSpacingOverridden) {
-        lineSpacing = lineSpacingOverridden.doubleValue;
-      }
-      NSNumber *spacingOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/spacing"]];
-      if (spacingOverridden) {
-        spacing = spacingOverridden.doubleValue;
-      }
-      NSNumber *baseOffsetOverridden =
-          [config getOptionalDouble:[prefix stringByAppendingString:@"/base_offset"]];
-      if (baseOffsetOverridden) {
-        baseOffset = baseOffsetOverridden.doubleValue;
-      }
+    NSString *fontNameOverridden =
+        [config getString:[prefix stringByAppendingString:@"/font_face"]];
+    if (fontNameOverridden) {
+      fontName = fontNameOverridden;
+    }
+    NSNumber *fontSizeOverridden =
+        [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
+    if (fontSizeOverridden) {
+      fontSize = fontSizeOverridden.integerValue;
+    }
+    NSString *labelFontNameOverridden =
+        [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
+    if (labelFontNameOverridden) {
+      labelFontName = labelFontNameOverridden;
+    }
+    NSNumber *labelFontSizeOverridden =
+        [config getOptionalInt:[prefix stringByAppendingString:@"/label_font_point"]];
+    if (labelFontSizeOverridden) {
+      labelFontSize = labelFontSizeOverridden.integerValue;
+    }
+    NSColor *candidateLabelColorOverridden =
+        [config getColor:[prefix stringByAppendingString:@"/label_color"]];
+    if (candidateLabelColorOverridden) {
+      candidateLabelColor = candidateLabelColorOverridden;
+    }
+    NSColor *highlightedCandidateLabelColorOverridden =
+        [config getColor:[prefix stringByAppendingString:@"/label_hilited_color"]];
+    if (!highlightedCandidateLabelColorOverridden) {
+      // for backward compatibility, 'label_hilited_color' and 'hilited_candidate_label_color'
+      // are both valid
+      highlightedCandidateLabelColorOverridden =
+          [config getColor:[prefix stringByAppendingString:@"/hilited_candidate_label_color"]];
+    }
+    if (highlightedCandidateLabelColorOverridden) {
+      highlightedCandidateLabelColor = highlightedCandidateLabelColorOverridden;
+    }
+    NSNumber *alphaOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/alpha"]];
+    if (alphaOverridden) {
+      alpha = fmin(fmax(alphaOverridden.doubleValue, 0.0), 1.0);
+    }
+    NSNumber *cornerRadiusOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/corner_radius"]];
+    if (cornerRadiusOverridden) {
+      cornerRadius = cornerRadiusOverridden.doubleValue;
+    }
+    NSNumber *hilitedCornerRadiusOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/hilited_corner_radius"]];
+    if (hilitedCornerRadiusOverridden) {
+      hilitedCornerRadius = hilitedCornerRadiusOverridden.doubleValue;
+    }
+    NSNumber *borderHeightOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
+    if (borderHeightOverridden) {
+      borderHeight = borderHeightOverridden.doubleValue;
+    }
+    NSNumber *borderWidthOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/border_width"]];
+    if (borderWidthOverridden) {
+      borderWidth = borderWidthOverridden.doubleValue;
+    }
+    NSNumber *lineSpacingOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/line_spacing"]];
+    if (lineSpacingOverridden) {
+      lineSpacing = lineSpacingOverridden.doubleValue;
+    }
+    NSNumber *spacingOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/spacing"]];
+    if (spacingOverridden) {
+      spacing = spacingOverridden.doubleValue;
+    }
+    NSNumber *baseOffsetOverridden =
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/base_offset"]];
+    if (baseOffsetOverridden) {
+      baseOffset = baseOffsetOverridden.doubleValue;
+    }
   }
 
   if (fontSize == 0) { // default size
@@ -1539,16 +1535,14 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     _commentHighlightedAttrsDark[NSFontAttributeName] = font;
     _preeditAttrsDark[NSFontAttributeName] = font;
     _preeditHighlightedAttrsDark[NSFontAttributeName] = font;
-    if (!_vertical) {
-      _attrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _highlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _labelAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _labelHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _commentAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _commentHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _preeditAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-      _preeditHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
-    }
+    _attrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _highlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _labelHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _commentHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
+    _preeditHighlightedAttrsDark[NSBaselineOffsetAttributeName] = @(baseOffset);
     _paragraphStyleDark = paragraphStyle;
     _preeditParagraphStyleDark = preeditParagraphStyle;
   } else {
@@ -1608,7 +1602,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
               borderColor:borderColor
                    isDark:isDark];
   NSSize edgeInset;
-  if (_vertical) {
+  if (vertical) {
     edgeInset = NSMakeSize(MAX(borderHeight, cornerRadius), MAX(borderWidth, cornerRadius));
   } else {
     edgeInset = NSMakeSize(MAX(borderWidth, cornerRadius), MAX(borderHeight, cornerRadius));
@@ -1619,14 +1613,19 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
              borderWidth:MIN(borderHeight, borderWidth)
                linespace:lineSpacing / 2
         preeditLinespace:spacing
-              horizontal:_horizontal
-                vertical:_vertical
-              inlineEdit:_inlinePreedit
+              horizontal:horizontal
+                vertical:vertical
+              inlineEdit:inlinePreedit
                   isDark:isDark];
   if (isDark) {
     alphaValueDark = (alpha == 0) ? 1.0 : alpha;
   } else {
     alphaValue = (alpha == 0) ? 1.0 : alpha;
+  }
+  if (_view.isDark) {
+    _inlinePreedit = [_view.darkStyles[@"inlineEdit"] boolValue];
+  } else {
+    _inlinePreedit = [_view.styles[@"inlineEdit"] boolValue];
   }
 }
 @end
