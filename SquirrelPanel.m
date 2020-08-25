@@ -708,15 +708,19 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 // Use this method to convert charcters to upright position
 // Based on the width of the chacter, relative font size matters
-- (void)convertToVerticalGlyph:(NSMutableAttributedString *)originalText inRange:(NSRange)stringRange attribute:(NSDictionary *)attribute {
+CGFloat convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange stringRange, NSDictionary *attribute) {
   double baseOffset = [attribute[NSBaselineOffsetAttributeName] doubleValue];
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
   const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"漢" attributes:attribute];
   const NSRect cjkRect = [cjkChar boundingRectWithSize:NSZeroSize options:NULL];
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"한" attributes:attribute];
-  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size;
+  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSZeroSize options:NULL].size;
   stringRange = [originalText.string rangeOfComposedCharacterSequencesForRange:stringRange];
+  NSMutableDictionary * offsetAttribute =[attribute mutableCopy];
+  [offsetAttribute addEntriesFromDictionary:@{NSBaselineOffsetAttributeName: @(baseOffset)}];
+  const NSAttributedString *spaceChar = [[NSAttributedString alloc] initWithString:@" " attributes:offsetAttribute];
+  const CGFloat minimumHeight = [spaceChar boundingRectWithSize:NSZeroSize options:NULL].size.height;
   NSUInteger i = stringRange.location;
   while (i < stringRange.location+stringRange.length) {
     NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
@@ -726,11 +730,14 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     if ((charRect.size.width >= cjkRect.size.width) || (charRect.size.width >= hangulSize.width)) {
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
       NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:NULL];
-      [originalText addAttribute:NSBaselineOffsetAttributeName value:@((cjkRect.size.height - uprightCharRect.size.height)/2+(cjkRect.origin.y-uprightCharRect.origin.y)-(charRect.size.width-cjkChar.size.width)/2+baseOffset) range:range];
+      CGFloat widthDiff = charRect.size.width-cjkChar.size.width;
+      CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/1.5 : widthDiff/2) +baseOffset;
+      [originalText addAttribute:NSBaselineOffsetAttributeName value:@(offset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(baseOffset) range:range];
     }
   }
+  return minimumHeight;
 }
 
 - (void)initializeUIStyleForDarkMode:(BOOL)isDark{
@@ -1066,11 +1073,13 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
     [text appendAttributedString:line];
 
+    NSMutableParagraphStyle *paragraphStylePreedit = [preeditParagraphStyle mutableCopy];
     if (_vertical) {
-      [self convertToVerticalGlyph:text inRange:NSMakeRange(0, line.length) attribute:preeditAttrs];
+      CGFloat minimumLineHeight = convertToVerticalGlyph(text, NSMakeRange(0, line.length), preeditAttrs);
+      paragraphStylePreedit.minimumLineHeight = minimumLineHeight;
     }
     [text addAttribute:NSParagraphStyleAttributeName
-                 value:preeditParagraphStyle
+                 value:paragraphStylePreedit
                  range:NSMakeRange(0, text.length)];
     
     preeditRange = NSMakeRange(0, text.length);
@@ -1116,7 +1125,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
                         attributes:labelAttrsCan]];
       // get the label size for indent
       if (_vertical) {
-        [self convertToVerticalGlyph:line inRange:NSMakeRange(0, line.length) attribute:labelAttrsCan];
+        convertToVerticalGlyph(line, NSMakeRange(0, line.length), labelAttrsCan);
       }
       if (!_horizontal) {
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
@@ -1171,10 +1180,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       [text appendAttributedString:separator];
     }
 
-    if (_vertical) {
-      [self convertToVerticalGlyph:line inRange:NSMakeRange(candidateStart, line.length-candidateStart) attribute:attrsCan];
-    }
     NSMutableParagraphStyle *paragraphStyleCandidate = [paragraphStyle mutableCopy];
+    if (_vertical) {
+      CGFloat minimumLineHeight = convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart), attrsCan);
+      paragraphStyleCandidate.minimumLineHeight = minimumLineHeight;
+    }
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
@@ -1206,7 +1216,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message
                                                              attributes:commentAttrs];
   if (_vertical) {
-    [self convertToVerticalGlyph:text inRange:NSMakeRange(0, text.length) attribute:commentAttrs];
+    convertToVerticalGlyph(text, NSMakeRange(0, text.length), commentAttrs);
   }
   [_view setText:text];
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
