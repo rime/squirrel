@@ -1242,14 +1242,14 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
     CGFloat r, g, b, a;
   } f, b;
 
-  [[foregroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
+  [foregroundColor
       getRed:&f.r
        green:&f.g
         blue:&f.b
        alpha:&f.a];
   //NSLog(@"fg: %f %f %f %f", f.r, f.g, f.b, f.a);
 
-  [[backgroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
+  [[backgroundColor colorUsingColorSpace:[foregroundColor colorSpace]]
       getRed:&b.r
        green:&b.g
         blue:&b.b
@@ -1257,10 +1257,17 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
   //NSLog(@"bg: %f %f %f %f", b.r, b.g, b.b, b.a);
 
 #define blend_value(f, b) (((f)*2.0 + (b)) / 3.0)
-  return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
+  if ([foregroundColor colorSpace] == [NSColorSpace displayP3ColorSpace]) {
+    return [NSColor colorWithDisplayP3Red:blend_value(f.r, b.r)
+                                    green:blend_value(f.g, b.g)
+                                     blue:blend_value(f.b, b.b)
+                                    alpha:f.a];
+  } else {
+    return [NSColor colorWithSRGBRed:blend_value(f.r, b.r)
                                green:blend_value(f.g, b.g)
                                 blue:blend_value(f.b, b.b)
                                alpha:f.a];
+  }
 #undef blend_value
 }
 
@@ -1339,7 +1346,9 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   }
   if (colorScheme) {
       NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
-
+      if (@available(macOS 10.12, *)) {
+        config.useP3 = [config getBool:[prefix stringByAppendingString:@"/in_display_p3"]];
+      }
       backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
       borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
       preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];

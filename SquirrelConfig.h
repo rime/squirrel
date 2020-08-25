@@ -6,6 +6,7 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 @interface SquirrelConfig : NSObject
 
 @property(nonatomic, readonly) BOOL isOpen;
+@property(nonatomic) BOOL useP3;
 @property(nonatomic, readonly) NSString *schemaId;
 
 - (BOOL)openBaseConfig;

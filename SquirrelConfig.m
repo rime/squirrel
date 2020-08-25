@@ -15,6 +15,7 @@
   if (self) {
     _cache = [[NSMutableDictionary alloc] init];
   }
+  self.useP3 = false;
   return self;
 }
 
@@ -129,7 +130,7 @@
   if (cachedValue) {
     return cachedValue;
   }
-  NSColor *color = [[self class] colorFromString:[self getString:option]];
+  NSColor *color = [[self class] colorFromString:[self getString:option] inDisplayP3:_useP3];
   if (color) {
     _cache[option] = color;
     return color;
@@ -161,7 +162,7 @@
   return nil;
 }
 
-+ (NSColor *)colorFromString:(NSString *)string {
++ (NSColor *)colorFromString:(NSString *)string inDisplayP3:(BOOL)isP3 {
   if (string == nil) {
     return nil;
   }
@@ -174,11 +175,17 @@
     // 0xccbbaa
     sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
-
-  return [NSColor colorWithDeviceRed:(CGFloat)r / 255.
+  if (isP3) {
+    return [NSColor colorWithDisplayP3Red:(CGFloat)r / 255.
+                                    green:(CGFloat)g / 255.
+                                     blue:(CGFloat)b / 255.
+                                    alpha:(CGFloat)a / 255.];
+  } else {
+    return [NSColor colorWithSRGBRed:(CGFloat)r / 255.
                                green:(CGFloat)g / 255.
                                 blue:(CGFloat)b / 255.
                                alpha:(CGFloat)a / 255.];
+  }
 }
 
 @end
