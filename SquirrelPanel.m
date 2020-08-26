@@ -1340,6 +1340,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     colorScheme = [config getString:@"style/color_scheme_dark"];
     if (!colorScheme) {
       _view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+    } else {
+      _view.appearance = nil;
     }
   } else {
     colorScheme = [config getString:@"style/color_scheme"];
