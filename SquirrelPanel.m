@@ -1249,14 +1249,14 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
     CGFloat r, g, b, a;
   } f, b;
 
-  [foregroundColor
+  [[foregroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
       getRed:&f.r
        green:&f.g
         blue:&f.b
        alpha:&f.a];
   //NSLog(@"fg: %f %f %f %f", f.r, f.g, f.b, f.a);
 
-  [[backgroundColor colorUsingColorSpace:[foregroundColor colorSpace]]
+  [[backgroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
       getRed:&b.r
        green:&b.g
         blue:&b.b
@@ -1264,17 +1264,10 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
   //NSLog(@"bg: %f %f %f %f", b.r, b.g, b.b, b.a);
 
 #define blend_value(f, b) (((f)*2.0 + (b)) / 3.0)
-  if ([foregroundColor colorSpace] == [NSColorSpace displayP3ColorSpace]) {
-    return [NSColor colorWithDisplayP3Red:blend_value(f.r, b.r)
-                                    green:blend_value(f.g, b.g)
-                                     blue:blend_value(f.b, b.b)
-                                    alpha:f.a];
-  } else {
-    return [NSColor colorWithSRGBRed:blend_value(f.r, b.r)
+  return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
                                green:blend_value(f.g, b.g)
                                 blue:blend_value(f.b, b.b)
                                alpha:f.a];
-  }
 #undef blend_value
 }
 
@@ -1577,6 +1570,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     _preeditParagraphStyle = preeditParagraphStyle;
   }
 
+  backgroundColor = backgroundColor ? backgroundColor : [NSColor windowBackgroundColor];
   candidateTextColor = candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
   candidateLabelColor = candidateLabelColor ? candidateLabelColor : blendColors(candidateTextColor, backgroundColor);
   highlightedCandidateTextColor = highlightedCandidateTextColor ? highlightedCandidateTextColor : [NSColor selectedControlTextColor];
