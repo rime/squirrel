@@ -4,11 +4,16 @@ set -e
 
 cd "$(dirname $0)/.."
 
-get_app_version() {
+# deprecated
+get_bundle_version() {
     sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
 }
 
-app_version=$(get_app_version Info.plist)
+get_project_version() {
+    xcrun agvtool what-version | sed -n 'n;s/^[[:space:]]*\([0-9.]*\)$/\1/;p'
+}
+
+app_version=$(get_project_version)
 echo "current app version: ${app_version}"
 
 invalid_args() {
@@ -58,23 +63,27 @@ old_version="${old_major}.${old_minor}.${old_patch}"
 new_version="${new_major}.${new_minor}.${new_patch}"
 echo "updating ${old_version} => ${new_version}"
 
-
-if [[ $OSTYPE =~ darwin ]]; then
-    L_BOUND='[[:<:]]'
-    R_BOUND='[[:>:]]'
-else
-    L_BOUND='\<'
-    R_BOUND='\>'
-fi
-
-SEP='\([,.]\)'
-
-version_pattern="${L_BOUND}${old_major}${SEP}${old_minor}${SEP}${old_patch}${R_BOUND}"
-replacement=${new_major}'\1'${new_minor}'\2'${new_patch}
-
-edit_source_file() {
+# deprecated
+edit_info_plist_file() {
     local file="$1"
+
+    if [[ $OSTYPE =~ darwin ]]; then
+        L_BOUND='[[:<:]]'
+        R_BOUND='[[:>:]]'
+    else
+        L_BOUND='\<'
+        R_BOUND='\>'
+    fi
+    SEP='\([,.]\)'
+    local version_pattern="${L_BOUND}${old_major}${SEP}${old_minor}${SEP}${old_patch}${R_BOUND}"
+    local replacement=${new_major}'\1'${new_minor}'\2'${new_patch}
+
     sed -i '' "s/${version_pattern}/${replacement}/g" "${file}"
+}
+
+bump_version() {
+    local version="$1"
+    xcrun agvtool new-version "${version}"
 }
 
 update_changelog() {
@@ -85,7 +94,7 @@ update_changelog() {
          --setversion "${version}"
 }
 
-edit_source_file Info.plist
+bump_version "${new_version}"
 
 update_changelog "${new_version}"
 ${VISUAL:-${EDITOR:-vim}} CHANGELOG.md
