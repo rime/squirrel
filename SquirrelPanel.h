@@ -25,6 +25,7 @@
 
 -(void)updateStatus:(NSString*)message;
 
--(void)updateConfig:(SquirrelConfig*)config;
+-(void)updateConfig:(SquirrelConfig*)config
+        forDarkMode:(BOOL)isDark;
 
 @end

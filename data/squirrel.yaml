@@ -29,6 +29,7 @@ style:
   # space between preedit and candidates in non-inline mode
   spacing: 10
   #candidate_format: '%c. %@'
+  # baseline height adjustment, for alignment
   #base_offset: 0
   font_face: 'Lucida Grande'
   font_point: 21
