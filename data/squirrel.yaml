@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.34'
+config_version: '0.35'
 
 us_keyboard_layout: false
 
@@ -16,21 +16,27 @@ show_notifications_when: appropriate
 
 style:
   color_scheme: native
-  horizontal: false
+  candidate_list_layout: stacked  # stacked | linear
+  text_orientation: horitontal    # horizontal | vertical
   inline_preedit: true
   corner_radius: 10
+  hilited_corner_radius: 0
   border_height: 0
   border_width: 0
+  # space between candidates in stacked layout
   line_spacing: 5
-  spacing: 10  # space between preedit and candidates in non-inline mode
-  # candidate_format: '%c. %@'
-  font_face: Lucida Grande
+  # space between preedit and candidates in non-inline mode
+  spacing: 10
+  #candidate_format: '%c. %@'
+  #base_offset: 0
+  font_face: 'Lucida Grande'
   font_point: 21
-  # label_font_face: Monaco
+  #label_font_face: 'Lucida Grande'
   label_font_point: 18
 
 preset_color_schemes:
-  # native: {}  # system UI colors
+  native:
+    name: 系統配色
 
   aqua:
     name: 碧水／Aqua
@@ -113,7 +119,7 @@ preset_color_schemes:
     hilited_back_color: 0x444444
     hilited_candidate_label_color: 0xfafafa
     hilited_candidate_text_color: 0xfafafa
-    hilited_candidate_back_color: 0xd8bf00
+    hilited_candidate_back_color: 0xd4bc00
     comment_text_color: 0x808080
     hilited_comment_text_color: 0x444444
 
@@ -291,9 +297,9 @@ app_options:
     ascii_mode: true
     no_inline: true
   org.vim.MacVim:
-    ascii_mode: true
-    no_inline: true
-    vim_mode: true
+    ascii_mode: true  # 初始爲西文模式
+    no_inline: true   # 不使用行內編輯
+    vim_mode: true    # 退出VIM插入模式自動切換輸入法狀態
   com.apple.dt.Xcode:
     ascii_mode: true
   com.barebones.textwrangler:
