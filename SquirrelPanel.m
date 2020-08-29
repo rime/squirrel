@@ -1232,6 +1232,9 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSString *colorScheme = [config getString:@"style/color_scheme"];
   if (colorScheme) {
     NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
+    if (@available(macOS 10.12, *)) {
+      config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]];
+    }
     backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
     borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
     preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];

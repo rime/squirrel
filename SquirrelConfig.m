@@ -15,6 +15,7 @@
   if (self) {
     _cache = [[NSMutableDictionary alloc] init];
   }
+  self.colorSpace = @"srgb";
   return self;
 }
 
@@ -129,7 +130,7 @@
   if (cachedValue) {
     return cachedValue;
   }
-  NSColor *color = [[self class] colorFromString:[self getString:option]];
+  NSColor *color = [self colorFromString:[self getString:option]];
   if (color) {
     _cache[option] = color;
     return color;
@@ -161,7 +162,7 @@
   return nil;
 }
 
-+ (NSColor *)colorFromString:(NSString *)string {
+- (NSColor *)colorFromString:(NSString *)string {
   if (string == nil) {
     return nil;
   }
@@ -174,11 +175,17 @@
     // 0xccbbaa
     sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
-
-  return [NSColor colorWithDeviceRed:(CGFloat)r / 255.
+  if ([self.colorSpace isEqualToString:@"display_p3"]) {
+    return [NSColor colorWithDisplayP3Red:(CGFloat)r / 255.
+                                    green:(CGFloat)g / 255.
+                                     blue:(CGFloat)b / 255.
+                                    alpha:(CGFloat)a / 255.];
+  } else {  // sRGB by default
+    return [NSColor colorWithSRGBRed:(CGFloat)r / 255.
                                green:(CGFloat)g / 255.
                                 blue:(CGFloat)b / 255.
                                alpha:(CGFloat)a / 255.];
+  }
 }
 
 @end
