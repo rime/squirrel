@@ -175,7 +175,7 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
     return;
   }
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
-  if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+    if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
       [schema hasSection:@"style"]) {
     [self.panel updateConfig:schema forDarkMode:NO];
   } else {
