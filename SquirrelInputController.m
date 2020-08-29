@@ -72,7 +72,7 @@ const int N_KEY_ROLL_OVER = 50;
     }
 
     switch (event.type) {
-      case NSFlagsChanged: {
+      case NSEventTypeFlagsChanged: {
         if (_lastModifier == modifiers) {
           handled = YES;
           break;
@@ -111,7 +111,7 @@ const int N_KEY_ROLL_OVER = 50;
         }
         [self rimeUpdate];
       } break;
-      case NSKeyDown: {
+      case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
         if (modifiers & OSX_COMMAND_MASK)
           break;
@@ -134,7 +134,7 @@ const int N_KEY_ROLL_OVER = 50;
           [self rimeUpdate];
         }
       } break;
-      case NSLeftMouseDown: {
+      case NSEventTypeLeftMouseDown: {
         [self commitComposition:_currentClient];
       } break;
       default:
@@ -156,6 +156,11 @@ const int N_KEY_ROLL_OVER = 50;
   Bool is_horizontal_mode = NSApp.squirrelAppDelegate.panel.horizontal;
   if (is_horizontal_mode != rime_get_api()->get_option(_session, "_horizontal")) {
     rime_get_api()->set_option(_session, "_horizontal", is_horizontal_mode);
+  }
+  // in vertical mode, arrow keys may behave differently.
+  Bool is_vertical_mode = NSApp.squirrelAppDelegate.panel.vertical;
+  if (is_vertical_mode != rime_get_api()->get_option(_session, "_vertical")) {
+    rime_get_api()->set_option(_session, "_vertical", is_vertical_mode);
   }
 
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
@@ -257,7 +262,7 @@ const int N_KEY_ROLL_OVER = 50;
 -(NSUInteger)recognizedEvents:(id)sender
 {
   //NSLog(@"recognizedEvents:");
-  return NSKeyDownMask | NSFlagsChangedMask | NSLeftMouseDownMask;
+  return NSEventMaskKeyDown | NSEventMaskFlagsChanged | NSEventMaskLeftMouseDown;
 }
 
 -(void)activateServer:(id)sender
@@ -403,7 +408,7 @@ const int N_KEY_ROLL_OVER = 50;
                    caretPos:(NSUInteger)caretPos
                  candidates:(NSArray*)candidates
                    comments:(NSArray*)comments
-                     labels:(NSString*)labels
+                     labels:(NSArray*)labels
                 highlighted:(NSUInteger)index
 {
   //NSLog(@"showPanelWithPreedit:...:");
@@ -528,9 +533,18 @@ const int N_KEY_ROLL_OVER = 50;
         [comments addObject:@""];
       }
     }
-    NSString* labels = @"";
+    NSArray* labels;
     if (ctx.menu.select_keys) {
-      labels = @(ctx.menu.select_keys);
+      labels = @[@(ctx.menu.select_keys)];
+    } else if (ctx.select_labels) {
+      NSMutableArray *selectLabels = [NSMutableArray array];
+      for (i = 0; i < ctx.menu.page_size; ++i) {
+        char* label_str = ctx.select_labels[i];
+        [selectLabels addObject:@(label_str)];
+      }
+      labels = selectLabels;
+    } else {
+      labels = @[];
     }
     [self showPanelWithPreedit:(_inlinePreedit ? nil : preeditText)
                       selRange:selRange
