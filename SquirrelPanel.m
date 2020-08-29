@@ -27,7 +27,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, assign) CGFloat borderWidth;
 @property(nonatomic, assign) CGFloat linespace;
 @property(nonatomic, assign) CGFloat preeditLinespace;
-@property(nonatomic, assign) BOOL horizontal;
+@property(nonatomic, assign) BOOL linear;
 @property(nonatomic, assign) BOOL vertical;
 @property(nonatomic, assign) BOOL inlinePreedit;
 
@@ -50,7 +50,7 @@ hilitedCornerRadius:(double)hilitedCornerRadius
         borderWidth:(double)borderWidth
           linespace:(double)linespace
    preeditLinespace:(double)preeditLinespace
-         horizontal:(BOOL)horizontal
+         linear:(BOOL)linear
            vertical:(BOOL)vertical
       inlinePreedit:(BOOL)inlinePreedit;
 
@@ -133,7 +133,7 @@ hilitedCornerRadius:(double)hilitedCornerRadius
             borderWidth:(double)borderWidth
               linespace:(double)linespace
        preeditLinespace:(double)preeditLinespace
-             horizontal:(BOOL)horizontal
+                 linear:(BOOL)linear
                vertical:(BOOL)vertical
           inlinePreedit:(BOOL)inlinePreedit {
   _cornerRadius = cornerRadius;
@@ -142,7 +142,7 @@ hilitedCornerRadius:(double)hilitedCornerRadius
   _borderWidth = borderWidth;
   _linespace = linespace;
   _preeditLinespace = preeditLinespace;
-  _horizontal = horizontal;
+  _linear = linear;
   _vertical = vertical;
   _inlinePreedit = inlinePreedit;
 }
@@ -418,7 +418,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     preeditRect.origin = NSMakePoint(textField.origin.x - _edgeInset.width, textField.origin.y - _edgeInset.height);
     preeditRect.size.height += _edgeInset.height;
     if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
-      if (_preeditRange.length > 0 && !_horizontal) {
+      if (_preeditRange.length > 0 && !_linear) {
         preeditRect.size.height -= _hilitedCornerRadius / 2;
       }
     }
@@ -433,7 +433,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   
   // Draw highlighted Rect
   if (_highlightedRange.length > 0 && _highlightedStripColor != nil) {
-    if (_horizontal){
+    if (_linear){
       NSRect leadingRect;
       NSRect bodyRect;
       NSRect trailingRect;
@@ -998,7 +998,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       if (_vertical) {
         convertToVerticalGlyph(line, NSMakeRange(0, line.length));
       }
-      if (!_horizontal) {
+      if (!_linear) {
         labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
     }
@@ -1044,7 +1044,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     
     
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
-                                        initWithString:(_horizontal ? @"  " : @"\n")
+                                        initWithString:(_linear ? @"  " : @"\n")
                                             attributes:attrs];
     _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
     if (i > 0) {
@@ -1164,9 +1164,38 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
 
+static void updateCandidateListLayout(BOOL *isLinearCandidateList, SquirrelConfig *config, NSString *prefix) {
+  NSString* candidateListLayout = [config getString:[prefix stringByAppendingString:@"/candidate_list_layout"]];
+  if ([candidateListLayout isEqualToString:@"stacked"]) {
+    *isLinearCandidateList = false;
+  } else if ([candidateListLayout isEqualToString:@"linear"]) {
+    *isLinearCandidateList = true;
+  } else {
+    // Deprecated. Not to be confused with text_orientation: horizontal
+    NSNumber *horizontal = [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
+    if (horizontal) {
+      *isLinearCandidateList = horizontal.boolValue;
+    }
+  }
+}
+
+static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, NSString *prefix) {
+  NSString* textOrientation = [config getString:[prefix stringByAppendingString:@"/text_orientation"]];
+  if ([textOrientation isEqualToString:@"horizontal"]) {
+    *isVerticalText = false;
+  } else if ([textOrientation isEqualToString:@"vertical"]) {
+    *isVerticalText = true;
+  } else {
+    NSNumber *vertical = [config getOptionalBool:[prefix stringByAppendingString:@"/vertical"]];
+    if (vertical) {
+      *isVerticalText = vertical.boolValue;
+    }
+  }
+}
+
 -(void)updateConfig:(SquirrelConfig *)config {
-  _horizontal = [config getBool:@"style/horizontal"];
-  _vertical = [config getBool:@"style/vertical"];
+  updateCandidateListLayout(&_linear, config, @"style");
+  updateTextOrientation(&_vertical, config, @"style");
   _inlinePreedit = [config getBool:@"style/inline_preedit"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
   _candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
@@ -1237,16 +1266,9 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     // the following per-color-scheme configurations, if exist, will
     // override configurations with the same name under the global 'style' section
 
-    NSNumber *horizontalOverridden =
-        [config getOptionalBool:[prefix stringByAppendingString:@"/horizontal"]];
-    if (horizontalOverridden) {
-      _horizontal = horizontalOverridden.boolValue;
-    }
-    NSNumber *verticalOverridden =
-        [config getOptionalBool:[prefix stringByAppendingString:@"/vertical"]];
-    if (verticalOverridden) {
-      _vertical = verticalOverridden.boolValue;
-    }
+    updateCandidateListLayout(&_linear, config, prefix);
+    updateTextOrientation(&_vertical, config, prefix);
+
     NSNumber *inlinePreeditOverridden =
         [config getOptionalBool:[prefix stringByAppendingString:@"/inline_preedit"]];
     if (inlinePreeditOverridden) {
@@ -1441,7 +1463,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
              borderWidth:MIN(borderHeight, borderWidth)
                linespace:lineSpacing
         preeditLinespace:spacing
-              horizontal:_horizontal
+              linear:_linear
                 vertical:_vertical
            inlinePreedit:_inlinePreedit];
 

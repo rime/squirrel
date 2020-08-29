@@ -4,7 +4,9 @@
 
 @interface SquirrelPanel : NSObject
 
-@property(nonatomic, assign) BOOL horizontal;
+// Linear candidate list, as opposed to stacked candidate list.
+@property(nonatomic, assign) BOOL linear;
+// Vertical text, as opposed to horizontal text.
 @property(nonatomic, assign) BOOL vertical;
 @property(nonatomic, assign) BOOL inlinePreedit;
 

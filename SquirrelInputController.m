@@ -152,15 +152,15 @@ const int N_KEY_ROLL_OVER = 50;
 {
   // TODO add special key event preprocessing here
 
-  // in horizontal mode, arrow keys may behave differently.
-  Bool is_horizontal_mode = NSApp.squirrelAppDelegate.panel.horizontal;
-  if (is_horizontal_mode != rime_get_api()->get_option(_session, "_horizontal")) {
-    rime_get_api()->set_option(_session, "_horizontal", is_horizontal_mode);
+  // with linear candidate list, arrow keys may behave differently.
+  Bool is_linear = NSApp.squirrelAppDelegate.panel.linear;
+  if (is_linear != rime_get_api()->get_option(_session, "_linear")) {
+    rime_get_api()->set_option(_session, "_linear", is_linear);
   }
-  // in vertical mode, arrow keys may behave differently.
-  Bool is_vertical_mode = NSApp.squirrelAppDelegate.panel.vertical;
-  if (is_vertical_mode != rime_get_api()->get_option(_session, "_vertical")) {
-    rime_get_api()->set_option(_session, "_vertical", is_vertical_mode);
+  // with vertical text, arrow keys may behave differently.
+  Bool is_vertical = NSApp.squirrelAppDelegate.panel.vertical;
+  if (is_vertical != rime_get_api()->get_option(_session, "_vertical")) {
+    rime_get_api()->set_option(_session, "_vertical", is_vertical);
   }
 
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
