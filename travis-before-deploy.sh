@@ -1,9 +1,9 @@
 #!/bin/bash
 
-get_app_version() {
-    sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
-}
-app_version="$(get_app_version 'Info.plist')"
+cd "$(dirname $0)"
+source package/common.sh
+
+app_version="$(get_app_version)"
 version_name="${app_version}"
 
 if [[ -n "${TRAVIS_TAG}" ]]

@@ -2,13 +2,9 @@
 # enconding: utf-8
 
 cd "$(dirname $0)"
-PROJECT_ROOT="$(cd ..; pwd)"
+source common.sh
 
-get_app_version() {
-    sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
-}
-
-app_version=$(get_app_version "${PROJECT_ROOT}/Info.plist")
+app_version="$(get_app_version)"
 download_url="https://dl.bintray.com/rime/squirrel/Squirrel-${app_version}.zip"
 target_archive="archives/Squirrel-${app_version}.zip"
 

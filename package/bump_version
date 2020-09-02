@@ -3,26 +3,14 @@
 set -e
 
 cd "$(dirname $0)/.."
+source package/common.sh
 
-# deprecated
-get_bundle_version() {
-    sed -n '/CFBundleVersion/{n;s/.*<string>\(.*\)<\/string>.*/\1/;p;}' $@
-}
-
-get_project_version() {
-    xcrun agvtool what-version | sed -n 'n;s/^[[:space:]]*\([0-9.]*\)$/\1/;p'
-}
-
-app_version=$(get_project_version)
+app_version="$(get_app_version)"
 echo "current app version: ${app_version}"
 
 invalid_args() {
     echo "Usage: $(basename $0) <new_version>|major|minor|patch"
     exit 1
-}
-
-match_line() {
-    grep --quiet --fixed-strings "$@"
 }
 
 version_pattern='([0-9]+)\.([0-9]+)\.([0-9]+)'
@@ -79,11 +67,6 @@ edit_info_plist_file() {
     local replacement=${new_major}'\1'${new_minor}'\2'${new_patch}
 
     sed -i '' "s/${version_pattern}/${replacement}/g" "${file}"
-}
-
-bump_version() {
-    local version="$1"
-    xcrun agvtool new-version "${version}"
 }
 
 update_changelog() {
