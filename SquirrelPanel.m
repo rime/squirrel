@@ -797,6 +797,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [self initializeUIStyleForDarkMode:YES];
     }
     _maxHeight = 0;
+    _window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
   }
   return self;
 }
