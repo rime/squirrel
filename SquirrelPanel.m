@@ -149,7 +149,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
 - (BOOL)isDark {
   BOOL dark = NO;
   if (@available(macOS 10.14, *)) {
-    if ([self.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
+    if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
       dark = YES;
     }
   }
@@ -800,6 +800,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [self initializeUIStyleForDarkMode:YES];
     }
     _maxHeight = 0;
+    _window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
   }
   return self;
 }
