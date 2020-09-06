@@ -16,8 +16,9 @@ show_notifications_when: appropriate
 
 style:
   color_scheme: native
-  candidate_list_layout: stacked  # stacked | linear
-  text_orientation: horitontal    # horizontal | vertical
+  # note: do not set a default value, in order to keep the deprecated option style/horizontal working for old users
+  #candidate_list_layout: stacked  # stacked | linear
+  text_orientation: horitontal  # horizontal | vertical
   inline_preedit: true
   corner_radius: 10
   hilited_corner_radius: 0
