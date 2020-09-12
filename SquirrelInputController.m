@@ -183,9 +183,11 @@ const int N_KEY_ROLL_OVER = 50;
 
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
-    bool is_chording_key = (rime_modifiers & ~kShiftMask) == 0 &&
-    ((rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
-     rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R);
+    bool is_chording_key =
+    (rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
+    rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
+    rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
+    rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
     if (is_chording_key &&
         rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode modifiers:rime_modifiers];
