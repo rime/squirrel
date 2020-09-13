@@ -797,9 +797,6 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [self initializeUIStyleForDarkMode:YES];
     }
     _maxHeight = 0;
-    if (@available(macOS 10.14, *)) {
-      self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
-    }
   }
   return self;
 }
