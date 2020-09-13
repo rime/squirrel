@@ -687,7 +687,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 @end
 
 @implementation SquirrelPanel {
-  NSWindow *_window;
   SquirrelView *_view;
 
   NSString *_candidateFormat;
@@ -780,27 +779,28 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
 }
 
 - (instancetype)init {
-  self = [super init];
+  self = [super initWithContentRect:_position
+                          styleMask:NSWindowStyleMaskBorderless
+                            backing:NSBackingStoreBuffered
+                              defer:YES];
   if (self) {
-    _window = [[NSWindow alloc] initWithContentRect:_position
-                                          styleMask:NSWindowStyleMaskBorderless
-                                            backing:NSBackingStoreBuffered
-                                              defer:YES];
-    _window.alphaValue = 1.0;
+    self.alphaValue = 1.0;
     // _window.level = NSScreenSaverWindowLevel + 1;
     // ^ May fix visibility issue in fullscreen games.
-    _window.level = CGShieldingWindowLevel();
-    _window.hasShadow = YES;
-    _window.opaque = NO;
-    _window.backgroundColor = [NSColor clearColor];
-    _view = [[SquirrelView alloc] initWithFrame:_window.contentView.frame];
-    _window.contentView = _view;
+    self.level = CGShieldingWindowLevel();
+    self.hasShadow = YES;
+    self.opaque = NO;
+    self.backgroundColor = [NSColor clearColor];
+    _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
+    self.contentView = _view;
     [self initializeUIStyleForDarkMode:NO];
     if (@available(macOS 10.14, *)) {
       [self initializeUIStyleForDarkMode:YES];
     }
     _maxHeight = 0;
-    _window.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+    if (@available(macOS 10.14, *)) {
+      self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+    }
   }
   return self;
 }
@@ -896,10 +896,10 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     _view.boundsRotation = 0;
     [_view setBoundsOrigin:NSMakePoint(0, 0)];
   }
-  _window.alphaValue = current.alphaValue;
-  [_window setFrame:windowRect display:YES];
-  [_window invalidateShadow];
-  [_window orderFront:nil];
+  self.alphaValue = current.alphaValue;
+  [self setFrame:windowRect display:YES];
+  [self invalidateShadow];
+  [self orderFront:nil];
   // voila !
 }
 
@@ -908,7 +908,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     [_statusTimer invalidate];
     _statusTimer = nil;
   }
-  [_window orderOut:nil];
+  [self orderOut:nil];
   _maxHeight = 0;
 }
 
