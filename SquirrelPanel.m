@@ -676,7 +676,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
   }
 
-  if (current.borderColor) {
+  if (current.borderColor && (current.borderWidth > 0)) {
     [current.borderColor setStroke];
     [borderPath stroke];
   }
@@ -798,9 +798,6 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [self initializeUIStyleForDarkMode:YES];
     }
     _maxHeight = 0;
-    if (@available(macOS 10.14, *)) {
-      self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
-    }
   }
   return self;
 }
@@ -1289,14 +1286,21 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   if (isDark) {
     colorScheme = [config getString:@"style/color_scheme_dark"];
     if (!colorScheme) {
-      _view.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+      NSApp.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
     } else {
-      _view.appearance = nil;
+      NSApp.appearance = nil;
     }
   } else {
     colorScheme = [config getString:@"style/color_scheme"];
   }
   if (colorScheme) {
+    if (@available(macOS 10.14, *)) {
+      if ([colorScheme isEqualToString:@"native"]) {
+        self.appearance = nil;
+      } else {
+        self.appearance = [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+      }
+    }
     NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
     if (@available(macOS 10.12, *)) {
       config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]];
