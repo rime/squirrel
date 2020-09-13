@@ -2,7 +2,7 @@
 
 @class SquirrelConfig;
 
-@interface SquirrelPanel : NSObject
+@interface SquirrelPanel : NSWindow
 
 // Linear candidate list, as opposed to stacked candidate list.
 @property(nonatomic, assign) BOOL linear;
