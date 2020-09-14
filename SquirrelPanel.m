@@ -560,16 +560,15 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
           highlightedRect.origin.y -= current.hilitedCornerRadius / 2;
         }
       }
+      NSRect outerBox = backgroundRect;
+      outerBox.size.height -= preeditRect.size.height;
+      outerBox.origin.y += preeditRect.size.height;
       if (current.hilitedCornerRadius == 0) {
         // fill in small gaps between highlighted rect and the bounding rect.
-        checkBorders(&highlightedRect, backgroundRect);
+        checkBorders(&highlightedRect, outerBox);
       } else {
-        // leave a small gap between highlighted rect and the bounding rect
-        NSRect candidateRect = backgroundRect;
-        candidateRect.size.height -= preeditRect.size.height;
-        candidateRect.origin.y += preeditRect.size.height;
-        makeRoomForCorner(&highlightedRect, candidateRect, current.hilitedCornerRadius / 2);
-
+        // leave a small gap between highlighted rect and the bounding rec
+        makeRoomForCorner(&highlightedRect, outerBox, current.hilitedCornerRadius / 2);
       }
       highlightedPath = drawSmoothLines(rectVertex(highlightedRect), current.hilitedCornerRadius*0.3, current.hilitedCornerRadius*1.4);
     }
