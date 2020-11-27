@@ -967,44 +967,76 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   // For vertical mode, before appending candidates, copy the front workflow
   // of candidates to get the max width of candidates, so that the spacing
   // between candidate and comment can be calculated later.
-  NSSize maxLineSize = NSZeroSize;
-  if (!_horizontal) {
+  NSSize maxCandidateSize = NSZeroSize;
+  if (!_linear) {
     NSUInteger i;
     for (i = 0; i < candidates.count; ++i) {
       NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
 
-      char label_character = (i < labels.length) ? [labels characterAtIndex:i]
-                                                 : ((i + 1) % 10 + '0');
+    NSString *labelString;
+    if (labels.count > 1 && i < labels.count) {
+      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+      labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+    } else if (labels.count == 1 && i < [labels[0] length]) {
+      // custom: A. B. C...
+      char labelCharacter = [labels[0] characterAtIndex:i];
+      labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
+    } else {
+      // default: 1. 2. 3...
+      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+      labelString = [NSString stringWithFormat:labelFormat, i+1];
+    }
 
-      NSDictionary *attrs = (i == index) ? _highlightedAttrs : _attrs;
-      NSDictionary *labelAttrs =
-          (i == index) ? _labelHighlightedAttrs : _labelAttrs;
+    NSDictionary *attrs = (i == index) ? _highlightedAttrs : _attrs;
+    NSDictionary *labelAttrs = (i == index) ? _labelHighlightedAttrs : _labelAttrs;
 
-      if (labelRange.location != NSNotFound) {
-        [line appendAttributedString:
-                  [[NSAttributedString alloc]
-                      initWithString:[NSString stringWithFormat:labelFormat,
-                                                                label_character]
-                          attributes:labelAttrs]];
+    CGFloat labelWidth = 0.0;
+    if (labelRange.location != NSNotFound) {
+      [line appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:labelString
+                        attributes:labelAttrs]];
+      // get the label size for indent
+      if (_vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(0, line.length));
       }
-
-      NSString *candidate = [NSString stringWithFormat:@"\u200E%@\u200E", candidates[i]];
-
-      [line appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:candidate
-                                           attributes:attrs]];
-
-      if (labelRange2.location != NSNotFound) {
-        [line appendAttributedString:
-                  [[NSAttributedString alloc]
-                      initWithString:[NSString stringWithFormat:labelFormat2,
-                                                                label_character]
-                          attributes:labelAttrs]];
+      if (!_linear) {
+        labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       }
+    }
+
+    NSUInteger candidateStart = line.length;
+    NSString *candidate = candidates[i];
+    [line appendAttributedString:[[NSAttributedString alloc]
+                                     initWithString:candidate.precomposedStringWithCanonicalMapping
+                                         attributes:attrs]];
+    // Use left-to-right marks to prevent right-to-left text from changing the
+    // layout of non-candidate text.
+    [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
+
+    if (labelRange2.location != NSNotFound) {
+      NSString *labelString2;
+      if (labels.count > 1 && i < labels.count) {
+        labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]].precomposedStringWithCanonicalMapping;
+      } else if (labels.count == 1 && i < [labels[0] length]) {
+        // custom: A. B. C...
+        char labelCharacter = [labels[0] characterAtIndex:i];
+        labelString2 = [NSString stringWithFormat:labelFormat2, labelCharacter];
+      } else {
+        // default: 1. 2. 3...
+        labelFormat2 = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString2 = [NSString stringWithFormat:labelFormat, i+1];
+      }
+      [line appendAttributedString:
+                [[NSAttributedString alloc]
+                    initWithString:labelString2
+                        attributes:labelAttrs]];
+    }
 
       if (i < comments.count && [comments[i] length] != 0) {
-        if (maxLineSize.width < line.size.width) {
-          maxLineSize.width = line.size.width;
+        if (maxCandidateSize.width < line.size.width) {
+          maxCandidateSize.width = line.size.width;
         }
       }
     }
@@ -1079,12 +1111,12 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     }
 
     if (i < comments.count && [comments[i] length] != 0) {
-      if (_horizontal) {
+      if (_linear) {
         [line appendAttributedString:[[NSAttributedString alloc]
                                         initWithString:@" "
                                             attributes:_attrs]];
       } else {
-        while (line.size.width <= maxLineSize.width) {
+        while (line.size.width <= maxCandidateSize.width) {
           [line appendAttributedString:[[NSAttributedString alloc]
                                         initWithString:@"\t"
                                             attributes:_attrs]];
