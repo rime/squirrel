@@ -12,7 +12,8 @@ RIME_LIB_DIR = librime/dist/lib
 RIME_LIBRARY_FILE_NAME = librime.1.dylib
 RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
 
-RIME_DEPS = librime/thirdparty/lib/libmarisa.a \
+RIME_DEPS = librime/thirdparty/lib/libcapnp.a \
+	librime/thirdparty/lib/libmarisa.a \
 	librime/thirdparty/lib/libleveldb.a \
 	librime/thirdparty/lib/libopencc.a \
 	librime/thirdparty/lib/libyaml-cpp.a
