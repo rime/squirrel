@@ -46,7 +46,7 @@ cat > "${appcast_file}" << EOF
     <item>
       <title>鼠鬚管 ${app_version}</title>
       <sparkle:releaseNotesLink>https://rime.github.io/release/squirrel/</sparkle:releaseNotesLink>
-      <sparkle:minimumSystemVersion>10.7.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>10.9.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"
@@ -74,7 +74,7 @@ cat > "${appcast_file}" << EOF
     <item>
       <title>鼠鬚管 ${app_version}</title>
       <sparkle:releaseNotesLink>https://rime.github.io/testing/squirrel/</sparkle:releaseNotesLink>
-      <sparkle:minimumSystemVersion>10.7.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>10.9.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"
@@ -103,7 +103,7 @@ cat > "${appcast_file}" << EOF
     <item>
       <title>鼠鬚管 ${app_version}</title>
       <sparkle:releaseNotesLink>https://rime.github.io/testing/squirrel/</sparkle:releaseNotesLink>
-      <sparkle:minimumSystemVersion>10.7.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>10.9.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"

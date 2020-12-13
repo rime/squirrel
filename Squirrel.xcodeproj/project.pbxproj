@@ -709,7 +709,7 @@
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib /usr/local/lib";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -755,7 +755,7 @@
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
