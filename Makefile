@@ -21,8 +21,8 @@ PLUM_DATA = bin/rime-install \
 	data/plum/default.yaml \
 	data/plum/symbols.yaml \
 	data/plum/essay.txt
-OPENCC_DATA = data/opencc/TSCharacters.ocd \
-	data/opencc/TSPhrases.ocd \
+OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
+	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
 DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
 
