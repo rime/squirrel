@@ -7,9 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1B4763F11DAA029B00C58621 /* SquirrelDomainServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */; };
-		1BC8F63A1DAA515700461284 /* squirrel_client in Resources */ = {isa = PBXBuildFile; fileRef = 1BC8F6391DAA515700461284 /* squirrel_client */; };
-		1BC8F63B1DAA516200461284 /* squirrel_client in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1BC8F6391DAA515700461284 /* squirrel_client */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */; };
+		441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */; };
+		441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */; };
+		441E637A22B7E96F006DCCDD /* cangjie5_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */; };
+		441E637B22B7E96F006DCCDD /* cangjie5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */; };
+		441E637C22B7E96F006DCCDD /* cangjie5.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */; };
+		441E637D22B7E96F006DCCDD /* stroke.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636922B7E90D006DCCDD /* stroke.dict.yaml */; };
+		441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636B22B7E90D006DCCDD /* stroke.schema.yaml */; };
+		441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */; };
+		441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */; };
 		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
 		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4443A83A1828CC5100731305 /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 4443A8391828CC5100731305 /* input_source.m */; };
@@ -29,30 +36,34 @@
 		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
-		7B54888E1D2DAAF50056A1BE /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488761D2DAAF50056A1BE /* hk2s.json */; };
-		7B54888F1D2DAAF50056A1BE /* HKVariants.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488771D2DAAF50056A1BE /* HKVariants.ocd */; };
-		7B5488901D2DAAF50056A1BE /* HKVariantsPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488781D2DAAF50056A1BE /* HKVariantsPhrases.ocd */; };
-		7B5488911D2DAAF50056A1BE /* HKVariantsRev.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488791D2DAAF50056A1BE /* HKVariantsRev.ocd */; };
-		7B5488921D2DAAF50056A1BE /* HKVariantsRevPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887A1D2DAAF50056A1BE /* HKVariantsRevPhrases.ocd */; };
-		7B5488931D2DAAF50056A1BE /* JPVariants.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887B1D2DAAF50056A1BE /* JPVariants.ocd */; };
-		7B5488941D2DAAF50056A1BE /* s2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887C1D2DAAF50056A1BE /* s2hk.json */; };
-		7B5488951D2DAAF50056A1BE /* s2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887D1D2DAAF50056A1BE /* s2t.json */; };
-		7B5488961D2DAAF50056A1BE /* s2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887E1D2DAAF50056A1BE /* s2tw.json */; };
-		7B5488971D2DAAF50056A1BE /* s2twp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54887F1D2DAAF50056A1BE /* s2twp.json */; };
-		7B5488981D2DAAF50056A1BE /* STCharacters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488801D2DAAF50056A1BE /* STCharacters.ocd */; };
-		7B5488991D2DAAF50056A1BE /* STPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488811D2DAAF50056A1BE /* STPhrases.ocd */; };
-		7B54889A1D2DAAF50056A1BE /* t2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488821D2DAAF50056A1BE /* t2hk.json */; };
-		7B54889B1D2DAAF50056A1BE /* t2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488831D2DAAF50056A1BE /* t2s.json */; };
-		7B54889C1D2DAAF50056A1BE /* t2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488841D2DAAF50056A1BE /* t2tw.json */; };
-		7B54889D1D2DAAF50056A1BE /* TSCharacters.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488851D2DAAF50056A1BE /* TSCharacters.ocd */; };
-		7B54889E1D2DAAF50056A1BE /* TSPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488861D2DAAF50056A1BE /* TSPhrases.ocd */; };
-		7B54889F1D2DAAF50056A1BE /* tw2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488871D2DAAF50056A1BE /* tw2s.json */; };
-		7B5488A01D2DAAF50056A1BE /* tw2sp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488881D2DAAF50056A1BE /* tw2sp.json */; };
-		7B5488A11D2DAAF50056A1BE /* TWPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B5488891D2DAAF50056A1BE /* TWPhrases.ocd */; };
-		7B5488A21D2DAAF50056A1BE /* TWPhrasesRev.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54888A1D2DAAF50056A1BE /* TWPhrasesRev.ocd */; };
-		7B5488A31D2DAAF50056A1BE /* TWVariants.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54888B1D2DAAF50056A1BE /* TWVariants.ocd */; };
-		7B5488A41D2DAAF50056A1BE /* TWVariantsRev.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54888C1D2DAAF50056A1BE /* TWVariantsRev.ocd */; };
-		7B5488A51D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 7B54888D1D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd */; };
+		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
+		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
+		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
+		77AA68172588916F00A592E2 /* HKVariantsRevPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */; };
+		77AA68182588916F00A592E2 /* jp2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EE2588916300A592E2 /* jp2t.json */; };
+		77AA68192588916F00A592E2 /* JPShinjitaiCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */; };
+		77AA681A2588916F00A592E2 /* JPShinjitaiPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */; };
+		77AA681B2588916F00A592E2 /* JPVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E62588916300A592E2 /* JPVariants.ocd2 */; };
+		77AA681C2588916F00A592E2 /* JPVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */; };
+		77AA681D2588916F00A592E2 /* s2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F02588916300A592E2 /* s2hk.json */; };
+		77AA681E2588916F00A592E2 /* s2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67ED2588916300A592E2 /* s2t.json */; };
+		77AA681F2588916F00A592E2 /* s2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F52588916400A592E2 /* s2tw.json */; };
+		77AA68202588916F00A592E2 /* s2twp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EA2588916300A592E2 /* s2twp.json */; };
+		77AA68212588916F00A592E2 /* STCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F32588916400A592E2 /* STCharacters.ocd2 */; };
+		77AA68222588916F00A592E2 /* STPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F72588916400A592E2 /* STPhrases.ocd2 */; };
+		77AA68232588916F00A592E2 /* t2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E82588916300A592E2 /* t2hk.json */; };
+		77AA68242588916F00A592E2 /* t2jp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EF2588916300A592E2 /* t2jp.json */; };
+		77AA68252588916F00A592E2 /* t2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DD2588916300A592E2 /* t2s.json */; };
+		77AA68262588916F00A592E2 /* t2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DE2588916300A592E2 /* t2tw.json */; };
+		77AA68272588916F00A592E2 /* TSCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E32588916300A592E2 /* TSCharacters.ocd2 */; };
+		77AA68282588916F00A592E2 /* TSPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F62588916400A592E2 /* TSPhrases.ocd2 */; };
+		77AA68292588916F00A592E2 /* tw2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DF2588916300A592E2 /* tw2s.json */; };
+		77AA682A2588916F00A592E2 /* tw2sp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EC2588916300A592E2 /* tw2sp.json */; };
+		77AA682B2588916F00A592E2 /* TWPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E72588916300A592E2 /* TWPhrases.ocd2 */; };
+		77AA682C2588916F00A592E2 /* TWPhrasesRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */; };
+		77AA682D2588916F00A592E2 /* TWVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F12588916300A592E2 /* TWVariants.ocd2 */; };
+		77AA682E2588916F00A592E2 /* TWVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */; };
+		77AA682F2588916F00A592E2 /* TWVariantsRevPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */; };
 		7B5488AF1D2DACDF0056A1BE /* default.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488211D2DAAD10056A1BE /* default.yaml */; };
 		7B5488B71D2DACDF0056A1BE /* essay.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488291D2DAAD10056A1BE /* essay.txt */; };
 		7B5488BC1D2DACDF0056A1BE /* luna_pinyin_fluency.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */; };
@@ -80,30 +91,34 @@
 			dstPath = opencc;
 			dstSubfolderSpec = 12;
 			files = (
-				7B54888E1D2DAAF50056A1BE /* hk2s.json in Copy opencc Files */,
-				7B54888F1D2DAAF50056A1BE /* HKVariants.ocd in Copy opencc Files */,
-				7B5488901D2DAAF50056A1BE /* HKVariantsPhrases.ocd in Copy opencc Files */,
-				7B5488911D2DAAF50056A1BE /* HKVariantsRev.ocd in Copy opencc Files */,
-				7B5488921D2DAAF50056A1BE /* HKVariantsRevPhrases.ocd in Copy opencc Files */,
-				7B5488931D2DAAF50056A1BE /* JPVariants.ocd in Copy opencc Files */,
-				7B5488941D2DAAF50056A1BE /* s2hk.json in Copy opencc Files */,
-				7B5488951D2DAAF50056A1BE /* s2t.json in Copy opencc Files */,
-				7B5488961D2DAAF50056A1BE /* s2tw.json in Copy opencc Files */,
-				7B5488971D2DAAF50056A1BE /* s2twp.json in Copy opencc Files */,
-				7B5488981D2DAAF50056A1BE /* STCharacters.ocd in Copy opencc Files */,
-				7B5488991D2DAAF50056A1BE /* STPhrases.ocd in Copy opencc Files */,
-				7B54889A1D2DAAF50056A1BE /* t2hk.json in Copy opencc Files */,
-				7B54889B1D2DAAF50056A1BE /* t2s.json in Copy opencc Files */,
-				7B54889C1D2DAAF50056A1BE /* t2tw.json in Copy opencc Files */,
-				7B54889D1D2DAAF50056A1BE /* TSCharacters.ocd in Copy opencc Files */,
-				7B54889E1D2DAAF50056A1BE /* TSPhrases.ocd in Copy opencc Files */,
-				7B54889F1D2DAAF50056A1BE /* tw2s.json in Copy opencc Files */,
-				7B5488A01D2DAAF50056A1BE /* tw2sp.json in Copy opencc Files */,
-				7B5488A11D2DAAF50056A1BE /* TWPhrases.ocd in Copy opencc Files */,
-				7B5488A21D2DAAF50056A1BE /* TWPhrasesRev.ocd in Copy opencc Files */,
-				7B5488A31D2DAAF50056A1BE /* TWVariants.ocd in Copy opencc Files */,
-				7B5488A41D2DAAF50056A1BE /* TWVariantsRev.ocd in Copy opencc Files */,
-				7B5488A51D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd in Copy opencc Files */,
+				77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */,
+				77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */,
+				77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */,
+				77AA68172588916F00A592E2 /* HKVariantsRevPhrases.ocd2 in Copy opencc Files */,
+				77AA68182588916F00A592E2 /* jp2t.json in Copy opencc Files */,
+				77AA68192588916F00A592E2 /* JPShinjitaiCharacters.ocd2 in Copy opencc Files */,
+				77AA681A2588916F00A592E2 /* JPShinjitaiPhrases.ocd2 in Copy opencc Files */,
+				77AA681B2588916F00A592E2 /* JPVariants.ocd2 in Copy opencc Files */,
+				77AA681C2588916F00A592E2 /* JPVariantsRev.ocd2 in Copy opencc Files */,
+				77AA681D2588916F00A592E2 /* s2hk.json in Copy opencc Files */,
+				77AA681E2588916F00A592E2 /* s2t.json in Copy opencc Files */,
+				77AA681F2588916F00A592E2 /* s2tw.json in Copy opencc Files */,
+				77AA68202588916F00A592E2 /* s2twp.json in Copy opencc Files */,
+				77AA68212588916F00A592E2 /* STCharacters.ocd2 in Copy opencc Files */,
+				77AA68222588916F00A592E2 /* STPhrases.ocd2 in Copy opencc Files */,
+				77AA68232588916F00A592E2 /* t2hk.json in Copy opencc Files */,
+				77AA68242588916F00A592E2 /* t2jp.json in Copy opencc Files */,
+				77AA68252588916F00A592E2 /* t2s.json in Copy opencc Files */,
+				77AA68262588916F00A592E2 /* t2tw.json in Copy opencc Files */,
+				77AA68272588916F00A592E2 /* TSCharacters.ocd2 in Copy opencc Files */,
+				77AA68282588916F00A592E2 /* TSPhrases.ocd2 in Copy opencc Files */,
+				77AA68292588916F00A592E2 /* tw2s.json in Copy opencc Files */,
+				77AA682A2588916F00A592E2 /* tw2sp.json in Copy opencc Files */,
+				77AA682B2588916F00A592E2 /* TWPhrases.ocd2 in Copy opencc Files */,
+				77AA682C2588916F00A592E2 /* TWPhrasesRev.ocd2 in Copy opencc Files */,
+				77AA682D2588916F00A592E2 /* TWVariants.ocd2 in Copy opencc Files */,
+				77AA682E2588916F00A592E2 /* TWVariantsRev.ocd2 in Copy opencc Files */,
+				77AA682F2588916F00A592E2 /* TWVariantsRevPhrases.ocd2 in Copy opencc Files */,
 			);
 			name = "Copy opencc Files";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -114,6 +129,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 12;
 			files = (
+				441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */,
+				441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
+				441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */,
+				441E637A22B7E96F006DCCDD /* cangjie5_express.schema.yaml in Copy Shared Support Files */,
+				441E637B22B7E96F006DCCDD /* cangjie5.dict.yaml in Copy Shared Support Files */,
+				441E637C22B7E96F006DCCDD /* cangjie5.schema.yaml in Copy Shared Support Files */,
+				441E637D22B7E96F006DCCDD /* stroke.dict.yaml in Copy Shared Support Files */,
+				441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */,
+				441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
+				441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
 				44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */,
 				44AEBC7621F569FD00344375 /* punctuation.yaml in Copy Shared Support Files */,
 				7B5488AF1D2DACDF0056A1BE /* default.yaml in Copy Shared Support Files */,
@@ -137,7 +162,6 @@
 			dstSubfolderSpec = 6;
 			files = (
 				442C64921F7A410A0027EFBE /* rime-install in CopyFiles */,
-				1BC8F63B1DAA516200461284 /* squirrel_client in CopyFiles */,
 				44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */,
 				44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */,
 			);
@@ -160,13 +184,20 @@
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelDomainServer.m; sourceTree = "<group>"; };
-		1B4763F21DAA03D100C58621 /* SquirrelDomainServer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SquirrelDomainServer.h; sourceTree = "<group>"; };
-		1BC8F6391DAA515700461284 /* squirrel_client */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = squirrel_client; path = bin/squirrel_client; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
+		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
+		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
+		441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.schema.yaml; path = data/plum/terra_pinyin.schema.yaml; sourceTree = "<group>"; };
+		441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_express.schema.yaml; path = data/plum/cangjie5_express.schema.yaml; sourceTree = "<group>"; };
+		441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_tw.schema.yaml; path = data/plum/bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
+		441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo.schema.yaml; path = data/plum/bopomofo.schema.yaml; sourceTree = "<group>"; };
+		441E636922B7E90D006DCCDD /* stroke.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = stroke.dict.yaml; path = data/plum/stroke.dict.yaml; sourceTree = "<group>"; };
+		441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.dict.yaml; path = data/plum/cangjie5.dict.yaml; sourceTree = "<group>"; };
+		441E636B22B7E90D006DCCDD /* stroke.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = stroke.schema.yaml; path = data/plum/stroke.schema.yaml; sourceTree = "<group>"; };
+		441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_express.schema.yaml; path = data/plum/bopomofo_express.schema.yaml; sourceTree = "<group>"; };
 		442B5B871570C37200370DEA /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = squirrel.yaml; path = data/squirrel.yaml; sourceTree = "<group>"; };
 		442C64901F7A404A0027EFBE /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
 		4443A8391828CC5100731305 /* input_source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = input_source.m; sourceTree = "<group>"; };
@@ -181,6 +212,7 @@
 		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
 		44AEBC7121F569CF00344375 /* punctuation.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = punctuation.yaml; path = data/plum/punctuation.yaml; sourceTree = "<group>"; };
 		44AEBC7221F569CF00344375 /* key_bindings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = key_bindings.yaml; path = data/plum/key_bindings.yaml; sourceTree = "<group>"; };
+		44CB5E872585EFAE0022654F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
 		44CD7D9E1828D981006E9222 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
 		44DA191A152B8CB600FB8EF0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.xib"; sourceTree = "<group>"; };
@@ -199,6 +231,34 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
+		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
+		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
+		77AA67DF2588916300A592E2 /* tw2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2s.json; sourceTree = "<group>"; };
+		77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRev.ocd2; sourceTree = "<group>"; };
+		77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPShinjitaiPhrases.ocd2; sourceTree = "<group>"; };
+		77AA67E22588916300A592E2 /* hk2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hk2s.json; sourceTree = "<group>"; };
+		77AA67E32588916300A592E2 /* TSCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSCharacters.ocd2; sourceTree = "<group>"; };
+		77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPVariantsRev.ocd2; sourceTree = "<group>"; };
+		77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPShinjitaiCharacters.ocd2; sourceTree = "<group>"; };
+		77AA67E62588916300A592E2 /* JPVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPVariants.ocd2; sourceTree = "<group>"; };
+		77AA67E72588916300A592E2 /* TWPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrases.ocd2; sourceTree = "<group>"; };
+		77AA67E82588916300A592E2 /* t2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2hk.json; sourceTree = "<group>"; };
+		77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
+		77AA67EA2588916300A592E2 /* s2twp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2twp.json; sourceTree = "<group>"; };
+		77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrasesRev.ocd2; sourceTree = "<group>"; };
+		77AA67EC2588916300A592E2 /* tw2sp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2sp.json; sourceTree = "<group>"; };
+		77AA67ED2588916300A592E2 /* s2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2t.json; sourceTree = "<group>"; };
+		77AA67EE2588916300A592E2 /* jp2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jp2t.json; sourceTree = "<group>"; };
+		77AA67EF2588916300A592E2 /* t2jp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2jp.json; sourceTree = "<group>"; };
+		77AA67F02588916300A592E2 /* s2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2hk.json; sourceTree = "<group>"; };
+		77AA67F12588916300A592E2 /* TWVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariants.ocd2; sourceTree = "<group>"; };
+		77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
+		77AA67F32588916400A592E2 /* STCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = STCharacters.ocd2; sourceTree = "<group>"; };
+		77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRev.ocd2; sourceTree = "<group>"; };
+		77AA67F52588916400A592E2 /* s2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2tw.json; sourceTree = "<group>"; };
+		77AA67F62588916400A592E2 /* TSPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSPhrases.ocd2; sourceTree = "<group>"; };
+		77AA67F72588916400A592E2 /* STPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = STPhrases.ocd2; sourceTree = "<group>"; };
 		7B5488211D2DAAD10056A1BE /* default.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = default.yaml; path = data/plum/default.yaml; sourceTree = "<group>"; };
 		7B5488291D2DAAD10056A1BE /* essay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = essay.txt; path = data/plum/essay.txt; sourceTree = "<group>"; };
 		7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_fluency.schema.yaml; path = data/plum/luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
@@ -208,36 +268,11 @@
 		7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.schema.yaml; path = data/plum/luna_pinyin.schema.yaml; sourceTree = "<group>"; };
 		7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_quanpin.schema.yaml; path = data/plum/luna_quanpin.schema.yaml; sourceTree = "<group>"; };
 		7B54883B1D2DAAD10056A1BE /* symbols.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = symbols.yaml; path = data/plum/symbols.yaml; sourceTree = "<group>"; };
-		7B5488761D2DAAF50056A1BE /* hk2s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hk2s.json; sourceTree = "<group>"; };
-		7B5488771D2DAAF50056A1BE /* HKVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd; sourceTree = "<group>"; };
-		7B5488781D2DAAF50056A1BE /* HKVariantsPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsPhrases.ocd; sourceTree = "<group>"; };
-		7B5488791D2DAAF50056A1BE /* HKVariantsRev.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRev.ocd; sourceTree = "<group>"; };
-		7B54887A1D2DAAF50056A1BE /* HKVariantsRevPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRevPhrases.ocd; sourceTree = "<group>"; };
-		7B54887B1D2DAAF50056A1BE /* JPVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPVariants.ocd; sourceTree = "<group>"; };
-		7B54887C1D2DAAF50056A1BE /* s2hk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = s2hk.json; sourceTree = "<group>"; };
-		7B54887D1D2DAAF50056A1BE /* s2t.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = s2t.json; sourceTree = "<group>"; };
-		7B54887E1D2DAAF50056A1BE /* s2tw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = s2tw.json; sourceTree = "<group>"; };
-		7B54887F1D2DAAF50056A1BE /* s2twp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = s2twp.json; sourceTree = "<group>"; };
-		7B5488801D2DAAF50056A1BE /* STCharacters.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = STCharacters.ocd; sourceTree = "<group>"; };
-		7B5488811D2DAAF50056A1BE /* STPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = STPhrases.ocd; sourceTree = "<group>"; };
-		7B5488821D2DAAF50056A1BE /* t2hk.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = t2hk.json; sourceTree = "<group>"; };
-		7B5488831D2DAAF50056A1BE /* t2s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
-		7B5488841D2DAAF50056A1BE /* t2tw.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
-		7B5488851D2DAAF50056A1BE /* TSCharacters.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSCharacters.ocd; sourceTree = "<group>"; };
-		7B5488861D2DAAF50056A1BE /* TSPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSPhrases.ocd; sourceTree = "<group>"; };
-		7B5488871D2DAAF50056A1BE /* tw2s.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tw2s.json; sourceTree = "<group>"; };
-		7B5488881D2DAAF50056A1BE /* tw2sp.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tw2sp.json; sourceTree = "<group>"; };
-		7B5488891D2DAAF50056A1BE /* TWPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrases.ocd; sourceTree = "<group>"; };
-		7B54888A1D2DAAF50056A1BE /* TWPhrasesRev.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrasesRev.ocd; sourceTree = "<group>"; };
-		7B54888B1D2DAAF50056A1BE /* TWVariants.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariants.ocd; sourceTree = "<group>"; };
-		7B54888C1D2DAAF50056A1BE /* TWVariantsRev.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRev.ocd; sourceTree = "<group>"; };
-		7B54888D1D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRevPhrases.ocd; sourceTree = "<group>"; };
 		7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelConfig.h; sourceTree = "<group>"; };
 		7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelConfig.m; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
-		A485E5BB0DD28B8D00E472E5 /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		A4B8E1B20F645B870094E08B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		A4FC48CA0F6530EF0069BE81 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
@@ -277,8 +312,6 @@
 				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
 				7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */,
 				7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */,
-				1B4763F01DAA029B00C58621 /* SquirrelDomainServer.m */,
-				1B4763F21DAA03D100C58621 /* SquirrelDomainServer.h */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
@@ -316,9 +349,6 @@
 			isa = PBXGroup;
 			children = (
 				442C648F1F7A40180027EFBE /* bin */,
-				1BC8F6391DAA515700461284 /* squirrel_client */,
-				44E21A8E16A653E700C2B08F /* rime_deployer */,
-				44E21A8F16A653E700C2B08F /* rime_dict_manager */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -358,30 +388,34 @@
 		4407F39D14EC071E001329FE /* opencc */ = {
 			isa = PBXGroup;
 			children = (
-				7B5488761D2DAAF50056A1BE /* hk2s.json */,
-				7B5488771D2DAAF50056A1BE /* HKVariants.ocd */,
-				7B5488781D2DAAF50056A1BE /* HKVariantsPhrases.ocd */,
-				7B5488791D2DAAF50056A1BE /* HKVariantsRev.ocd */,
-				7B54887A1D2DAAF50056A1BE /* HKVariantsRevPhrases.ocd */,
-				7B54887B1D2DAAF50056A1BE /* JPVariants.ocd */,
-				7B54887C1D2DAAF50056A1BE /* s2hk.json */,
-				7B54887D1D2DAAF50056A1BE /* s2t.json */,
-				7B54887E1D2DAAF50056A1BE /* s2tw.json */,
-				7B54887F1D2DAAF50056A1BE /* s2twp.json */,
-				7B5488801D2DAAF50056A1BE /* STCharacters.ocd */,
-				7B5488811D2DAAF50056A1BE /* STPhrases.ocd */,
-				7B5488821D2DAAF50056A1BE /* t2hk.json */,
-				7B5488831D2DAAF50056A1BE /* t2s.json */,
-				7B5488841D2DAAF50056A1BE /* t2tw.json */,
-				7B5488851D2DAAF50056A1BE /* TSCharacters.ocd */,
-				7B5488861D2DAAF50056A1BE /* TSPhrases.ocd */,
-				7B5488871D2DAAF50056A1BE /* tw2s.json */,
-				7B5488881D2DAAF50056A1BE /* tw2sp.json */,
-				7B5488891D2DAAF50056A1BE /* TWPhrases.ocd */,
-				7B54888A1D2DAAF50056A1BE /* TWPhrasesRev.ocd */,
-				7B54888B1D2DAAF50056A1BE /* TWVariants.ocd */,
-				7B54888C1D2DAAF50056A1BE /* TWVariantsRev.ocd */,
-				7B54888D1D2DAAF50056A1BE /* TWVariantsRevPhrases.ocd */,
+				77AA67E22588916300A592E2 /* hk2s.json */,
+				77AA67DC2588916300A592E2 /* HKVariants.ocd2 */,
+				77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */,
+				77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */,
+				77AA67EE2588916300A592E2 /* jp2t.json */,
+				77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */,
+				77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */,
+				77AA67E62588916300A592E2 /* JPVariants.ocd2 */,
+				77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */,
+				77AA67F02588916300A592E2 /* s2hk.json */,
+				77AA67ED2588916300A592E2 /* s2t.json */,
+				77AA67F52588916400A592E2 /* s2tw.json */,
+				77AA67EA2588916300A592E2 /* s2twp.json */,
+				77AA67F32588916400A592E2 /* STCharacters.ocd2 */,
+				77AA67F72588916400A592E2 /* STPhrases.ocd2 */,
+				77AA67E82588916300A592E2 /* t2hk.json */,
+				77AA67EF2588916300A592E2 /* t2jp.json */,
+				77AA67DD2588916300A592E2 /* t2s.json */,
+				77AA67DE2588916300A592E2 /* t2tw.json */,
+				77AA67E32588916300A592E2 /* TSCharacters.ocd2 */,
+				77AA67F62588916400A592E2 /* TSPhrases.ocd2 */,
+				77AA67DF2588916300A592E2 /* tw2s.json */,
+				77AA67EC2588916300A592E2 /* tw2sp.json */,
+				77AA67E72588916300A592E2 /* TWPhrases.ocd2 */,
+				77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */,
+				77AA67F12588916300A592E2 /* TWVariants.ocd2 */,
+				77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */,
+				77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */,
 			);
 			name = opencc;
 			path = data/opencc;
@@ -420,6 +454,16 @@
 		7B5488A71D2DAC9D0056A1BE /* plum */ = {
 			isa = PBXGroup;
 			children = (
+				441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */,
+				441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */,
+				441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */,
+				441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */,
+				441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */,
+				441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */,
+				441E636922B7E90D006DCCDD /* stroke.dict.yaml */,
+				441E636B22B7E90D006DCCDD /* stroke.schema.yaml */,
+				441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */,
+				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
 				7B5488211D2DAAD10056A1BE /* default.yaml */,
 				7B5488291D2DAAD10056A1BE /* essay.txt */,
 				7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */,
@@ -466,7 +510,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0720;
+				LastUpgradeCheck = 1220;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -476,6 +520,7 @@
 				en,
 				"zh-Hans",
 				"zh-Hant",
+				Base,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Squirrel */;
 			projectDirPath = "";
@@ -496,7 +541,6 @@
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
-				1BC8F63A1DAA515700461284 /* squirrel_client in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
@@ -512,7 +556,6 @@
 			files = (
 				7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				1B4763F11DAA029B00C58621 /* SquirrelDomainServer.m in Sources */,
 				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
@@ -538,9 +581,9 @@
 		A45578F41146A75200592C6E /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A485E5BB0DD28B8D00E472E5 /* en */,
 				44DA191A152B8CB600FB8EF0 /* zh-Hans */,
 				44DA191B152B8CBC00FB8EF0 /* zh-Hant */,
+				44CB5E872585EFAE0022654F /* Base */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
@@ -563,8 +606,11 @@
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 0.14.0;
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -582,6 +628,8 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
 					"-DHAVE_CONFIG_H",
@@ -601,7 +649,10 @@
 			buildSettings = {
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 0.14.0;
+				EXCLUDED_ARCHS = arm64;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -618,6 +669,8 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
+				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
 					"-DHAVE_CONFIG_H",
@@ -636,8 +689,33 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
@@ -647,7 +725,7 @@
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib /usr/local/lib";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
@@ -657,8 +735,33 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
@@ -668,7 +771,7 @@
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
 				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib";
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};

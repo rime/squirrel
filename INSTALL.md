@@ -31,9 +31,8 @@ brew link --force boost@1.60
 > Starting from version 1.68, homebrewed `boost` libraries depends on `icu4c`,
 > which is not provided by macOS.
 >
-> The [`with-icu` branch](https://github.com/rime/librime/tree/with-icu) adds
-> support for linking to ICU libraries but the built app cannot run on machines
-> without ICU libraries installed.
+> librime's make target `xcode/{debug,release,dist}-with-icu` links to ICU libraries
+> but the built app cannot run on machines without ICU libraries installed.
 >
 > To make the build portable, either install an earlier version of `boost` via
 > homebrew, or build from source with bootstrap option `--without-icu`.
@@ -54,6 +53,12 @@ port install boost -no_static
 git clone --recursive https://github.com/rime/squirrel.git
 
 cd squirrel
+```
+
+Optionally, checkout Rime plugins (a list of GitHub repo slugs):
+
+``` sh
+bash librime/install-plugins.sh rime/librime-sample # ...
 ```
 
 ### Build dependencies
