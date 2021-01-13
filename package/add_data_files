@@ -1,0 +1,84 @@
+#!/bin/bash
+
+set -e
+
+project_file=Squirrel.xcodeproj/project.pbxproj
+test -f "${project_file}"
+
+anchor=(80 65 terra_pinyin.schema.yaml)
+
+lastid=80
+
+obj_entry() {
+    local id=$1
+    local ref=$2
+    local file="$3"
+    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E63${ref}22B7E90C006DCCDD /* ${file} */; };"
+}
+
+copy_files_entry() {
+    local id=$1
+    local ref=$2
+    local file="$3"
+    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */,"
+}
+
+file_ref_entry() {
+    local id=$1
+    local ref=$2
+    local file="$3"
+    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ${file}; path = data/plum/${file}; sourceTree = \"<group>\"; };"
+}
+
+group_entry() {
+    local id=$1
+    local ref=$2
+    local file="$3"
+    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */,"
+}
+
+add_line() {
+    local search="^[[:space:]]*$(sed 's/\//\\\//g; s/\*/\\*/g' <<< "${1}")\$"
+    sed -i '' "/${search}/a\\
+${2}
+" "${project_file}"
+}
+
+add_file() {
+    local file="$1"
+    local new_id=$(( ++lastid ))
+    local new_refid=$(( ++lastid ))
+    local anchor_line
+    local new_line
+
+    anchor_line="$(obj_entry ${anchor[@]})"
+    new_line="$(obj_entry ${new_id} ${new_refid} "${file}")"
+    add_line "${anchor_line}" "${new_line}"
+
+    anchor_line="$(copy_files_entry ${anchor[@]})"
+    new_line="$(copy_files_entry ${new_id} ${new_refid} "${file}")"
+    add_line "${anchor_line}" "${new_line}"
+
+    anchor_line="$(file_ref_entry ${anchor[@]})"
+    new_line="$(file_ref_entry ${new_id} ${new_refid} "${file}")"
+    add_line "${anchor_line}" "${new_line}"
+
+    anchor_line="$(group_entry ${anchor[@]})"
+    new_line="$(group_entry ${new_id} ${new_refid} "${file}")"
+    add_line "${anchor_line}" "${new_line}"
+}
+
+data_files=(
+    $(ls data/plum/* | xargs basename)
+)
+
+for file in "${data_files[@]}"
+do
+    if grep -Fq " ${file} " "${project_file}"
+    then
+	echo "found ${file}"
+	continue
+    fi
+    echo "adding ${file} to ${project_file}"
+    add_file "${file}"
+done

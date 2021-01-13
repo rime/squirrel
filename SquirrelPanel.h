@@ -4,7 +4,10 @@
 
 @interface SquirrelPanel : NSObject
 
-@property(nonatomic, assign) BOOL horizontal;
+// Linear candidate list, as opposed to stacked candidate list.
+@property(nonatomic, assign) BOOL linear;
+// Vertical text, as opposed to horizontal text.
+@property(nonatomic, assign) BOOL vertical;
 @property(nonatomic, assign) BOOL inlinePreedit;
 
 // position of input caret on screen.
@@ -15,7 +18,7 @@
           caretPos:(NSUInteger)caretPos
         candidates:(NSArray*)candidates
           comments:(NSArray*)comments
-            labels:(NSString*)labels
+            labels:(NSArray*)labels
        highlighted:(NSUInteger)index;
 
 -(void)hide;

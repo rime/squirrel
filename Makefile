@@ -1,12 +1,19 @@
-.PHONY: all install librime data update-plum-data update-opencc-data deps release debug \
-	package archive test-archive permission-check install-debug install-release \
-	clean clean-deps
+.PHONY: all install deps release debug
 
 all: release
 install: install-release
 
-LIBRIME = lib/librime.1.dylib
-LIBRIME_DEPS = librime/thirdparty/lib/libmarisa.a \
+# Change to `xcode/dist-with-icu` if boost is linked to icu libraries.
+RIME_DIST_TARGET = xcode/dist
+
+RIME_BIN_DIR = librime/dist/bin
+RIME_LIB_DIR = librime/dist/lib
+
+RIME_LIBRARY_FILE_NAME = librime.1.dylib
+RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
+
+RIME_DEPS = librime/thirdparty/lib/libcapnp.a \
+	librime/thirdparty/lib/libmarisa.a \
 	librime/thirdparty/lib/libleveldb.a \
 	librime/thirdparty/lib/libopencc.a \
 	librime/thirdparty/lib/libyaml-cpp.a
@@ -14,80 +21,90 @@ PLUM_DATA = bin/rime-install \
 	data/plum/default.yaml \
 	data/plum/symbols.yaml \
 	data/plum/essay.txt
-OPENCC_DATA = data/opencc/TSCharacters.ocd \
-	data/opencc/TSPhrases.ocd \
+OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
+	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
-SQUIRREL_CLIENT=squirrel_client
-DEPS = $(LIBRIME) $(PLUM_DATA) $(OPENCC_DATA) $(SQUIRREL_CLIENT)
-LIBRIME_OUTPUT = librime/xbuild/lib/Release/librime.1.dylib
-RIME_BIN_BUILD_DIR = librime/xbuild/bin/Release
-RIME_BIN_DEPLOYER = rime_deployer
-RIME_BIN_DICT_MANAGER = rime_dict_manager
-OPENCC_DATA_OUTPUT = librime/thirdparty/data/opencc/*.*
+DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
+
+OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
 INSTALL_NAME_TOOL_ARGS = -add_rpath @loader_path/../Frameworks
 
-$(LIBRIME):
+.PHONY: librime copy-rime-binaries
+
+$(RIME_LIBRARY):
 	$(MAKE) librime
 
-$(LIBRIME_DEPS):
-	$(MAKE) -C librime -f Makefile.xcode thirdparty
+$(RIME_DEPS):
+	$(MAKE) -C librime xcode/thirdparty
+
+librime: $(RIME_DEPS)
+	$(MAKE) -C librime $(RIME_DIST_TARGET)
+	$(MAKE) copy-rime-binaries
+
+copy-rime-binaries:
+	cp -L $(RIME_LIB_DIR)/$(RIME_LIBRARY_FILE_NAME) lib/
+	cp $(RIME_BIN_DIR)/rime_deployer bin/
+	cp $(RIME_BIN_DIR)/rime_dict_manager bin/
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_deployer
+	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/rime_dict_manager
+
+.PHONY: data plum-data opencc-data copy-plum-data copy-opencc-data
+
+data: plum-data opencc-data
 
 $(PLUM_DATA):
-	$(MAKE) update-plum-data
+	$(MAKE) plum-data
 
 $(OPENCC_DATA):
-	$(MAKE) update-opencc-data
+	$(MAKE) opencc-data
 
-librime: $(LIBRIME_DEPS)
-	$(MAKE) -C librime -f Makefile.xcode release
-	cp -L $(LIBRIME_OUTPUT) $(LIBRIME)
-	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DEPLOYER) bin/
-	cp $(RIME_BIN_BUILD_DIR)/$(RIME_BIN_DICT_MANAGER) bin/
-	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DEPLOYER)
-	$(INSTALL_NAME_TOOL) $(INSTALL_NAME_TOOL_ARGS) bin/$(RIME_BIN_DICT_MANAGER)
+plum-data:
+	$(MAKE) -C plum
+	$(MAKE) copy-plum-data
 
-data: update-plum-data update-opencc-data
-squirrel_client:
-	clang SquirrelClient.c -o ./bin/squirrel_client
+opencc-data:
+	$(MAKE) -C librime xcode/thirdparty/opencc
+	$(MAKE) copy-opencc-data
 
-update-plum-data:
-	$(MAKE) -C plum minimal
+copy-plum-data:
 	mkdir -p data/plum
 	cp $(PLUM_DATA_OUTPUT) data/plum/
 	cp $(RIME_PACKAGE_INSTALLER) bin/
 
-update-opencc-data:
-	$(MAKE) -C librime -f Makefile.xcode thirdparty/opencc
+copy-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
 
-deps: librime data squirrel_client
+deps: librime data
 
-release: $(DEPS)
+release: $(DEPS_CHECK)
+	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
 
-debug: $(DEPS)
+debug: $(DEPS_CHECK)
+	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
+
+.PHONY: package archive sign-archive
 
 package: release
 	bash package/make_package
 
 archive: package
-	bash package/create_archive
-
-test-archive: package
-	testing=1 bash package/create_archive
+	bash package/make_archive
 
 sign-archive:
 	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
-	bash package/create_archive
+	bash package/make_archive
 
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
+
+.PHONY: permission-check install-debug install-release
 
 permission-check:
 	[ -w "$(DSTROOT)" ] && [ -w "$(SQUIRREL_APP_ROOT)" ] || sudo chown -R ${USER} "$(DSTROOT)"
@@ -102,6 +119,8 @@ install-release: release permission-check
 	cp -R build/Release/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
 
+.PHONY: clean clean-deps
+
 clean:
 	rm -rf build > /dev/null 2>&1 || true
 	rm build.log > /dev/null 2>&1 || true
@@ -112,4 +131,4 @@ clean:
 
 clean-deps:
 	$(MAKE) -C plum clean
-	$(MAKE) -C librime -f Makefile.xcode clean
+	$(MAKE) -C librime xcode/clean

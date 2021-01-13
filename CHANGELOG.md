@@ -1,5 +1,67 @@
+<a name="0.14.0"></a>
+## 0.14.0 (2019-06-23)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.3](https://github.com/rime/librime/blob/master/CHANGELOG.md#153-2019-06-22)
+  * 修復 `single_char_filter` 組件
+
+* 建設安全、可靠、快速的全自動構建、發佈流程
+
+* 安裝「八股文」語法數據庫（傳承字），可依照 [配方](https://github.com/lotem/rime-octagram-data) 在方案裏啓用
+
+#### Features
+
+* **package/add_data_files:**  update xcode project to install all files under data/plum ([2ab1810e](https://github.com/rime/squirrel/commit/2ab1810e94b963df27e6fd2e399465ccdabba138))
+* **travis-ci:**  fetch latest rime binaries in install script, install extra recipes ([027679d5](https://github.com/rime/squirrel/commit/027679d58974845a83a393a313bbd63462a795b1))
+
+
+
+<a name="0.13"></a>
+## 0.13 (2019-06-17)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.2](https://github.com/rime/librime/blob/master/CHANGELOG.md#152-2019-06-17)
+  * 修復用戶詞的權重，穩定造句質量、平衡翻譯器優先級 [librime#287](https://github.com/rime/librime/issues/287)
+
+* 安裝預設輸入方案集，避免大多數方案依賴問題 [#279](https://github.com/rime/squirrel/issues/279)
+
+#### Features
+
+* **plum:**  bundle preset recipes ([7885c5fa](https://github.com/rime/squirrel/commit/7885c5fa6006e999c5a07ac1800e9afa15d629a8))
+
+
+
+<a name="0.12.0"></a>
+## 0.12.0 (2019-06-16)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.5.1](https://github.com/rime/librime/blob/master/CHANGELOG.md#151-2019-06-16)
+  * 建設全自動構建、發佈流程
+  * 更新第三方庫
+  * 將Rime插件納入自動化構建流程。本次發行包含兩款插件：
+    - [lbrime-lua](https://github.com/hchunhui/librime-lua)
+    - [librime-octagram](https://github.com/lotem/librime-octagram)
+
+#### Bug Fixes
+
+* **squirrel.yaml:**  duplicate YAML key in color scheme dust ([44a4d7ee](https://github.com/rime/squirrel/commit/44a4d7ee3cad94c170616b7c8d9415a4f92c86d5))
+
+#### Features
+
+* **squirrel.yaml:**  udpate UI settings ([d8b1dc56](https://github.com/rime/squirrel/commit/d8b1dc569cc2c168f0fc5e8240ff6e049142fc24))
+* **travis-ci:**  deploy release package ([c367b675](https://github.com/rime/squirrel/commit/c367b675bbca4f7e4467b71b9f42adbb888b77a5))
+
+
+
 <a name="0.11.0"></a>
 ## 0.11.0 (2019-01-21)
+
 
 #### 主要更新
 
@@ -23,6 +85,7 @@
 
 <a name="0.10.0"></a>
 ## 0.10.0 (2019-01-01)
+
 
 #### 主要更新
 
