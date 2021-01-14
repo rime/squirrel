@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -32,10 +32,9 @@
 		44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8E16A653E700C2B08F /* rime_deployer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8F16A653E700C2B08F /* rime_dict_manager */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
-		44F01493152AF6AF00EFDAC3 /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 44F01492152AF6AF00EFDAC3 /* Sparkle.framework */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
+		77418DFC25B18732006BF1B1 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 77418DFB25B18732006BF1B1 /* Sparkle */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
 		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
 		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
@@ -174,7 +173,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */,
-				44F01493152AF6AF00EFDAC3 /* Sparkle.framework in Copy 3rd-party Frameworks */,
 			);
 			name = "Copy 3rd-party Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -224,7 +222,6 @@
 		44E98EA714AE16DD00847AD6 /* unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unchecked.h; sourceTree = "<group>"; };
 		44E98EC114AE1AC900847AD6 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
-		44F01492152AF6AF00EFDAC3 /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Sparkle.framework; sourceTree = "<group>"; };
 		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
@@ -286,7 +283,7 @@
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */,
 				A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */,
-				44F01538152B2D9300EFDAC3 /* Sparkle.framework in Frameworks */,
+				77418DFC25B18732006BF1B1 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -321,7 +318,6 @@
 			children = (
 				44CD640915E2633D0021234E /* librime.1.dylib */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
-				44F01492152AF6AF00EFDAC3 /* Sparkle.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -499,6 +495,9 @@
 			dependencies = (
 			);
 			name = Squirrel;
+			packageProductDependencies = (
+				77418DFB25B18732006BF1B1 /* Sparkle */,
+			);
 			productInstallPath = "$(HOME)/Applications";
 			productName = Squirrel;
 			productReference = 44F1EB381431F8270015FD04 /* Squirrel.app */;
@@ -523,6 +522,9 @@
 				Base,
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Squirrel */;
+			packageReferences = (
+				77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */,
+			);
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -723,7 +725,11 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib /usr/local/lib";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
+					/usr/lib,
+					/usr/local/lib,
+				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
@@ -769,7 +775,10 @@
 				);
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
-				LD_RUNPATH_SEARCH_PATHS = "@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks /usr/lib";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
+					/usr/lib,
+				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
@@ -799,6 +808,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
+			requirement = {
+				kind = exactVersion;
+				version = "1.24.0-spm";
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		77418DFB25B18732006BF1B1 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
 }
