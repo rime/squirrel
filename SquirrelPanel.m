@@ -481,14 +481,8 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   if (_preeditRange.length > 0) {
     preeditRect = [self contentRectForRange:_preeditRange];
     preeditRect.size.width = textField.size.width;
-    preeditRect.size.height += current.preeditLinespace;
+    preeditRect.size.height += current.edgeInset.height + current.preeditLinespace + current.hilitedCornerRadius / 2;
     preeditRect.origin = NSMakePoint(textField.origin.x - current.edgeInset.width, textField.origin.y - current.edgeInset.height);
-    preeditRect.size.height += current.edgeInset.height;
-    if (_highlightedRange.location - (_preeditRange.location+_preeditRange.length) <= 1) {
-      if (_preeditRange.length > 0 && !current.linear) {
-        preeditRect.size.height -= current.hilitedCornerRadius / 2;
-      }
-    }
     if (_highlightedRange.length == 0) {
       preeditRect.size.height += current.edgeInset.height - current.preeditLinespace;
     }
@@ -517,8 +511,8 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
         innerBox.origin.y += current.edgeInset.height + 1;
         innerBox.size.height -= (current.edgeInset.height + 1) * 2;
       } else {
-        innerBox.origin.y += preeditRect.size.height + current.halfLinespace + 1;
-        innerBox.size.height -= current.edgeInset.height + preeditRect.size.height + current.halfLinespace + 2;
+        innerBox.origin.y += preeditRect.size.height + current.halfLinespace + current.hilitedCornerRadius / 2 + 1;
+        innerBox.size.height -= current.edgeInset.height + preeditRect.size.height + current.halfLinespace + current.hilitedCornerRadius / 2 + 2;
       }
       NSRect outerBox = backgroundRect;
       outerBox.size.height -= current.hilitedCornerRadius + preeditRect.size.height;
@@ -588,7 +582,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     if (_highlightedRange.length == 0) {
       innerBox.size.height -= (current.edgeInset.height + 1) * 2;
     } else {
-      innerBox.size.height -= current.edgeInset.height+current.preeditLinespace + 2;
+      innerBox.size.height -= current.edgeInset.height + current.preeditLinespace + current.hilitedCornerRadius / 2 + 2;
     }
     NSRect outerBox = preeditRect;
     outerBox.size.height -= current.hilitedCornerRadius;
@@ -1121,11 +1115,18 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
                                         initWithString:(_linear ? @"  " : @"\n")
                                             attributes:attrs];
     _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
-    if (i > 0) {
+    
+    NSMutableParagraphStyle *paragraphStyleCandidate;
+    if (i == 0) {
+      paragraphStyleCandidate = [current.paragraphStyle mutableCopy];
+    } else {
+      NSMutableParagraphStyle *firstParagraphStyle = [current.paragraphStyle mutableCopy];
+      firstParagraphStyle.paragraphSpacingBefore = current.halfLinespace;
+      paragraphStyleCandidate = firstParagraphStyle;
+      
       [text appendAttributedString:separator];
     }
-
-    NSMutableParagraphStyle *paragraphStyleCandidate = [current.paragraphStyle mutableCopy];
+    
     if (_vertical) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
@@ -1472,11 +1473,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
-  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
+  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2 + hilitedCornerRadius / 2;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.paragraphSpacing = spacing;
+  preeditParagraphStyle.paragraphSpacing = spacing + hilitedCornerRadius / 2;
   
   SquirrelLayout *current = isDark ? _view.darkLayout : _view.layout;
   NSMutableDictionary *attrs = [current.attrs mutableCopy];
