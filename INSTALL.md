@@ -6,46 +6,23 @@
 
 ### Prerequisites
 
-If you haven't already got the Xcode toolchain, install **Xcode Command Line Tools**:
+Install **Xcode >= 12.2** from App Store.
+
+Install **cmake**.
+
+Download from https://cmake.org/download/
+
+or install from [Homebrew](http://brew.sh/):
 
 ``` sh
-xcode-select --install
-```
-
-Install dependencies with [Homebrew](http://brew.sh/):
-
-Optional: set the [USTC mirror](https://lug.ustc.edu.cn/wiki/mirrors/help/brew.git) to speed up the `brew install` process in mainland China.
-
-``` sh
-# dev tools:
 brew install cmake
-brew install git
-
-# libraries:
-brew install boost@1.60
-brew link --force boost@1.60
 ```
 
-> **Note:**
->
-> Starting from version 1.68, homebrewed `boost` libraries depends on `icu4c`,
-> which is not provided by macOS.
->
-> librime's make target `xcode/{debug,release,dist}-with-icu` links to ICU libraries
-> but the built app cannot run on machines without ICU libraries installed.
->
-> To make the build portable, either install an earlier version of `boost` via
-> homebrew, or build from source with bootstrap option `--without-icu`.
-
-You can also install them with [MacPorts](https://www.macports.org/):
+or install from [MacPorts](https://www.macports.org/):
 
 ``` sh
-port install cmake git
-port install boost -no_static
+port install cmake
 ```
-
-> If you've built Boost manually instead of installing it with Homebrew or
-> MacPorts, please set shell variable `BOOST_ROOT` to its top level directory.
 
 ### Checkout the code
 
@@ -61,15 +38,73 @@ Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 bash librime/install-plugins.sh rime/librime-sample # ...
 ```
 
+### Shortcut: get the lastest librime release
+
+You have the option to skip the following two sections - building Boost and
+librime, by downloading the latest librime binary from GitHub releases.
+
+``` sh
+bash ./travis-install.sh
+```
+
+When this is done, you may move on to [Build Squirrel](#build-squirrel).
+
+### Install Boost C++ libraries
+
+Choose one of the following options.
+
+**Option:** Download and install from source.
+
+``` sh
+export BUILD_UNIVERSAL=1
+
+make -C librime xcode/thirdparty/boost
+
+export BOOST_ROOT="$(pwd)/librime/thirdparty/src/boost_1_75_0"
+```
+
+Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
+universal macOS binaries.
+
+After Boost source code is downloaded and a few compiled libraries are built,
+be sure to set shell variable `BOOST_ROOT` to its top level directory as above.
+
+You may also set `BOOST_ROOT` to an existing Boost source tree before this step.
+
+**Option:** Install the current version form Homebrew:
+
+``` sh
+brew install boost
+```
+
+**Note:** with this option, the built Squirrel.app is not portable because it
+links to locally installed libraries from Homebrew.
+
+Learn more about the implications of this at
+https://github.com/rime/librime/blob/master/README-mac.md#install-boost-c-libraries
+
+**Option:** Install from [MacPorts](https://www.macports.org/):
+
+``` sh
+port install boost -no_static
+```
+
 ### Build dependencies
+
+Again, set `BUILD_UNIVERSAL` to tell `make` that we are building librime as
+universal macOS binaries.
 
 Build librime, dependent third-party libraries and data files:
 
 ``` sh
+export BUILD_UNIVERSAL=1
+
 make deps
 ```
 
 ### Build Squirrel
+
+With all dependencies ready, build `Squirrel.app`:
 
 ``` sh
 make
@@ -77,10 +112,10 @@ make
 
 ## Install it on your Mac
 
-Once built, you can install and try it live:
+Once built, you can install and try it live on your Mac computer:
 
 ``` sh
 sudo make install
 ```
 
-That's it. Thanks for riming with Squirrel.
+That's it, a verbal journal. Thanks for riming with Squirrel.

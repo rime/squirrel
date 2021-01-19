@@ -82,6 +82,7 @@
 本品引用了以下開源軟件：
 
   * Boost C++ Libraries  (Boost Software License)
+  * capnproto (MIT License)
   * darts-clone  (New BSD License)
   * google-glog  (New BSD License)
   * Google Test  (New BSD License)
