@@ -38,7 +38,7 @@ Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 bash librime/install-plugins.sh rime/librime-sample # ...
 ```
 
-### Shortcut: get the lastest librime release
+### Shortcut: get the latest librime release
 
 You have the option to skip the following two sections - building Boost and
 librime, by downloading the latest librime binary from GitHub releases.
