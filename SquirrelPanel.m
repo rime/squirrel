@@ -203,6 +203,8 @@ double sign(double number) {
 // Bezier cubic curve, which has continuous roundness
 NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat beta) {
   NSBezierPath *path = [NSBezierPath bezierPath];
+  if (vertex.count < 1)
+    return path;
   NSPoint previousPoint = [vertex[vertex.count-1] pointValue];
   NSPoint point = [vertex[0] pointValue];
   NSPoint nextPoint;
