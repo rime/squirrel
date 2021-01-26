@@ -212,48 +212,6 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
   self.needsDisplay = YES;
 }
 
-// If an edge is close to border, will use border instead. To fix rounding errors
-void checkBorders(NSRect *rect, NSRect boundary) {
-  const CGFloat ROUND_UP = 1.0;
-  double diff;
-  if (NSMinX(*rect) - ROUND_UP < NSMinX(boundary)) {
-    diff = NSMinX(*rect) - NSMinX(boundary);
-    rect->origin.x -= diff;
-    rect->size.width += diff;
-  }
-  if (NSMaxX(*rect) + ROUND_UP > NSMaxX(boundary)) {
-    diff = NSMaxX(boundary) - NSMaxX(*rect);
-    rect->size.width += diff;
-  }
-  if (NSMinY(*rect) - ROUND_UP < NSMinY(boundary)) {
-    diff = NSMinY(*rect) - NSMinY(boundary);
-    rect->origin.y -= diff;
-    rect->size.height += diff;
-  }
-  if (NSMaxY(*rect) + ROUND_UP > NSMaxY(boundary)) {
-    diff = NSMaxY(boundary) - NSMaxY(*rect);
-    rect->size.height += diff;
-  }
-}
-
-void makeRoomForCorner(NSRect *rect, NSRect boundary, CGFloat corner) {
-  const CGFloat ROUND_UP = 1.0;
-  if (NSMinX(*rect) - ROUND_UP < NSMinX(boundary)) {
-    rect->size.width -= corner;
-    rect->origin.x += corner;
-  }
-  if (NSMaxX(*rect) + ROUND_UP > NSMaxX(boundary)) {
-    rect->size.width -= corner;
-  }
-  if (NSMinY(*rect) - ROUND_UP < NSMinY(boundary)) {
-    rect->size.height -= corner;
-    rect->origin.y += corner;
-  }
-  if (NSMaxY(*rect) + ROUND_UP > NSMaxY(boundary)) {
-    rect->size.height -= corner;
-  }
-}
-
 // A tweaked sign function, to winddown corner radius when the size is small
 double sign(double number) {
   if (number >= 2) {
@@ -321,6 +279,15 @@ NSArray<NSValue *> *rectVertex(NSRect rect) {
     @(NSMakePoint(rect.origin.x+rect.size.width, rect.origin.y+rect.size.height)),
     @(NSMakePoint(rect.origin.x+rect.size.width, rect.origin.y))
   ];
+}
+
+void xyTranslation(NSMutableArray<NSValue *> *shape, NSPoint direction) {
+  for (NSUInteger i = 0; i < shape.count; i += 1) {
+    NSPoint point = [shape[i] pointValue];
+    point.x += direction.x;
+    point.y += direction.y;
+    [shape replaceObjectAtIndex:i withObject:@(point)];
+  }
 }
 
 BOOL nearEmptyRect(NSRect rect) {
@@ -481,12 +448,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   if (_preeditRange.length > 0) {
     preeditRect = [self contentRectForRange:_preeditRange];
     preeditRect.size.width = textField.size.width;
-    preeditRect.size.height += current.edgeInset.height + current.preeditLinespace + current.hilitedCornerRadius / 2;
+    preeditRect.size.height += current.edgeInset.height + current.preeditLinespace / 2 + current.hilitedCornerRadius / 2;
     preeditRect.origin = NSMakePoint(textField.origin.x - current.edgeInset.width, textField.origin.y - current.edgeInset.height);
     if (_highlightedRange.length == 0) {
-      preeditRect.size.height += current.edgeInset.height - current.preeditLinespace;
+      preeditRect.size.height += current.edgeInset.height - current.preeditLinespace / 2;
     }
-    checkBorders(&preeditRect, backgroundRect);
     if (current.preeditBackgroundColor != nil) {
       preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
     }
@@ -494,6 +460,22 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   
   // Draw highlighted Rect
   if (_highlightedRange.length > 0 && current.highlightedStripColor != nil) {
+    NSRect innerBox = backgroundRect;
+    innerBox.size.width -= (current.edgeInset.width + 1 + textFrameWidth) * 2;
+    innerBox.origin.x += current.edgeInset.width + 1 + textFrameWidth;
+    if (_preeditRange.length == 0) {
+      innerBox.origin.y += current.edgeInset.height + 1;
+      innerBox.size.height -= (current.edgeInset.height + 1) * 2;
+    } else {
+      innerBox.origin.y += preeditRect.size.height + current.preeditLinespace / 2 + current.hilitedCornerRadius / 2 + 1;
+      innerBox.size.height -= current.edgeInset.height + preeditRect.size.height + current.preeditLinespace / 2 + current.hilitedCornerRadius / 2 + 2;
+    }
+    NSRect outerBox = backgroundRect;
+    outerBox.size.height -= current.hilitedCornerRadius + preeditRect.size.height;
+    outerBox.size.width -= current.hilitedCornerRadius;
+    outerBox.origin.x += current.hilitedCornerRadius / 2;
+    outerBox.origin.y += current.hilitedCornerRadius / 2 + preeditRect.size.height;
+    
     if (current.linear){
       NSRect leadingRect;
       NSRect bodyRect;
@@ -504,22 +486,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       [self addGapBetweenHorizontalCandidates:&bodyRect];
       [self addGapBetweenHorizontalCandidates:&trailingRect];
       
-      NSRect innerBox = backgroundRect;
-      innerBox.size.width -= (current.edgeInset.width + 1 + textFrameWidth) * 2;
-      innerBox.origin.x += current.edgeInset.width + 1 + textFrameWidth;
-      if (_preeditRange.length == 0) {
-        innerBox.origin.y += current.edgeInset.height + 1;
-        innerBox.size.height -= (current.edgeInset.height + 1) * 2;
-      } else {
-        innerBox.origin.y += preeditRect.size.height + current.halfLinespace + current.hilitedCornerRadius / 2 + 1;
-        innerBox.size.height -= current.edgeInset.height + preeditRect.size.height + current.halfLinespace + current.hilitedCornerRadius / 2 + 2;
-      }
-      NSRect outerBox = backgroundRect;
-      outerBox.size.height -= current.hilitedCornerRadius + preeditRect.size.height;
-      outerBox.size.width -= current.hilitedCornerRadius;
-      outerBox.origin.x += current.hilitedCornerRadius / 2;
-      outerBox.origin.y += current.hilitedCornerRadius / 2 + preeditRect.size.height;
-      
       NSMutableArray<NSValue *> *highlightedPoints;
       NSMutableArray<NSValue *> *highlightedPoints2;
       // Handles the special case where containing boxes are separated
@@ -529,6 +495,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       } else {
         highlightedPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
       }
+      
+      xyTranslation(highlightedPoints, NSMakePoint(0, -current.halfLinespace));
+      xyTranslation(highlightedPoints2, NSMakePoint(0, -current.halfLinespace));
+      innerBox.size.height -= current.halfLinespace;
       // Expand the boxes to reach proper border
       expand(highlightedPoints, innerBox, outerBox);
       expand(highlightedPoints2, innerBox, outerBox);
@@ -554,17 +524,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
           highlightedRect.origin.y -= current.hilitedCornerRadius / 2;
         }
       }
-      NSRect outerBox = backgroundRect;
-      outerBox.size.height -= preeditRect.size.height;
-      outerBox.origin.y += preeditRect.size.height;
-      if (current.hilitedCornerRadius == 0) {
-        // fill in small gaps between highlighted rect and the bounding rect.
-        checkBorders(&highlightedRect, outerBox);
-      } else {
-        // leave a small gap between highlighted rect and the bounding rec
-        makeRoomForCorner(&highlightedRect, outerBox, current.hilitedCornerRadius / 2);
-      }
-      highlightedPath = drawSmoothLines(rectVertex(highlightedRect), current.hilitedCornerRadius*0.3, current.hilitedCornerRadius*1.4);
+      NSMutableArray<NSValue *> *highlightedPoints = [rectVertex(highlightedRect) mutableCopy];
+      expand(highlightedPoints, innerBox, outerBox);
+      highlightedPath = drawSmoothLines(highlightedPoints, current.hilitedCornerRadius*0.3, current.hilitedCornerRadius*1.4);
     }
   }
   
@@ -1118,15 +1080,16 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     
     NSMutableParagraphStyle *paragraphStyleCandidate;
     if (i == 0) {
-      paragraphStyleCandidate = [current.paragraphStyle mutableCopy];
-    } else {
       NSMutableParagraphStyle *firstParagraphStyle = [current.paragraphStyle mutableCopy];
-      firstParagraphStyle.paragraphSpacingBefore = current.halfLinespace;
+      firstParagraphStyle.paragraphSpacingBefore = current.preeditLinespace / 2 + current.hilitedCornerRadius / 2;
       paragraphStyleCandidate = firstParagraphStyle;
-      
+    } else {
+      paragraphStyleCandidate = [current.paragraphStyle mutableCopy];
       [text appendAttributedString:separator];
     }
-    
+    if (_linear) {
+      paragraphStyleCandidate.lineSpacing = current.halfLinespace * 2;
+    }
     if (_vertical) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
@@ -1473,11 +1436,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.paragraphSpacing = lineSpacing / 2;
-  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2 + hilitedCornerRadius / 2;
+  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.paragraphSpacing = spacing + hilitedCornerRadius / 2;
+  preeditParagraphStyle.paragraphSpacing = spacing / 2 + hilitedCornerRadius / 2;
   
   SquirrelLayout *current = isDark ? _view.darkLayout : _view.layout;
   NSMutableDictionary *attrs = [current.attrs mutableCopy];
