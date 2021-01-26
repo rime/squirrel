@@ -2,8 +2,9 @@
 
 #import "SquirrelConfig.h"
 
-static const int kOffsetHeight = 5;
-static const int kDefaultFontSize = 24;
+static const CGFloat kOffsetHeight = 5;
+static const CGFloat kDefaultFontSize = 24;
+static const CGFloat kBlendedBackgroundColorFraction = 1.0 / 5;
 static const NSTimeInterval kShowStatusDuration = 1.2;
 static NSString *const kDefaultCandidateFormat = @"%c. %@";
 
@@ -1109,31 +1110,8 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
     // return foregroundColor;
     backgroundColor = [NSColor lightGrayColor];
   }
-
-  struct {
-    CGFloat r, g, b, a;
-  } f, b;
-
-  [[foregroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
-      getRed:&f.r
-       green:&f.g
-        blue:&f.b
-       alpha:&f.a];
-  //NSLog(@"fg: %f %f %f %f", f.r, f.g, f.b, f.a);
-
-  [[backgroundColor colorUsingColorSpace:[NSColorSpace deviceRGBColorSpace]]
-      getRed:&b.r
-       green:&b.g
-        blue:&b.b
-       alpha:&b.a];
-  //NSLog(@"bg: %f %f %f %f", b.r, b.g, b.b, b.a);
-
-#define blend_value(f, b) (((f)*2.0 + (b)) / 3.0)
-  return [NSColor colorWithDeviceRed:blend_value(f.r, b.r)
-                               green:blend_value(f.g, b.g)
-                                blue:blend_value(f.b, b.b)
-                               alpha:f.a];
-#undef blend_value
+  return [[foregroundColor blendedColorWithFraction:kBlendedBackgroundColorFraction ofColor:backgroundColor]
+          colorWithAlphaComponent:foregroundColor.alphaComponent];
 }
 
 static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
