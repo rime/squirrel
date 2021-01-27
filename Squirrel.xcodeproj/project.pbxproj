@@ -7,496 +7,495 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */; };
-		441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */; };
-		441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */; };
-		441E637A22B7E96F006DCCDD /* cangjie5_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */; };
-		441E637B22B7E96F006DCCDD /* cangjie5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */; };
-		441E637C22B7E96F006DCCDD /* cangjie5.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */; };
-		441E637D22B7E96F006DCCDD /* stroke.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636922B7E90D006DCCDD /* stroke.dict.yaml */; };
-		441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636B22B7E90D006DCCDD /* stroke.schema.yaml */; };
-		441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */; };
-		441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */; };
-		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
-		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		4443A83A1828CC5100731305 /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 4443A8391828CC5100731305 /* input_source.m */; };
-		446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 446C01D61F767BD400A6C23E /* Assets.xcassets */; };
-		448363DD25BDBBED0022C7BA /* pinyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363D925BDBBBF0022C7BA /* pinyin.yaml */; };
-		448363DE25BDBBED0022C7BA /* zhuyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363DA25BDBBBF0022C7BA /* zhuyin.yaml */; };
-		44986A95184B421700B3278D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44986A93184B421700B3278D /* LICENSE.txt */; };
-		44986A96184B421700B3278D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 44986A94184B421700B3278D /* README.md */; };
-		44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */; };
-		44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 44AC95191430CF6000C888FB /* SquirrelInputController.m */; };
-		44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44AEBC7221F569CF00344375 /* key_bindings.yaml */; };
-		44AEBC7621F569FD00344375 /* punctuation.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44AEBC7121F569CF00344375 /* punctuation.yaml */; };
-		44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 44CD640915E2633D0021234E /* librime.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		44CD7D9F1828D981006E9222 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 44CD7D9E1828D981006E9222 /* rime.pdf */; };
-		44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8E16A653E700C2B08F /* rime_deployer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8F16A653E700C2B08F /* rime_dict_manager */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
-		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
-		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
-		77418DFC25B18732006BF1B1 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 77418DFB25B18732006BF1B1 /* Sparkle */; };
-		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
-		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
-		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
-		77AA68172588916F00A592E2 /* HKVariantsRevPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */; };
-		77AA68182588916F00A592E2 /* jp2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EE2588916300A592E2 /* jp2t.json */; };
-		77AA68192588916F00A592E2 /* JPShinjitaiCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */; };
-		77AA681A2588916F00A592E2 /* JPShinjitaiPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */; };
-		77AA681B2588916F00A592E2 /* JPVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E62588916300A592E2 /* JPVariants.ocd2 */; };
-		77AA681C2588916F00A592E2 /* JPVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */; };
-		77AA681D2588916F00A592E2 /* s2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F02588916300A592E2 /* s2hk.json */; };
-		77AA681E2588916F00A592E2 /* s2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67ED2588916300A592E2 /* s2t.json */; };
-		77AA681F2588916F00A592E2 /* s2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F52588916400A592E2 /* s2tw.json */; };
-		77AA68202588916F00A592E2 /* s2twp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EA2588916300A592E2 /* s2twp.json */; };
-		77AA68212588916F00A592E2 /* STCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F32588916400A592E2 /* STCharacters.ocd2 */; };
-		77AA68222588916F00A592E2 /* STPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F72588916400A592E2 /* STPhrases.ocd2 */; };
-		77AA68232588916F00A592E2 /* t2hk.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E82588916300A592E2 /* t2hk.json */; };
-		77AA68242588916F00A592E2 /* t2jp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EF2588916300A592E2 /* t2jp.json */; };
-		77AA68252588916F00A592E2 /* t2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DD2588916300A592E2 /* t2s.json */; };
-		77AA68262588916F00A592E2 /* t2tw.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DE2588916300A592E2 /* t2tw.json */; };
-		77AA68272588916F00A592E2 /* TSCharacters.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E32588916300A592E2 /* TSCharacters.ocd2 */; };
-		77AA68282588916F00A592E2 /* TSPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F62588916400A592E2 /* TSPhrases.ocd2 */; };
-		77AA68292588916F00A592E2 /* tw2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DF2588916300A592E2 /* tw2s.json */; };
-		77AA682A2588916F00A592E2 /* tw2sp.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EC2588916300A592E2 /* tw2sp.json */; };
-		77AA682B2588916F00A592E2 /* TWPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E72588916300A592E2 /* TWPhrases.ocd2 */; };
-		77AA682C2588916F00A592E2 /* TWPhrasesRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */; };
-		77AA682D2588916F00A592E2 /* TWVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F12588916300A592E2 /* TWVariants.ocd2 */; };
-		77AA682E2588916F00A592E2 /* TWVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */; };
-		77AA682F2588916F00A592E2 /* TWVariantsRevPhrases.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */; };
-		7B5488AF1D2DACDF0056A1BE /* default.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488211D2DAAD10056A1BE /* default.yaml */; };
-		7B5488B71D2DACDF0056A1BE /* essay.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488291D2DAAD10056A1BE /* essay.txt */; };
-		7B5488BC1D2DACDF0056A1BE /* luna_pinyin_fluency.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */; };
-		7B5488BD1D2DACDF0056A1BE /* luna_pinyin_simp.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54882F1D2DAAD10056A1BE /* luna_pinyin_simp.schema.yaml */; };
-		7B5488BE1D2DACDF0056A1BE /* luna_pinyin_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488301D2DAAD10056A1BE /* luna_pinyin_tw.schema.yaml */; };
-		7B5488BF1D2DACDF0056A1BE /* luna_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488311D2DAAD10056A1BE /* luna_pinyin.dict.yaml */; };
-		7B5488C01D2DACDF0056A1BE /* luna_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */; };
-		7B5488C11D2DACDF0056A1BE /* luna_quanpin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */; };
-		7B5488C91D2DACDF0056A1BE /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54883B1D2DAAD10056A1BE /* symbols.yaml */; };
-		7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */; };
-		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
-		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
-		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		A45578F51146A75200592C6E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A45578F41146A75200592C6E /* MainMenu.xib */; };
-		A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DE105E8CE8006D528B /* macos_keycode.m */; };
-		A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B8E1B20F645B870094E08B /* Carbon.framework */; };
-		A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4FC48C90F6530EF0069BE81 /* Localizable.strings */; };
-		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
+		7708732825C1777100C1549C /* macos_keycode.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708731A25C1777000C1549C /* macos_keycode.m */; };
+		7708732925C1777100C1549C /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708731D25C1777100C1549C /* SquirrelPanel.m */; };
+		7708732A25C1777100C1549C /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7708731E25C1777100C1549C /* utf8.cpp */; };
+		7708732B25C1777100C1549C /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708731F25C1777100C1549C /* input_source.m */; };
+		7708732C25C1777100C1549C /* SquirrelApplicationDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708732025C1777100C1549C /* SquirrelApplicationDelegate.m */; };
+		7708732D25C1777100C1549C /* SquirrelConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708732125C1777100C1549C /* SquirrelConfig.m */; };
+		7708732E25C1777100C1549C /* SquirrelInputController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708732425C1777100C1549C /* SquirrelInputController.m */; };
+		7708732F25C1777100C1549C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7708732525C1777100C1549C /* main.m */; };
+		7708737525C1827400C1549C /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7708737425C1827400C1549C /* Cocoa.framework */; };
+		7708737725C1827C00C1549C /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7708737625C1827C00C1549C /* InputMethodKit.framework */; };
+		7708737925C1828200C1549C /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7708737825C1828200C1549C /* Carbon.framework */; };
+		7708737E25C1832F00C1549C /* librime.1.dylib in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 7708737C25C1832800C1549C /* librime.1.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7708742925C1870700C1549C /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 7708734825C17B5C00C1549C /* dsa_pub.pem */; };
+		7708742A25C1870700C1549C /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7708735125C17CD400C1549C /* InfoPlist.strings */; };
+		7708742B25C1870800C1549C /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 7708735325C17CD400C1549C /* Localizable.strings */; };
+		7708742C25C1870800C1549C /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 7708734D25C17CA100C1549C /* MainMenu.xib */; };
+		7708742D25C1870800C1549C /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 7708734125C1780F00C1549C /* rime.pdf */; };
+		7708742E25C1870800C1549C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7708733525C177BA00C1549C /* Assets.xcassets */; };
+		7708742F25C1870800C1549C /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 7708734625C17B5C00C1549C /* LICENSE.txt */; };
+		7708743025C1870800C1549C /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 7708734725C17B5C00C1549C /* README.md */; };
+		7708743125C1872F00C1549C /* bopomofo_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CF25C1866000C1549C /* bopomofo_express.schema.yaml */; };
+		7708743225C1872F00C1549C /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CA25C1866000C1549C /* bopomofo_tw.schema.yaml */; };
+		7708743325C1872F00C1549C /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D325C1866000C1549C /* bopomofo.schema.yaml */; };
+		7708743425C1872F00C1549C /* cangjie5_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CE25C1866000C1549C /* cangjie5_express.schema.yaml */; };
+		7708743525C1872F00C1549C /* cangjie5.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CD25C1866000C1549C /* cangjie5.dict.yaml */; };
+		7708743625C1872F00C1549C /* cangjie5.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C625C1866000C1549C /* cangjie5.schema.yaml */; };
+		7708743725C1872F00C1549C /* default.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D025C1866000C1549C /* default.yaml */; };
+		7708743825C1872F00C1549C /* essay.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CC25C1866000C1549C /* essay.txt */; };
+		7708743925C1872F00C1549C /* key_bindings.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D425C1866000C1549C /* key_bindings.yaml */; };
+		7708743A25C1872F00C1549C /* luna_pinyin_fluency.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C325C1865F00C1549C /* luna_pinyin_fluency.schema.yaml */; };
+		7708743B25C1872F00C1549C /* luna_pinyin_simp.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C225C1865F00C1549C /* luna_pinyin_simp.schema.yaml */; };
+		7708743C25C1872F00C1549C /* luna_pinyin_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C125C1865F00C1549C /* luna_pinyin_tw.schema.yaml */; };
+		7708743D25C1872F00C1549C /* luna_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C925C1866000C1549C /* luna_pinyin.dict.yaml */; };
+		7708743E25C1872F00C1549C /* luna_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C725C1866000C1549C /* luna_pinyin.schema.yaml */; };
+		7708743F25C1872F00C1549C /* luna_quanpin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C525C1866000C1549C /* luna_quanpin.schema.yaml */; };
+		7708744025C1872F00C1549C /* pinyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873CB25C1866000C1549C /* pinyin.yaml */; };
+		7708744125C1872F00C1549C /* punctuation.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D225C1866000C1549C /* punctuation.yaml */; };
+		7708744225C1872F00C1549C /* stroke.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C425C1865F00C1549C /* stroke.dict.yaml */; };
+		7708744325C1872F00C1549C /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D125C1866000C1549C /* stroke.schema.yaml */; };
+		7708744425C1872F00C1549C /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D525C1866000C1549C /* symbols.yaml */; };
+		7708744525C1872F00C1549C /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D725C1866000C1549C /* terra_pinyin.dict.yaml */; };
+		7708744625C1872F00C1549C /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873D625C1866000C1549C /* terra_pinyin.schema.yaml */; };
+		7708744725C1872F00C1549C /* zhuyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 770873C825C1866000C1549C /* zhuyin.yaml */; };
+		7708744825C1872F00C1549C /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7708742725C1868000C1549C /* squirrel.yaml */; };
+		7708744925C1873D00C1549C /* hk2s.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740025C1867300C1549C /* hk2s.json */; };
+		7708744A25C1873D00C1549C /* HKVariants.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FB25C1867300C1549C /* HKVariants.ocd2 */; };
+		7708744B25C1873D00C1549C /* HKVariantsRev.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F425C1867300C1549C /* HKVariantsRev.ocd2 */; };
+		7708744C25C1873D00C1549C /* HKVariantsRevPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FF25C1867300C1549C /* HKVariantsRevPhrases.ocd2 */; };
+		7708744D25C1873D00C1549C /* jp2t.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740125C1867300C1549C /* jp2t.json */; };
+		7708744E25C1873D00C1549C /* JPShinjitaiCharacters.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F625C1867300C1549C /* JPShinjitaiCharacters.ocd2 */; };
+		7708744F25C1873D00C1549C /* JPShinjitaiPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740325C1867300C1549C /* JPShinjitaiPhrases.ocd2 */; };
+		7708745025C1873D00C1549C /* JPVariants.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F525C1867300C1549C /* JPVariants.ocd2 */; };
+		7708745125C1873D00C1549C /* JPVariantsRev.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F025C1867200C1549C /* JPVariantsRev.ocd2 */; };
+		7708745225C1873D00C1549C /* s2hk.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740825C1867300C1549C /* s2hk.json */; };
+		7708745325C1873D00C1549C /* s2t.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740225C1867300C1549C /* s2t.json */; };
+		7708745425C1873D00C1549C /* s2tw.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740725C1867300C1549C /* s2tw.json */; };
+		7708745525C1873D00C1549C /* s2twp.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740A25C1867300C1549C /* s2twp.json */; };
+		7708745625C1873D00C1549C /* STCharacters.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FD25C1867300C1549C /* STCharacters.ocd2 */; };
+		7708745725C1873D00C1549C /* STPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873EF25C1867200C1549C /* STPhrases.ocd2 */; };
+		7708745825C1873D00C1549C /* t2hk.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F225C1867200C1549C /* t2hk.json */; };
+		7708745925C1873D00C1549C /* t2jp.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FC25C1867300C1549C /* t2jp.json */; };
+		7708745A25C1873D00C1549C /* t2s.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740425C1867300C1549C /* t2s.json */; };
+		7708745B25C1873D00C1549C /* t2tw.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F925C1867300C1549C /* t2tw.json */; };
+		7708745C25C1873D00C1549C /* TSCharacters.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F725C1867300C1549C /* TSCharacters.ocd2 */; };
+		7708745D25C1873D00C1549C /* TSPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FE25C1867300C1549C /* TSPhrases.ocd2 */; };
+		7708745E25C1873D00C1549C /* tw2s.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740525C1867300C1549C /* tw2s.json */; };
+		7708745F25C1873D00C1549C /* tw2sp.json in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740625C1867300C1549C /* tw2sp.json */; };
+		7708746025C1873D00C1549C /* TWPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F825C1867300C1549C /* TWPhrases.ocd2 */; };
+		7708746125C1873D00C1549C /* TWPhrasesRev.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873FA25C1867300C1549C /* TWPhrasesRev.ocd2 */; };
+		7708746225C1873D00C1549C /* TWVariants.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F325C1867200C1549C /* TWVariants.ocd2 */; };
+		7708746325C1873D00C1549C /* TWVariantsRev.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 7708740925C1867300C1549C /* TWVariantsRev.ocd2 */; };
+		7708746425C1873D00C1549C /* TWVariantsRevPhrases.ocd2 in Copy OpenCC Files */ = {isa = PBXBuildFile; fileRef = 770873F125C1867200C1549C /* TWVariantsRevPhrases.ocd2 */; };
+		7708746525C1874600C1549C /* rime_deployer in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BD25C1860100C1549C /* rime_deployer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7708746625C1874600C1549C /* rime_dict_manager in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BB25C1860100C1549C /* rime_dict_manager */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		7708746725C1874600C1549C /* rime-install in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BC25C1860100C1549C /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		77C88BE825C18B200046B94A /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 77C88BE725C18B200046B94A /* Sparkle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		4407F3CA14EC079A001329FE /* Copy opencc Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = opencc;
-			dstSubfolderSpec = 12;
-			files = (
-				77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */,
-				77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */,
-				77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */,
-				77AA68172588916F00A592E2 /* HKVariantsRevPhrases.ocd2 in Copy opencc Files */,
-				77AA68182588916F00A592E2 /* jp2t.json in Copy opencc Files */,
-				77AA68192588916F00A592E2 /* JPShinjitaiCharacters.ocd2 in Copy opencc Files */,
-				77AA681A2588916F00A592E2 /* JPShinjitaiPhrases.ocd2 in Copy opencc Files */,
-				77AA681B2588916F00A592E2 /* JPVariants.ocd2 in Copy opencc Files */,
-				77AA681C2588916F00A592E2 /* JPVariantsRev.ocd2 in Copy opencc Files */,
-				77AA681D2588916F00A592E2 /* s2hk.json in Copy opencc Files */,
-				77AA681E2588916F00A592E2 /* s2t.json in Copy opencc Files */,
-				77AA681F2588916F00A592E2 /* s2tw.json in Copy opencc Files */,
-				77AA68202588916F00A592E2 /* s2twp.json in Copy opencc Files */,
-				77AA68212588916F00A592E2 /* STCharacters.ocd2 in Copy opencc Files */,
-				77AA68222588916F00A592E2 /* STPhrases.ocd2 in Copy opencc Files */,
-				77AA68232588916F00A592E2 /* t2hk.json in Copy opencc Files */,
-				77AA68242588916F00A592E2 /* t2jp.json in Copy opencc Files */,
-				77AA68252588916F00A592E2 /* t2s.json in Copy opencc Files */,
-				77AA68262588916F00A592E2 /* t2tw.json in Copy opencc Files */,
-				77AA68272588916F00A592E2 /* TSCharacters.ocd2 in Copy opencc Files */,
-				77AA68282588916F00A592E2 /* TSPhrases.ocd2 in Copy opencc Files */,
-				77AA68292588916F00A592E2 /* tw2s.json in Copy opencc Files */,
-				77AA682A2588916F00A592E2 /* tw2sp.json in Copy opencc Files */,
-				77AA682B2588916F00A592E2 /* TWPhrases.ocd2 in Copy opencc Files */,
-				77AA682C2588916F00A592E2 /* TWPhrasesRev.ocd2 in Copy opencc Files */,
-				77AA682D2588916F00A592E2 /* TWVariants.ocd2 in Copy opencc Files */,
-				77AA682E2588916F00A592E2 /* TWVariantsRev.ocd2 in Copy opencc Files */,
-				77AA682F2588916F00A592E2 /* TWVariantsRevPhrases.ocd2 in Copy opencc Files */,
-			);
-			name = "Copy opencc Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 12;
-			files = (
-				448363DD25BDBBED0022C7BA /* pinyin.yaml in Copy Shared Support Files */,
-				448363DE25BDBBED0022C7BA /* zhuyin.yaml in Copy Shared Support Files */,
-				441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */,
-				441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
-				441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */,
-				441E637A22B7E96F006DCCDD /* cangjie5_express.schema.yaml in Copy Shared Support Files */,
-				441E637B22B7E96F006DCCDD /* cangjie5.dict.yaml in Copy Shared Support Files */,
-				441E637C22B7E96F006DCCDD /* cangjie5.schema.yaml in Copy Shared Support Files */,
-				441E637D22B7E96F006DCCDD /* stroke.dict.yaml in Copy Shared Support Files */,
-				441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */,
-				441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
-				441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
-				44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */,
-				44AEBC7621F569FD00344375 /* punctuation.yaml in Copy Shared Support Files */,
-				7B5488AF1D2DACDF0056A1BE /* default.yaml in Copy Shared Support Files */,
-				7B5488B71D2DACDF0056A1BE /* essay.txt in Copy Shared Support Files */,
-				7B5488BC1D2DACDF0056A1BE /* luna_pinyin_fluency.schema.yaml in Copy Shared Support Files */,
-				7B5488BD1D2DACDF0056A1BE /* luna_pinyin_simp.schema.yaml in Copy Shared Support Files */,
-				7B5488BE1D2DACDF0056A1BE /* luna_pinyin_tw.schema.yaml in Copy Shared Support Files */,
-				7B5488BF1D2DACDF0056A1BE /* luna_pinyin.dict.yaml in Copy Shared Support Files */,
-				7B5488C01D2DACDF0056A1BE /* luna_pinyin.schema.yaml in Copy Shared Support Files */,
-				7B5488C11D2DACDF0056A1BE /* luna_quanpin.schema.yaml in Copy Shared Support Files */,
-				7B5488C91D2DACDF0056A1BE /* symbols.yaml in Copy Shared Support Files */,
-				442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */,
-			);
-			name = "Copy Shared Support Files";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		44E21A8D16A653AC00C2B08F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 6;
-			files = (
-				442C64921F7A410A0027EFBE /* rime-install in CopyFiles */,
-				44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */,
-				44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A464E3780F65263000148227 /* Copy 3rd-party Frameworks */ = {
+		7708736825C1822200C1549C /* Copy 3rd-party Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */,
+				7708737E25C1832F00C1549C /* librime.1.dylib in Copy 3rd-party Frameworks */,
 			);
 			name = "Copy 3rd-party Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7708737F25C1836000C1549C /* Copy Shared Support Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 12;
+			files = (
+				7708743125C1872F00C1549C /* bopomofo_express.schema.yaml in Copy Shared Support Files */,
+				7708743225C1872F00C1549C /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
+				7708743325C1872F00C1549C /* bopomofo.schema.yaml in Copy Shared Support Files */,
+				7708743425C1872F00C1549C /* cangjie5_express.schema.yaml in Copy Shared Support Files */,
+				7708743525C1872F00C1549C /* cangjie5.dict.yaml in Copy Shared Support Files */,
+				7708743625C1872F00C1549C /* cangjie5.schema.yaml in Copy Shared Support Files */,
+				7708743725C1872F00C1549C /* default.yaml in Copy Shared Support Files */,
+				7708743825C1872F00C1549C /* essay.txt in Copy Shared Support Files */,
+				7708743925C1872F00C1549C /* key_bindings.yaml in Copy Shared Support Files */,
+				7708743A25C1872F00C1549C /* luna_pinyin_fluency.schema.yaml in Copy Shared Support Files */,
+				7708743B25C1872F00C1549C /* luna_pinyin_simp.schema.yaml in Copy Shared Support Files */,
+				7708743C25C1872F00C1549C /* luna_pinyin_tw.schema.yaml in Copy Shared Support Files */,
+				7708743D25C1872F00C1549C /* luna_pinyin.dict.yaml in Copy Shared Support Files */,
+				7708743E25C1872F00C1549C /* luna_pinyin.schema.yaml in Copy Shared Support Files */,
+				7708743F25C1872F00C1549C /* luna_quanpin.schema.yaml in Copy Shared Support Files */,
+				7708744025C1872F00C1549C /* pinyin.yaml in Copy Shared Support Files */,
+				7708744125C1872F00C1549C /* punctuation.yaml in Copy Shared Support Files */,
+				7708744225C1872F00C1549C /* stroke.dict.yaml in Copy Shared Support Files */,
+				7708744325C1872F00C1549C /* stroke.schema.yaml in Copy Shared Support Files */,
+				7708744425C1872F00C1549C /* symbols.yaml in Copy Shared Support Files */,
+				7708744525C1872F00C1549C /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
+				7708744625C1872F00C1549C /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
+				7708744725C1872F00C1549C /* zhuyin.yaml in Copy Shared Support Files */,
+				7708744825C1872F00C1549C /* squirrel.yaml in Copy Shared Support Files */,
+			);
+			name = "Copy Shared Support Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		7708739825C183AB00C1549C /* Copy OpenCC Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = opencc;
+			dstSubfolderSpec = 12;
+			files = (
+				7708744925C1873D00C1549C /* hk2s.json in Copy OpenCC Files */,
+				7708744A25C1873D00C1549C /* HKVariants.ocd2 in Copy OpenCC Files */,
+				7708744B25C1873D00C1549C /* HKVariantsRev.ocd2 in Copy OpenCC Files */,
+				7708744C25C1873D00C1549C /* HKVariantsRevPhrases.ocd2 in Copy OpenCC Files */,
+				7708744D25C1873D00C1549C /* jp2t.json in Copy OpenCC Files */,
+				7708744E25C1873D00C1549C /* JPShinjitaiCharacters.ocd2 in Copy OpenCC Files */,
+				7708744F25C1873D00C1549C /* JPShinjitaiPhrases.ocd2 in Copy OpenCC Files */,
+				7708745025C1873D00C1549C /* JPVariants.ocd2 in Copy OpenCC Files */,
+				7708745125C1873D00C1549C /* JPVariantsRev.ocd2 in Copy OpenCC Files */,
+				7708745225C1873D00C1549C /* s2hk.json in Copy OpenCC Files */,
+				7708745325C1873D00C1549C /* s2t.json in Copy OpenCC Files */,
+				7708745425C1873D00C1549C /* s2tw.json in Copy OpenCC Files */,
+				7708745525C1873D00C1549C /* s2twp.json in Copy OpenCC Files */,
+				7708745625C1873D00C1549C /* STCharacters.ocd2 in Copy OpenCC Files */,
+				7708745725C1873D00C1549C /* STPhrases.ocd2 in Copy OpenCC Files */,
+				7708745825C1873D00C1549C /* t2hk.json in Copy OpenCC Files */,
+				7708745925C1873D00C1549C /* t2jp.json in Copy OpenCC Files */,
+				7708745A25C1873D00C1549C /* t2s.json in Copy OpenCC Files */,
+				7708745B25C1873D00C1549C /* t2tw.json in Copy OpenCC Files */,
+				7708745C25C1873D00C1549C /* TSCharacters.ocd2 in Copy OpenCC Files */,
+				7708745D25C1873D00C1549C /* TSPhrases.ocd2 in Copy OpenCC Files */,
+				7708745E25C1873D00C1549C /* tw2s.json in Copy OpenCC Files */,
+				7708745F25C1873D00C1549C /* tw2sp.json in Copy OpenCC Files */,
+				7708746025C1873D00C1549C /* TWPhrases.ocd2 in Copy OpenCC Files */,
+				7708746125C1873D00C1549C /* TWPhrasesRev.ocd2 in Copy OpenCC Files */,
+				7708746225C1873D00C1549C /* TWVariants.ocd2 in Copy OpenCC Files */,
+				7708746325C1873D00C1549C /* TWVariantsRev.ocd2 in Copy OpenCC Files */,
+				7708746425C1873D00C1549C /* TWVariantsRevPhrases.ocd2 in Copy OpenCC Files */,
+			);
+			name = "Copy OpenCC Files";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		770873B525C183E000C1549C /* Copy Executable Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				7708746525C1874600C1549C /* rime_deployer in Copy Executable Files */,
+				7708746625C1874600C1549C /* rime_dict_manager in Copy Executable Files */,
+				7708746725C1874600C1549C /* rime-install in Copy Executable Files */,
+			);
+			name = "Copy Executable Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
-		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
-		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
-		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
-		441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.schema.yaml; path = data/plum/terra_pinyin.schema.yaml; sourceTree = "<group>"; };
-		441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_express.schema.yaml; path = data/plum/cangjie5_express.schema.yaml; sourceTree = "<group>"; };
-		441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_tw.schema.yaml; path = data/plum/bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
-		441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo.schema.yaml; path = data/plum/bopomofo.schema.yaml; sourceTree = "<group>"; };
-		441E636922B7E90D006DCCDD /* stroke.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = stroke.dict.yaml; path = data/plum/stroke.dict.yaml; sourceTree = "<group>"; };
-		441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.dict.yaml; path = data/plum/cangjie5.dict.yaml; sourceTree = "<group>"; };
-		441E636B22B7E90D006DCCDD /* stroke.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = stroke.schema.yaml; path = data/plum/stroke.schema.yaml; sourceTree = "<group>"; };
-		441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_express.schema.yaml; path = data/plum/bopomofo_express.schema.yaml; sourceTree = "<group>"; };
-		442B5B871570C37200370DEA /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = squirrel.yaml; path = data/squirrel.yaml; sourceTree = "<group>"; };
-		442C64901F7A404A0027EFBE /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
-		4443A8391828CC5100731305 /* input_source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = input_source.m; sourceTree = "<group>"; };
-		446C01D61F767BD400A6C23E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		446D18E014F0191200EC3116 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		446D18E114F0193100EC3116 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		448363D925BDBBBF0022C7BA /* pinyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = pinyin.yaml; path = data/plum/pinyin.yaml; sourceTree = "<group>"; };
-		448363DA25BDBBBF0022C7BA /* zhuyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = zhuyin.yaml; path = data/plum/zhuyin.yaml; sourceTree = "<group>"; };
-		44986A93184B421700B3278D /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		44986A94184B421700B3278D /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README.md; sourceTree = "<group>"; };
-		44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
-		44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
-		44AC95181430CF6000C888FB /* SquirrelInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelInputController.h; sourceTree = "<group>"; };
-		44AC95191430CF6000C888FB /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
-		44AEBC7121F569CF00344375 /* punctuation.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = punctuation.yaml; path = data/plum/punctuation.yaml; sourceTree = "<group>"; };
-		44AEBC7221F569CF00344375 /* key_bindings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = key_bindings.yaml; path = data/plum/key_bindings.yaml; sourceTree = "<group>"; };
-		44CB5E872585EFAE0022654F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
-		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
-		44CD7D9E1828D981006E9222 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
-		44DA191A152B8CB600FB8EF0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.xib"; sourceTree = "<group>"; };
-		44DA191B152B8CBC00FB8EF0 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hant"; path = "zh-Hant.lproj/MainMenu.xib"; sourceTree = "<group>"; };
-		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
-		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
-		44E98EA514AE16DD00847AD6 /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checked.h; sourceTree = "<group>"; };
-		44E98EA614AE16DD00847AD6 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
-		44E98EA714AE16DD00847AD6 /* unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unchecked.h; sourceTree = "<group>"; };
-		44E98EC114AE1AC900847AD6 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
-		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
-		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
-		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
-		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
-		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
-		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
-		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
-		77AA67DF2588916300A592E2 /* tw2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2s.json; sourceTree = "<group>"; };
-		77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRev.ocd2; sourceTree = "<group>"; };
-		77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPShinjitaiPhrases.ocd2; sourceTree = "<group>"; };
-		77AA67E22588916300A592E2 /* hk2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hk2s.json; sourceTree = "<group>"; };
-		77AA67E32588916300A592E2 /* TSCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSCharacters.ocd2; sourceTree = "<group>"; };
-		77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPVariantsRev.ocd2; sourceTree = "<group>"; };
-		77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPShinjitaiCharacters.ocd2; sourceTree = "<group>"; };
-		77AA67E62588916300A592E2 /* JPVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = JPVariants.ocd2; sourceTree = "<group>"; };
-		77AA67E72588916300A592E2 /* TWPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrases.ocd2; sourceTree = "<group>"; };
-		77AA67E82588916300A592E2 /* t2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2hk.json; sourceTree = "<group>"; };
-		77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
-		77AA67EA2588916300A592E2 /* s2twp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2twp.json; sourceTree = "<group>"; };
-		77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrasesRev.ocd2; sourceTree = "<group>"; };
-		77AA67EC2588916300A592E2 /* tw2sp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2sp.json; sourceTree = "<group>"; };
-		77AA67ED2588916300A592E2 /* s2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2t.json; sourceTree = "<group>"; };
-		77AA67EE2588916300A592E2 /* jp2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = jp2t.json; sourceTree = "<group>"; };
-		77AA67EF2588916300A592E2 /* t2jp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2jp.json; sourceTree = "<group>"; };
-		77AA67F02588916300A592E2 /* s2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2hk.json; sourceTree = "<group>"; };
-		77AA67F12588916300A592E2 /* TWVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariants.ocd2; sourceTree = "<group>"; };
-		77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
-		77AA67F32588916400A592E2 /* STCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = STCharacters.ocd2; sourceTree = "<group>"; };
-		77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWVariantsRev.ocd2; sourceTree = "<group>"; };
-		77AA67F52588916400A592E2 /* s2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = s2tw.json; sourceTree = "<group>"; };
-		77AA67F62588916400A592E2 /* TSPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TSPhrases.ocd2; sourceTree = "<group>"; };
-		77AA67F72588916400A592E2 /* STPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = STPhrases.ocd2; sourceTree = "<group>"; };
-		7B5488211D2DAAD10056A1BE /* default.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = default.yaml; path = data/plum/default.yaml; sourceTree = "<group>"; };
-		7B5488291D2DAAD10056A1BE /* essay.txt */ = {isa = PBXFileReference; lastKnownFileType = text; name = essay.txt; path = data/plum/essay.txt; sourceTree = "<group>"; };
-		7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_fluency.schema.yaml; path = data/plum/luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
-		7B54882F1D2DAAD10056A1BE /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_simp.schema.yaml; path = data/plum/luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
-		7B5488301D2DAAD10056A1BE /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin_tw.schema.yaml; path = data/plum/luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
-		7B5488311D2DAAD10056A1BE /* luna_pinyin.dict.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.dict.yaml; path = data/plum/luna_pinyin.dict.yaml; sourceTree = "<group>"; };
-		7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_pinyin.schema.yaml; path = data/plum/luna_pinyin.schema.yaml; sourceTree = "<group>"; };
-		7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_quanpin.schema.yaml; path = data/plum/luna_quanpin.schema.yaml; sourceTree = "<group>"; };
-		7B54883B1D2DAAD10056A1BE /* symbols.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = symbols.yaml; path = data/plum/symbols.yaml; sourceTree = "<group>"; };
-		7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelConfig.h; sourceTree = "<group>"; };
-		7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelConfig.m; sourceTree = "<group>"; };
-		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
-		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
-		A4B8E1B20F645B870094E08B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		A4FC48CA0F6530EF0069BE81 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
+		7708731625C1774000C1549C /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = core.h; path = utf8/core.h; sourceTree = "<group>"; };
+		7708731725C1774000C1549C /* unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = unchecked.h; path = utf8/unchecked.h; sourceTree = "<group>"; };
+		7708731825C1774000C1549C /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = checked.h; path = utf8/checked.h; sourceTree = "<group>"; };
+		7708731925C1777000C1549C /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		7708731A25C1777000C1549C /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
+		7708731B25C1777000C1549C /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
+		7708731C25C1777100C1549C /* SquirrelApplicationDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelApplicationDelegate.h; sourceTree = "<group>"; };
+		7708731D25C1777100C1549C /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
+		7708731E25C1777100C1549C /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
+		7708731F25C1777100C1549C /* input_source.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = input_source.m; sourceTree = "<group>"; };
+		7708732025C1777100C1549C /* SquirrelApplicationDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelApplicationDelegate.m; sourceTree = "<group>"; };
+		7708732125C1777100C1549C /* SquirrelConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelConfig.m; sourceTree = "<group>"; };
+		7708732225C1777100C1549C /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
+		7708732325C1777100C1549C /* SquirrelInputController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelInputController.h; sourceTree = "<group>"; };
+		7708732425C1777100C1549C /* SquirrelInputController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelInputController.m; sourceTree = "<group>"; };
+		7708732525C1777100C1549C /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7708732625C1777100C1549C /* SquirrelConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelConfig.h; sourceTree = "<group>"; };
+		7708732725C1777100C1549C /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
+		7708733525C177BA00C1549C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7708733725C177BA00C1549C /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		7708734125C1780F00C1549C /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
+		7708734625C17B5C00C1549C /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
+		7708734725C17B5C00C1549C /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		7708734825C17B5C00C1549C /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
+		7708734E25C17CA100C1549C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
+		7708735225C17CD400C1549C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		7708735425C17CD400C1549C /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		7708735825C17CE400C1549C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		7708735925C17CE400C1549C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		7708735A25C17CE400C1549C /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.xib"; sourceTree = "<group>"; };
+		7708735B25C17CF500C1549C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		7708735C25C17CF500C1549C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hant"; path = "zh-Hant.lproj/MainMenu.xib"; sourceTree = "<group>"; };
+		7708735D25C17CF500C1549C /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
+		7708737425C1827400C1549C /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		7708737625C1827C00C1549C /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = System/Library/Frameworks/InputMethodKit.framework; sourceTree = SDKROOT; };
+		7708737825C1828200C1549C /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		7708737C25C1832800C1549C /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
+		770873BB25C1860100C1549C /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
+		770873BC25C1860100C1549C /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
+		770873BD25C1860100C1549C /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
+		770873C125C1865F00C1549C /* luna_pinyin_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_pinyin_tw.schema.yaml; sourceTree = "<group>"; };
+		770873C225C1865F00C1549C /* luna_pinyin_simp.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_pinyin_simp.schema.yaml; sourceTree = "<group>"; };
+		770873C325C1865F00C1549C /* luna_pinyin_fluency.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_pinyin_fluency.schema.yaml; sourceTree = "<group>"; };
+		770873C425C1865F00C1549C /* stroke.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = stroke.dict.yaml; sourceTree = "<group>"; };
+		770873C525C1866000C1549C /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_quanpin.schema.yaml; sourceTree = "<group>"; };
+		770873C625C1866000C1549C /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = cangjie5.schema.yaml; sourceTree = "<group>"; };
+		770873C725C1866000C1549C /* luna_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_pinyin.schema.yaml; sourceTree = "<group>"; };
+		770873C825C1866000C1549C /* zhuyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = zhuyin.yaml; sourceTree = "<group>"; };
+		770873C925C1866000C1549C /* luna_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = luna_pinyin.dict.yaml; sourceTree = "<group>"; };
+		770873CA25C1866000C1549C /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
+		770873CB25C1866000C1549C /* pinyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = pinyin.yaml; sourceTree = "<group>"; };
+		770873CC25C1866000C1549C /* essay.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = essay.txt; sourceTree = "<group>"; };
+		770873CD25C1866000C1549C /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = cangjie5.dict.yaml; sourceTree = "<group>"; };
+		770873CE25C1866000C1549C /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = cangjie5_express.schema.yaml; sourceTree = "<group>"; };
+		770873CF25C1866000C1549C /* bopomofo_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = bopomofo_express.schema.yaml; sourceTree = "<group>"; };
+		770873D025C1866000C1549C /* default.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = default.yaml; sourceTree = "<group>"; };
+		770873D125C1866000C1549C /* stroke.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = stroke.schema.yaml; sourceTree = "<group>"; };
+		770873D225C1866000C1549C /* punctuation.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = punctuation.yaml; sourceTree = "<group>"; };
+		770873D325C1866000C1549C /* bopomofo.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = bopomofo.schema.yaml; sourceTree = "<group>"; };
+		770873D425C1866000C1549C /* key_bindings.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = key_bindings.yaml; sourceTree = "<group>"; };
+		770873D525C1866000C1549C /* symbols.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = symbols.yaml; sourceTree = "<group>"; };
+		770873D625C1866000C1549C /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = terra_pinyin.schema.yaml; sourceTree = "<group>"; };
+		770873D725C1866000C1549C /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = terra_pinyin.dict.yaml; sourceTree = "<group>"; };
+		770873EF25C1867200C1549C /* STPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = STPhrases.ocd2; path = opencc/STPhrases.ocd2; sourceTree = "<group>"; };
+		770873F025C1867200C1549C /* JPVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = JPVariantsRev.ocd2; path = opencc/JPVariantsRev.ocd2; sourceTree = "<group>"; };
+		770873F125C1867200C1549C /* TWVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TWVariantsRevPhrases.ocd2; path = opencc/TWVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
+		770873F225C1867200C1549C /* t2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = t2hk.json; path = opencc/t2hk.json; sourceTree = "<group>"; };
+		770873F325C1867200C1549C /* TWVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TWVariants.ocd2; path = opencc/TWVariants.ocd2; sourceTree = "<group>"; };
+		770873F425C1867300C1549C /* HKVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = HKVariantsRev.ocd2; path = opencc/HKVariantsRev.ocd2; sourceTree = "<group>"; };
+		770873F525C1867300C1549C /* JPVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = JPVariants.ocd2; path = opencc/JPVariants.ocd2; sourceTree = "<group>"; };
+		770873F625C1867300C1549C /* JPShinjitaiCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = JPShinjitaiCharacters.ocd2; path = opencc/JPShinjitaiCharacters.ocd2; sourceTree = "<group>"; };
+		770873F725C1867300C1549C /* TSCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TSCharacters.ocd2; path = opencc/TSCharacters.ocd2; sourceTree = "<group>"; };
+		770873F825C1867300C1549C /* TWPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TWPhrases.ocd2; path = opencc/TWPhrases.ocd2; sourceTree = "<group>"; };
+		770873F925C1867300C1549C /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = t2tw.json; path = opencc/t2tw.json; sourceTree = "<group>"; };
+		770873FA25C1867300C1549C /* TWPhrasesRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TWPhrasesRev.ocd2; path = opencc/TWPhrasesRev.ocd2; sourceTree = "<group>"; };
+		770873FB25C1867300C1549C /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = HKVariants.ocd2; path = opencc/HKVariants.ocd2; sourceTree = "<group>"; };
+		770873FC25C1867300C1549C /* t2jp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = t2jp.json; path = opencc/t2jp.json; sourceTree = "<group>"; };
+		770873FD25C1867300C1549C /* STCharacters.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = STCharacters.ocd2; path = opencc/STCharacters.ocd2; sourceTree = "<group>"; };
+		770873FE25C1867300C1549C /* TSPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TSPhrases.ocd2; path = opencc/TSPhrases.ocd2; sourceTree = "<group>"; };
+		770873FF25C1867300C1549C /* HKVariantsRevPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = HKVariantsRevPhrases.ocd2; path = opencc/HKVariantsRevPhrases.ocd2; sourceTree = "<group>"; };
+		7708740025C1867300C1549C /* hk2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = hk2s.json; path = opencc/hk2s.json; sourceTree = "<group>"; };
+		7708740125C1867300C1549C /* jp2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = jp2t.json; path = opencc/jp2t.json; sourceTree = "<group>"; };
+		7708740225C1867300C1549C /* s2t.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = s2t.json; path = opencc/s2t.json; sourceTree = "<group>"; };
+		7708740325C1867300C1549C /* JPShinjitaiPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = JPShinjitaiPhrases.ocd2; path = opencc/JPShinjitaiPhrases.ocd2; sourceTree = "<group>"; };
+		7708740425C1867300C1549C /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = t2s.json; path = opencc/t2s.json; sourceTree = "<group>"; };
+		7708740525C1867300C1549C /* tw2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = tw2s.json; path = opencc/tw2s.json; sourceTree = "<group>"; };
+		7708740625C1867300C1549C /* tw2sp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = tw2sp.json; path = opencc/tw2sp.json; sourceTree = "<group>"; };
+		7708740725C1867300C1549C /* s2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = s2tw.json; path = opencc/s2tw.json; sourceTree = "<group>"; };
+		7708740825C1867300C1549C /* s2hk.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = s2hk.json; path = opencc/s2hk.json; sourceTree = "<group>"; };
+		7708740925C1867300C1549C /* TWVariantsRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; name = TWVariantsRev.ocd2; path = opencc/TWVariantsRev.ocd2; sourceTree = "<group>"; };
+		7708740A25C1867300C1549C /* s2twp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = s2twp.json; path = opencc/s2twp.json; sourceTree = "<group>"; };
+		7708742725C1868000C1549C /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = squirrel.yaml; sourceTree = "<group>"; };
+		7731DAF025C25E85004948AA /* Squirrel.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Squirrel.entitlements; sourceTree = "<group>"; };
+		776F012E25C171070018DE66 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		8D11072E0486CEB800E47090 /* Frameworks */ = {
+		776F012B25C171070018DE66 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */,
-				A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */,
-				77418DFC25B18732006BF1B1 /* Sparkle in Frameworks */,
+				7708737925C1828200C1549C /* Carbon.framework in Frameworks */,
+				77C88BE825C18B200046B94A /* Sparkle in Frameworks */,
+				7708737725C1827C00C1549C /* InputMethodKit.framework in Frameworks */,
+				7708737525C1827400C1549C /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		080E96DDFE201D6D7F000001 /* Sources */ = {
+		7708729E25C1760800C1549C /* SharedSupport */ = {
 			isa = PBXGroup;
 			children = (
-				44E98EA414AE16DD00847AD6 /* utf8 */,
-				44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */,
-				44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */,
-				44AC95181430CF6000C888FB /* SquirrelInputController.h */,
-				44AC95191430CF6000C888FB /* SquirrelInputController.m */,
-				A47C48DE105E8CE8006D528B /* macos_keycode.m */,
-				A44571AB0DBF42C200F793F9 /* macos_keycode.h */,
-				32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */,
-				4443A8391828CC5100731305 /* input_source.m */,
-				29B97316FDCFA39411CA2CEA /* main.m */,
-				44E98EC114AE1AC900847AD6 /* utf8.h */,
-				44E98EC214AE1AC900847AD6 /* utf8.cpp */,
-				44F84AD514E94C490005D70B /* SquirrelPanel.h */,
-				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
-				7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */,
-				7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */,
+				770872A925C176A500C1549C /* opencc */,
+				770872A825C1769D00C1549C /* plum */,
+				7708742725C1868000C1549C /* squirrel.yaml */,
+			);
+			name = SharedSupport;
+			path = data;
+			sourceTree = "<group>";
+		};
+		770872A825C1769D00C1549C /* plum */ = {
+			isa = PBXGroup;
+			children = (
+				770873CF25C1866000C1549C /* bopomofo_express.schema.yaml */,
+				770873CA25C1866000C1549C /* bopomofo_tw.schema.yaml */,
+				770873D325C1866000C1549C /* bopomofo.schema.yaml */,
+				770873CE25C1866000C1549C /* cangjie5_express.schema.yaml */,
+				770873CD25C1866000C1549C /* cangjie5.dict.yaml */,
+				770873C625C1866000C1549C /* cangjie5.schema.yaml */,
+				770873D025C1866000C1549C /* default.yaml */,
+				770873CC25C1866000C1549C /* essay.txt */,
+				770873D425C1866000C1549C /* key_bindings.yaml */,
+				770873C325C1865F00C1549C /* luna_pinyin_fluency.schema.yaml */,
+				770873C225C1865F00C1549C /* luna_pinyin_simp.schema.yaml */,
+				770873C125C1865F00C1549C /* luna_pinyin_tw.schema.yaml */,
+				770873C925C1866000C1549C /* luna_pinyin.dict.yaml */,
+				770873C725C1866000C1549C /* luna_pinyin.schema.yaml */,
+				770873C525C1866000C1549C /* luna_quanpin.schema.yaml */,
+				770873CB25C1866000C1549C /* pinyin.yaml */,
+				770873D225C1866000C1549C /* punctuation.yaml */,
+				770873C425C1865F00C1549C /* stroke.dict.yaml */,
+				770873D125C1866000C1549C /* stroke.schema.yaml */,
+				770873D525C1866000C1549C /* symbols.yaml */,
+				770873D725C1866000C1549C /* terra_pinyin.dict.yaml */,
+				770873D625C1866000C1549C /* terra_pinyin.schema.yaml */,
+				770873C825C1866000C1549C /* zhuyin.yaml */,
+			);
+			path = plum;
+			sourceTree = "<group>";
+		};
+		770872A925C176A500C1549C /* opencc */ = {
+			isa = PBXGroup;
+			children = (
+				7708740025C1867300C1549C /* hk2s.json */,
+				770873FB25C1867300C1549C /* HKVariants.ocd2 */,
+				770873F425C1867300C1549C /* HKVariantsRev.ocd2 */,
+				770873FF25C1867300C1549C /* HKVariantsRevPhrases.ocd2 */,
+				7708740125C1867300C1549C /* jp2t.json */,
+				770873F625C1867300C1549C /* JPShinjitaiCharacters.ocd2 */,
+				7708740325C1867300C1549C /* JPShinjitaiPhrases.ocd2 */,
+				770873F525C1867300C1549C /* JPVariants.ocd2 */,
+				770873F025C1867200C1549C /* JPVariantsRev.ocd2 */,
+				7708740825C1867300C1549C /* s2hk.json */,
+				7708740225C1867300C1549C /* s2t.json */,
+				7708740725C1867300C1549C /* s2tw.json */,
+				7708740A25C1867300C1549C /* s2twp.json */,
+				770873FD25C1867300C1549C /* STCharacters.ocd2 */,
+				770873EF25C1867200C1549C /* STPhrases.ocd2 */,
+				770873F225C1867200C1549C /* t2hk.json */,
+				770873FC25C1867300C1549C /* t2jp.json */,
+				7708740425C1867300C1549C /* t2s.json */,
+				770873F925C1867300C1549C /* t2tw.json */,
+				770873F725C1867300C1549C /* TSCharacters.ocd2 */,
+				770873FE25C1867300C1549C /* TSPhrases.ocd2 */,
+				7708740525C1867300C1549C /* tw2s.json */,
+				7708740625C1867300C1549C /* tw2sp.json */,
+				770873F825C1867300C1549C /* TWPhrases.ocd2 */,
+				770873FA25C1867300C1549C /* TWPhrasesRev.ocd2 */,
+				770873F325C1867200C1549C /* TWVariants.ocd2 */,
+				7708740925C1867300C1549C /* TWVariantsRev.ocd2 */,
+				770873F125C1867200C1549C /* TWVariantsRevPhrases.ocd2 */,
+			);
+			name = opencc;
+			sourceTree = "<group>";
+		};
+		7708731225C176E100C1549C /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				7708731F25C1777100C1549C /* input_source.m */,
+				7708732725C1777100C1549C /* macos_keycode.h */,
+				7708731A25C1777000C1549C /* macos_keycode.m */,
+				7708732525C1777100C1549C /* main.m */,
+				7708732225C1777100C1549C /* Squirrel_Prefix.pch */,
+				7708731C25C1777100C1549C /* SquirrelApplicationDelegate.h */,
+				7708732025C1777100C1549C /* SquirrelApplicationDelegate.m */,
+				7708732625C1777100C1549C /* SquirrelConfig.h */,
+				7708732125C1777100C1549C /* SquirrelConfig.m */,
+				7708732325C1777100C1549C /* SquirrelInputController.h */,
+				7708732425C1777100C1549C /* SquirrelInputController.m */,
+				7708731B25C1777000C1549C /* SquirrelPanel.h */,
+				7708731D25C1777100C1549C /* SquirrelPanel.m */,
+				7708731E25C1777100C1549C /* utf8.cpp */,
+				7708731925C1777000C1549C /* utf8.h */,
+				7708731525C1772B00C1549C /* utf8 */,
 			);
 			name = Sources;
 			sourceTree = "<group>";
 		};
-		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
+		7708731525C1772B00C1549C /* utf8 */ = {
 			isa = PBXGroup;
 			children = (
-				44CD640915E2633D0021234E /* librime.1.dylib */,
-				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				7708731825C1774000C1549C /* checked.h */,
+				7708731625C1774000C1549C /* core.h */,
+				7708731725C1774000C1549C /* unchecked.h */,
 			);
-			name = "Linked Frameworks";
+			name = utf8;
 			sourceTree = "<group>";
 		};
-		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
+		7708733125C1777E00C1549C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A4B8E1B20F645B870094E08B /* Carbon.framework */,
-				E93074B60A5C264700470842 /* InputMethodKit.framework */,
-				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
-			);
-			name = "Other Frameworks";
-			sourceTree = "<group>";
-		};
-		19C28FACFE9D520D11CA2CBB /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				44F1EB381431F8270015FD04 /* Squirrel.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		29B97314FDCFA39411CA2CEA /* Squirrel */ = {
-			isa = PBXGroup;
-			children = (
-				442C648F1F7A40180027EFBE /* bin */,
-				44DA7A4214DD598900C1ED3B /* SharedSupport */,
-				080E96DDFE201D6D7F000001 /* Sources */,
-				29B97317FDCFA39411CA2CEA /* Resources */,
-				29B97323FDCFA39411CA2CEA /* Frameworks */,
-				19C28FACFE9D520D11CA2CBB /* Products */,
-			);
-			indentWidth = 2;
-			name = Squirrel;
-			sourceTree = "<group>";
-			tabWidth = 2;
-		};
-		29B97317FDCFA39411CA2CEA /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				44986A93184B421700B3278D /* LICENSE.txt */,
-				44986A94184B421700B3278D /* README.md */,
-				44CD7D9E1828D981006E9222 /* rime.pdf */,
-				44F7708E152B3334005CF491 /* dsa_pub.pem */,
-				A4FC48C90F6530EF0069BE81 /* Localizable.strings */,
-				8D1107310486CEB800E47090 /* Info.plist */,
-				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
-				A45578F41146A75200592C6E /* MainMenu.xib */,
-				446C01D61F767BD400A6C23E /* Assets.xcassets */,
+				7708733525C177BA00C1549C /* Assets.xcassets */,
+				7708734825C17B5C00C1549C /* dsa_pub.pem */,
+				7708733725C177BA00C1549C /* Info.plist */,
+				7708735125C17CD400C1549C /* InfoPlist.strings */,
+				7708735325C17CD400C1549C /* Localizable.strings */,
+				7708734D25C17CA100C1549C /* MainMenu.xib */,
+				7708734125C1780F00C1549C /* rime.pdf */,
+				7731DAF025C25E85004948AA /* Squirrel.entitlements */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
+		7708734525C17A0800C1549C /* Other Resources */ = {
 			isa = PBXGroup;
 			children = (
-				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
-				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
+				7708734625C17B5C00C1549C /* LICENSE.txt */,
+				7708734725C17B5C00C1549C /* README.md */,
+			);
+			name = "Other Resources";
+			sourceTree = "<group>";
+		};
+		7708737325C1827400C1549C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				7708737825C1828200C1549C /* Carbon.framework */,
+				7708737425C1827400C1549C /* Cocoa.framework */,
+				7708737C25C1832800C1549C /* librime.1.dylib */,
+				7708737625C1827C00C1549C /* InputMethodKit.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4407F39D14EC071E001329FE /* opencc */ = {
+		770873BA25C185E900C1549C /* bin */ = {
 			isa = PBXGroup;
 			children = (
-				77AA67E22588916300A592E2 /* hk2s.json */,
-				77AA67DC2588916300A592E2 /* HKVariants.ocd2 */,
-				77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */,
-				77AA67E92588916300A592E2 /* HKVariantsRevPhrases.ocd2 */,
-				77AA67EE2588916300A592E2 /* jp2t.json */,
-				77AA67E52588916300A592E2 /* JPShinjitaiCharacters.ocd2 */,
-				77AA67E12588916300A592E2 /* JPShinjitaiPhrases.ocd2 */,
-				77AA67E62588916300A592E2 /* JPVariants.ocd2 */,
-				77AA67E42588916300A592E2 /* JPVariantsRev.ocd2 */,
-				77AA67F02588916300A592E2 /* s2hk.json */,
-				77AA67ED2588916300A592E2 /* s2t.json */,
-				77AA67F52588916400A592E2 /* s2tw.json */,
-				77AA67EA2588916300A592E2 /* s2twp.json */,
-				77AA67F32588916400A592E2 /* STCharacters.ocd2 */,
-				77AA67F72588916400A592E2 /* STPhrases.ocd2 */,
-				77AA67E82588916300A592E2 /* t2hk.json */,
-				77AA67EF2588916300A592E2 /* t2jp.json */,
-				77AA67DD2588916300A592E2 /* t2s.json */,
-				77AA67DE2588916300A592E2 /* t2tw.json */,
-				77AA67E32588916300A592E2 /* TSCharacters.ocd2 */,
-				77AA67F62588916400A592E2 /* TSPhrases.ocd2 */,
-				77AA67DF2588916300A592E2 /* tw2s.json */,
-				77AA67EC2588916300A592E2 /* tw2sp.json */,
-				77AA67E72588916300A592E2 /* TWPhrases.ocd2 */,
-				77AA67EB2588916300A592E2 /* TWPhrasesRev.ocd2 */,
-				77AA67F12588916300A592E2 /* TWVariants.ocd2 */,
-				77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */,
-				77AA67F22588916300A592E2 /* TWVariantsRevPhrases.ocd2 */,
-			);
-			name = opencc;
-			path = data/opencc;
-			sourceTree = "<group>";
-		};
-		442C648F1F7A40180027EFBE /* bin */ = {
-			isa = PBXGroup;
-			children = (
-				442C64901F7A404A0027EFBE /* rime-install */,
-				44E21A8E16A653E700C2B08F /* rime_deployer */,
-				44E21A8F16A653E700C2B08F /* rime_dict_manager */,
+				770873BD25C1860100C1549C /* rime_deployer */,
+				770873BB25C1860100C1549C /* rime_dict_manager */,
+				770873BC25C1860100C1549C /* rime-install */,
 			);
 			name = bin;
 			sourceTree = "<group>";
 		};
-		44DA7A4214DD598900C1ED3B /* SharedSupport */ = {
+		776F012525C171070018DE66 = {
 			isa = PBXGroup;
 			children = (
-				442B5B871570C37200370DEA /* squirrel.yaml */,
-				7B5488A71D2DAC9D0056A1BE /* plum */,
-				4407F39D14EC071E001329FE /* opencc */,
+				770873BA25C185E900C1549C /* bin */,
+				7708729E25C1760800C1549C /* SharedSupport */,
+				776F013025C171070018DE66 /* Squirrel */,
+				7708734525C17A0800C1549C /* Other Resources */,
+				7708737325C1827400C1549C /* Frameworks */,
+				776F012F25C171070018DE66 /* Products */,
 			);
-			name = SharedSupport;
+			indentWidth = 2;
+			sourceTree = "<group>";
+			tabWidth = 2;
+		};
+		776F012F25C171070018DE66 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				776F012E25C171070018DE66 /* Squirrel.app */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
-		44E98EA414AE16DD00847AD6 /* utf8 */ = {
+		776F013025C171070018DE66 /* Squirrel */ = {
 			isa = PBXGroup;
 			children = (
-				44E98EA514AE16DD00847AD6 /* checked.h */,
-				44E98EA614AE16DD00847AD6 /* core.h */,
-				44E98EA714AE16DD00847AD6 /* unchecked.h */,
+				7708731225C176E100C1549C /* Sources */,
+				7708733125C1777E00C1549C /* Resources */,
 			);
-			path = utf8;
-			sourceTree = "<group>";
-		};
-		7B5488A71D2DAC9D0056A1BE /* plum */ = {
-			isa = PBXGroup;
-			children = (
-				448363D925BDBBBF0022C7BA /* pinyin.yaml */,
-				448363DA25BDBBBF0022C7BA /* zhuyin.yaml */,
-				441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */,
-				441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */,
-				441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */,
-				441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */,
-				441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */,
-				441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */,
-				441E636922B7E90D006DCCDD /* stroke.dict.yaml */,
-				441E636B22B7E90D006DCCDD /* stroke.schema.yaml */,
-				441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */,
-				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
-				7B5488211D2DAAD10056A1BE /* default.yaml */,
-				7B5488291D2DAAD10056A1BE /* essay.txt */,
-				7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */,
-				7B54882F1D2DAAD10056A1BE /* luna_pinyin_simp.schema.yaml */,
-				7B5488301D2DAAD10056A1BE /* luna_pinyin_tw.schema.yaml */,
-				7B5488311D2DAAD10056A1BE /* luna_pinyin.dict.yaml */,
-				7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */,
-				7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */,
-				44AEBC7221F569CF00344375 /* key_bindings.yaml */,
-				44AEBC7121F569CF00344375 /* punctuation.yaml */,
-				7B54883B1D2DAAD10056A1BE /* symbols.yaml */,
-			);
-			name = plum;
+			path = Squirrel;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* Squirrel */ = {
+		776F012D25C171070018DE66 /* Squirrel */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Squirrel" */;
+			buildConfigurationList = 776F013F25C171070018DE66 /* Build configuration list for PBXNativeTarget "Squirrel" */;
 			buildPhases = (
-				8D1107290486CEB800E47090 /* Resources */,
-				8D11072C0486CEB800E47090 /* Sources */,
-				8D11072E0486CEB800E47090 /* Frameworks */,
-				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
-				44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */,
-				4407F3CA14EC079A001329FE /* Copy opencc Files */,
-				44E21A8D16A653AC00C2B08F /* CopyFiles */,
+				776F012A25C171070018DE66 /* Sources */,
+				776F012B25C171070018DE66 /* Frameworks */,
+				776F012C25C171070018DE66 /* Resources */,
+				7708736825C1822200C1549C /* Copy 3rd-party Frameworks */,
+				7708737F25C1836000C1549C /* Copy Shared Support Files */,
+				7708739825C183AB00C1549C /* Copy OpenCC Files */,
+				770873B525C183E000C1549C /* Copy Executable Files */,
+				778ED51D25C28E450020B652 /* Copy Build Target */,
 			);
 			buildRules = (
 			);
@@ -504,106 +503,133 @@
 			);
 			name = Squirrel;
 			packageProductDependencies = (
-				77418DFB25B18732006BF1B1 /* Sparkle */,
+				77C88BE725C18B200046B94A /* Sparkle */,
 			);
-			productInstallPath = "$(HOME)/Applications";
 			productName = Squirrel;
-			productReference = 44F1EB381431F8270015FD04 /* Squirrel.app */;
+			productReference = 776F012E25C171070018DE66 /* Squirrel.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		29B97313FDCFA39411CA2CEA /* Project object */ = {
+		776F012625C171070018DE66 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1240;
+				TargetAttributes = {
+					776F012D25C171070018DE66 = {
+						CreatedOnToolsVersion = 12.3;
+					};
+				};
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
-			compatibilityVersion = "Xcode 3.2";
+			buildConfigurationList = 776F012925C171070018DE66 /* Build configuration list for PBXProject "Squirrel" */;
+			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
-			hasScannedForEncodings = 1;
+			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 				"zh-Hans",
 				"zh-Hant",
-				Base,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* Squirrel */;
+			mainGroup = 776F012525C171070018DE66;
 			packageReferences = (
-				77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
+			productRefGroup = 776F012F25C171070018DE66 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* Squirrel */,
+				776F012D25C171070018DE66 /* Squirrel */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		8D1107290486CEB800E47090 /* Resources */ = {
+		776F012C25C171070018DE66 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
-				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
-				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
-				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
-				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
-				44986A96184B421700B3278D /* README.md in Resources */,
-				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
-				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
+				7708742925C1870700C1549C /* dsa_pub.pem in Resources */,
+				7708742A25C1870700C1549C /* InfoPlist.strings in Resources */,
+				7708742B25C1870800C1549C /* Localizable.strings in Resources */,
+				7708742C25C1870800C1549C /* MainMenu.xib in Resources */,
+				7708742D25C1870800C1549C /* rime.pdf in Resources */,
+				7708742E25C1870800C1549C /* Assets.xcassets in Resources */,
+				7708742F25C1870800C1549C /* LICENSE.txt in Resources */,
+				7708743025C1870800C1549C /* README.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		778ED51D25C28E450020B652 /* Copy Build Target */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Build Target";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ -d \"${SYMROOT}/${CONFIGURATION}\" ] ; then\n  test -d \"${SRCROOT}/build\" || mkdir \"${SRCROOT}/build\"\n  test -d \"${SRCROOT}/build/${CONFIGURATION}\" && rm -rf \"${SRCROOT}/build/${CONFIGURATION}\" || true\n  cp -f -R \"${SYMROOT}/${CONFIGURATION}\" \"${SRCROOT}/build\"\n  \n  find \"${SRCROOT}/build\" -name \"Sparkle.framework\" | grep -v Frameworks | xargs rm -rf\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		8D11072C0486CEB800E47090 /* Sources */ = {
+		776F012A25C171070018DE66 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */,
-				8D11072D0486CEB800E47090 /* main.m in Sources */,
-				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
-				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
-				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
-				44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */,
-				4443A83A1828CC5100731305 /* input_source.m in Sources */,
-				44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */,
+				7708732E25C1777100C1549C /* SquirrelInputController.m in Sources */,
+				7708732825C1777100C1549C /* macos_keycode.m in Sources */,
+				7708732C25C1777100C1549C /* SquirrelApplicationDelegate.m in Sources */,
+				7708732B25C1777100C1549C /* input_source.m in Sources */,
+				7708732925C1777100C1549C /* SquirrelPanel.m in Sources */,
+				7708732D25C1777100C1549C /* SquirrelConfig.m in Sources */,
+				7708732F25C1777100C1549C /* main.m in Sources */,
+				7708732A25C1777100C1549C /* utf8.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
+		7708734D25C17CA100C1549C /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				089C165DFE840E0CC02AAC07 /* en */,
-				446D18E014F0191200EC3116 /* zh-Hans */,
-				446D18E114F0193100EC3116 /* zh-Hant */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
-		A45578F41146A75200592C6E /* MainMenu.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				44DA191A152B8CB600FB8EF0 /* zh-Hans */,
-				44DA191B152B8CBC00FB8EF0 /* zh-Hant */,
-				44CB5E872585EFAE0022654F /* Base */,
+				7708734E25C17CA100C1549C /* Base */,
+				7708735A25C17CE400C1549C /* zh-Hans */,
+				7708735C25C17CF500C1549C /* zh-Hant */,
 			);
 			name = MainMenu.xib;
 			sourceTree = "<group>";
 		};
-		A4FC48C90F6530EF0069BE81 /* Localizable.strings */ = {
+		7708735125C17CD400C1549C /* InfoPlist.strings */ = {
 			isa = PBXVariantGroup;
 			children = (
-				A4FC48CA0F6530EF0069BE81 /* en */,
-				44FA4D891685997300116C1F /* zh-Hans */,
-				44FA4D8E16859B2900116C1F /* zh-Hant */,
+				7708735225C17CD400C1549C /* en */,
+				7708735925C17CE400C1549C /* zh-Hans */,
+				7708735D25C17CF500C1549C /* zh-Hant */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		7708735325C17CD400C1549C /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				7708735425C17CD400C1549C /* en */,
+				7708735825C17CE400C1549C /* zh-Hans */,
+				7708735B25C17CF500C1549C /* zh-Hant */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -611,204 +637,210 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		C01FCF4B08A954540054247B /* Debug */ = {
+		776F013D25C171070018DE66 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.14.0;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
-					"\"$(SRCROOT)\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)\"";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"/Library/Input Methods\"";
-				LIBRARY_SEARCH_PATHS = (
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
 					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-DLEOPARD",
-					"-DHAVE_CONFIG_H",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
-				);
-				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		C01FCF4C08A954540054247B /* Release */ = {
+		776F013E25C171070018DE66 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CODE_SIGN_IDENTITY = "-";
-				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0.14.0;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2)",
-					"\"$(SRCROOT)\"",
-				);
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1 = "\"$(SRCROOT)\"";
-				FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_2 = "\"$(SRCROOT)\"";
-				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
-				GCC_MODEL_TUNING = G5;
-				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"/Library/Input Methods\"";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
-				);
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_CODE_SIGN_FLAGS = "--deep";
-				OTHER_CPLUSPLUSFLAGS = (
-					"-DLEOPARD",
-					"-DHAVE_CONFIG_H",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
-				);
-				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
-				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
-		C01FCF4F08A954540054247B /* Debug */ = {
+		776F014025C171070018DE66 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_TESTABILITY = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Squirrel/Squirrel.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2)",
+					"$(SRCROOT)/librime/src",
+					"$(SRCROOT)/librime/thirdparty/include",
 				);
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
+				INFOPLIST_FILE = Squirrel/Info.plist;
+				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
-					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
-					/usr/lib,
-					/usr/local/lib,
+					"$(inherited)",
+					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/lib",
+				);
+				OTHER_CODE_SIGN_FLAGS = "--deep";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DLEOPARD",
+					"-DHAVE_CONFIG_H",
+				);
+				OTHER_LDFLAGS = "-lrime.1";
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Debug;
 		};
-		C01FCF5008A954540054247B /* Release */ = {
+		776F014125C171070018DE66 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
-				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_MOVE = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
-				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
-				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Squirrel/Squirrel.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_STYLE = Manual;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				HEADER_SEARCH_PATHS = (
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1)",
-					"$(HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2)",
+					"$(SRCROOT)/librime/src",
+					"$(SRCROOT)/librime/thirdparty/include",
 				);
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
-				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/thirdparty/include\"";
+				INFOPLIST_FILE = Squirrel/Info.plist;
+				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
-					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
-					/usr/lib,
+					"$(inherited)",
+					"@executable_path/../Frameworks",
 				);
-				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SRCROOT)/lib",
+				);
+				OTHER_CODE_SIGN_FLAGS = "--deep";
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					"-DLEOPARD",
+					"-DHAVE_CONFIG_H",
+				);
+				OTHER_LDFLAGS = "-lrime.1";
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "Squirrel" */ = {
+		776F012925C171070018DE66 /* Build configuration list for PBXProject "Squirrel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4B08A954540054247B /* Debug */,
-				C01FCF4C08A954540054247B /* Release */,
+				776F013D25C171070018DE66 /* Debug */,
+				776F013E25C171070018DE66 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */ = {
+		776F013F25C171070018DE66 /* Build configuration list for PBXNativeTarget "Squirrel" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				C01FCF4F08A954540054247B /* Debug */,
-				C01FCF5008A954540054247B /* Release */,
+				776F014025C171070018DE66 /* Debug */,
+				776F014125C171070018DE66 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -816,7 +848,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+		77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
 			requirement = {
@@ -827,12 +859,12 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		77418DFB25B18732006BF1B1 /* Sparkle */ = {
+		77C88BE725C18B200046B94A /* Sparkle */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 77418DFA25B18732006BF1B1 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			package = 77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */;
 			productName = Sparkle;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
-	rootObject = 29B97313FDCFA39411CA2CEA /* Project object */;
+	rootObject = 776F012625C171070018DE66 /* Project object */;
 }

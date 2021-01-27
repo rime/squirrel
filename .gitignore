@@ -2,6 +2,7 @@ Squirrel.xcodeproj/*.mode1v3
 Squirrel.xcodeproj/*.pbxuser
 Squirrel.xcodeproj/project.xcworkspace/
 Squirrel.xcodeproj/xcuserdata/
+Squirrel.xcodeproj/xcshareddata/
 build/
 build.log
 bin/*
