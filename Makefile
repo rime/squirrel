@@ -83,11 +83,11 @@ deps: librime data
 
 release: $(DEPS_CHECK)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
+	xcodebuild -project Squirrel.xcodeproj -scheme Squirrel -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
+	xcodebuild -project Squirrel.xcodeproj -scheme Squirrel -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive sign-archive
 
@@ -127,7 +127,7 @@ clean:
 	rm bin/* > /dev/null 2>&1 || true
 	rm lib/* > /dev/null 2>&1 || true
 	rm data/plum/* > /dev/null 2>&1 || true
-	rm data/opencc/*.ocd > /dev/null 2>&1 || true
+	rm data/opencc/* > /dev/null 2>&1 || true
 
 clean-deps:
 	$(MAKE) -C plum clean
