@@ -83,11 +83,11 @@ deps: librime data
 
 release: $(DEPS_CHECK)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Release build | grep -v setenv | tee build.log
+	xcodebuild -project Squirrel.xcodeproj -scheme Squirrel -configuration Release build | grep -v setenv | tee build.log
 
 debug: $(DEPS_CHECK)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Debug build | grep -v setenv | tee build.log
+	xcodebuild -project Squirrel.xcodeproj -scheme Squirrel -configuration Debug build | grep -v setenv | tee build.log
 
 .PHONY: package archive sign-archive
 
