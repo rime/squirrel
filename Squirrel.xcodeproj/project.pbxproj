@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -82,7 +82,8 @@
 		7708746525C1874600C1549C /* rime_deployer in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BD25C1860100C1549C /* rime_deployer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7708746625C1874600C1549C /* rime_dict_manager in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BB25C1860100C1549C /* rime_dict_manager */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		7708746725C1874600C1549C /* rime-install in Copy Executable Files */ = {isa = PBXBuildFile; fileRef = 770873BC25C1860100C1549C /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		77C88BE825C18B200046B94A /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 77C88BE725C18B200046B94A /* Sparkle */; };
+		774A7D5A25C2B7F9007CE00E /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 774A7D5825C2B761007CE00E /* Sparkle.framework */; };
+		774A7D5C25C2B81B007CE00E /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 774A7D5825C2B761007CE00E /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -92,6 +93,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				774A7D5C25C2B81B007CE00E /* Sparkle.framework in Copy 3rd-party Frameworks */,
 				7708737E25C1832F00C1549C /* librime.1.dylib in Copy 3rd-party Frameworks */,
 			);
 			name = "Copy 3rd-party Frameworks";
@@ -278,6 +280,7 @@
 		7708740A25C1867300C1549C /* s2twp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; name = s2twp.json; path = opencc/s2twp.json; sourceTree = "<group>"; };
 		7708742725C1868000C1549C /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; path = squirrel.yaml; sourceTree = "<group>"; };
 		7731DAF025C25E85004948AA /* Squirrel.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = Squirrel.entitlements; sourceTree = "<group>"; };
+		774A7D5825C2B761007CE00E /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Frameworks/Sparkle.framework; sourceTree = "<group>"; };
 		776F012E25C171070018DE66 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -287,9 +290,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				7708737925C1828200C1549C /* Carbon.framework in Frameworks */,
-				77C88BE825C18B200046B94A /* Sparkle in Frameworks */,
 				7708737725C1827C00C1549C /* InputMethodKit.framework in Frameworks */,
 				7708737525C1827400C1549C /* Cocoa.framework in Frameworks */,
+				774A7D5A25C2B7F9007CE00E /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -432,6 +435,7 @@
 		7708737325C1827400C1549C /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				774A7D5825C2B761007CE00E /* Sparkle.framework */,
 				7708737825C1828200C1549C /* Carbon.framework */,
 				7708737425C1827400C1549C /* Cocoa.framework */,
 				7708737C25C1832800C1549C /* librime.1.dylib */,
@@ -495,7 +499,6 @@
 				7708737F25C1836000C1549C /* Copy Shared Support Files */,
 				7708739825C183AB00C1549C /* Copy OpenCC Files */,
 				770873B525C183E000C1549C /* Copy Executable Files */,
-				778ED51D25C28E450020B652 /* Copy Build Target */,
 			);
 			buildRules = (
 			);
@@ -503,7 +506,6 @@
 			);
 			name = Squirrel;
 			packageProductDependencies = (
-				77C88BE725C18B200046B94A /* Sparkle */,
 			);
 			productName = Squirrel;
 			productReference = 776F012E25C171070018DE66 /* Squirrel.app */;
@@ -534,7 +536,6 @@
 			);
 			mainGroup = 776F012525C171070018DE66;
 			packageReferences = (
-				77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */,
 			);
 			productRefGroup = 776F012F25C171070018DE66 /* Products */;
 			projectDirPath = "";
@@ -562,28 +563,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		778ED51D25C28E450020B652 /* Copy Build Target */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Copy Build Target";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [ -d \"${SYMROOT}/${CONFIGURATION}\" ] ; then\n  test -d \"${SRCROOT}/build\" || mkdir \"${SRCROOT}/build\"\n  test -d \"${SRCROOT}/build/${CONFIGURATION}\" && rm -rf \"${SRCROOT}/build/${CONFIGURATION}\" || true\n  cp -f -R \"${SYMROOT}/${CONFIGURATION}\" \"${SRCROOT}/build\"\n  \n  find \"${SRCROOT}/build\" -name \"Sparkle.framework\" | grep -v Frameworks | xargs rm -rf\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		776F012A25C171070018DE66 /* Sources */ = {
@@ -760,6 +739,10 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/librime/src",
 					"$(SRCROOT)/librime/thirdparty/include",
@@ -797,6 +780,10 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = "";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/librime/src",
 					"$(SRCROOT)/librime/thirdparty/include",
@@ -846,25 +833,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/sparkle-project/Sparkle.git";
-			requirement = {
-				kind = exactVersion;
-				version = "1.24.0-spm";
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		77C88BE725C18B200046B94A /* Sparkle */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 77C88BE625C18B200046B94A /* XCRemoteSwiftPackageReference "Sparkle" */;
-			productName = Sparkle;
-		};
-/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 776F012625C171070018DE66 /* Project object */;
 }
