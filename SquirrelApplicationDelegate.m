@@ -164,8 +164,10 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
 
   _enableNotifications =
       ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
-
-  [self.panel updateConfig:_config];
+  [self.panel updateConfig:_config forDarkMode:NO];
+  if (@available(macOS 10.14, *)) {
+    [self.panel updateConfig:_config forDarkMode:YES];
+  }
 }
 
 -(void)loadSchemaSpecificSettings:(NSString *)schemaId {
@@ -175,9 +177,17 @@ static BOOL OSVersionIsEqualOrAbove(NSInteger versionMajor, NSInteger versionMin
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
   if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
       [schema hasSection:@"style"]) {
-    [self.panel updateConfig:schema];
+    [self.panel updateConfig:schema forDarkMode:NO];
   } else {
-    [self.panel updateConfig:self.config];
+    [self.panel updateConfig:self.config forDarkMode:NO];
+  }
+  if (@available(macOS 10.14, *)) {
+      if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+        [schema hasSection:@"style"]) {
+      [self.panel updateConfig:schema forDarkMode:YES];
+    } else {
+      [self.panel updateConfig:self.config forDarkMode:YES];
+    }
   }
   [schema close];
 }
