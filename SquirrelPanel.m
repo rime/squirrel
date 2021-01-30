@@ -1096,8 +1096,8 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
         labelString2 = [NSString stringWithFormat:labelFormat2, labelCharacter];
       } else {
         // default: 1. 2. 3...
-        labelFormat2 = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-        labelString2 = [NSString stringWithFormat:labelFormat, i+1];
+        labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString2 = [NSString stringWithFormat:labelFormat2, i+1];
       }
       [line appendAttributedString:
                 [[NSAttributedString alloc]
