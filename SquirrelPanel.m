@@ -726,10 +726,20 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   }
 }
 
++ (NSColor *)secondaryTextColor {
+  if(@available(macOS 10.10, *)) {
+    return [NSColor secondaryLabelColor];
+  } else {
+    return [NSColor disabledControlTextColor];
+  }
+}
+
 - (void)initializeUIStyleForDarkMode:(BOOL)isDark {
   SquirrelTheme *theme = [_view selectTheme:isDark];
   theme.native = YES;
   theme.candidateFormat = kDefaultCandidateFormat;
+  
+  NSColor *secondaryTextColor = [[self class] secondaryTextColor];
 
   NSMutableDictionary *attrs = [[NSMutableDictionary alloc] init];
   attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
@@ -743,13 +753,13 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   NSMutableDictionary *labelHighlightedAttrs = [highlightedAttrs mutableCopy];
 
   NSMutableDictionary *commentAttrs = [[NSMutableDictionary alloc] init];
-  commentAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  commentAttrs[NSForegroundColorAttributeName] = secondaryTextColor;
   commentAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   NSMutableDictionary *commentHighlightedAttrs = [commentAttrs mutableCopy];
 
   NSMutableDictionary *preeditAttrs = [[NSMutableDictionary alloc] init];
-  preeditAttrs[NSForegroundColorAttributeName] = [NSColor disabledControlTextColor];
+  preeditAttrs[NSForegroundColorAttributeName] = secondaryTextColor;
   preeditAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   NSMutableDictionary *preeditHighlightedAttrs = [[NSMutableDictionary alloc] init];
@@ -1493,17 +1503,20 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+  
+  NSColor *secondaryTextColor = [[self class] secondaryTextColor];
 
   backgroundColor = backgroundColor ? backgroundColor : [NSColor windowBackgroundColor];
   candidateTextColor = candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
-  candidateLabelColor = candidateLabelColor ? candidateLabelColor : blendColors(candidateTextColor, backgroundColor);
+  candidateLabelColor = candidateLabelColor ? candidateLabelColor :
+  isNative ? secondaryTextColor : blendColors(candidateTextColor, backgroundColor);
   highlightedCandidateTextColor = highlightedCandidateTextColor ? highlightedCandidateTextColor : [NSColor selectedControlTextColor];
   highlightedCandidateBackColor = highlightedCandidateBackColor ? highlightedCandidateBackColor : [NSColor selectedTextBackgroundColor];
-  highlightedCandidateLabelColor = highlightedCandidateLabelColor ? highlightedCandidateLabelColor
-    : blendColors(highlightedCandidateTextColor, highlightedCandidateBackColor);
-  commentTextColor = commentTextColor ? commentTextColor : [NSColor disabledControlTextColor];
+  highlightedCandidateLabelColor = highlightedCandidateLabelColor ? highlightedCandidateLabelColor :
+  isNative ? secondaryTextColor : blendColors(highlightedCandidateTextColor, highlightedCandidateBackColor);
+  commentTextColor = commentTextColor ? commentTextColor : secondaryTextColor;
   highlightedCommentTextColor = highlightedCommentTextColor ? highlightedCommentTextColor : commentTextColor;
-  textColor = textColor ? textColor : [NSColor disabledControlTextColor];
+  textColor = textColor ? textColor : secondaryTextColor;
   highlightedTextColor = highlightedTextColor ? highlightedTextColor : [NSColor controlTextColor];
 
   attrs[NSForegroundColorAttributeName] = candidateTextColor;
