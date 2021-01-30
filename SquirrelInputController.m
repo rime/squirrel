@@ -80,7 +80,7 @@ const int N_KEY_ROLL_OVER = 50;
         //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
-        int changes = _lastModifier ^ modifiers;
+        NSUInteger changes = _lastModifier ^ modifiers;
         if (changes & OSX_CAPITAL_MASK) {
           // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
           // while NSFlagsChanged event has the flag changed already.
@@ -116,12 +116,12 @@ const int N_KEY_ROLL_OVER = 50;
         if (modifiers & OSX_COMMAND_MASK)
           break;
 
-        NSInteger keyCode = event.keyCode;
+        int keyCode = event.keyCode;
         NSString* keyChars = event.charactersIgnoringModifiers;
         if (!isalpha(keyChars.UTF8String[0])) {
           keyChars = event.characters;
         }
-        //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %ld, keyChars: [%@]",
+        //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars: [%@]",
         //      sender, modifiers, keyCode, keyChars);
 
         // translate osx keyevents to rime keyevents
