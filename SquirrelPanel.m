@@ -692,7 +692,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 CGFloat minimumHeight(NSDictionary *attribute) {
   const NSAttributedString *spaceChar = [[NSAttributedString alloc] initWithString:@" " attributes:attribute];
-  const CGFloat minimumHeight = [spaceChar boundingRectWithSize:NSZeroSize options:NULL].size.height;
+  const CGFloat minimumHeight = [spaceChar boundingRectWithSize:NSZeroSize options:0].size.height;
   return minimumHeight;
 }
 
@@ -704,19 +704,19 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   // Use the width of the character to determin if they should be upright in vertical writing mode.
   // Adjust font base line for better alignment.
   const NSAttributedString *cjkChar = [[NSAttributedString alloc] initWithString:@"字" attributes:attribute];
-  const NSRect cjkRect = [cjkChar boundingRectWithSize:NSZeroSize options:NULL];
+  const NSRect cjkRect = [cjkChar boundingRectWithSize:NSZeroSize options:0];
   const NSAttributedString *hangulChar = [[NSAttributedString alloc] initWithString:@"글" attributes:attribute];
-  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSZeroSize options:NULL].size;
+  const NSSize hangulSize = [hangulChar boundingRectWithSize:NSZeroSize options:0].size;
   stringRange = [originalText.string rangeOfComposedCharacterSequencesForRange:stringRange];
   NSUInteger i = stringRange.location;
   while (i < stringRange.location+stringRange.length) {
     NSRange range = [originalText.string rangeOfComposedCharacterSequenceAtIndex:i];
     i = range.location + range.length;
-    NSRect charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:NULL];
+    NSRect charRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:0];
     // Also adjust the baseline so upright and lying charcters are properly aligned
     if ((charRect.size.width >= cjkRect.size.width) || (charRect.size.width >= hangulSize.width)) {
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
-      NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:NULL];
+      NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:0];
       CGFloat widthDiff = charRect.size.width-cjkChar.size.width;
       CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/1.2 : widthDiff/2) +baseOffset;
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(offset) range:range];
@@ -1119,7 +1119,7 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
                                         initWithString:(theme.linear ? @"  " : @"\n")
                                             attributes:attrs];
-    _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NULL].size.width;
+    _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:0].size.width;
 
     NSMutableParagraphStyle *paragraphStyleCandidate;
     if (i == 0) {
