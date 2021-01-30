@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.35'
+config_version: '0.36'
 
 us_keyboard_layout: false
 
@@ -11,15 +11,23 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
-# DEPRECATED: since 0.27
+# Deprecated since 0.27, Squirrel 0.10
 #show_notifications_via_notification_center: false
 
 style:
   color_scheme: native
-  # note: do not set a default value, in order to keep the deprecated option style/horizontal working for old users
+  # optional: define both light and dark color schemes to match system appearance
+  #color_scheme: solarized_light
+  #color_scheme_dark: solarized_dark
+
+  # Deprecated since 0.36, Squirrel 0.15
+  #horizontal: false
+  # NOTE: do not set a default value for `candidate_list_layout`, in order to
+  # keep the deprecated `horizontal` option working for existing users.
   #candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
+
   corner_radius: 10
   hilited_corner_radius: 0
   border_height: 0
@@ -28,7 +36,9 @@ style:
   line_spacing: 5
   # space between preedit and candidates in non-inline mode
   spacing: 10
+
   #candidate_format: '%c. %@'
+
   #base_offset: 0
   font_face: 'Lucida Grande'
   font_point: 21
