@@ -5,10 +5,11 @@
 @interface SquirrelPanel : NSWindow
 
 // Linear candidate list, as opposed to stacked candidate list.
-@property(nonatomic, assign) BOOL linear;
+@property(nonatomic, readonly) BOOL linear;
 // Vertical text, as opposed to horizontal text.
-@property(nonatomic, assign) BOOL vertical;
-@property(nonatomic, assign) BOOL inlinePreedit;
+@property(nonatomic, readonly) BOOL vertical;
+// Show preedit text inline.
+@property(nonatomic, readonly) BOOL inlinePreedit;
 
 // position of input caret on screen.
 @property(nonatomic, assign) NSRect position;
@@ -25,7 +26,7 @@
 
 -(void)updateStatus:(NSString*)message;
 
--(void)updateConfig:(SquirrelConfig*)config
-        forDarkMode:(BOOL)isDark;
+-(void)loadConfig:(SquirrelConfig*)config
+      forDarkMode:(BOOL)isDark;
 
 @end
