@@ -3,7 +3,7 @@
 #import <rime/key_table.h>
 
 
-int osx_modifiers_to_rime_modifiers(unsigned modifiers) 
+int osx_modifiers_to_rime_modifiers(unsigned long modifiers) 
 {
   int ret = 0;
   
