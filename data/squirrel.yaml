@@ -273,7 +273,6 @@ preset_color_schemes:
     hilited_corner_radius: 3                # 高亮圆角
     border_height: 6                        # 窗口边界高度，大于圆角半径才生效
     border_width: 6                         # 窗口边界宽度，大于圆角半径才生效
-    border_color_width: 0
     font_face: "PingFangSC"                 # 候选词字体
     font_point: 16                          # 候选字词大小
     label_font_point: 14                    # 候选编号大小
