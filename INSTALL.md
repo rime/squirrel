@@ -6,7 +6,8 @@
 
 ### Prerequisites
 
-Install **Xcode >= 12.2** from App Store.
+Install **Xcode 12.2** or above from App Store, to build Squirrel as a Universal
+app. The minimum required version is *Xcode 10* to build for `x86_64` only.
 
 Install **cmake**.
 
@@ -64,7 +65,7 @@ export BOOST_ROOT="$(pwd)/librime/thirdparty/src/boost_1_75_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
-universal macOS binaries.
+universal macOS binaries. Skip this if building only for the native architecture.
 
 After Boost source code is downloaded and a few compiled libraries are built,
 be sure to set shell variable `BOOST_ROOT` to its top level directory as above.
@@ -92,7 +93,7 @@ port install boost -no_static
 ### Build dependencies
 
 Again, set `BUILD_UNIVERSAL` to tell `make` that we are building librime as
-universal macOS binaries.
+universal macOS binaries. Skip this if building only for the native architecture.
 
 Build librime, dependent third-party libraries and data files:
 
@@ -110,12 +111,26 @@ With all dependencies ready, build `Squirrel.app`:
 make
 ```
 
+To build only for the native architecture, pass variable `ARCHS` to `make`:
+
+``` sh
+# for Mac computers with Apple Silicon
+make ARCHS='arm64'
+
+# for Intel-based Mac
+make ARCHS='x86_64'
+```
+
 ## Install it on your Mac
 
 Once built, you can install and try it live on your Mac computer:
 
 ``` sh
-sudo make install
+# Squirrel as a Universal app
+make install
+
+# for Intel-based Mac only
+make ARCHS='x86_64' install
 ```
 
 That's it, a verbal journal. Thanks for riming with Squirrel.
