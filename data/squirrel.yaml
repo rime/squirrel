@@ -364,6 +364,9 @@ app_options:
     no_inline: true
   co.zeit.hyper:
     ascii_mode: true
+  com.google.Chrome:
+    # 規避 https://github.com/rime/squirrel/issues/435
+    inline: true
   ru.keepcoder.Telegram:
     # 規避 https://github.com/rime/squirrel/issues/475
     inline: true
