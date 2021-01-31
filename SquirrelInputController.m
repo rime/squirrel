@@ -494,8 +494,9 @@ const int N_KEY_ROLL_OVER = 50;
       _schemaId = @(status.schema_id);
       [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
       // inline preedit
-      _inlinePreedit = NSApp.squirrelAppDelegate.panel.inlinePreedit &&
-          !rime_get_api()->get_option(_session, "no_inline");  // not disabled in app options
+      _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
+                        !rime_get_api()->get_option(_session, "no_inline")) ||
+      rime_get_api()->get_option(_session, "inline");
       // if not inline, embed soft cursor in preedit string
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
