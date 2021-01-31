@@ -614,7 +614,7 @@
 					"$(SRCROOT)/librime/thirdparty/include",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"/Library/Input Methods\"";
+				INSTALL_PATH = "/Library/Input Methods";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -623,18 +623,14 @@
 					"$(inherited)",
 					"$(SRCROOT)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
 					"-DHAVE_CONFIG_H",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
-				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -658,7 +654,7 @@
 					"$(SRCROOT)/librime/thirdparty/include",
 				);
 				INFOPLIST_FILE = Info.plist;
-				INSTALL_PATH = "\"/Library/Input Methods\"";
+				INSTALL_PATH = "/Library/Input Methods";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -667,18 +663,14 @@
 					"$(inherited)",
 					"$(SRCROOT)/lib",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
 					"-DHAVE_CONFIG_H",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_1)",
-					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
-				SDKROOT = macosx;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
