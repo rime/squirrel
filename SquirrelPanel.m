@@ -678,15 +678,15 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSTimer *_statusTimer;
 }
 
-- (BOOL)isLinear {
+- (BOOL)linear {
   return _view.currentTheme.linear;
 }
 
-- (BOOL)isVertical {
+- (BOOL)vertical {
   return _view.currentTheme.vertical;
 }
 
-- (BOOL)isInlinePreedit {
+- (BOOL)inlinePreedit {
   return _view.currentTheme.inlinePreedit;
 }
 
