@@ -13,10 +13,15 @@
 * 發行通用二進制代碼，兼容搭載Intel處理器及Apple芯片的Mac電腦
 
 * 界面新功能
-  * 新增顯示直書文字的界面樣式
+  * 在原有界面樣式基礎上新增顯示直書文字的選項 `style/text_orientation`
+  * 支持顯示輸入方案自定義的候選序號 `menu/alternative_select_labels`
+  * 候選窗超長文字折行顯示
+  * 編輯區高亮區塊支持圓角
+  * 新增外觀配置項 `border_color`, `preedit_back_color`, `base_offset`（文字基線調整）
   * 支持P3色域
   * 「系統配色」自動適應深淺色外觀，或由用家自選用於深色模式的配色方案
   * 新增明暗兩款Solarized配色方案
+    [`squirrel.yaml`](https://github.com/rime/squirrel/blob/master/data/squirrel.yaml)演示了P3色域、自選深淺系配色方案的用法
 
 * 修復及規避若干軟件兼容問題
 
