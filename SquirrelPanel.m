@@ -690,14 +690,23 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   return _view.currentTheme.inlinePreedit;
 }
 
-CGFloat minimumHeight(NSDictionary *attribute) {
+NSArray *basicLineHeights(NSDictionary *attribute) {
   NSMutableAttributedString *spaceChar = [[NSMutableAttributedString alloc] initWithString:@" " attributes:attribute];
   NSMutableAttributedString *emojiChar = [[NSMutableAttributedString alloc] initWithString:@"😄️" attributes:attribute];
   [spaceChar fixFontAttributeInRange:NSMakeRange(0, spaceChar.length)];
   [emojiChar fixFontAttributeInRange:NSMakeRange(0, emojiChar.length)];
   const CGFloat spaceHeight = [spaceChar boundingRectWithSize:NSZeroSize options:0].size.height;
   const CGFloat emojiHeight = [emojiChar boundingRectWithSize:NSZeroSize options:0].size.height;
-  return MAX(spaceHeight, emojiHeight);
+  return @[@(spaceHeight), @(emojiHeight)];
+}
+
+CGFloat heightDiff(NSDictionary *attribute) {
+  NSArray *heights = basicLineHeights(attribute);
+  return [heights[1] doubleValue] - [heights[0] doubleValue];
+}
+CGFloat minimumHeight(NSDictionary *attribute) {
+  NSArray *heights = basicLineHeights(attribute);
+  return MAX([heights[1] doubleValue], [heights[0] doubleValue]);
 }
 
 // Use this method to convert charcters to upright position
@@ -722,11 +731,37 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
       NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:0];
       CGFloat widthDiff = charRect.size.width-cjkChar.size.width;
-      CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/1.2 : widthDiff/2) +baseOffset;
+      CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/3 : widthDiff/2) +baseOffset;
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(offset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(baseOffset) range:range];
     }
+  }
+}
+
+bool existEmoji(NSMutableAttributedString *text) {
+  [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
+  NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
+  long i = 0;
+  while (i < text.length) {
+    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
+    if ([charFont.fontName isEqualTo: @"AppleColorEmoji"]) {
+      return YES;
+    }
+    i = currentFontRange.location + currentFontRange.length;
+  }
+  return NO;
+}
+
+void offset(NSMutableAttributedString *text, CGFloat shift) {
+  NSRange currentAttrRange = NSMakeRange(NSNotFound, 0);
+  long i = 0;
+  while (i < text.length) {
+    NSMutableDictionary *currentAttr = [[text attributesAtIndex:i effectiveRange:&currentAttrRange] mutableCopy];
+    CGFloat currentOffset = [currentAttr[NSBaselineOffsetAttributeName] doubleValue];
+    currentAttr[NSBaselineOffsetAttributeName] = @(currentOffset+shift);
+    [text setAttributes:currentAttr range:currentAttrRange];
+    i = currentAttrRange.location + currentAttrRange.length;
   }
 }
 
@@ -1150,6 +1185,15 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       highlightedRange = NSMakeRange(text.length, line.length);
     }
     [text appendAttributedString:line];
+  }
+  
+  // Change Emoji font size
+  if (!existEmoji(text) & theme.inlinePreedit & theme.linear) {
+    if (theme.vertical) {
+      offset(text, heightDiff(theme.attrs) * 0.8);
+    } else {
+      offset(text, heightDiff(theme.attrs) / 2);
+    }
   }
   // text done!
   [_view setText:text];
