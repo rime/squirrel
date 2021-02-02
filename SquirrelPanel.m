@@ -733,11 +733,14 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
 void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
   NSFont *emojiFont = [NSFont fontWithName:@"AppleColorEmoji" size:emojiFontSize];
-  for (int i = 0; i < text.length; ++i) {
-    NSFont *charFont = [text attributesAtIndex:i effectiveRange:0][NSFontAttributeName];
+  NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
+  long i = 0;
+  while (i < text.length) {
+    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
     if ([charFont.fontName isEqualTo: @"AppleColorEmoji"]) {
-      [text addAttributes:@{NSFontAttributeName: emojiFont} range:NSMakeRange(i, 1)];
+      [text addAttributes:@{NSFontAttributeName: emojiFont} range:currentFontRange];
     }
+    i = currentFontRange.location + currentFontRange.length;
   }
 }
 
