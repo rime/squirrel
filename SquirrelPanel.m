@@ -691,9 +691,13 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 }
 
 CGFloat minimumHeight(NSDictionary *attribute) {
-  const NSAttributedString *spaceChar = [[NSAttributedString alloc] initWithString:@" " attributes:attribute];
-  const CGFloat minimumHeight = [spaceChar boundingRectWithSize:NSZeroSize options:0].size.height;
-  return minimumHeight;
+  NSMutableAttributedString *spaceChar = [[NSMutableAttributedString alloc] initWithString:@" " attributes:attribute];
+  NSMutableAttributedString *emojiChar = [[NSMutableAttributedString alloc] initWithString:@"😄️" attributes:attribute];
+  [spaceChar fixFontAttributeInRange:NSMakeRange(0, spaceChar.length)];
+  [emojiChar fixFontAttributeInRange:NSMakeRange(0, emojiChar.length)];
+  const CGFloat spaceHeight = [spaceChar boundingRectWithSize:NSZeroSize options:0].size.height;
+  const CGFloat emojiHeight = [emojiChar boundingRectWithSize:NSZeroSize options:0].size.height;
+  return MAX(spaceHeight, emojiHeight);
 }
 
 // Use this method to convert charcters to upright position
@@ -1020,8 +1024,8 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     NSMutableParagraphStyle *paragraphStylePreedit = [theme.preeditParagraphStyle mutableCopy];
     if (theme.vertical) {
       convertToVerticalGlyph(text, NSMakeRange(0, line.length));
-      paragraphStylePreedit.minimumLineHeight = minimumHeight(theme.preeditAttrs);
     }
+    paragraphStylePreedit.minimumLineHeight = minimumHeight(theme.preeditAttrs);
     [text addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStylePreedit
                  range:NSMakeRange(0, text.length)];
@@ -1135,8 +1139,8 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     }
     if (theme.vertical) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
-      paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
     }
+    paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
