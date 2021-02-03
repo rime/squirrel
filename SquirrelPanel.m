@@ -26,7 +26,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, readonly) CGFloat linespace;
 @property(nonatomic, readonly) CGFloat preeditLinespace;
 @property(nonatomic, readonly) CGFloat alpha;
-@property(nonatomic, readonly) CGFloat emojiFontSize;
 @property(nonatomic, readonly) BOOL linear;
 @property(nonatomic, readonly) BOOL vertical;
 @property(nonatomic, readonly) BOOL inlinePreedit;
@@ -66,8 +65,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
            commentAttrs:(NSMutableDictionary *)commentAttrs
 commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
            preeditAttrs:(NSMutableDictionary *)preeditAttrs
-preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
-          emojiFontSize:(CGFloat)emojiFontSize;
+preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
 
 - (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
      preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle;
@@ -117,8 +115,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
            commentAttrs:(NSMutableDictionary *)commentAttrs
 commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
            preeditAttrs:(NSMutableDictionary *)preeditAttrs
-preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
-          emojiFontSize:(CGFloat)emojiFontSize {
+preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
   _attrs = attrs;
   _labelAttrs = labelAttrs;
   _highlightedAttrs = highlightedAttrs;
@@ -127,7 +124,6 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   _commentHighlightedAttrs = commentHighlightedAttrs;
   _preeditAttrs = preeditAttrs;
   _preeditHighlightedAttrs = preeditHighlightedAttrs;
-  _emojiFontSize = emojiFontSize;
 }
 
 - (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
@@ -794,8 +790,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
               commentAttrs:commentAttrs
    commentHighlightedAttrs:commentHighlightedAttrs
               preeditAttrs:preeditAttrs
-   preeditHighlightedAttrs:preeditHighlightedAttrs
-             emojiFontSize:0];
+   preeditHighlightedAttrs:preeditHighlightedAttrs];
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle];
 }
@@ -1168,9 +1163,9 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   }
   
   // Change Emoji font size
-  if (theme.emojiFontSize > 0) {
-    changeEmojiSize(text, theme.emojiFontSize);
-  }
+  NSFont *currentFont = theme.attrs[NSFontAttributeName];
+  changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.75), currentFont.pointSize - 4));
+
   // text done!
   [_view setText:text];
   [_view drawViewWith:highlightedRange preeditRange:_preeditRange highlightedPreeditRange:highlightedPreeditRange];
@@ -1290,7 +1285,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSString *fontName = [config getString:@"style/font_face"];
   NSInteger fontSize = [config getInt:@"style/font_point"];
-  NSInteger emojiFontSize = [config getInt:@"style/emoji_font_point"];
   NSString *labelFontName = [config getString:@"style/label_font_face"];
   NSInteger labelFontSize = [config getInt:@"style/label_font_point"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
@@ -1388,11 +1382,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
     if (fontSizeOverridden) {
       fontSize = fontSizeOverridden.integerValue;
-    }
-    NSNumber *emojiFontSizeOverridden =
-        [config getOptionalInt:[prefix stringByAppendingString:@"/emoji_font_point"]];
-    if (emojiFontSizeOverridden) {
-      emojiFontSize = emojiFontSizeOverridden.integerValue;
     }
     NSString *labelFontNameOverridden =
         [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
@@ -1565,8 +1554,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
               commentAttrs:commentAttrs
    commentHighlightedAttrs:commentHighlightedAttrs
               preeditAttrs:preeditAttrs
-   preeditHighlightedAttrs:preeditHighlightedAttrs
-             emojiFontSize:emojiFontSize];
+   preeditHighlightedAttrs:preeditHighlightedAttrs];
 
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle];
