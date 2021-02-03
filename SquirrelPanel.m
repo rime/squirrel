@@ -1164,7 +1164,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   
   // Change Emoji font size
   NSFont *currentFont = theme.attrs[NSFontAttributeName];
-  changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.75), currentFont.pointSize - 4));
+  changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.8), currentFont.pointSize - 2));
 
   // text done!
   [_view setText:text];
