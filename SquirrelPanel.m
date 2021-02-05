@@ -718,11 +718,25 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
       [originalText addAttribute:NSVerticalGlyphFormAttributeName value:@(1) range:range];
       NSRect uprightCharRect = [[originalText attributedSubstringFromRange:range] boundingRectWithSize:NSZeroSize options:0];
       CGFloat widthDiff = charRect.size.width-cjkChar.size.width;
-      CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/1.2 : widthDiff/2) +baseOffset;
+      CGFloat offset = (cjkRect.size.height - uprightCharRect.size.height)/2 + (cjkRect.origin.y-uprightCharRect.origin.y) - (widthDiff>0 ? widthDiff/3 : widthDiff/2) +baseOffset;
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(offset) range:range];
     } else {
       [originalText addAttribute:NSBaselineOffsetAttributeName value:@(baseOffset) range:range];
     }
+  }
+}
+
+void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
+  [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
+  NSFont *emojiFont = [NSFont fontWithName:@"AppleColorEmoji" size:emojiFontSize];
+  NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
+  long i = 0;
+  while (i < text.length) {
+    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
+    if ([charFont.fontName isEqualTo: @"AppleColorEmoji"]) {
+      [text addAttributes:@{NSFontAttributeName: emojiFont} range:currentFontRange];
+    }
+    i = currentFontRange.location + currentFontRange.length;
   }
 }
 
@@ -1147,6 +1161,11 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
     }
     [text appendAttributedString:line];
   }
+  
+  // Change Emoji font size
+  NSFont *currentFont = theme.attrs[NSFontAttributeName];
+  changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.8), currentFont.pointSize - 2));
+
   // text done!
   [_view setText:text];
   [_view drawViewWith:highlightedRange preeditRange:_preeditRange highlightedPreeditRange:highlightedPreeditRange];
