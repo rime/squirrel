@@ -848,10 +848,14 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
 
   //Break line if the text is too long, based on screen size.
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
-  if (theme.vertical && (textWidth > NSHeight(_screenRect) / 3 - theme.edgeInset.height * 2)) {
-    textWidth = NSHeight(_screenRect) / 3 - theme.edgeInset.height * 2;
-  } else if (!theme.vertical && (textWidth > NSWidth(_screenRect) / 2 - theme.edgeInset.height * 2)) {
-    textWidth = NSWidth(_screenRect) / 2 - theme.edgeInset.height * 2;
+  NSFont *currentFont = theme.attrs[NSFontAttributeName];
+  CGFloat fontScale = currentFont.pointSize / 12;
+  CGFloat textWidthRatio = MIN(1.0, 1.0 / 4 + fontScale / 12);
+  CGFloat maxTextWidth = theme.vertical
+  ? NSHeight(_screenRect) * textWidthRatio - theme.edgeInset.height * 2
+  : NSWidth(_screenRect) * textWidthRatio - theme.edgeInset.width * 2;
+  if (textWidth > maxTextWidth) {
+    textWidth = maxTextWidth;
   }
   _view.text.layoutManagers[0].textContainers[0].containerSize = NSMakeSize(textWidth, 0);
 
