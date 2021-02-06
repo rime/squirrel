@@ -1,10 +1,10 @@
 <a name="0.15.0"></a>
-## 0.15.0 (2021-01-31)
+## 0.15.0 (2021-02-06)
 
 
 #### 主要更新
 
-* 升級核心算法庫 [librime 1.7.0](https://github.com/rime/librime/blob/master/CHANGELOG.md#170-2021-01-17)
+* 升級核心算法庫 [librime 1.7.1](https://github.com/rime/librime/blob/master/CHANGELOG.md#171-2021-02-06)
   * 遣詞造句性能提升40%
   * 支持拼音輸入法詞典擴展包
   * 升級中日韓統一表意文字和繪文字字符集數據
@@ -25,15 +25,21 @@
 
 * 修復及規避若干軟件兼容問題
 
+![有詩爲證](https://github.com/rime/home/raw/master/images/squirrel-vertical-text-light.png)
+![有圖爲證](https://github.com/rime/home/raw/master/images/squirrel-vertical-text-dark.png)
+
 #### Bug Fixes
 
+* **SquirrelInputController:**  add back the Chrome address bar hack ([22ed91ea](https://github.com/rime/squirrel/commit/22ed91ea7d2c9807dedc8cd68709c82cdb3a5fd8), closes [#299](https://github.com/rime/squirrel/issues/299))
 * **SquirrelPanel:**
   *  properties custom getter got wrong names ([d509c779](https://github.com/rime/squirrel/commit/d509c7791d288722a6782cca8c9afd7d0b440db5), closes [#494](https://github.com/rime/squirrel/issues/494))
   *  label format after candidate repeats label before, Closes #489 ([d2c34107](https://github.com/rime/squirrel/commit/d2c34107bdbec5767865582e4d217e546d576eca))
   *  native color scheme can only use semantic colors ([e6c69598](https://github.com/rime/squirrel/commit/e6c695983e610bd78d8c43b033a4c3602b632730))
   *  reimplement blendColors, tune background color fraction to increase contrast ([9b890f60](https://github.com/rime/squirrel/commit/9b890f60667c291216ff971b176534627f6a1cac))
 * **SquirrelPanel.m:**  index out of bounds at drawSmoothLines() ([241b457f](https://github.com/rime/squirrel/commit/241b457fc0378c733ead8cb9352c156c12198cec))
-* **build:**  exclude architecture arm64 ([51f62cf7](https://github.com/rime/squirrel/commit/51f62cf7e52d779f8721f2ffcf5fc2b6720155c3))
+* **build:**
+  *  exclude architecture arm64 ([51f62cf7](https://github.com/rime/squirrel/commit/51f62cf7e52d779f8721f2ffcf5fc2b6720155c3))
+  *  fix codesign error on Xcode11 ([11486644](https://github.com/rime/squirrel/commit/1148664423ae1fc986df184ef2f794790cd31834))
 * **data/squirrel.yaml:**
   *  force inline in Chrome to work around bksp ([69112996](https://github.com/rime/squirrel/commit/69112996441fdae1d1778ac9a32eb98f6a8e7841))
   *  force inline mode in Telegram app ([34f2d382](https://github.com/rime/squirrel/commit/34f2d38216a7483ed8634da5de8409f6a3d7f542))
@@ -45,7 +51,10 @@
 * **SquirrelInputController:**
   *  app option `inline` forces inline mode ([699fee0f](https://github.com/rime/squirrel/commit/699fee0fd2c9808667fd60426f1abc8c09d7ff8d))
   *  support chording with Control, Alt or Shift keys ([118aee61](https://github.com/rime/squirrel/commit/118aee617089b4c7a3e448a42ea0b4c65eae5895))
-* **SquirrelPanel:**  merge lyc/dark_mode, with slight modifications ([5a587fca](https://github.com/rime/squirrel/commit/5a587fca16d7b6c842682f285949041871ed80bf), closes [#449](https://github.com/rime/squirrel/issues/449))
+* **SquirrelPanel:**
+  *  optimize window size for big/small text ([150c5533](https://github.com/rime/squirrel/commit/150c5533f8862b242e1837fb0b62e97429cbb2a3))
+  *  merge lyc/dark_mode, with slight modifications ([5a587fca](https://github.com/rime/squirrel/commit/5a587fca16d7b6c842682f285949041871ed80bf), closes [#449](https://github.com/rime/squirrel/issues/449))
+* **app_options:**  support the `vim_mode` app option ([08ed4f45](https://github.com/rime/squirrel/commit/08ed4f4590e17c969f1536b347bbe1f05737d4aa), closes [#124](https://github.com/rime/squirrel/issues/124))
 * **data/squirrel.yaml:**  solarized color schemes ([35b9ea76](https://github.com/rime/squirrel/commit/35b9ea76d2c3c4ce095bc838948ba43761022a12))
 * **ui:**  vertical text orientation, rounded corner text with TextStorage, wrapping lone lines and border color ([c6c9302d](https://github.com/rime/squirrel/commit/c6c9302dcd537e0b72af729082390483bc3d07c0))
 
