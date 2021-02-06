@@ -850,7 +850,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   CGFloat textWidth = _view.text.size.width + _view.textFrameWidth * 2;
   NSFont *currentFont = theme.attrs[NSFontAttributeName];
   CGFloat fontScale = currentFont.pointSize / 12;
-  CGFloat textWidthRatio = MIN(1.0, 1.0 / 4 + fontScale / 12);
+  CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + fontScale / 12);
   CGFloat maxTextWidth = theme.vertical
   ? NSHeight(_screenRect) * textWidthRatio - theme.edgeInset.height * 2
   : NSWidth(_screenRect) * textWidthRatio - theme.edgeInset.width * 2;
