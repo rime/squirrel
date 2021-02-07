@@ -121,7 +121,17 @@ clean-sparkle:
 .PHONY: package archive sign-archive
 
 package: release
+ifdef DEV_ID
+	package/sign.bash $(DEV_ID)
+endif
 	bash package/make_package
+ifdef DEV_ID
+	productsign --sign "Developer ID Installer: $(DEV_ID)" package/Squirrel.pkg package/Squirrel-signed.pkg
+	rm package/Squirrel.pkg
+	mv package/Squirrel-signed.pkg package/Squirrel.pkg
+	xcrun notarytool submit package/Squirrel.pkg --keychain-profile "$(DEV_ID)" --wait
+	xcrun stapler staple package/Squirrel.pkg
+endif
 
 archive: package
 	bash package/make_archive
