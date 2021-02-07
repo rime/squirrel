@@ -19,7 +19,7 @@ void RegisterInputSource() {
 
 void ActivateInputSource() {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
-  for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
@@ -42,7 +42,7 @@ void ActivateInputSource() {
 
 void DeactivateInputSource() {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
-  for (int i = CFArrayGetCount(sourceList); i > 0; --i) {
+  for (CFIndex i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i - 1));
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
@@ -60,7 +60,7 @@ void DeactivateInputSource() {
 BOOL IsInputSourceActive() {
   int active = 0;
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
-  for (int i = 0; i < CFArrayGetCount(sourceList); ++i) {
+  for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
         sourceList, i));
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
