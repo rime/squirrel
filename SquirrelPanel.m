@@ -1291,6 +1291,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSInteger fontSize = [config getInt:@"style/font_point"];
   NSString *labelFontName = [config getString:@"style/label_font_face"];
   NSInteger labelFontSize = [config getInt:@"style/label_font_point"];
+  NSString *commentFontName = [config getString:@"style/comment_font_face"];
+  NSInteger commentFontSize = [config getInt:@"style/comment_font_point"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
   CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
@@ -1397,6 +1399,16 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     if (labelFontSizeOverridden) {
       labelFontSize = labelFontSizeOverridden.integerValue;
     }
+    NSString *commentFontNameOverridden =
+        [config getString:[prefix stringByAppendingString:@"/comment_font_face"]];
+    if (commentFontNameOverridden) {
+      commentFontName = commentFontNameOverridden;
+    }
+    NSNumber *commentFontSizeOverridden =
+        [config getOptionalInt:[prefix stringByAppendingString:@"/comment_font_point"]];
+    if (commentFontSizeOverridden) {
+      commentFontSize = commentFontSizeOverridden.integerValue;
+    }
     NSColor *candidateLabelColorOverridden =
         [config getColor:[prefix stringByAppendingString:@"/label_color"]];
     if (candidateLabelColorOverridden) {
@@ -1491,6 +1503,24 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       labelFont = [NSFont fontWithName:font.fontName size:labelFontSize];
     }
   }
+  NSFontDescriptor *commentFontDescriptor = nil;
+  NSFont *commentFont = nil;
+  if (commentFontName != nil) {
+    commentFontDescriptor = getFontDescriptor(commentFontName);
+    if (commentFontDescriptor == nil) {
+      commentFontDescriptor = fontDescriptor;
+    }
+    if (commentFontDescriptor != nil) {
+      commentFont = [NSFont fontWithDescriptor:commentFontDescriptor size:commentFontSize];
+    }
+  }
+  if (commentFont == nil) {
+    if (fontDescriptor != nil) {
+      commentFont = [NSFont fontWithDescriptor:fontDescriptor size:commentFontSize];
+    } else {
+      commentFont = [NSFont fontWithName:font.fontName size:commentFontSize];
+    }
+  }
 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -1514,8 +1544,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   highlightedAttrs[NSFontAttributeName] = font;
   labelAttrs[NSFontAttributeName] = labelFont;
   labelHighlightedAttrs[NSFontAttributeName] = labelFont;
-  commentAttrs[NSFontAttributeName] = font;
-  commentHighlightedAttrs[NSFontAttributeName] = font;
+  commentAttrs[NSFontAttributeName] = commentFont;
+  commentHighlightedAttrs[NSFontAttributeName] = commentFont;
   preeditAttrs[NSFontAttributeName] = font;
   preeditHighlightedAttrs[NSFontAttributeName] = font;
   attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
