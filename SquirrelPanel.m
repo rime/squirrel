@@ -11,7 +11,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @interface SquirrelTheme : NSObject
 
 @property(nonatomic, assign) BOOL native;
-@property(nonatomic, copy) NSString* candidateFormat;
 
 @property(nonatomic, strong, readonly) NSColor *backgroundColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedStripColor;
