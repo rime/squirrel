@@ -41,6 +41,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, strong, readonly) NSParagraphStyle *paragraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
 
+@property(nonatomic, strong, readonly) NSString *labelFormat, *labelFormat2;
+
+- (void)setCandidateFormat:(NSString *)candidateFormat;
+
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
@@ -73,6 +77,54 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
 @end
 
 @implementation SquirrelTheme
+
+- (void)setCandidateFormat:(NSString *)candidateFormat {
+// in our candiate format, everything other than '%@' is
+// considered as a part of the label
+  NSRange labelRange, labelRange2, pureCandidateRange;
+  labelRange = [candidateFormat rangeOfString:@"%c"];
+  if (labelRange.location == NSNotFound) {
+    labelRange2 = labelRange;
+    _labelFormat2 = _labelFormat = nil;
+    pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
+  }
+  pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
+  if (pureCandidateRange.location == NSNotFound) {
+    // this should never happen, but just ensure that Squirrel
+    // would not crash when such edge case occurs...
+    _labelFormat = candidateFormat;
+    labelRange2 = pureCandidateRange;
+    _labelFormat2 = nil;
+  } else {
+    if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
+      // '%@' is at the end, so label2 does not exist
+      labelRange2 = NSMakeRange(NSNotFound, 0);
+      _labelFormat2 = nil;
+      // fix label1, everything other than '%@' is label1
+      if (pureCandidateRange.location > 0) {
+        labelRange.location = 0;
+        labelRange.length = pureCandidateRange.location;
+      } else {
+        labelRange = NSMakeRange(NSNotFound, 0);
+      }
+    } else {
+      if (pureCandidateRange.location > 0) {
+        labelRange = NSMakeRange(0, pureCandidateRange.location);
+      } else {
+        labelRange = NSMakeRange(NSNotFound, 0);
+      }
+      labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange),
+                                candidateFormat.length -
+                                    NSMaxRange(pureCandidateRange));
+      _labelFormat2 = [candidateFormat substringWithRange:labelRange2];
+    }
+    if (labelRange.location != NSNotFound) {
+      _labelFormat = [candidateFormat substringWithRange:labelRange];
+    } else {
+      _labelFormat = nil;
+    }
+  }
+}
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -964,57 +1016,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
 
   SquirrelTheme *theme = _view.currentTheme;
 
-  NSString *candidateFormat = theme.candidateFormat;
-  NSRange labelRange, labelRange2, pureCandidateRange;
-  NSString *labelFormat, *labelFormat2;
-  {
-    // in our candiate format, everything other than '%@' is
-    // considered as a part of the label
-
-    labelRange = [candidateFormat rangeOfString:@"%c"];
-    if (labelRange.location == NSNotFound) {
-      labelRange2 = labelRange;
-      labelFormat2 = labelFormat = nil;
-      pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
-    }
-    pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
-    if (pureCandidateRange.location == NSNotFound) {
-      // this should never happen, but just ensure that Squirrel
-      // would not crash when such edge case occurs...
-      labelFormat = candidateFormat;
-      labelRange2 = pureCandidateRange;
-      labelFormat2 = nil;
-    } else {
-      if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
-        // '%@' is at the end, so label2 does not exist
-        labelRange2 = NSMakeRange(NSNotFound, 0);
-        labelFormat2 = nil;
-        // fix label1, everything other than '%@' is label1
-        if (pureCandidateRange.location > 0) {
-          labelRange.location = 0;
-          labelRange.length = pureCandidateRange.location;
-        } else {
-          labelRange = NSMakeRange(NSNotFound, 0);
-        }
-      } else {
-        if (pureCandidateRange.location > 0) {
-          labelRange = NSMakeRange(0, pureCandidateRange.location);
-        } else {
-          labelRange = NSMakeRange(NSNotFound, 0);
-        }
-        labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange),
-                                  candidateFormat.length -
-                                      NSMaxRange(pureCandidateRange));
-        labelFormat2 = [candidateFormat substringWithRange:labelRange2];
-      }
-      if (labelRange.location != NSNotFound) {
-        labelFormat = [candidateFormat substringWithRange:labelRange];
-      } else {
-        labelFormat = nil;
-      }
-    }
-  }
-
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
   _preeditRange = NSMakeRange(NSNotFound, 0);
@@ -1076,8 +1077,9 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
         (i == index) ? theme.commentHighlightedAttrs : theme.commentAttrs;
     CGFloat labelWidth = 0.0;
     
-    if (labelRange.location != NSNotFound) {
+    if (theme.labelFormat != nil) {
       NSString *labelString;
+      NSString *labelFormat = theme.labelFormat;
       if (labels.count > 1 && i < labels.count) {
         labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
         labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
@@ -1117,8 +1119,9 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
     }
 
-    if (labelRange2.location != NSNotFound) {
+    if (theme.labelFormat2 != nil) {
       NSString *labelString2;
+      NSString *labelFormat2 = [theme.labelFormat2 copy];
       if (labels.count > 1 && i < labels.count) {
         labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
         labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]].precomposedStringWithCanonicalMapping;
@@ -1638,6 +1641,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
            inlinePreedit:inlinePreedit];
 
   theme.native = isNative;
-  theme.candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
+  [theme setCandidateFormat: candidateFormat ? candidateFormat : kDefaultCandidateFormat];
 }
 @end
