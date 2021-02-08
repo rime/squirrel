@@ -1473,6 +1473,9 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   if (labelFontSize == 0) {
     labelFontSize = fontSize;
   }
+  if (commentFontSize == 0) {
+    commentFontSize = fontSize;
+  }
   NSFontDescriptor *fontDescriptor = nil;
   NSFont *font = nil;
   if (fontName != nil) {
