@@ -975,31 +975,41 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     if (labelRange.location == NSNotFound) {
       labelRange2 = labelRange;
       labelFormat2 = labelFormat = nil;
-      pureCandidateRange = NSMakeRange(0, candidateFormat.length);
-    } else {
       pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
       if (pureCandidateRange.location == NSNotFound) {
-        // this should never happen, but just ensure that Squirrel
-        // would not crash when such edge case occurs...
-        labelFormat = candidateFormat;
-        labelRange2 = pureCandidateRange;
+        pureCandidateRange = NSMakeRange(0, candidateFormat.length);
+      }
+    }
+    pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
+    if (pureCandidateRange.location == NSNotFound) {
+      // this should never happen, but just ensure that Squirrel
+      // would not crash when such edge case occurs...
+      labelFormat = candidateFormat;
+      labelRange2 = pureCandidateRange;
+      labelFormat2 = nil;
+    } else {
+      if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
+        // '%@' is at the end, so label2 does not exist
+        labelRange2 = NSMakeRange(NSNotFound, 0);
         labelFormat2 = nil;
+        // fix label1, everything other than '%@' is label1
+        labelRange.location = 0;
+        labelRange.length = pureCandidateRange.location;
       } else {
-        if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
-          // '%@' is at the end, so label2 does not exist
-          labelRange2 = NSMakeRange(NSNotFound, 0);
-          labelFormat2 = nil;
-          // fix label1, everything other than '%@' is label1
-          labelRange.location = 0;
-          labelRange.length = pureCandidateRange.location;
-        } else {
+        if (pureCandidateRange.location > 0) {
           labelRange = NSMakeRange(0, pureCandidateRange.location);
-          labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange),
-                                    candidateFormat.length -
-                                        NSMaxRange(pureCandidateRange));
-          labelFormat2 = [candidateFormat substringWithRange:labelRange2];
+        } else {
+          labelRange = NSMakeRange(NSNotFound, 0);
         }
+        labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange),
+                                  candidateFormat.length -
+                                      NSMaxRange(pureCandidateRange));
+        labelFormat2 = [candidateFormat substringWithRange:labelRange2];
+      }
+      if (labelRange.location != NSNotFound) {
         labelFormat = [candidateFormat substringWithRange:labelRange];
+      } else {
+        labelFormat = nil;
       }
     }
   }
@@ -1058,29 +1068,28 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   NSUInteger i;
   for (i = 0; i < candidates.count; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
-
-    NSString *labelString;
-    if (labels.count > 1 && i < labels.count) {
-      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-      labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
-    } else if (labels.count == 1 && i < [labels[0] length]) {
-      // custom: A. B. C...
-      char labelCharacter = [labels[0] characterAtIndex:i];
-      labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
-    } else {
-      // default: 1. 2. 3...
-      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-      labelString = [NSString stringWithFormat:labelFormat, i+1];
-    }
-
     NSDictionary *attrs = (i == index) ? theme.highlightedAttrs : theme.attrs;
     NSDictionary *labelAttrs =
         (i == index) ? theme.labelHighlightedAttrs : theme.labelAttrs;
     NSDictionary *commentAttrs =
         (i == index) ? theme.commentHighlightedAttrs : theme.commentAttrs;
-
     CGFloat labelWidth = 0.0;
+    
     if (labelRange.location != NSNotFound) {
+      NSString *labelString;
+      if (labels.count > 1 && i < labels.count) {
+        labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+      } else if (labels.count == 1 && i < [labels[0] length]) {
+        // custom: A. B. C...
+        char labelCharacter = [labels[0] characterAtIndex:i];
+        labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
+      } else {
+        // default: 1. 2. 3...
+        labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString = [NSString stringWithFormat:labelFormat, i+1];
+      }
+
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
@@ -1099,9 +1108,13 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     [line appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:candidate.precomposedStringWithCanonicalMapping
                                          attributes:attrs]];
+    NSUInteger candidateEnd = line.length;
     // Use left-to-right marks to prevent right-to-left text from changing the
     // layout of non-candidate text.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
+    if (theme.vertical) {
+      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
+    }
 
     if (labelRange2.location != NSNotFound) {
       NSString *labelString2;
@@ -1121,6 +1134,10 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
                 [[NSAttributedString alloc]
                     initWithString:labelString2
                         attributes:labelAttrs]];
+      if (theme.vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(candidateEnd, line.length-candidateEnd));
+      }
+      candidateEnd = line.length;
     }
 
     if (i < comments.count && [comments[i] length] != 0) {
@@ -1131,6 +1148,9 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:comment.precomposedStringWithCanonicalMapping
                                            attributes:commentAttrs]];
+      if (theme.vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(candidateEnd, line.length-candidateEnd));
+      }
     }
 
 
@@ -1152,7 +1172,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       paragraphStyleCandidate.lineSpacing = theme.linespace;
     }
     if (theme.vertical) {
-      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
     }
     paragraphStyleCandidate.headIndent = labelWidth;
