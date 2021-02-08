@@ -976,9 +976,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       labelRange2 = labelRange;
       labelFormat2 = labelFormat = nil;
       pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
-      if (pureCandidateRange.location == NSNotFound) {
-        pureCandidateRange = NSMakeRange(0, candidateFormat.length);
-      }
     }
     pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
     if (pureCandidateRange.location == NSNotFound) {
@@ -993,8 +990,12 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
         labelRange2 = NSMakeRange(NSNotFound, 0);
         labelFormat2 = nil;
         // fix label1, everything other than '%@' is label1
-        labelRange.location = 0;
-        labelRange.length = pureCandidateRange.location;
+        if (pureCandidateRange.location > 0) {
+          labelRange.location = 0;
+          labelRange.length = pureCandidateRange.location;
+        } else {
+          labelRange = NSMakeRange(NSNotFound, 0);
+        }
       } else {
         if (pureCandidateRange.location > 0) {
           labelRange = NSMakeRange(0, pureCandidateRange.location);
@@ -1143,7 +1144,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     if (i < comments.count && [comments[i] length] != 0) {
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@" "
-                                           attributes:attrs]];
+                                           attributes:commentAttrs]];
       NSString *comment = comments[i];
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:comment.precomposedStringWithCanonicalMapping
