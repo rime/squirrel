@@ -965,41 +965,40 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   SquirrelTheme *theme = _view.currentTheme;
 
   NSString *candidateFormat = theme.candidateFormat;
-  NSRange labelRange, labelRange2, pureCandidateRange;
-  NSString *labelFormat, *labelFormat2;
+  NSRange labelRangeBefore, labelRangeAfter, pureCandidateRange;
+  NSString *labelFormatBefore, *labelFormatAfter;
   {
-    // in our candiate format, everything other than '%@' is
+    // in the candidate format, everything other than '%@' is
     // considered as a part of the label
 
-    labelRange = [candidateFormat rangeOfString:@"%c"];
-    if (labelRange.location == NSNotFound) {
-      labelRange2 = labelRange;
-      labelFormat2 = labelFormat = nil;
+    labelRangeBefore = [candidateFormat rangeOfString:@"%c"];
+    if (labelRangeBefore.location == NSNotFound) {
+      labelRangeAfter = NSMakeRange(NSNotFound, 0);
+      labelFormatBefore = labelFormatAfter = nil;
       pureCandidateRange = NSMakeRange(0, candidateFormat.length);
     } else {
       pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
       if (pureCandidateRange.location == NSNotFound) {
         // this should never happen, but just ensure that Squirrel
         // would not crash when such edge case occurs...
-        labelFormat = candidateFormat;
-        labelRange2 = pureCandidateRange;
-        labelFormat2 = nil;
+        labelFormatBefore = candidateFormat;
+        labelRangeAfter = NSMakeRange(NSNotFound, 0);
+        labelFormatAfter = nil;
       } else {
+        // everything before '%@' is a label
+        labelRangeBefore = NSMakeRange(0, pureCandidateRange.location);
+        labelFormatBefore = [candidateFormat substringWithRange:labelRangeBefore];
         if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
-          // '%@' is at the end, so label2 does not exist
-          labelRange2 = NSMakeRange(NSNotFound, 0);
-          labelFormat2 = nil;
-          // fix label1, everything other than '%@' is label1
-          labelRange.location = 0;
-          labelRange.length = pureCandidateRange.location;
+          // '%@' is at the end, so label after does not exist
+          labelRangeAfter = NSMakeRange(NSNotFound, 0);
+          labelFormatAfter = nil;
         } else {
-          labelRange = NSMakeRange(0, pureCandidateRange.location);
-          labelRange2 = NSMakeRange(NSMaxRange(pureCandidateRange),
-                                    candidateFormat.length -
+          // anything after '%@' is a label
+          labelRangeAfter = NSMakeRange(NSMaxRange(pureCandidateRange),
+                                        candidateFormat.length -
                                         NSMaxRange(pureCandidateRange));
-          labelFormat2 = [candidateFormat substringWithRange:labelRange2];
+          labelFormatAfter = [candidateFormat substringWithRange:labelRangeAfter];
         }
-        labelFormat = [candidateFormat substringWithRange:labelRange];
       }
     }
   }
@@ -1059,20 +1058,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   for (i = 0; i < candidates.count; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
 
-    NSString *labelString;
-    if (labels.count > 1 && i < labels.count) {
-      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-      labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
-    } else if (labels.count == 1 && i < [labels[0] length]) {
-      // custom: A. B. C...
-      char labelCharacter = [labels[0] characterAtIndex:i];
-      labelString = [NSString stringWithFormat:labelFormat, labelCharacter];
-    } else {
-      // default: 1. 2. 3...
-      labelFormat = [labelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-      labelString = [NSString stringWithFormat:labelFormat, i+1];
-    }
-
     NSDictionary *attrs = (i == index) ? theme.highlightedAttrs : theme.attrs;
     NSDictionary *labelAttrs =
         (i == index) ? theme.labelHighlightedAttrs : theme.labelAttrs;
@@ -1080,7 +1065,20 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
         (i == index) ? theme.commentHighlightedAttrs : theme.commentAttrs;
 
     CGFloat labelWidth = 0.0;
-    if (labelRange.location != NSNotFound) {
+    if (labelRangeBefore.location != NSNotFound) {
+      NSString *labelString;
+      if (labels.count > 1 && i < labels.count) {
+        NSString *labelFormat = [labelFormatBefore stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+      } else if (labels.count == 1 && i < [labels[0] length]) {
+        // custom: A. B. C...
+        char labelCharacter = [labels[0] characterAtIndex:i];
+        labelString = [NSString stringWithFormat:labelFormatBefore, labelCharacter];
+      } else {
+        // default: 1. 2. 3...
+        NSString *labelFormat = [labelFormatBefore stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString = [NSString stringWithFormat:labelFormat, i+1];
+      }
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
@@ -1103,23 +1101,23 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     // layout of non-candidate text.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
 
-    if (labelRange2.location != NSNotFound) {
-      NSString *labelString2;
+    if (labelRangeAfter.location != NSNotFound) {
+      NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
-        labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-        labelString2 = [NSString stringWithFormat:labelFormat2, labels[i]].precomposedStringWithCanonicalMapping;
+        NSString *labelFormat = [labelFormatAfter stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
-        labelString2 = [NSString stringWithFormat:labelFormat2, labelCharacter];
+        labelString = [NSString stringWithFormat:labelFormatAfter, labelCharacter];
       } else {
         // default: 1. 2. 3...
-        labelFormat2 = [labelFormat2 stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-        labelString2 = [NSString stringWithFormat:labelFormat2, i+1];
+        NSString *labelFormat = [labelFormatAfter stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        labelString = [NSString stringWithFormat:labelFormat, i+1];
       }
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:labelString2
+                    initWithString:labelString
                         attributes:labelAttrs]];
     }
 
