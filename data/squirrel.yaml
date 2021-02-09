@@ -11,9 +11,6 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
-# Deprecated since 0.27, Squirrel 0.10
-#show_notifications_via_notification_center: false
-
 style:
   color_scheme: native
   # optional: define both light and dark color schemes to match system appearance
@@ -39,11 +36,14 @@ style:
 
   #candidate_format: '%c. %@'
 
-  #base_offset: 0
+  # adjust the base line of vertical text
+  #base_offset: 6
   font_face: 'Lucida Grande'
   font_point: 21
   #label_font_face: 'Lucida Grande'
   label_font_point: 18
+  #comment_font_face: 'Lucida Grande'
+  #comment_font_point: 18
 
 preset_color_schemes:
   native:
