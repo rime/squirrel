@@ -1100,6 +1100,9 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     // Use left-to-right marks to prevent right-to-left text from changing the
     // layout of non-candidate text.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
+    if (theme.vertical) {
+      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
+    }
 
     if (labelRangeAfter.location != NSNotFound) {
       NSString *labelString;
@@ -1115,22 +1118,29 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
         NSString *labelFormat = [labelFormatAfter stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
         labelString = [NSString stringWithFormat:labelFormat, i+1];
       }
+      NSUInteger labelAfterStart = line.length;
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
                         attributes:labelAttrs]];
+      if (theme.vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(labelAfterStart, line.length-labelAfterStart));
+      }
     }
 
     if (i < comments.count && [comments[i] length] != 0) {
+      NSUInteger commentStart = line.length;
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:@" "
-                                           attributes:attrs]];
+                                           attributes:commentAttrs]];
       NSString *comment = comments[i];
       [line appendAttributedString:[[NSAttributedString alloc]
                                        initWithString:comment.precomposedStringWithCanonicalMapping
                                            attributes:commentAttrs]];
+      if (theme.vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(commentStart, line.length-commentStart));
+      }
     }
-
 
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
                                         initWithString:(theme.linear ? @"  " : @"\n")
@@ -1150,7 +1160,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       paragraphStyleCandidate.lineSpacing = theme.linespace;
     }
     if (theme.vertical) {
-      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
     }
     paragraphStyleCandidate.headIndent = labelWidth;
