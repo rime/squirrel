@@ -85,7 +85,6 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
   if (labelRange.location == NSNotFound) {
     labelRange2 = labelRange;
     _labelFormat2 = _labelFormat = nil;
-    pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
   }
   pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
   if (pureCandidateRange.location == NSNotFound) {
