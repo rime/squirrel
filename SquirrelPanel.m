@@ -11,7 +11,6 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @interface SquirrelTheme : NSObject
 
 @property(nonatomic, assign) BOOL native;
-@property(nonatomic, copy) NSString* candidateFormat;
 
 @property(nonatomic, strong, readonly) NSColor *backgroundColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedStripColor;
@@ -40,6 +39,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, strong, readonly) NSDictionary *preeditHighlightedAttrs;
 @property(nonatomic, strong, readonly) NSParagraphStyle *paragraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
+
+@property(nonatomic, strong, readonly) NSString *prefixLabelFormat, *suffixLabelFormat;
+
+- (void)setCandidateFormat:(NSString *)candidateFormat;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -73,6 +76,32 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
 @end
 
 @implementation SquirrelTheme
+
+- (void)setCandidateFormat:(NSString *)candidateFormat {
+  // in the candiate format, everything other than '%@' is considered part of the label
+  NSRange candidateRange = [candidateFormat rangeOfString:@"%@"];
+  if (candidateRange.location == NSNotFound) {
+    _prefixLabelFormat = candidateFormat;
+    _suffixLabelFormat = nil;
+    return;
+  }
+  if (candidateRange.location > 0) {
+    // everything before '%@' is prefix label
+    NSRange prefixLabelRange = NSMakeRange(0, candidateRange.location);
+    _prefixLabelFormat = [candidateFormat substringWithRange:prefixLabelRange];
+  } else {
+    _prefixLabelFormat = nil;
+  }
+  if (NSMaxRange(candidateRange) < candidateFormat.length) {
+    // everything after '%@' is suffix label
+    NSRange suffixLabelRange = NSMakeRange(NSMaxRange(candidateRange),
+                                           candidateFormat.length - NSMaxRange(candidateRange));
+    _suffixLabelFormat = [candidateFormat substringWithRange:suffixLabelRange];
+  } else {
+    // '%@' is at the end, so suffix label does not exist
+    _suffixLabelFormat = nil;
+  }
+}
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -752,7 +781,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
   SquirrelTheme *theme = [_view selectTheme:isDark];
   theme.native = YES;
   theme.candidateFormat = kDefaultCandidateFormat;
-  
+
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
 
   NSMutableDictionary *attrs = [[NSMutableDictionary alloc] init];
@@ -964,45 +993,6 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
 
   SquirrelTheme *theme = _view.currentTheme;
 
-  NSString *candidateFormat = theme.candidateFormat;
-  NSRange labelRangeBefore, labelRangeAfter, pureCandidateRange;
-  NSString *labelFormatBefore, *labelFormatAfter;
-  {
-    // in the candidate format, everything other than '%@' is
-    // considered as a part of the label
-
-    labelRangeBefore = [candidateFormat rangeOfString:@"%c"];
-    if (labelRangeBefore.location == NSNotFound) {
-      labelRangeAfter = NSMakeRange(NSNotFound, 0);
-      labelFormatBefore = labelFormatAfter = nil;
-      pureCandidateRange = NSMakeRange(0, candidateFormat.length);
-    } else {
-      pureCandidateRange = [candidateFormat rangeOfString:@"%@"];
-      if (pureCandidateRange.location == NSNotFound) {
-        // this should never happen, but just ensure that Squirrel
-        // would not crash when such edge case occurs...
-        labelFormatBefore = candidateFormat;
-        labelRangeAfter = NSMakeRange(NSNotFound, 0);
-        labelFormatAfter = nil;
-      } else {
-        // everything before '%@' is a label
-        labelRangeBefore = NSMakeRange(0, pureCandidateRange.location);
-        labelFormatBefore = [candidateFormat substringWithRange:labelRangeBefore];
-        if (NSMaxRange(pureCandidateRange) >= candidateFormat.length) {
-          // '%@' is at the end, so label after does not exist
-          labelRangeAfter = NSMakeRange(NSNotFound, 0);
-          labelFormatAfter = nil;
-        } else {
-          // anything after '%@' is a label
-          labelRangeAfter = NSMakeRange(NSMaxRange(pureCandidateRange),
-                                        candidateFormat.length -
-                                        NSMaxRange(pureCandidateRange));
-          labelFormatAfter = [candidateFormat substringWithRange:labelRangeAfter];
-        }
-      }
-    }
-  }
-
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
   _preeditRange = NSMakeRange(NSNotFound, 0);
@@ -1063,22 +1053,23 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
         (i == index) ? theme.labelHighlightedAttrs : theme.labelAttrs;
     NSDictionary *commentAttrs =
         (i == index) ? theme.commentHighlightedAttrs : theme.commentAttrs;
-
     CGFloat labelWidth = 0.0;
-    if (labelRangeBefore.location != NSNotFound) {
+
+    if (theme.prefixLabelFormat != nil) {
       NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
-        NSString *labelFormat = [labelFormatBefore stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
         labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
-        labelString = [NSString stringWithFormat:labelFormatBefore, labelCharacter];
+        labelString = [NSString stringWithFormat:theme.prefixLabelFormat, labelCharacter];
       } else {
         // default: 1. 2. 3...
-        NSString *labelFormat = [labelFormatBefore stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
         labelString = [NSString stringWithFormat:labelFormat, i+1];
       }
+
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
@@ -1104,27 +1095,27 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
     }
 
-    if (labelRangeAfter.location != NSNotFound) {
+    if (theme.suffixLabelFormat != nil) {
       NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
-        NSString *labelFormat = [labelFormatAfter stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
+        NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
         labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
-        labelString = [NSString stringWithFormat:labelFormatAfter, labelCharacter];
+        labelString = [NSString stringWithFormat:theme.suffixLabelFormat, labelCharacter];
       } else {
         // default: 1. 2. 3...
-        NSString *labelFormat = [labelFormatAfter stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
+        NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
         labelString = [NSString stringWithFormat:labelFormat, i+1];
       }
-      NSUInteger labelAfterStart = line.length;
+      NSUInteger suffixLabelStart = line.length;
       [line appendAttributedString:
                 [[NSAttributedString alloc]
                     initWithString:labelString
                         attributes:labelAttrs]];
       if (theme.vertical) {
-        convertToVerticalGlyph(line, NSMakeRange(labelAfterStart, line.length-labelAfterStart));
+        convertToVerticalGlyph(line, NSMakeRange(suffixLabelStart, line.length-suffixLabelStart));
       }
     }
 
@@ -1172,7 +1163,7 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     }
     [text appendAttributedString:line];
   }
-  
+
   // Change Emoji font size
   NSFont *currentFont = theme.attrs[NSFontAttributeName];
   changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.8), currentFont.pointSize - 2));
@@ -1566,7 +1557,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  
+
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
 
   backgroundColor = backgroundColor ? backgroundColor : [NSColor windowBackgroundColor];
@@ -1628,6 +1619,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
            inlinePreedit:inlinePreedit];
 
   theme.native = isNative;
-  theme.candidateFormat = candidateFormat ? candidateFormat : kDefaultCandidateFormat;
+  [theme setCandidateFormat: (candidateFormat ? candidateFormat : kDefaultCandidateFormat)];
 }
 @end
