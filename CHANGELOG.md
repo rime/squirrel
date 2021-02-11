@@ -1,3 +1,35 @@
+<a name="0.15.1"></a>
+## 0.15.1 (2021-02-11)
+
+
+#### 主要更新
+
+* 升級核心算法庫 [librime 1.7.3](https://github.com/rime/librime/blob/master/CHANGELOG.md#173-2021-02-11)
+  * 修復若干內存安全問題
+  * 修復並擊輸入法回車鍵上屏字符按鍵序列
+
+* 指定候選註釋文字的字體、字號 `style/comment_font_face`, `style/comment_font_point`
+* 修復無數字序號的候選樣式 `style/candidate_format`
+* 優化界面代碼
+
+#### Performance
+
+* **SquirrelPanel:**  decompose candidate_format when loading theme ([803f6421](https://github.com/rime/squirrel/commit/803f64218384b505cbea1289af85a2b65f8f83f5), closes [#516](https://github.com/rime/squirrel/issues/516))
+
+#### Bug Fixes
+
+*   avoid implicit lossy integer transform ([da4fcbf2](https://github.com/rime/squirrel/commit/da4fcbf2b77ca8298eaa8043937ee2c98f95ee0f))
+* **SquirrelPanel:**
+  *  vertical glyph in comment text with smaller font ([c2e6f434](https://github.com/rime/squirrel/commit/c2e6f4347413a67278ab12eb388d5225e02e3fb1), closes [#522](https://github.com/rime/squirrel/issues/522))
+  *  unspecified comment_font_point falls back to font_point ([8194d95a](https://github.com/rime/squirrel/commit/8194d95a82554c453f84ff4dd30eaa51affd10ae))
+* **SquirrelPanel.m:**  error with candidate_format without the label part ([d2b839b6](https://github.com/rime/squirrel/commit/d2b839b6b5c415aa1cdd28e1ef7921949b90ee21), closes [#516](https://github.com/rime/squirrel/issues/516))
+
+#### Features
+
+* **SquirrelPanel:**  comment​ font config (#511) ([3d0ab6a2](https://github.com/rime/squirrel/commit/3d0ab6a209c31c0ac2b97bd8ab1bddcc269aa9bb))
+
+
+
 <a name="0.15.0"></a>
 ## 0.15.0 (2021-02-06)
 
