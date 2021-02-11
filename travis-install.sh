@@ -1,6 +1,6 @@
 #!/bin/bash
 
-rime_version=1.7.2
+rime_version=1.7.3
 rime_variant='rime-with-plugins'
 
 download_archive="${rime_variant}-${rime_version}-osx.zip"
