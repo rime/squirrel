@@ -26,7 +26,7 @@
 
 #### Features
 
-* **SquirrelPanel:**  comment​ font config (#511) ([3d0ab6a2](https://github.com/rime/squirrel/commit/3d0ab6a209c31c0ac2b97bd8ab1bddcc269aa9bb))
+* **SquirrelPanel:**  comment font config (#511) ([3d0ab6a2](https://github.com/rime/squirrel/commit/3d0ab6a209c31c0ac2b97bd8ab1bddcc269aa9bb))
 
 
 
