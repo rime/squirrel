@@ -37,7 +37,7 @@
       "size" : "128x128"
     },
     {
-      "filename" : "rime-257.png",
+      "filename" : "rime-256.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "256x256"
@@ -49,7 +49,7 @@
       "size" : "256x256"
     },
     {
-      "filename" : "rime-513.png",
+      "filename" : "rime-512.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "512x512"
