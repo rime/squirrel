@@ -90,7 +90,7 @@ ls -l ${appcast_file}
 
 # for testing appcast push locally.
 appcast_file='debug-appcast.xml'
-download_url="${PROJECT_ROOT}/package/${target_archive}"
+download_url="file://${PROJECT_ROOT}/package/${target_archive}"
 
 cat > "${appcast_file}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
