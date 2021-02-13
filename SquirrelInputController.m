@@ -307,12 +307,13 @@ const int N_KEY_ROLL_OVER = 50;
 -(void)commitComposition:(id)sender
 {
   //NSLog(@"commitComposition:");
-  // - FIXME: chrome's address bar issues this callback when showing suggestions.
-  if ([[sender bundleIdentifier] isEqualToString:@"com.google.Chrome"])
-    return;
-  // force committing existing Rime composition
-  if (_session && rime_get_api()->commit_composition(_session)) {
-    [self rimeConsumeCommittedText];
+  // commit raw input
+  if (_session) {
+    const char* raw_input = rime_get_api()->get_input(_session);
+    if (raw_input) {
+      [self commitString: @(raw_input)];
+      rime_get_api()->clear_composition(_session);
+    }
   }
 }
 
