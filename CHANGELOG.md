@@ -1,3 +1,22 @@
+<a name="0.15.2"></a>
+## 0.15.2 (2021-02-13)
+
+
+#### 主要更新
+
+* 修復工單 [#513](https://github.com/rime/squirrel/issues/513)
+* 重製應用圖標，提升暗色背景下的可見度
+
+#### Bug Fixes
+
+* **SquirrelPanel:**  use of uninitialized local variable linear, vertical ([e8b87a4f](https://github.com/rime/squirrel/commit/e8b87a4f97994001c6889ecc1d43fa38e7589e66))
+
+#### Features
+
+* **RimeIcon:**  updated app icon ([76d742b8](https://github.com/rime/squirrel/commit/76d742b8ee271c24dae5f98251a93930e57279ec))
+
+
+
 <a name="0.15.1"></a>
 ## 0.15.1 (2021-02-11)
 
