@@ -1278,8 +1278,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 }
 
 +(void)updateTheme:(SquirrelTheme *)theme withConfig:(SquirrelConfig *)config forDarkMode:(BOOL)isDark {
-  BOOL linear;
-  BOOL vertical;
+  BOOL linear = NO;
+  BOOL vertical = NO;
   updateCandidateListLayout(&linear, config, @"style");
   updateTextOrientation(&vertical, config, @"style");
   BOOL inlinePreedit = [config getBool:@"style/inline_preedit"];
@@ -1619,6 +1619,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
            inlinePreedit:inlinePreedit];
 
   theme.native = isNative;
-  [theme setCandidateFormat: (candidateFormat ? candidateFormat : kDefaultCandidateFormat)];
+  theme.candidateFormat = (candidateFormat ? candidateFormat : kDefaultCandidateFormat);
 }
 @end
