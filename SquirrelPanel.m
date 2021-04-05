@@ -746,13 +746,13 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   }
 }
 
-void fixDefaultFont(NSMutableAttributedString *text, NSSet<NSFont *> *fonts) {
+void fixDefaultFont(NSMutableAttributedString *text) {
   [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
   NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
   long i = 0;
   while (i < text.length) {
-    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
-    if (![fonts containsObject:charFont]) {
+    NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
+    if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
       NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
       [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
     }
@@ -1156,11 +1156,7 @@ void fixDefaultFont(NSMutableAttributedString *text, NSSet<NSFont *> *fonts) {
   }
 
   // Fix font rendering
-  fixDefaultFont(text, [NSSet setWithArray:@[
-    theme.attrs[NSFontAttributeName],
-    theme.labelAttrs[NSFontAttributeName],
-    theme.commentAttrs[NSFontAttributeName]
-  ]]);
+  fixDefaultFont(text);
 
   // text done!
   [_view setText:text];
