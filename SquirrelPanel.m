@@ -751,13 +751,10 @@ void fixDefaultFont(NSMutableAttributedString *text, NSSet<NSFont *> *fonts) {
   NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
   long i = 0;
   while (i < text.length) {
-    NSDictionary *charAttr = [text attributesAtIndex:i effectiveRange:&currentFontRange];
-    NSFont *charFont = charAttr[NSFontAttributeName];
+    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
     if (![fonts containsObject:charFont]) {
-      NSMutableDictionary *defaultAttributes = [charAttr mutableCopy];
       NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
-      [defaultAttributes setValue:defaultFont forKey:NSFontAttributeName];
-      [text setAttributes:defaultAttributes range:currentFontRange];
+      [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
     }
     i = currentFontRange.location + currentFontRange.length;
   }
