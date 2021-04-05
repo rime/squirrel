@@ -746,15 +746,18 @@ void convertToVerticalGlyph(NSMutableAttributedString *originalText, NSRange str
   }
 }
 
-void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
+void fixDefaultFont(NSMutableAttributedString *text, NSSet<NSFont *> *fonts) {
   [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
-  NSFont *emojiFont = [NSFont fontWithName:@"AppleColorEmoji" size:emojiFontSize];
   NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
   long i = 0;
   while (i < text.length) {
-    NSFont *charFont = [text attributesAtIndex:i effectiveRange:&currentFontRange][NSFontAttributeName];
-    if ([charFont.fontName isEqualTo: @"AppleColorEmoji"]) {
-      [text addAttributes:@{NSFontAttributeName: emojiFont} range:currentFontRange];
+    NSDictionary *charAttr = [text attributesAtIndex:i effectiveRange:&currentFontRange];
+    NSFont *charFont = charAttr[NSFontAttributeName];
+    if (![fonts containsObject:charFont]) {
+      NSMutableDictionary *defaultAttributes = [charAttr mutableCopy];
+      NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
+      [defaultAttributes setValue:defaultFont forKey:NSFontAttributeName];
+      [text setAttributes:defaultAttributes range:currentFontRange];
     }
     i = currentFontRange.location + currentFontRange.length;
   }
@@ -1155,9 +1158,12 @@ void changeEmojiSize(NSMutableAttributedString *text, CGFloat emojiFontSize) {
     [text appendAttributedString:line];
   }
 
-  // Change Emoji font size
-  NSFont *currentFont = theme.attrs[NSFontAttributeName];
-  changeEmojiSize(text, MAX(round(currentFont.pointSize * 0.8), currentFont.pointSize - 2));
+  // Fix font rendering
+  fixDefaultFont(text, [NSSet setWithArray:@[
+    theme.attrs[NSFontAttributeName],
+    theme.labelAttrs[NSFontAttributeName],
+    theme.commentAttrs[NSFontAttributeName]
+  ]]);
 
   // text done!
   [_view setText:text];
