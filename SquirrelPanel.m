@@ -240,6 +240,13 @@ SquirrelTheme *_darkTheme;
   NSRange glyphRange = [_text.layoutManagers[0] glyphRangeForTextContainer:_text.layoutManagers[0].textContainers[0]];
   NSRect rect = [_text.layoutManagers[0] boundingRectForGlyphRange:glyphRange inTextContainer:_text.layoutManagers[0].textContainers[0]];
   CGFloat frameWidth = self.textFrameWidth;
+  __block long actualWidth = 0;
+  [_text.layoutManagers[0] enumerateLineFragmentsForGlyphRange:glyphRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer *textContainer, NSRange glyphRange, BOOL *stop) {
+    if (usedRect.size.width > actualWidth) {
+      actualWidth = usedRect.size.width;
+    }
+  }];
+  rect.size.width = actualWidth;
   rect.origin.x -= frameWidth;
   rect.size.width += frameWidth * 2;
   return rect;
