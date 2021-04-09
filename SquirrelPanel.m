@@ -6,7 +6,7 @@ static const CGFloat kOffsetHeight = 5;
 static const CGFloat kDefaultFontSize = 24;
 static const CGFloat kBlendedBackgroundColorFraction = 1.0 / 5;
 static const NSTimeInterval kShowStatusDuration = 1.2;
-static NSString *const kDefaultCandidateFormat = @"%c. %@";
+static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 
 @interface SquirrelTheme : NSObject
 
