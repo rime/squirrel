@@ -10,6 +10,8 @@
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
 @property(nonatomic, readonly) BOOL inlinePreedit;
+// Show first candidate inline
+@property(nonatomic, readonly) BOOL inlineCandidate;
 
 // position of input caret on screen.
 @property(nonatomic, assign) NSRect position;
