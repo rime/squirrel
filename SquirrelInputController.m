@@ -29,6 +29,7 @@ const int N_KEY_ROLL_OVER = 50;
   RimeSessionId _session;
   NSString *_schemaId;
   BOOL _inlinePreedit;
+  BOOL _inlineCandidate;
   // for chord-typing
   int _chordKeyCodes[N_KEY_ROLL_OVER];
   int _chordModifiers[N_KEY_ROLL_OVER];
@@ -497,7 +498,8 @@ const int N_KEY_ROLL_OVER = 50;
       // inline preedit
       _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
                         !rime_get_api()->get_option(_session, "no_inline")) ||
-      rime_get_api()->get_option(_session, "inline");
+                      rime_get_api()->get_option(_session, "inline");
+      _inlineCandidate = NSApp.squirrelAppDelegate.panel.inlineCandidate;
       // if not inline, embed soft cursor in preedit string
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
@@ -514,15 +516,32 @@ const int N_KEY_ROLL_OVER = 50;
     NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
     NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
     NSRange selRange = NSMakeRange(start, end - start);
-    if (_inlinePreedit) {
-      [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
-    }
-    else {
-      NSRange empty = {0, 0};
-      // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
-      // note this is a full-shape space U+3000; using half shape characters like "..." will result in
-      // an unstable baseline when composing Chinese characters.
-      [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+    if (_inlineCandidate) {
+      const char *condidatePreview = ctx.commit_text_preview;
+      NSString *condidatePreviewText = condidatePreview ? @(condidatePreview) : @"";
+      if (_inlinePreedit) {
+        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
+          condidatePreviewText = [condidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
+        }
+        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:caretPos > selRange.location ? selRange.location : selRange.location];
+      } else {
+        if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
+          condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
+        } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
+          condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
+        }
+        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:caretPos > selRange.location ? selRange.location : selRange.location-1];
+      }
+    } else {
+      if (_inlinePreedit) {
+        [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
+      } else {
+        NSRange empty = {0, 0};
+        // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
+        // note this is a full-shape space U+3000; using half shape characters like "..." will result in
+        // an unstable baseline when composing Chinese characters.
+        [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+      }
     }
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
