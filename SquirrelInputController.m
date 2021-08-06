@@ -523,14 +523,14 @@ const int N_KEY_ROLL_OVER = 50;
         if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
           condidatePreviewText = [condidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
         }
-        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:caretPos > selRange.location ? selRange.location : selRange.location];
+        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:condidatePreviewText.length-(preeditText.length-caretPos)];
       } else {
         if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
           condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
         } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
           condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
         }
-        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:caretPos > selRange.location ? selRange.location : selRange.location-1];
+        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:condidatePreviewText.length];
       }
     } else {
       if (_inlinePreedit) {
