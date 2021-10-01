@@ -896,7 +896,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     if (@available(macOS 10.14, *)) {
       _back = [[NSVisualEffectView alloc] init];
       _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      _back.material = NSVisualEffectMaterialFullScreenUI;
+      _back.material = NSVisualEffectMaterialHUDWindow;
       _back.state = NSVisualEffectStateActive;
       _back.wantsLayer = YES;
       _back.layer.mask = _view.shape;
@@ -1009,35 +1009,23 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     windowRect.origin.y = NSMinY(_screenRect);
   }
   [self setFrame:windowRect display:YES];
+  // rotate the view, the core in vertical mode!
+  if (theme.vertical) {
+    self.contentView.boundsRotation = -90.0;
+    [self.contentView setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
+  } else {
+    self.contentView.boundsRotation = 0;
+    [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
+  }
   BOOL translucency = theme.translucency;
-  [_view setFrame:_view.superview.bounds];
+  [_view setFrame:self.contentView.bounds];
   if (@available(macOS 10.14, *)) {
     if (translucency) {
-      [_back setFrame:_back.superview.bounds];
+      [_back setFrame:self.contentView.bounds];
       _back.appearance = NSApp.effectiveAppearance;
       [_back setHidden:NO];
     } else {
       [_back setHidden:YES];
-    }
-  }
-  // rotate the view, the core in vertical mode!
-  if (theme.vertical) {
-    _view.boundsRotation = 90.0;
-    [_view setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
-    if (@available(macOS 10.14, *)) {
-      if (translucency) {
-        _back.boundsRotation = 90.0;
-        [_back setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
-      }
-    }
-  } else {
-    _view.boundsRotation = 0;
-    [_view setBoundsOrigin:NSMakePoint(0, 0)];
-    if (@available(macOS 10.14, *)) {
-      if (translucency) {
-        _back.boundsRotation = 0;
-        [_back setBoundsOrigin:NSMakePoint(0, 0)];
-      }
     }
   }
   self.alphaValue = theme.alpha;
