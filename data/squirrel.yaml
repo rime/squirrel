@@ -294,7 +294,7 @@ preset_color_schemes:
     name: 曬經・日／Solarized Light
     author: 雪齋 <lyc20041@gmail.com>
     color_space: display_p3 # Only available on macOS 10.12+
-    back_color: 0x66E5F6FB                  #Lab 97 , 0 , 10
+    back_color: 0xF0E5F6FB                  #Lab 97 , 0 , 10
     border_color: 0xEDFFFF                  #Lab 100, 0 , 10
     preedit_back_color: 0x403516            #Lab 20 ,-12,-12
     candidate_text_color: 0x595E00          #Lab 35 ,-35,-5
@@ -311,7 +311,7 @@ preset_color_schemes:
   solarized_dark:
     name: 曬經・月／Solarized Dark
     author: 雪齋 <lyc20041@gmail.com>
-    back_color: 0x66352A0A                  #Lab 15 ,-12,-12
+    back_color: 0xF0352A0A                  #Lab 15 ,-12,-12
     border_color: 0x2A1F00                  #Lab 10 ,-12,-12
     preedit_back_color: 0xD7E8ED            #Lab 92 , 0 , 10
     candidate_text_color: 0x7389FF          #Lab 75 , 65, 45
