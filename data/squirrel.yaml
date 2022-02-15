@@ -294,37 +294,36 @@ preset_color_schemes:
     name: 曬經・日／Solarized Light
     author: 雪齋 <lyc20041@gmail.com>
     color_space: display_p3 # Only available on macOS 10.12+
-    back_color: 0xf0E5F6FB #Lab 97, 0, 10
-    border_color: 0xf0EDFFFF #Lab 100, 0, 10
-    preedit_back_color: 0xf0D7E8ED #Lab 92, 0, 10
-    candidate_text_color: 0x3942CB #Lab 50, 65, 45
-    label_color: 0x2566C6 #Lab 55, 45, 65
-    comment_text_color: 0x8144C2 #Lab 50, 65, -5
-    text_color: 0x756E5D #Lab 45, -7, -7
-    hilited_back_color: 0xf0C9DADF #Lab 87, 0, 10
-    hilited_candidate_back_color: 0x403516 #Lab 20, -12, -12
-    hilited_candidate_text_color: 0x989F52 #Lab 60, -35, -5
-    hilited_candidate_label_color: 0xCC8947 #Lab 55, -10, -45
-    hilited_comment_text_color: 0x289989 #Lab 60, -20, 65
-    hilited_text_color: 0xBE706D #Lab 50, 15, -45
+    back_color: 0x66E5F6FB                  #Lab 97 , 0 , 10
+    border_color: 0xEDFFFF                  #Lab 100, 0 , 10
+    preedit_back_color: 0x403516            #Lab 20 ,-12,-12
+    candidate_text_color: 0x595E00          #Lab 35 ,-35,-5
+    label_color: 0xA36407                   #Lab 40 ,-10,-45
+    comment_text_color: 0x005947            #Lab 35 ,-20, 65
+    text_color: 0xA1A095                    #Lab 65 ,-5 ,-2
+    hilited_back_color: 0x4C4022            #Lab 25 ,-12,-12
+    hilited_candidate_back_color: 0xD7E8ED  #Lab 92 , 0 , 10
+    hilited_candidate_text_color: 0x3942CB  #Lab 50 , 65, 45
+    hilited_candidate_label_color: 0x2566C6 #Lab 55 , 45, 65
+    hilited_comment_text_color: 0x8144C2    #Lab 50 , 65,-5
+    hilited_text_color: 0x2C8BAE            #Lab 60 , 10, 65
 
   solarized_dark:
     name: 曬經・月／Solarized Dark
     author: 雪齋 <lyc20041@gmail.com>
-    color_space: display_p3 # Only available on macOS 10.12+
-    back_color: 0xf0352A0A #Lab 15, -12, -12
-    border_color: 0xf02A1F00 #Lab 10, -12, -12
-    preedit_back_color: 0xf0403516 #Lab 20, -12, -12
-    candidate_text_color: 0x989F52 #Lab 60, -35, -5
-    label_color: 0xCC8947 #Lab 55, -10, -45
-    comment_text_color: 0x289989 #Lab 60, -20, 65
-    text_color: 0xA1A095 #Lab 65, -05, -02
-    hilited_back_color: 0xf04C4022 #Lab 25, -12, -12
-    hilited_candidate_back_color: 0xD7E8ED #Lab 92, 0, 10
-    hilited_candidate_text_color: 0x3942CB #Lab 50, 65, 45
-    hilited_candidate_label_color: 0x2566C6 #Lab 55, 45, 65
-    hilited_comment_text_color: 0x8144C2 #Lab 50, 65, -5
-    hilited_text_color: 0x2C8BAE #Lab 60, 10, 65
+    back_color: 0x66352A0A                  #Lab 15 ,-12,-12
+    border_color: 0x2A1F00                  #Lab 10 ,-12,-12
+    preedit_back_color: 0xD7E8ED            #Lab 92 , 0 , 10
+    candidate_text_color: 0x7389FF          #Lab 75 , 65, 45
+    label_color: 0x478DF4                   #Lab 70 , 45, 65
+    comment_text_color: 0xC38AFF            #Lab 75 , 65,-5
+    text_color: 0x756E5D                    #Lab 45 ,-7 ,-7
+    hilited_back_color: 0xC9DADF            #Lab 87 , 0 , 10
+    hilited_candidate_back_color: 0x403516  #Lab 20 ,-12,-12
+    hilited_candidate_text_color: 0x989F52  #Lab 60 ,-35,-5
+    hilited_candidate_label_color: 0xCC8947 #Lab 55 ,-10,-45
+    hilited_comment_text_color: 0x289989    #Lab 60 ,-20, 65
+    hilited_text_color: 0xBE706D            #Lab 50 , 15,-45
 
 app_options:
   com.apple.Spotlight:
