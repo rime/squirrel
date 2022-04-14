@@ -1276,11 +1276,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
   NSString *fontName = [config getString:@"style/font_face"];
-  NSInteger fontSize = [config getInt:@"style/font_point"];
+  NSInteger fontSize = [config getDouble:@"style/font_point"];
   NSString *labelFontName = [config getString:@"style/label_font_face"];
-  NSInteger labelFontSize = [config getInt:@"style/label_font_point"];
+  NSInteger labelFontSize = [config getDouble:@"style/label_font_point"];
   NSString *commentFontName = [config getString:@"style/comment_font_face"];
-  NSInteger commentFontSize = [config getInt:@"style/comment_font_point"];
+  NSInteger commentFontSize = [config getDouble:@"style/comment_font_point"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
   CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
@@ -1373,7 +1373,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       fontName = fontNameOverridden;
     }
     NSNumber *fontSizeOverridden =
-        [config getOptionalInt:[prefix stringByAppendingString:@"/font_point"]];
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/font_point"]];
     if (fontSizeOverridden) {
       fontSize = fontSizeOverridden.integerValue;
     }
@@ -1383,7 +1383,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       labelFontName = labelFontNameOverridden;
     }
     NSNumber *labelFontSizeOverridden =
-        [config getOptionalInt:[prefix stringByAppendingString:@"/label_font_point"]];
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/label_font_point"]];
     if (labelFontSizeOverridden) {
       labelFontSize = labelFontSizeOverridden.integerValue;
     }
@@ -1393,7 +1393,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       commentFontName = commentFontNameOverridden;
     }
     NSNumber *commentFontSizeOverridden =
-        [config getOptionalInt:[prefix stringByAppendingString:@"/comment_font_point"]];
+        [config getOptionalDouble:[prefix stringByAppendingString:@"/comment_font_point"]];
     if (commentFontSizeOverridden) {
       commentFontSize = commentFontSizeOverridden.integerValue;
     }
