@@ -1685,12 +1685,12 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   attrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   highlightedSurroundingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  labelHighlightedSurroundingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  commentHighlightedSurroundingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+  labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - labelFontSize) / 2);
+  labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - labelFontSize) / 2);
+  labelHighlightedSurroundingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - labelFontSize) / 2);
+  commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - commentFontSize) / 2);
+  commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - commentFontSize) / 2);
+  commentHighlightedSurroundingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset + (fontSize - commentFontSize) / 2);
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
 
