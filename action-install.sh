@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 rime_version=1.7.3
 rime_variant='rime-with-plugins'
@@ -13,6 +13,10 @@ unzip -n "${download_archive}" -d librime
 # skip building librime and opencc-data
 make copy-rime-binaries copy-opencc-data
 
+# disable it for lack the ${SQUIRREL_BUNDLED_RECIPES}
+# define it here
+# SQUIRREL_BUNDLED_RECIPES=
+
 # install Rime recipes as listed in the ci project variable
-rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
-make copy-plum-data
+# rime_dir=plum/output bash plum/rime-install ${SQUIRREL_BUNDLED_RECIPES}
+# make copy-plum-data

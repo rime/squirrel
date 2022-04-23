@@ -1,0 +1,21 @@
+name: commit ci
+on: [push]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout last commit
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Build Squirrel
+        run: ./action-build.sh
+
+      - name: Upload Squirrel artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: squirrel.zip
+          path: ./**/*.pkg
+          # keep 90 days
+          retention-days: 90
