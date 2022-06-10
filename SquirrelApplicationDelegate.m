@@ -50,10 +50,7 @@ void show_message(const char* msg_text, const char* msg_id) {
 static void show_status_message(const char* msg_text, const char* msg_id) {
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   if (panel) {
-    NSString *message = NSLocalizedString(@(msg_text), nil);
-    if ([[message substringToIndex:1]  isEqual: @"!"]) {
-      message = [message substringFromIndex:1];
-    }
+    NSString *message = @(msg_text);
     [panel updateStatus: message];
   }
 }
@@ -88,7 +85,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   }
   // option change
   if (!strcmp(message_type, "option")) {
-    show_status_message(message_value, message_type);
+    Bool state = message_value[0] != '!';
+    const char* option_name = message_value + !state;
+    const char *state_label = rime_get_api()->get_state_label(session_id, option_name, state);
+    if (state_label) {
+      show_status_message(state_label, message_type);
+    }
   }
 }
 
