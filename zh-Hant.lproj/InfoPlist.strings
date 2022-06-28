@@ -3,6 +3,8 @@
 NSHumanReadableCopyright = "Copyleft 2017, 式恕堂";
 
 im.rime.inputmethod.Squirrel = "鼠鬚管";
+im.rime.inputmethod.SquirrelCHS = "鼠鬚管-簡";
+im.rime.inputmethod.SquirrelCHT = "鼠鬚管-繁";
 
 CFBundleName = "鼠鬚管";
 CFBundleDisplayName = "鼠鬚管";
