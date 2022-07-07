@@ -5,7 +5,7 @@ static const unsigned char kInstallLocation[] =
 static NSString *const kSourceID =
     @"im.rime.inputmethod.Squirrel";
 static NSString *const kInputModeID =
-    @"im.rime.inputmethod.Squirrel.Rime";
+    @"im.rime.inputmethod.Squirrel.Rime.Hans";
 
 void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
