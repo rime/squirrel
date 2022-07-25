@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>TISInputSourceID</key>
-	<string>im.rime.inputmethod.Squirrel.Rime</string>
+	<string>im.rime.inputmethod.Squirrel</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
