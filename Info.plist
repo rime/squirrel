@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>TISInputSourceID</key>
+	<string>im.rime.inputmethod.Squirrel</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -24,18 +26,46 @@
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>im.rime.inputmethod.Squirrel</key>
+			<key>im.rime.inputmethod.Squirrel.Hans</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>im.rime.inputmethod.Squirrel.Rime</string>
+				<string>im.rime.inputmethod.Squirrel.Hans</string>
 				<key>TISIntendedLanguage</key>
-				<string>zh</string>
+				<string>zh-Hans</string>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
-					<string>zh-Hans</string>
-					<string>zh-Hant</string>
+					<string>Hans</string>
+					<string>Han</string>
+				</array>
+				<key>tsInputModeDefaultStateKey</key>
+				<true/>
+				<key>tsInputModeIsVisibleKey</key>
+				<true/>
+				<key>tsInputModeKeyEquivalentModifiersKey</key>
+				<integer>4608</integer>
+				<key>tsInputModeMenuIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModePaletteIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModePrimaryInScriptKey</key>
+				<true/>
+				<key>tsInputModeScriptKey</key>
+				<string>smUnicodeScript</string>
+			</dict>
+			<key>im.rime.inputmethod.Squirrel.Hant</key>
+			<dict>
+				<key>TISInputSourceID</key>
+				<string>im.rime.inputmethod.Squirrel.Hant</string>
+				<key>TISIntendedLanguage</key>
+				<string>zh-Hant</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime.pdf</string>
+				<key>tsInputModeCharacterRepertoireKey</key>
+				<array>
+					<string>Hant</string>
+					<string>Han</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
 				<true/>
@@ -55,7 +85,8 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>im.rime.inputmethod.Squirrel.Rime</string>
+			<string>im.rime.inputmethod.Squirrel.Hans</string>
+			<string>im.rime.inputmethod.Squirrel.Hant</string>
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>
@@ -82,8 +113,9 @@
 	<true/>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
-		<string>zh-Hans</string>
-		<string>zh-Hant</string>
+		<string>Hans</string>
+		<string>Hant</string>
+		<string>Han</string>
 	</array>
 	<key>tsInputMethodIconFileKey</key>
 	<string>rime.pdf</string>
