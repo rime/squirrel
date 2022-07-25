@@ -2,9 +2,9 @@
 
 NSHumanReadableCopyright = "Copyleft 2017, RIME Developers";
 
-im.rime.inputmethod.Squirrel = "Squirrel";
-im.rime.inputmethod.Squirrel.Hans = "Squirrel-Hans";
-im.rime.inputmethod.Squirrel.Hant = "Squirrel-Hant";
+im.rime.inputmethod.Squirrel.Rime = "Squirrel";
+im.rime.inputmethod.Squirrel.Rime.Hans = "Squirrel-Hans";
+im.rime.inputmethod.Squirrel.Rime.Hant = "Squirrel-Hant";
 
 CFBundleName = "Squirrel";
 CFBundleDisplayName = "Squirrel";

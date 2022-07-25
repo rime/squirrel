@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>TISInputSourceID</key>
-	<string>im.rime.inputmethod.Squirrel</string>
+	<string>im.rime.inputmethod.Squirrel.Rime</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -26,7 +26,7 @@
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>im.rime.inputmethod.Squirrel.Hans</key>
+			<key>im.rime.inputmethod.Squirrel.Rime.Hans</key>
 			<dict>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
@@ -52,7 +52,7 @@
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
-			<key>im.rime.inputmethod.Squirrel.Hant</key>
+			<key>im.rime.inputmethod.Squirrel.Rime.Hant</key>
 			<dict>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hant</string>
@@ -81,8 +81,8 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>im.rime.inputmethod.Squirrel.Hans</string>
-			<string>im.rime.inputmethod.Squirrel.Hant</string>
+			<string>im.rime.inputmethod.Squirrel.Rime.Hans</string>
+			<string>im.rime.inputmethod.Squirrel.Rime.Hant</string>
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>

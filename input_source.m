@@ -3,9 +3,9 @@
 static const unsigned char kInstallLocation[] =
     "/Library/Input Methods/Squirrel.app";
 static NSString *const kSourceID =
-    @"im.rime.inputmethod.Squirrel";
+    @"im.rime.inputmethod.Squirrel.Rime";
 static NSString *const kInputModeID =
-    @"im.rime.inputmethod.Squirrel.Hans";
+    @"im.rime.inputmethod.Squirrel.Rime.Hans";
 
 void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
