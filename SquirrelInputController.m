@@ -517,20 +517,20 @@ const int N_KEY_ROLL_OVER = 50;
     NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
     NSRange selRange = NSMakeRange(start, end - start);
     if (_inlineCandidate) {
-      const char *condidatePreview = ctx.commit_text_preview;
-      NSString *condidatePreviewText = condidatePreview ? @(condidatePreview) : @"";
+      const char *candidatePreview = ctx.commit_text_preview;
+      NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
       if (_inlinePreedit) {
         if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
-          condidatePreviewText = [condidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
+          candidatePreviewText = [candidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
         }
-        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:condidatePreviewText.length-(preeditText.length-caretPos)];
+        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(preeditText.length-caretPos)];
       } else {
         if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
-          condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
+          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
         } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
-          condidatePreviewText = [condidatePreviewText substringWithRange:NSMakeRange(0, condidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
+          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
         }
-        [self showPreeditString:condidatePreviewText selRange:NSMakeRange(selRange.location, condidatePreviewText.length-selRange.location) caretPos:condidatePreviewText.length];
+        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
       }
     } else {
       if (_inlinePreedit) {
