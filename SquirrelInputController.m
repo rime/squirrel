@@ -1,5 +1,6 @@
 #import "SquirrelInputController.h"
 
+#import "Squirrel-Swift.h"
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"

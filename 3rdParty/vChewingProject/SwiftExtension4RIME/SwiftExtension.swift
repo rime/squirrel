@@ -90,7 +90,7 @@ public extension Sequence {
         try areInIncreasingOrder(a.element, b.element)
           || (a.offset < b.offset && !areInIncreasingOrder(b.element, a.element))
       }
-      .map(\.element)
+      .map { $0.element }
   }
 }
 
