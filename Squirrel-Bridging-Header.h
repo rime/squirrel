@@ -3,3 +3,4 @@
 //
 
 #import "SquirrelInputController.h"
+#import "SquirrelApplicationDelegate.h"

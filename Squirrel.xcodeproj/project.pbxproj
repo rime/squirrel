@@ -45,6 +45,7 @@
 		5B511F2E28EEC27A0019E25B /* IMKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F2628EEC27A0019E25B /* IMKHelper.swift */; };
 		5B511F2F28EEC27A0019E25B /* TISInputSourceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F2728EEC27A0019E25B /* TISInputSourceExtension.swift */; };
 		5BA2241228EECC5C004DCA14 /* SquirrelInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */; };
+		5BA2241428EED286004DCA14 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241328EED286004DCA14 /* Properties.swift */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
 		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
 		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
@@ -255,6 +256,7 @@
 		5B511F2628EEC27A0019E25B /* IMKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMKHelper.swift; sourceTree = "<group>"; };
 		5B511F2728EEC27A0019E25B /* TISInputSourceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TISInputSourceExtension.swift; sourceTree = "<group>"; };
 		5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SquirrelInputController.swift; sourceTree = "<group>"; };
+		5BA2241328EED286004DCA14 /* Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Properties.swift; sourceTree = "<group>"; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -321,6 +323,7 @@
 			isa = PBXGroup;
 			children = (
 				44E98EA414AE16DD00847AD6 /* utf8 */,
+				5BA2241328EED286004DCA14 /* Properties.swift */,
 				44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */,
 				44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */,
 				44AC95181430CF6000C888FB /* SquirrelInputController.h */,
@@ -648,6 +651,7 @@
 				5B511F2C28EEC27A0019E25B /* SwiftExtension.swift in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
 				44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */,
+				5BA2241428EED286004DCA14 /* Properties.swift in Sources */,
 				5B511F1C28EEC25D0019E25B /* SquirrelInputController.swift in Sources */,
 				4443A83A1828CC5100731305 /* input_source.m in Sources */,
 				5B511F2F28EEC27A0019E25B /* TISInputSourceExtension.swift in Sources */,
