@@ -137,3 +137,6 @@ clean:
 clean-deps:
 	$(MAKE) -C plum clean
 	$(MAKE) -C librime xcode/clean
+
+swiftformat:
+	@swiftformat --swiftversion 5.0 --indent 2 ./
