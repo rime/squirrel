@@ -38,6 +38,11 @@
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
+		5B511EF428EEA3080019E25B /* SwiftExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511EEA28EEA3080019E25B /* SwiftExtension.swift */; };
+		5B511EF628EEA3080019E25B /* CocoaExtension_NSEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511EED28EEA3080019E25B /* CocoaExtension_NSEvent.swift */; };
+		5B511EF728EEA3080019E25B /* CocoaExtension_Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511EEE28EEA3080019E25B /* CocoaExtension_Misc.swift */; };
+		5B511EF928EEA3080019E25B /* IMKHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511EF128EEA3080019E25B /* IMKHelper.swift */; };
+		5B511EFA28EEA3080019E25B /* TISInputSourceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511EF228EEA3080019E25B /* TISInputSourceExtension.swift */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
 		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
 		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
@@ -237,6 +242,14 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		5B511EE928EEA3080019E25B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		5B511EEA28EEA3080019E25B /* SwiftExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftExtension.swift; sourceTree = "<group>"; };
+		5B511EEC28EEA3080019E25B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		5B511EED28EEA3080019E25B /* CocoaExtension_NSEvent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CocoaExtension_NSEvent.swift; sourceTree = "<group>"; };
+		5B511EEE28EEA3080019E25B /* CocoaExtension_Misc.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CocoaExtension_Misc.swift; sourceTree = "<group>"; };
+		5B511EF028EEA3080019E25B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		5B511EF128EEA3080019E25B /* IMKHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = IMKHelper.swift; sourceTree = "<group>"; };
+		5B511EF228EEA3080019E25B /* TISInputSourceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TISInputSourceExtension.swift; sourceTree = "<group>"; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -354,6 +367,7 @@
 		29B97314FDCFA39411CA2CEA /* Squirrel */ = {
 			isa = PBXGroup;
 			children = (
+				5B511EE528EEA2140019E25B /* 3rdParty */,
 				442C648F1F7A40180027EFBE /* bin */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
@@ -457,6 +471,53 @@
 			path = utf8;
 			sourceTree = "<group>";
 		};
+		5B511EE528EEA2140019E25B /* 3rdParty */ = {
+			isa = PBXGroup;
+			children = (
+				5B511EE628EEA2240019E25B /* vChewingProject */,
+			);
+			path = 3rdParty;
+			sourceTree = "<group>";
+		};
+		5B511EE628EEA2240019E25B /* vChewingProject */ = {
+			isa = PBXGroup;
+			children = (
+				5B511EEB28EEA3080019E25B /* CocoaExtension4RIME */,
+				5B511EEF28EEA3080019E25B /* IMKUtils4RIME */,
+				5B511EE828EEA3080019E25B /* SwiftExtension4RIME */,
+			);
+			path = vChewingProject;
+			sourceTree = "<group>";
+		};
+		5B511EE828EEA3080019E25B /* SwiftExtension4RIME */ = {
+			isa = PBXGroup;
+			children = (
+				5B511EE928EEA3080019E25B /* LICENSE */,
+				5B511EEA28EEA3080019E25B /* SwiftExtension.swift */,
+			);
+			path = SwiftExtension4RIME;
+			sourceTree = "<group>";
+		};
+		5B511EEB28EEA3080019E25B /* CocoaExtension4RIME */ = {
+			isa = PBXGroup;
+			children = (
+				5B511EEC28EEA3080019E25B /* LICENSE */,
+				5B511EED28EEA3080019E25B /* CocoaExtension_NSEvent.swift */,
+				5B511EEE28EEA3080019E25B /* CocoaExtension_Misc.swift */,
+			);
+			path = CocoaExtension4RIME;
+			sourceTree = "<group>";
+		};
+		5B511EEF28EEA3080019E25B /* IMKUtils4RIME */ = {
+			isa = PBXGroup;
+			children = (
+				5B511EF028EEA3080019E25B /* LICENSE */,
+				5B511EF128EEA3080019E25B /* IMKHelper.swift */,
+				5B511EF228EEA3080019E25B /* TISInputSourceExtension.swift */,
+			);
+			path = IMKUtils4RIME;
+			sourceTree = "<group>";
+		};
 		7B5488A71D2DAC9D0056A1BE /* plum */ = {
 			isa = PBXGroup;
 			children = (
@@ -520,7 +581,7 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1220;
+				LastUpgradeCheck = 1400;
 			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */;
 			compatibilityVersion = "Xcode 10.0";
@@ -569,10 +630,15 @@
 				7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */,
 				8D11072D0486CEB800E47090 /* main.m in Sources */,
 				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
+				5B511EF928EEA3080019E25B /* IMKHelper.swift in Sources */,
+				5B511EF628EEA3080019E25B /* CocoaExtension_NSEvent.swift in Sources */,
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
+				5B511EFA28EEA3080019E25B /* TISInputSourceExtension.swift in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
+				5B511EF428EEA3080019E25B /* SwiftExtension.swift in Sources */,
 				44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */,
 				4443A83A1828CC5100731305 /* input_source.m in Sources */,
+				5B511EF728EEA3080019E25B /* CocoaExtension_Misc.swift in Sources */,
 				44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -622,6 +688,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 0.15.2;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -668,6 +735,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 0.15.2;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -725,9 +793,11 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -775,10 +845,12 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -801,6 +873,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
 			};
 			name = Release;
 		};
