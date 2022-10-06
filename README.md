@@ -73,6 +73,7 @@
   * Junlu Cheng
   * Jak Wings
   * xiehuc
+  * Shiki Suen (vChewing Project)
 
 美術：
 
@@ -93,6 +94,9 @@
   * Sparkle  (MIT License)
   * UTF8-CPP  (Boost Software License)
   * yaml-cpp  (MIT License)
+  * vChewing CocoaExtension (MIT-NTL License)  // Rime 客製化版本
+  * vChewing SwiftExtension (MIT-NTL License)  // Rime 客製化版本
+  * vChewing IMKUtils (MIT-NTL License)  // Rime 客製化版本
 
 感謝王公子捐贈開發用機。
 
