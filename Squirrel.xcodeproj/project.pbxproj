@@ -46,6 +46,8 @@
 		5B511F2F28EEC27A0019E25B /* TISInputSourceExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F2728EEC27A0019E25B /* TISInputSourceExtension.swift */; };
 		5BA2241228EECC5C004DCA14 /* SquirrelInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */; };
 		5BA2241428EED286004DCA14 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241328EED286004DCA14 /* Properties.swift */; };
+		5BB868C528F08081002FAEEC /* SquirrelSettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */; };
+		5BB868C628F08081002FAEEC /* SquirrelSettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
 		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
 		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
@@ -257,6 +259,8 @@
 		5B511F2728EEC27A0019E25B /* TISInputSourceExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TISInputSourceExtension.swift; sourceTree = "<group>"; };
 		5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SquirrelInputController.swift; sourceTree = "<group>"; };
 		5BA2241328EED286004DCA14 /* Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Properties.swift; sourceTree = "<group>"; };
+		5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelSettingsWindow.swift; sourceTree = "<group>"; };
+		5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SquirrelSettingsWindow.xib; sourceTree = "<group>"; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -403,6 +407,8 @@
 				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
 				A45578F41146A75200592C6E /* MainMenu.xib */,
 				446C01D61F767BD400A6C23E /* Assets.xcassets */,
+				5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */,
+				5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -631,6 +637,7 @@
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
+				5BB868C628F08081002FAEEC /* SquirrelSettingsWindow.xib in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
 			);
@@ -654,6 +661,7 @@
 				5BA2241428EED286004DCA14 /* Properties.swift in Sources */,
 				5B511F1C28EEC25D0019E25B /* SquirrelInputController.swift in Sources */,
 				4443A83A1828CC5100731305 /* input_source.m in Sources */,
+				5BB868C528F08081002FAEEC /* SquirrelSettingsWindow.swift in Sources */,
 				5B511F2F28EEC27A0019E25B /* TISInputSourceExtension.swift in Sources */,
 				5B511F2A28EEC27A0019E25B /* CocoaExtension_Misc.swift in Sources */,
 				5BA2241228EECC5C004DCA14 /* SquirrelInputController.swift in Sources */,

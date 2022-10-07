@@ -31,16 +31,7 @@ public enum IMKHelper {
   public static let arrDynamicBasicKeyLayouts: [String] = [
     "com.apple.keylayout.ZhuyinBopomofo",
     "com.apple.keylayout.ZhuyinEten",
-    "org.atelierInmu.vChewing.keyLayouts.vchewingdachen",
-    "org.atelierInmu.vChewing.keyLayouts.vchewingmitac",
-    "org.atelierInmu.vChewing.keyLayouts.vchewingibm",
-    "org.atelierInmu.vChewing.keyLayouts.vchewingseigyou",
-    "org.atelierInmu.vChewing.keyLayouts.vchewingeten",
-    "org.unknown.keylayout.vChewingDachen",
-    "org.unknown.keylayout.vChewingFakeSeigyou",
-    "org.unknown.keylayout.vChewingETen",
-    "org.unknown.keylayout.vChewingIBM",
-    "org.unknown.keylayout.vChewingMiTAC",
+    // 不是威注音输入法，就不用插入威注音自己的 keylayouts 了。
   ]
 
   public static var currentBasicKeyboardLayout: String {

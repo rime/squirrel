@@ -1,6 +1,7 @@
 #import "SquirrelApplicationDelegate.h"
 
 #import <rime_api.h>
+#import "Squirrel-Swift.h"
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
 
@@ -25,6 +26,7 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 -(IBAction)configure:(id)sender
 {
   [[NSWorkspace sharedWorkspace] openFile:(@"~/Library/Rime").stringByStandardizingPath];
+  [SquirrelSettingsWindow show];
 }
 
 -(IBAction)openWiki:(id)sender

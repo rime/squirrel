@@ -271,23 +271,13 @@ const int N_KEY_ROLL_OVER = 50;
 
 -(void)activateServer:(id)sender
 {
-  // activateServer() 與 setValue() 是組合拳，前者執行之後必定會立刻執行後者。
-  // 所以千萬不要讓前者做後者會做的事情，否則很容易會出現重複計算、乃至迴圈計算。
-  // 同一個客體應用之間切換輸入法的時候，可能會出現僅觸發 setValue 的情況。
+  //NSLog(@"activateServer:");
+  [self overrideKeyboard];
+  _preeditString = @"";
 }
 
 - (void)setValue:(id)value forTag:(long)tag client:(id)sender
 {
-  //NSLog(@"setValue:");
-
-  // 以防萬一：讓 setValue 的行為僅對自身起作用。
-  if ([value isKindOfClass:[NSString class]] && [value containsString: [NSBundle mainBundle].bundleIdentifier]) {
-    if ([NSApp.squirrelAppDelegate.config getBool:@"us_keyboard_layout"]) {
-      [self overrideKeyboard];
-    }
-  }
-
-  _preeditString = @"";
 }
 
 -(instancetype)initWithServer:(IMKServer*)server delegate:(id)delegate client:(id)inputClient
@@ -297,6 +287,8 @@ const int N_KEY_ROLL_OVER = 50;
     _currentClient = inputClient;
     [self createSession];
   }
+  [self registerSessionControllerIntoSet];
+
   return self;
 }
 
@@ -372,6 +364,7 @@ const int N_KEY_ROLL_OVER = 50;
 
 -(void)dealloc
 {
+  [self removeSessionControllerFromSet];
   [self destroySession];
 }
 
