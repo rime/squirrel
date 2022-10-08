@@ -87,16 +87,6 @@ public extension TISInputSource {
   var inputModeID: String {
     unsafeBitCast(TISGetInputSourceProperty(self, kTISPropertyInputModeID), to: NSString.self) as String
   }
-
-  var vChewingLocalizedName: String {
-    switch identifier {
-    case "com.apple.keylayout.ZhuyinBopomofo":
-      return NSLocalizedString("Apple Zhuyin Bopomofo (Dachen)", comment: "")
-    case "com.apple.keylayout.ZhuyinEten":
-      return NSLocalizedString("Apple Zhuyin Eten (Traditional)", comment: "")
-    default: return localizedName
-    }
-  }
 }
 
 // MARK: - TISInputSource Extension by Mizuno Hiroki (a.k.a. "Mzp") (MIT License)

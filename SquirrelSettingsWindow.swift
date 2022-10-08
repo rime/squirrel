@@ -41,7 +41,7 @@ extension SquirrelSettingsWindow {
         continue
       }
       let menuItem = NSMenuItem()
-      menuItem.title = source.vChewingLocalizedName
+      menuItem.title = source.localizedName
       menuItem.representedObject = source.identifier
       if source.identifier == "com.apple.keylayout.US" { usKeyboardLayoutItem = menuItem }
       if basicKeyboardLayoutID == source.identifier { chosenBaseKeyboardLayoutItem = menuItem }
