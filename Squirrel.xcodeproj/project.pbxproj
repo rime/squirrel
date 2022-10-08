@@ -38,6 +38,7 @@
 		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
+		5B05EDBA28F134B600B50058 /* SquirrelSettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5B05EDBC28F134B600B50058 /* SquirrelSettingsWindow.xib */; };
 		5B511F1C28EEC25D0019E25B /* SquirrelInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F1B28EEC25D0019E25B /* SquirrelInputController.swift */; };
 		5B511F2928EEC27A0019E25B /* CocoaExtension_NSEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F1F28EEC27A0019E25B /* CocoaExtension_NSEvent.swift */; };
 		5B511F2A28EEC27A0019E25B /* CocoaExtension_Misc.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B511F2028EEC27A0019E25B /* CocoaExtension_Misc.swift */; };
@@ -47,7 +48,6 @@
 		5BA2241228EECC5C004DCA14 /* SquirrelInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */; };
 		5BA2241428EED286004DCA14 /* Properties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BA2241328EED286004DCA14 /* Properties.swift */; };
 		5BB868C528F08081002FAEEC /* SquirrelSettingsWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */; };
-		5BB868C628F08081002FAEEC /* SquirrelSettingsWindow.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
 		77AA68152588916F00A592E2 /* HKVariants.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67DC2588916300A592E2 /* HKVariants.ocd2 */; };
 		77AA68162588916F00A592E2 /* HKVariantsRev.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E02588916300A592E2 /* HKVariantsRev.ocd2 */; };
@@ -247,6 +247,10 @@
 		44F84AD614E94C490005D70B /* SquirrelPanel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SquirrelPanel.m; sourceTree = "<group>"; };
 		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
+		5B05EDBE28F134B900B50058 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SquirrelSettingsWindow.strings"; sourceTree = "<group>"; };
+		5B05EDC028F134BA00B50058 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/SquirrelSettingsWindow.strings"; sourceTree = "<group>"; };
+		5B05EDC128F1355000B50058 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/SquirrelSettingsWindow.xib; sourceTree = "<group>"; };
+		5B05EDC228F1355500B50058 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SquirrelSettingsWindow.strings; sourceTree = "<group>"; };
 		5B511F1A28EEC25D0019E25B /* Squirrel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Squirrel-Bridging-Header.h"; sourceTree = "<group>"; };
 		5B511F1B28EEC25D0019E25B /* SquirrelInputController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelInputController.swift; sourceTree = "<group>"; };
 		5B511F1E28EEC27A0019E25B /* LICENSE */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
@@ -260,7 +264,6 @@
 		5BA2241128EECC5C004DCA14 /* SquirrelInputController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SquirrelInputController.swift; sourceTree = "<group>"; };
 		5BA2241328EED286004DCA14 /* Properties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Properties.swift; sourceTree = "<group>"; };
 		5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SquirrelSettingsWindow.swift; sourceTree = "<group>"; };
-		5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SquirrelSettingsWindow.xib; sourceTree = "<group>"; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -408,7 +411,7 @@
 				A45578F41146A75200592C6E /* MainMenu.xib */,
 				446C01D61F767BD400A6C23E /* Assets.xcassets */,
 				5BB868C328F08081002FAEEC /* SquirrelSettingsWindow.swift */,
-				5BB868C428F08081002FAEEC /* SquirrelSettingsWindow.xib */,
+				5B05EDBC28F134B600B50058 /* SquirrelSettingsWindow.xib */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -637,7 +640,7 @@
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
-				5BB868C628F08081002FAEEC /* SquirrelSettingsWindow.xib in Resources */,
+				5B05EDBA28F134B600B50058 /* SquirrelSettingsWindow.xib in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
 			);
@@ -681,6 +684,17 @@
 				446D18E114F0193100EC3116 /* zh-Hant */,
 			);
 			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		5B05EDBC28F134B600B50058 /* SquirrelSettingsWindow.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				5B05EDBE28F134B900B50058 /* zh-Hans */,
+				5B05EDC028F134BA00B50058 /* zh-Hant */,
+				5B05EDC128F1355000B50058 /* Base */,
+				5B05EDC228F1355500B50058 /* en */,
+			);
+			name = SquirrelSettingsWindow.xib;
 			sourceTree = "<group>";
 		};
 		A45578F41146A75200592C6E /* MainMenu.xib */ = {
