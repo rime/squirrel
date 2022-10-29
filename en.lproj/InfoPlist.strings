@@ -1,6 +1,6 @@
 /* Localized versions of Info.plist keys */
 
-NSHumanReadableCopyright = "Copyleft, RIME Developers";
+NSHumanReadableCopyright = "Copyleft 🄯 RIME Developers";
 
 im.rime.inputmethod.Squirrel = "Squirrel";
 im.rime.inputmethod.Squirrel.Hans = "Squirrel - Simplified";
