@@ -270,8 +270,16 @@ const int N_KEY_ROLL_OVER = 50;
 -(void)activateServer:(id)sender
 {
   //NSLog(@"activateServer:");
-  if ([NSApp.squirrelAppDelegate.config getBool:@"us_keyboard_layout"]) {
-    [sender overrideKeyboardWithKeyboardNamed:@"com.apple.keylayout.US"];
+  NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config getString:@"keyboard_layout"];
+  if ([keyboardLayout isEqualToString:@"last"] || [keyboardLayout isEqualToString:@""]) {
+    keyboardLayout = NULL;
+  } else if ([keyboardLayout isEqualToString:@"default"]) {
+    keyboardLayout = @"com.apple.keylayout.ABC";
+  } else if (![keyboardLayout hasPrefix:@"com.apple.keylayout."]) {
+    keyboardLayout = [NSString stringWithFormat:@"com.apple.keylayout.%@", keyboardLayout];
+  }
+  if (keyboardLayout) {
+    [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
   _preeditString = @"";
 }
