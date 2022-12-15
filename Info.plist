@@ -117,6 +117,8 @@
 		<string>Hant</string>
 		<string>Han</string>
 	</array>
+	<key>TISIconIsTemplate</key>
+	<true/>
 	<key>tsInputMethodIconFileKey</key>
 	<string>rime.pdf</string>
 </dict>
