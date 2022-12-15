@@ -1,0 +1,15 @@
+
+/* Class = "NSMenuItem"; title = "Deploy"; ObjectID = "774"; */
+"774.title" = "Deploy";
+
+/* Class = "NSMenuItem"; title = "Check for updates…"; ObjectID = "776"; */
+"776.title" = "Check for updates…";
+
+/* Class = "NSMenuItem"; title = "Rime Wiki…"; ObjectID = "797"; */
+"797.title" = "Rime Wiki…";
+
+/* Class = "NSMenuItem"; title = "Settings…"; ObjectID = "802"; */
+"802.title" = "Settings…";
+
+/* Class = "NSMenuItem"; title = "Sync user data"; ObjectID = "804"; */
+"804.title" = "Sync user data";

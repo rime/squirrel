@@ -1,23 +1,16 @@
-/* 
-  Localizable.strings
-  Squirrel
-
-  Created by 弓辰 on 12/12/22.
-
-*/
 "Squirrel" = "鼠须管";
 
 "deploy_update" = "更新输入法引擎…";
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";
-"ascii_mode" = "Ａ";
-"!ascii_mode" = "中";
+"ascii_mode" = "🄰";
+"!ascii_mode" = "🈑";
 "full_shape" = "全角";
 "!full_shape" = "半角";
 "ascii_punct" = "．，";
 "!ascii_punct" = "。，";
 "simplification" = "汉字";
 "!simplification" = "漢字";
-"extended_charset" = "增广";
-"!extended_charset" = "通用";
+"extended_charset" = "扩展";
+"!extended_charset" = "基本";
