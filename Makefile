@@ -12,11 +12,11 @@ RIME_LIB_DIR = librime/dist/lib
 RIME_LIBRARY_FILE_NAME = librime.1.dylib
 RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
 
-RIME_DEPS = librime/thirdparty/lib/libcapnp.a \
-	librime/thirdparty/lib/libmarisa.a \
-	librime/thirdparty/lib/libleveldb.a \
-	librime/thirdparty/lib/libopencc.a \
-	librime/thirdparty/lib/libyaml-cpp.a
+RIME_DEPS = librime/lib/libcapnp.a \
+	librime/lib/libmarisa.a \
+	librime/lib/libleveldb.a \
+	librime/lib/libopencc.a \
+	librime/lib/libyaml-cpp.a
 PLUM_DATA = bin/rime-install \
 	data/plum/default.yaml \
 	data/plum/symbols.yaml \
@@ -26,7 +26,7 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/t2s.json
 DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
 
-OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
+OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
@@ -39,7 +39,7 @@ $(RIME_LIBRARY):
 	$(MAKE) librime
 
 $(RIME_DEPS):
-	$(MAKE) -C librime xcode/thirdparty
+	$(MAKE) -C librime xcode/deps
 
 librime: $(RIME_DEPS)
 	$(MAKE) -C librime $(RIME_DIST_TARGET)
@@ -67,7 +67,7 @@ plum-data:
 	$(MAKE) copy-plum-data
 
 opencc-data:
-	$(MAKE) -C librime xcode/thirdparty/opencc
+	$(MAKE) -C librime xcode/deps/opencc
 	$(MAKE) copy-opencc-data
 
 copy-plum-data:

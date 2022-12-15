@@ -36,7 +36,7 @@ cd squirrel
 Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 
 ``` sh
-bash librime/install-plugins.sh rime/librime-sample # ...
+bash librime/install-plugins.sh rime/librime-sample lotem/librime-octagram # ...
 ```
 
 ### Shortcut: get the latest librime release
@@ -59,9 +59,9 @@ Choose one of the following options.
 ``` sh
 export BUILD_UNIVERSAL=1
 
-make -C librime xcode/thirdparty/boost
+make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/thirdparty/src/boost_1_75_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_81_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
