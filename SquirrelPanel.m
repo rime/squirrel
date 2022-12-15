@@ -178,7 +178,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
 @property(nonatomic, assign) CGFloat seperatorWidth;
 
-- (BOOL)isFlipped;
+@property (NS_NONATOMIC_IOSONLY, getter=isFlipped, readonly) BOOL flipped;
 - (void)setText:(NSAttributedString *)text;
 - (void)drawViewWith:(NSRange)hilightedRange
         preeditRange:(NSRange)preeditRange
@@ -278,8 +278,8 @@ NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat
   NSBezierPath *path = [NSBezierPath bezierPath];
   if (vertex.count < 1)
     return path;
-  NSPoint previousPoint = [vertex[vertex.count-1] pointValue];
-  NSPoint point = [vertex[0] pointValue];
+  NSPoint previousPoint = (vertex[vertex.count-1]).pointValue;
+  NSPoint point = (vertex[0]).pointValue;
   NSPoint nextPoint;
   NSPoint control1;
   NSPoint control2;
@@ -292,9 +292,9 @@ NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat
   }
   [path moveToPoint:target];
   for (NSUInteger i = 0; i < vertex.count; i += 1) {
-    previousPoint = [vertex[(vertex.count+i-1)%vertex.count] pointValue];
-    point = [vertex[i] pointValue];
-    nextPoint = [vertex[(i+1)%vertex.count] pointValue];
+    previousPoint = (vertex[(vertex.count+i-1)%vertex.count]).pointValue;
+    point = (vertex[i]).pointValue;
+    nextPoint = (vertex[(i+1)%vertex.count]).pointValue;
     target = point;
     control1 = point;
     diff = NSMakePoint(point.x - previousPoint.x, point.y - previousPoint.y);
@@ -333,10 +333,10 @@ NSArray<NSValue *> *rectVertex(NSRect rect) {
 
 void xyTranslation(NSMutableArray<NSValue *> *shape, NSPoint direction) {
   for (NSUInteger i = 0; i < shape.count; i += 1) {
-    NSPoint point = [shape[i] pointValue];
+    NSPoint point = (shape[i]).pointValue;
     point.x += direction.x;
     point.y += direction.y;
-    [shape replaceObjectAtIndex:i withObject:@(point)];
+    shape[i] = @(point);
   }
 }
 
@@ -440,7 +440,7 @@ NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyRect, NS
 // If the point is outside the innerBox, will extend to reach the outerBox
 void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerBorder) {
   for (NSUInteger i = 0; i < vertex.count; i += 1){
-    NSPoint point = [vertex[i] pointValue];
+    NSPoint point = (vertex[i]).pointValue;
     if (point.x < innerBorder.origin.x) {
       point.x = outerBorder.origin.x;
     } else if (point.x > innerBorder.origin.x+innerBorder.size.width) {
@@ -451,7 +451,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     } else if (point.y > innerBorder.origin.y+innerBorder.size.height) {
       point.y = outerBorder.origin.y+outerBorder.size.height;
     }
-    [vertex replaceObjectAtIndex:i withObject:@(point)];
+    vertex[i] = @(point);
   }
 }
 
@@ -662,21 +662,21 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
   [theme.backgroundColor setFill];
   [backgroundPath fill];
-  if (theme.preeditBackgroundColor && ![preeditPath isEmpty]) {
+  if (theme.preeditBackgroundColor && !preeditPath.empty) {
     [theme.preeditBackgroundColor setFill];
     [preeditPath fill];
   }
-  if (theme.highlightedStripColor && ![highlightedPath isEmpty]) {
+  if (theme.highlightedStripColor && !highlightedPath.empty) {
     [theme.highlightedStripColor setFill];
     [highlightedPath fill];
-    if (![highlightedPath2 isEmpty]) {
+    if (!highlightedPath2.empty) {
       [highlightedPath2 fill];
     }
   }
-  if (theme.highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
+  if (theme.highlightedPreeditColor && !highlightedPreeditPath.empty) {
     [theme.highlightedPreeditColor setFill];
     [highlightedPreeditPath fill];
-    if (![highlightedPreeditPath2 isEmpty]) {
+    if (!highlightedPreeditPath2.empty) {
       [highlightedPreeditPath2 fill];
     }
   }
