@@ -59,9 +59,9 @@ Choose one of the following options.
 ``` sh
 export BUILD_UNIVERSAL=1
 
-make -C librime xcode/thirdparty/boost
+make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/thirdparty/src/boost_1_75_0"
+export BOOST_ROOT="$(pwd)/librime/deps/src/boost_1_75_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
