@@ -78,8 +78,9 @@ const int N_KEY_ROLL_OVER = 50;
           handled = YES;
           break;
         }
-        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int keyCode = event.keyCode;
+        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx, keyCode: %d", sender, modifiers, keyCode);
+        int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
@@ -88,39 +89,23 @@ const int N_KEY_ROLL_OVER = 50;
           // while NSFlagsChanged event has the flag changed already.
           // so it is necessary to revert kLockMask.
           rime_modifiers ^= kLockMask;
-          [self processKey:XK_Caps_Lock modifiers:rime_modifiers];
+          [self processKey:rime_keycode modifiers:rime_modifiers];
         }
         if (changes & OSX_SHIFT_MASK) {
           release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
-          if (keyCode == 0x38) {
-            [self processKey:XK_Shift_L modifiers:(rime_modifiers | release_mask)];
-          } else if (keyCode == 0x3c) {
-            [self processKey:XK_Shift_R modifiers:(rime_modifiers | release_mask)];
-          }
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_CTRL_MASK) {
           release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask;
-          if (keyCode == 0x3b) {
-            [self processKey:XK_Control_L modifiers:(rime_modifiers | release_mask)];
-          } else if (keyCode == 0x3e) {
-            [self processKey:XK_Control_R modifiers:(rime_modifiers | release_mask)];
-          }
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_ALT_MASK) {
           release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
-          if (keyCode == 0x3a) {
-            [self processKey:XK_Alt_L modifiers:(rime_modifiers | release_mask)];
-          } else if (keyCode == 0x3d) {
-            [self processKey:XK_Alt_R modifiers:(rime_modifiers | release_mask)];
-          }
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_COMMAND_MASK) {
           release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
-          if (keyCode == 0x37) {
-            [self processKey:XK_Super_L modifiers:(rime_modifiers | release_mask)];
-          } else if (keyCode == 0x36) {
-            [self processKey:XK_Super_R modifiers:(rime_modifiers | release_mask)];
-          }
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           // do not update UI when using Command key
           break;
         }
