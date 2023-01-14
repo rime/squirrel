@@ -129,8 +129,17 @@ Once built, you can install and try it live on your Mac computer:
 # Squirrel as a Universal app
 make install
 
+# for Mac computers with Apple Silicon
+make ARCHS='arm64' install
+
 # for Intel-based Mac only
 make ARCHS='x86_64' install
+```
+
+To clean-up the building files:
+
+``` sh
+make clean clean-deps
 ```
 
 That's it, a verbal journal. Thanks for riming with Squirrel.
