@@ -1,16 +1,6 @@
 "Squirrel" = "Squirrel";
 
-"deploy_update" = "Deploying Rime for updates.";
-"deploy_start" = "Deploying Rime input method engine.";
+"deploy_update" = "Deploying Rime for updates…";
+"deploy_start" = "Deploying Rime input method engine…";
 "deploy_success" = "Squirrel is ready.";
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
-"ascii_mode" = "🄰";
-"!ascii_mode" = "🈑";
-"full_shape" = "Full shape";
-"!full_shape" = "Half shape";
-"ascii_punct" = "．，";
-"!ascii_punct" = "。，";
-"simplification" = "Simplified";
-"!simplification" = "Traditional";
-"extended_charset" = "CJK extended";
-"!extended_charset" = "CJK baseset";

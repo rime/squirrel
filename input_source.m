@@ -4,8 +4,12 @@ static const unsigned char kInstallLocation[] =
     "/Library/Input Methods/Squirrel.app";
 static NSString *const kSourceID =
     @"im.rime.inputmethod.Squirrel";
-static NSString *const kInputModeID =
+static NSString *const kInputModeHantID =
+    @"im.rime.inputmethod.Squirrel.Hant";
+static NSString *const kInputModeHansID =
     @"im.rime.inputmethod.Squirrel.Hans";
+static NSString *const kInputModeCantID =
+    @"im.rime.inputmethod.Squirrel.Cant";
 
 void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
@@ -25,8 +29,10 @@ void ActivateInputSource() {
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"examining input source '%@", sourceID);
-    if ([sourceID isEqualToString:kSourceID] ||
-        [sourceID isEqualToString:kInputModeID]) {
+    if ([sourceID isEqualToString:kInputModeHantID] ||
+        [sourceID isEqualToString:kInputModeHansID] ||
+        [sourceID isEqualToString:kInputModeCantID] ||
+        [sourceID isEqualToString:kSourceID]) {
       TISEnableInputSource(inputSource);
       NSLog(@"Enabled input source: %@", sourceID);
       CFBooleanRef isSelectable = (CFBooleanRef)TISGetInputSourceProperty(
@@ -48,8 +54,10 @@ void DeactivateInputSource() {
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
-    if ([sourceID isEqualToString:kSourceID] ||
-        [sourceID isEqualToString:kInputModeID]) {
+    if ([sourceID isEqualToString:kInputModeHantID] ||
+        [sourceID isEqualToString:kInputModeHansID] ||
+        [sourceID isEqualToString:kInputModeCantID] ||
+        [sourceID isEqualToString:kSourceID]) {
       TISDisableInputSource(inputSource);
       NSLog(@"Disabled input source: %@", sourceID);
     }
@@ -66,8 +74,10 @@ BOOL IsInputSourceActive() {
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
-    if ([sourceID isEqualToString:kSourceID] ||
-        [sourceID isEqualToString:kInputModeID]) {
+    if ([sourceID isEqualToString:kInputModeHantID] ||
+        [sourceID isEqualToString:kInputModeHansID] ||
+        [sourceID isEqualToString:kInputModeCantID] ||
+        [sourceID isEqualToString:kSourceID]) {
       CFBooleanRef isEnabled = (CFBooleanRef)(TISGetInputSourceProperty(
           inputSource, kTISPropertyInputSourceIsEnabled));
       if (CFBooleanGetValue(isEnabled)) {
@@ -77,5 +87,5 @@ BOOL IsInputSourceActive() {
   }
   CFRelease(sourceList);
   //NSLog(@"IsInputSourceActive: %d", active);
-  return active == 2;  // 1 active input method + 1 active input mode
+  return active >= 2;  // 1 active input method + 1 active input mode
 }
