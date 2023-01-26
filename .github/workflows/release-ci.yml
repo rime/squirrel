@@ -1,0 +1,38 @@
+name: release ci
+on:
+  push:
+    tags:
+      - '*'
+jobs:
+  build:
+    runs-on: macos-latest
+    env:
+      SQUIRREL_BUNDLED_RECIPES: 'lotem/rime-octagram-data'
+    steps:
+      - name: Checkout last commit
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build Squirrel
+        run: ./action-build.sh
+
+      - name: Build changelog
+        id: release_log
+        run: |
+          log=$(./script/changelog.sh)
+          # multiline
+          log="${log//'%'/'%25'}"
+          log="${log//$'\n'/'%0A'}"
+          log="${log//$'\r'/'%0D'}"
+
+          echo "::set-output name=changelog::$log"
+
+      - name: Create release
+        uses: ncipollo/release-action@v1
+        with:
+          artifacts: "./**/*.pkg"
+          body: |
+            ${{ steps.release_log.outputs.changelog }}
+          draft: true
+          token: ${{ secrets.GITHUB_TOKEN }}

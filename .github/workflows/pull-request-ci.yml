@@ -1,0 +1,25 @@
+name: pull request ci
+on: [pull_request]
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout last commit
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Configure build environment
+        run: |
+          echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
+
+      - name: Build Squirrel
+        run: ./action-build.sh
+
+      - name: Upload Squirrel artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Squirrel-${{ env.git_ref_name }}.zip
+          path: ./**/*.pkg
+          # keep 30 days
+          retention-days: 30
