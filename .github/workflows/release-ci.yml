@@ -20,7 +20,7 @@ jobs:
       - name: Build changelog
         id: release_log
         run: |
-          log=$(./script/changelog.sh)
+          log=$(./action-changelog.sh)
           # multiline
           log="${log//'%'/'%25'}"
           log="${log//$'\n'/'%0A'}"
