@@ -1,5 +1,8 @@
 name: commit ci
-on: [push]
+on:
+  push:
+    branches:
+      - '*'
 jobs:
   build:
     runs-on: macos-latest
