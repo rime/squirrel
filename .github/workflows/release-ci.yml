@@ -21,13 +21,9 @@ jobs:
       - name: Build changelog
         id: release_log
         run: |
-          log=$(./action-changelog.sh)
-          # multiline
-          log="${log//'%'/'%25'}"
-          log="${log//$'\n'/'%0A'}"
-          log="${log//$'\r'/'%0D'}"
-
-          echo "::set-output name=changelog::$log"
+          echo 'changelog<<EOF' >> $GITHUB_OUTPUT
+          ./action-changelog.sh >> $GITHUB_OUTPUT
+          echo 'EOF' >> $GITHUB_OUTPUT
 
       - name: Create release
         uses: ncipollo/release-action@v1
