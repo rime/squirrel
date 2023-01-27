@@ -25,7 +25,7 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/t2s.json
 DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
 
-OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
+OPENCC_DATA_OUTPUT = librime/thirdparty/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
