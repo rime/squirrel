@@ -24,7 +24,7 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 -(IBAction)configure:(id)sender
 {
-  [[NSWorkspace sharedWorkspace] openFile:(@"~/Library/Rime").stringByStandardizingPath];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[@"file://" stringByAppendingString:(@"~/Library/Rime").stringByStandardizingPath]]];
 }
 
 -(IBAction)openWiki:(id)sender
@@ -181,13 +181,13 @@ void notification_handler(void* context_object, RimeSessionId session_id,
                                            options:NSDataReadingUncached
                                              error:nil];
   if (archive) {
-    NSDate* previousLaunch = [NSKeyedUnarchiver unarchiveObjectWithData:archive];
+    NSDate* previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
     if (previousLaunch && previousLaunch.timeIntervalSinceNow >= -2) {
       detected = YES;
     }
   }
   NSDate* now = [NSDate date];
-  NSData* record = [NSKeyedArchiver archivedDataWithRootObject:now];
+  NSData* record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
   [record writeToFile:logfile atomically:NO];
   return detected;
 }
