@@ -51,6 +51,13 @@ int main(int argc, char *argv[]) {
     return rime_get_api()->deploy() ? 0 : 1;
   }
 
+  if (argc > 1 && !strcmp("--sync", argv[1])) {
+    [[NSDistributedNotificationCenter defaultCenter]
+        postNotificationName:@"SquirrelSyncNotification"
+                      object:nil];
+    return 0;
+  }
+
   @autoreleasepool {
     // find the bundle identifier and then initialize the input method server
     IMKServer *server __unused =

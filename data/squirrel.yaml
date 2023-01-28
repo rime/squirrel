@@ -3,7 +3,11 @@
 
 config_version: '0.37'
 
-us_keyboard_layout: false
+# options: last | default | _custom_
+# last: the last used latin keyboard layout
+# default: US (ABC) keyboard layout
+# _custom_: keyboard layout of your choice, e.g. 'com.apple.keylayout.USExtended' or simply 'USExtended'
+keyboard_layout: default
 
 # for veteran chord-typist
 chord_duration: 0.1  # seconds
