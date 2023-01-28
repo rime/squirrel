@@ -14,12 +14,12 @@ jobs:
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
 
       - name: Build Squirrel
-        run: ./action-build.sh
+        run: ./action-build.sh package
 
       - name: Upload Squirrel artifact
         uses: actions/upload-artifact@v3
         with:
           name: Squirrel-${{ env.git_ref_name }}.zip
-          path: ./**/*.pkg
+          path: package/*.pkg
           # keep 30 days
           retention-days: 30

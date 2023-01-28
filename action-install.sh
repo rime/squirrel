@@ -12,9 +12,9 @@ rime_deps_download_url="https://github.com/rime/librime/releases/download/${rime
 
 mkdir -p download && (
     cd download
-    curl -LO "${rime_download_url}"
+    [ -z "${no_download}" ] && curl -LO "${rime_download_url}"
     tar --bzip2 -xf "${rime_archive}"
-    curl -LO "${rime_deps_download_url}"
+    [ -z "${no_download}" ] && curl -LO "${rime_deps_download_url}"
     tar --bzip2 -xf "${rime_deps_archive}"
 )
 

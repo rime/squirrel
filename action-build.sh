@@ -2,6 +2,8 @@
 
 set -e
 
+target="${1:-release}"
+
 # export BUILD_UNIVERSAL=1
 
 # preinstall
@@ -11,7 +13,7 @@ set -e
 # make deps
 
 # build Squirrel
-make package
+make "${target}"
 
 echo 'Installer package:'
-find . -type f -name "*.pkg"
+find package -type f -name '*.pkg' -or -name '*.zip'
