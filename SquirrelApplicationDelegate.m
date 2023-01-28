@@ -204,6 +204,12 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [self deploy:nil];
 }
 
+-(void)rimeNeedsSync:(NSNotification *)aNotification
+{
+  NSLog(@"Sync rime on demand.");
+  [self syncUserData:nil];
+}
+
 -(NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSLog(@"Squirrel is quitting.");
@@ -226,6 +232,11 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [notifCenter addObserver:self
                   selector:@selector(rimeNeedsReload:)
                       name:@"SquirrelReloadNotification"
+                    object:nil];
+
+  [notifCenter addObserver:self
+                  selector:@selector(rimeNeedsSync:)
+                      name:@"SquirrelSyncNotification"
                     object:nil];
 
 }

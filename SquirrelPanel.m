@@ -1,6 +1,53 @@
 #import "SquirrelPanel.h"
 
 #import "SquirrelConfig.h"
+#import <QuartzCore/QuartzCore.h>
+
+@implementation NSBezierPath (BezierPathQuartzUtilities)
+// This method works only in OS X v10.2 and later.
+- (CGPathRef)quartzPath {
+  NSInteger i, numElements;
+  // Need to begin a path here.
+  CGPathRef immutablePath = NULL;
+
+  // Then draw the path elements.
+  numElements = [self elementCount];
+  if (numElements > 0) {
+    CGMutablePathRef path = CGPathCreateMutable();
+    NSPoint points[3];
+    BOOL didClosePath = YES;
+    for (i = 0; i < numElements; i++) {
+      switch ([self elementAtIndex:i associatedPoints:points]) {
+      case NSMoveToBezierPathElement:
+        CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
+        break;
+      case NSLineToBezierPathElement:
+        CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
+        didClosePath = NO;
+        break;
+      case NSCurveToBezierPathElement:
+        CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
+                              points[1].x, points[1].y,
+                              points[2].x, points[2].y);
+        didClosePath = NO;
+        break;
+      case NSClosePathBezierPathElement:
+        CGPathCloseSubpath(path);
+        didClosePath = YES;
+        break;
+      }
+    }
+
+      // Be sure the path is closed or Quartz may not do valid hit detection.
+    if (!didClosePath) {
+        CGPathCloseSubpath(path);
+    }
+    immutablePath = CGPathCreateCopy(path);
+    CGPathRelease(path);
+  }
+  return immutablePath;
+}
+@end
 
 static const CGFloat kOffsetHeight = 5;
 static const CGFloat kDefaultFontSize = 24;
@@ -25,6 +72,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, readonly) CGFloat linespace;
 @property(nonatomic, readonly) CGFloat preeditLinespace;
 @property(nonatomic, readonly) CGFloat alpha;
+@property(nonatomic, readonly) BOOL translucency;
 @property(nonatomic, readonly) BOOL linear;
 @property(nonatomic, readonly) BOOL vertical;
 @property(nonatomic, readonly) BOOL inlinePreedit;
@@ -58,6 +106,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
               linespace:(CGFloat)linespace
        preeditLinespace:(CGFloat)preeditLinespace
                   alpha:(CGFloat)alpha
+           translucency:(BOOL)translucency
                  linear:(BOOL)linear
                vertical:(BOOL)vertical
           inlinePreedit:(BOOL)inlinePreedit
@@ -124,6 +173,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
               linespace:(double)linespace
        preeditLinespace:(double)preeditLinespace
                   alpha:(CGFloat)alpha
+           translucency:(BOOL)translucency
                  linear:(BOOL)linear
                vertical:(BOOL)vertical
           inlinePreedit:(BOOL)inlinePreedit
@@ -134,6 +184,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
   _borderWidth = borderWidth;
   _linespace = linespace;
   _alpha = alpha;
+  _translucency = translucency;
   _preeditLinespace = preeditLinespace;
   _linear = linear;
   _vertical = vertical;
@@ -177,6 +228,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
 @property(nonatomic, assign) CGFloat seperatorWidth;
+@property(nonatomic, readonly) CAShapeLayer *shape;
 
 @property (NS_NONATOMIC_IOSONLY, getter=isFlipped, readonly) BOOL flipped;
 - (void)setText:(NSAttributedString *)text;
@@ -228,6 +280,7 @@ SquirrelTheme *_darkTheme;
   [_text addLayoutManager:layoutManager];
   layoutManager.backgroundLayoutEnabled = YES;
   _defaultTheme = [[SquirrelTheme alloc] init];
+  _shape = [[CAShapeLayer alloc] init];
   if (@available(macOS 10.14, *)) {
     _darkTheme = [[SquirrelTheme alloc] init];
   }
@@ -622,6 +675,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
   [NSBezierPath setDefaultLineWidth:0];
   backgroundPath = drawSmoothLines(rectVertex(backgroundRect), theme.cornerRadius*0.3, theme.cornerRadius*1.4);
+  _shape.path = backgroundPath.quartzPath;
   // Nothing should extend beyond backgroundPath
   borderPath = [backgroundPath copy];
   [borderPath addClip];
@@ -693,6 +747,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 @implementation SquirrelPanel {
   SquirrelView *_view;
+  NSVisualEffectView *_back;
 
   NSRange _preeditRange;
   NSRect _screenRect;
@@ -836,8 +891,20 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     self.hasShadow = YES;
     self.opaque = NO;
     self.backgroundColor = [NSColor clearColor];
+    NSView *contentView = [[NSView alloc] init];
     _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
-    self.contentView = _view;
+    if (@available(macOS 10.14, *)) {
+      _back = [[NSVisualEffectView alloc] init];
+      _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+      _back.material = NSVisualEffectMaterialHUDWindow;
+      _back.state = NSVisualEffectStateActive;
+      _back.wantsLayer = YES;
+      _back.layer.mask = _view.shape;
+      [contentView addSubview:_back];
+    }
+    [contentView addSubview:_view];
+
+    self.contentView = contentView;
     [self initializeUIStyleForDarkMode:NO];
     if (@available(macOS 10.14, *)) {
       [self initializeUIStyleForDarkMode:YES];
@@ -941,16 +1008,27 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   if (NSMinY(windowRect) < NSMinY(_screenRect)) {
     windowRect.origin.y = NSMinY(_screenRect);
   }
+  [self setFrame:windowRect display:YES];
   // rotate the view, the core in vertical mode!
   if (theme.vertical) {
-    _view.boundsRotation = 90.0;
-    [_view setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
+    self.contentView.boundsRotation = -90.0;
+    [self.contentView setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
   } else {
-    _view.boundsRotation = 0;
-    [_view setBoundsOrigin:NSMakePoint(0, 0)];
+    self.contentView.boundsRotation = 0;
+    [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
+  }
+  BOOL translucency = theme.translucency;
+  [_view setFrame:self.contentView.bounds];
+  if (@available(macOS 10.14, *)) {
+    if (translucency) {
+      [_back setFrame:self.contentView.bounds];
+      _back.appearance = NSApp.effectiveAppearance;
+      [_back setHidden:NO];
+    } else {
+      [_back setHidden:YES];
+    }
   }
   self.alphaValue = theme.alpha;
-  [self setFrame:windowRect display:YES];
   [self invalidateShadow];
   [self orderFront:nil];
   // voila !
@@ -1282,6 +1360,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   updateTextOrientation(&vertical, config, @"style");
   BOOL inlinePreedit = [config getBool:@"style/inline_preedit"];
   BOOL inlineCandidate = [config getBool:@"style/inline_candidate"];
+  BOOL translucency = [config getBool:@"style/translucency"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
   NSString *fontName = [config getString:@"style/font_face"];
@@ -1374,6 +1453,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         [config getOptionalBool:[prefix stringByAppendingString:@"/inline_candidate"]];
     if (inlineCandidateOverridden) {
       inlineCandidate = inlineCandidateOverridden.boolValue;
+    }
+    NSNumber *translucencyOverridden =
+        [config getOptionalBool:[prefix stringByAppendingString:@"/translucency"]];
+    if (translucencyOverridden) {
+      translucency = translucencyOverridden.boolValue;
     }
     NSString *candidateFormatOverridden =
         [config getString:[prefix stringByAppendingString:@"/candidate_format"]];
@@ -1618,6 +1702,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
                linespace:lineSpacing
         preeditLinespace:spacing
                    alpha:(alpha == 0 ? 1.0 : alpha)
+            translucency:translucency
                   linear:linear
                 vertical:vertical
            inlinePreedit:inlinePreedit

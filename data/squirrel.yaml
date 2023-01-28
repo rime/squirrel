@@ -3,10 +3,10 @@
 
 config_version: '0.37'
 
-# options: last | default | <custom>
+# options: last | default | _custom_
 # last: the last used latin keyboard layout
 # default: US (ABC) keyboard layout
-# <custom>: keyboard layout of your choice, e.g. 'com.apple.keylayout.USExtended' or 'USExtended'
+# _custom_: keyboard layout of your choice, e.g. 'com.apple.keylayout.USExtended' or simply 'USExtended'
 keyboard_layout: default
 
 # for veteran chord-typist
