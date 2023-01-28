@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 rime_version=1.8.3
 
 rime_archive='rime-a0fceab-macOS.tar.bz2'

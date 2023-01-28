@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # export BUILD_UNIVERSAL=1
 
 # preinstall
@@ -11,5 +13,5 @@
 # build Squirrel
 make package
 
-# debug only for finding pkg path
+echo 'Installer package:'
 find . -type f -name "*.pkg"
