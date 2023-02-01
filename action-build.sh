@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -e
+
+target="${1:-release}"
+
 # export BUILD_UNIVERSAL=1
 
 # preinstall
@@ -9,7 +13,7 @@
 # make deps
 
 # build Squirrel
-make package
+make "${target}"
 
-# debug only for finding pkg path
-find . -type f -name "*.pkg"
+echo 'Installer package:'
+find package -type f -name '*.pkg' -or -name '*.zip'

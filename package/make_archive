@@ -1,14 +1,16 @@
 #! /bin/bash
 # enconding: utf-8
 
+set -e
+
 cd "$(dirname $0)"
 source common.sh
 
 app_version="$(get_app_version)"
-download_url="https://dl.bintray.com/rime/squirrel/Squirrel-${app_version}.zip"
-target_archive="archives/Squirrel-${app_version}.zip"
+target_archive="Squirrel-${app_version}.zip"
+download_url="https://github.com/rime/squirrel/releases/download/${app_version}/${target_archive}"
 
-if [ -n "${checksum}" ]; then
+verify_archive() {
     if ! [ -f "${target_archive}" ]; then
         echo >&2 "ERROR: file does not exit: ${target_archive}"
         exit 1
@@ -16,7 +18,9 @@ if [ -n "${checksum}" ]; then
     echo 'sha256 checksum:'
     echo "${checksum}  ${target_archive}"
     shasum -a 256 -c <<<"${checksum}  ${target_archive}" || exit 1
-else
+}
+
+create_archive() {
     if [ -e "${target_archive}" ]; then
         echo >&2 "ERROR: target archive already exists: ${target_archive}"
         exit 1
@@ -24,11 +28,22 @@ else
     zip -r "${target_archive}" Squirrel.pkg
     echo 'sha256 checksum:'
     shasum -a 256 "${target_archive}"
+}
+
+if [ -n "${checksum}" ]; then
+    verify_archive
+else
+    create_archive
 fi
 
-ls -l ${target_archive}
+# sign_key: the private key file for signing the zip archive in Sparkle appcast.
+# usage: checksum='...' sign_key='sign/dsa_priv.pem' ./make_archive
+if [ -z "${sign_key}" ]; then
+    echo 'sign_key unspecified; skip signing.'
+    exit
+fi
 
-dsa_signature=$(ruby sign/sign_update.rb "${target_archive}" sign/dsa_priv.pem)
+dsa_signature=$(ruby sign/sign_update.rb "${target_archive}" "${sign_key}")
 file_length=$(stat -f%z "${target_archive}")
 pub_date=$(date -R)
 

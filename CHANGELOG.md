@@ -1,3 +1,34 @@
+<a name="0.16.1"></a>
+## 0.16.1 (2023-01-30)
+
+
+#### 主要更新
+
+ * 更新 Rime 核心算法庫至 [1.8.4](https://github.com/rime/librime/releases/tag/1.8.4)
+ * 修復：橫向候選欄不響應左方向鍵移動插入點
+
+
+
+<a name="0.16.0"></a>
+## 0.16.0 (2023-01-30)
+
+
+#### 主要更新
+
+ * 輸入狀態變化時顯示方案中設定的狀態名稱 [#540](https://github.com/rime/squirrel/pull/540)
+ * 修正繪文字行高 [#559](https://github.com/rime/squirrel/issues/559)
+ * 支持半透明視窗背景 [#589](https://github.com/rime/squirrel/pull/589)
+ * 由 GitHub Actions執行自動構建 [#633](https://github.com/rime/squirrel/pull/633)
+ * 將鼠鬚管的輸入語言註冊爲簡體中文及繁體中文 [#648](https://github.com/rime/squirrel/pull/648)
+ * 可指定使用任意一種系統鍵盤佈局 [#687](https://github.com/rime/squirrel/pull/687)
+   例如： `squirrel.yaml:/keyboard_layout: USExtended`
+ * 區分左、右修飾鍵 [#688](https://github.com/rime/squirrel/pull/688)
+ * 支持以命令行方式同步用戶數據 [#694](https://github.com/rime/squirrel/pull/694)
+   命令： `Squirrel --sync`
+ * 更新 Rime 核心算法庫至 [1.8.3](https://github.com/rime/librime/releases/tag/1.8.3)
+
+
+
 <a name="0.15.2"></a>
 ## 0.15.2 (2021-02-13)
 
