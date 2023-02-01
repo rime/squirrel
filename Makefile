@@ -103,7 +103,7 @@ archive: package
 
 sign-archive:
 	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
-	bash package/make_archive
+	sign_key=sign/dsa_priv.pem bash package/make_archive
 
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
