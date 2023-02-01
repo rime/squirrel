@@ -8,7 +8,7 @@ source common.sh
 
 app_version="$(get_app_version)"
 target_archive="Squirrel-${app_version}.zip"
-download_url="https://github.com/rime/squirrel/releases/${app_version}/${target_archive}"
+download_url="https://github.com/rime/squirrel/releases/download/${app_version}/${target_archive}"
 
 verify_archive() {
     if ! [ -f "${target_archive}" ]; then
