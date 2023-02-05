@@ -15,7 +15,7 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 @property(nonatomic, assign) BOOL memorizeSize;
 
 @property(nonatomic, strong, readonly) NSColor *backgroundColor;
-@property(nonatomic, strong, readonly) NSColor *highlightedBackColor;
+@property(nonatomic, strong, readonly) NSColor *highlightedStripColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedPreeditColor;
 @property(nonatomic, strong, readonly) NSColor *preeditBackgroundColor;
 @property(nonatomic, strong, readonly) NSColor *borderColor;
@@ -51,7 +51,7 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 - (void)setCandidateFormat:(NSString *)candidateFormat;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
-     highlightedBackColor:(NSColor *)highlightedBackColor
+     highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
                borderColor:(NSColor *)borderColor;
@@ -71,14 +71,14 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
           inlinePreedit:(BOOL)inlinePreedit
         inlineCandidate:(BOOL)inlineCandidate;
 
-- (void)          setAttrs:(NSMutableDictionary *)attrs
-          highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
-                labelAttrs:(NSMutableDictionary *)labelAttrs
-     labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
-              commentAttrs:(NSMutableDictionary *)commentAttrs
-   commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
-              preeditAttrs:(NSMutableDictionary *)preeditAttrs
-   preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
+- (void)       setAttrs:(NSMutableDictionary *)attrs
+             labelAttrs:(NSMutableDictionary *)labelAttrs
+       highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
+  labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
+           commentAttrs:(NSMutableDictionary *)commentAttrs
+commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
+           preeditAttrs:(NSMutableDictionary *)preeditAttrs
+preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
 
 - (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
      preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle;
@@ -114,12 +114,12 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
-     highlightedBackColor:(NSColor *)highlightedBackColor
+     highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
                borderColor:(NSColor *)borderColor {
   _backgroundColor = backgroundColor;
-  _highlightedBackColor = highlightedBackColor;
+  _highlightedStripColor = highlightedStripColor;
   _highlightedPreeditColor = highlightedPreeditColor;
   _preeditBackgroundColor = preeditBackgroundColor;
   _borderColor = borderColor;
@@ -155,17 +155,17 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
   _inlineCandidate = inlineCandidate;
 }
 
-- (void)          setAttrs:(NSMutableDictionary *)attrs
-          highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
-                labelAttrs:(NSMutableDictionary *)labelAttrs
-     labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
-              commentAttrs:(NSMutableDictionary *)commentAttrs
-   commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
-              preeditAttrs:(NSMutableDictionary *)preeditAttrs
-   preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
+- (void)       setAttrs:(NSMutableDictionary *)attrs
+             labelAttrs:(NSMutableDictionary *)labelAttrs
+       highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
+  labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
+           commentAttrs:(NSMutableDictionary *)commentAttrs
+commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
+           preeditAttrs:(NSMutableDictionary *)preeditAttrs
+preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
   _attrs = attrs;
-  _highlightedAttrs = highlightedAttrs;
   _labelAttrs = labelAttrs;
+  _highlightedAttrs = highlightedAttrs;
   _labelHighlightedAttrs = labelHighlightedAttrs;
   _commentAttrs = commentAttrs;
   _commentHighlightedAttrs = commentHighlightedAttrs;
@@ -644,7 +644,7 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   // Draw highlighted Rect
   NSRange candidateRange = [_candidateRanges[_hilightedIndex] rangeValue];
   // Draw highlighted Rect
-  if (candidateRange.length > 0 && theme.highlightedBackColor != nil) {
+  if (candidateRange.length > 0 && theme.highlightedStripColor != nil) {
     highlightedPath = [self drawHighlightedWith:theme highlightedRange:candidateRange backgroundRect:backgroundRect preeditRect:preeditRect containingRect:containingRect];
   }
 
@@ -730,9 +730,9 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     layer.fillColor = theme.highlightedPreeditColor.CGColor;
     [panelLayer addSublayer: layer];
   }
-  if (theme.highlightedBackColor && !CGPathIsEmpty(highlightedPath)) {
+  if (theme.highlightedStripColor && !CGPathIsEmpty(highlightedPath)) {
     CAShapeLayer *layer = shapeFromPath(highlightedPath);
-    layer.fillColor = theme.highlightedBackColor.CGColor;
+    layer.fillColor = theme.highlightedStripColor.CGColor;
     if (theme.shadowSize > 0) {
       CAShapeLayer *shadowLayer = [CAShapeLayer layer];
       shadowLayer.shadowColor = NSColor.blackColor.CGColor;
@@ -859,8 +859,8 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   NSParagraphStyle *preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
 
   [theme          setAttrs:attrs
-          highlightedAttrs:highlightedAttrs
                 labelAttrs:labelAttrs
+          highlightedAttrs:highlightedAttrs
      labelHighlightedAttrs:labelHighlightedAttrs
               commentAttrs:commentAttrs
    commentHighlightedAttrs:commentHighlightedAttrs
@@ -1697,8 +1697,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   highlightedTextColor = highlightedTextColor ? highlightedTextColor : [NSColor controlTextColor];
 
   attrs[NSForegroundColorAttributeName] = candidateTextColor;
-  highlightedAttrs[NSForegroundColorAttributeName] = highlightedCandidateTextColor;
   labelAttrs[NSForegroundColorAttributeName] = candidateLabelColor;
+  highlightedAttrs[NSForegroundColorAttributeName] = highlightedCandidateTextColor;
   labelHighlightedAttrs[NSForegroundColorAttributeName] = highlightedCandidateLabelColor;
   commentAttrs[NSForegroundColorAttributeName] = commentTextColor;
   commentHighlightedAttrs[NSForegroundColorAttributeName] = highlightedCommentTextColor;
@@ -1706,8 +1706,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditHighlightedAttrs[NSForegroundColorAttributeName] = highlightedTextColor;
 
   [theme          setAttrs:attrs
-          highlightedAttrs:highlightedAttrs
                 labelAttrs:labelAttrs
+          highlightedAttrs:highlightedAttrs
      labelHighlightedAttrs:labelHighlightedAttrs
               commentAttrs:commentAttrs
    commentHighlightedAttrs:commentHighlightedAttrs
@@ -1718,7 +1718,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
      preeditParagraphStyle:preeditParagraphStyle];
 
   [theme setBackgroundColor:backgroundColor
-      highlightedBackColor:highlightedCandidateBackColor
+      highlightedStripColor:highlightedCandidateBackColor
     highlightedPreeditColor:highlightedBackColor
      preeditBackgroundColor:preeditBackgroundColor
                 borderColor:borderColor];
