@@ -9,7 +9,7 @@
 
  * 更新 Rime 核心算法庫至 [1.8.5](https://github.com/rime/librime/releases/tag/1.8.5)
  * 修復：橫向候選欄 Tab 鍵應當用作移動插入點 [rime/librime#609](https://github.com/rime/librime/issues/609)
- * 修復：macOS Mojave及以下版本單擊 Shift 等修飾鍵失效 [#715](https://github.com/rime/squirrel/issues/715)
+ * 修復：macOS Mojave 及以下版本單擊 Shift 等修飾鍵失效 [#715](https://github.com/rime/squirrel/issues/715)
  * 修復：全新安裝只添加一個輸入法選項（簡體中文） [#714](https://github.com/rime/squirrel/issues/714)
 
 
