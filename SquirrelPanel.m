@@ -885,9 +885,12 @@ void fixDefaultFont(NSMutableAttributedString *text) {
                               defer:YES];
   if (self) {
     self.alphaValue = 1.0;
-    // _window.level = NSScreenSaverWindowLevel + 1;
-    // ^ May fix visibility issue in fullscreen games.
-    self.level = CGShieldingWindowLevel();
+    // CGShieldingWindowLevel() is the one specifically used for drawing game screen.
+    // Therefore, the level for IME peripheral windows must be higher than this value.
+    // However, it shouldn't be too high. Otherwise (for example: +1000), IME crashes.
+    // Recommending +1 or +2, depending on actual neccesities. We use the +2 which is
+    // tested in vChewing IME, successfully showing candidate window in League of Legends.
+    self.level = CGShieldingWindowLevel() + 2;
     self.hasShadow = YES;
     self.opaque = NO;
     self.backgroundColor = [NSColor clearColor];
