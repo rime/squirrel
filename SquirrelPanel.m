@@ -16,14 +16,12 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 
 @property(nonatomic, strong, readonly) NSColor *backgroundColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedBackColor;
-@property(nonatomic, strong, readonly) NSColor *candidateBackColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedPreeditColor;
 @property(nonatomic, strong, readonly) NSColor *preeditBackgroundColor;
 @property(nonatomic, strong, readonly) NSColor *borderColor;
 
 @property(nonatomic, readonly) CGFloat cornerRadius;
 @property(nonatomic, readonly) CGFloat hilitedCornerRadius;
-@property(nonatomic, readonly) CGFloat surroundingExtraExpansion;
 @property(nonatomic, readonly) CGFloat shadowSize;
 @property(nonatomic, readonly) NSSize edgeInset;
 @property(nonatomic, readonly) CGFloat borderWidth;
@@ -54,14 +52,12 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedBackColor:(NSColor *)highlightedBackColor
-       candidateBackColor:(NSColor *)candidateBackColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
                borderColor:(NSColor *)borderColor;
 
 - (void)setCornerRadius:(CGFloat)cornerRadius
     hilitedCornerRadius:(CGFloat)hilitedCornerRadius
-      srdExtraExpansion:(CGFloat)surroundingExtraExpansion
              shadowSize:(CGFloat)shadowSize
               edgeInset:(NSSize)edgeInset
             borderWidth:(CGFloat)borderWidth
@@ -119,13 +115,11 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedBackColor:(NSColor *)highlightedBackColor
-       candidateBackColor:(NSColor *)candidateBackColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
                borderColor:(NSColor *)borderColor {
   _backgroundColor = backgroundColor;
   _highlightedBackColor = highlightedBackColor;
-  _candidateBackColor = candidateBackColor;
   _highlightedPreeditColor = highlightedPreeditColor;
   _preeditBackgroundColor = preeditBackgroundColor;
   _borderColor = borderColor;
@@ -133,7 +127,6 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 
 - (void)setCornerRadius:(double)cornerRadius
     hilitedCornerRadius:(double)hilitedCornerRadius
-      srdExtraExpansion:(double)surroundingExtraExpansion
              shadowSize:(double)shadowSize
               edgeInset:(NSSize)edgeInset
             borderWidth:(double)borderWidth
@@ -148,7 +141,6 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
         inlineCandidate:(BOOL)inlineCandidate {
   _cornerRadius = cornerRadius;
   _hilitedCornerRadius = hilitedCornerRadius;
-  _surroundingExtraExpansion = surroundingExtraExpansion;
   _shadowSize = shadowSize;
   _edgeInset = edgeInset;
   _borderWidth = borderWidth;
@@ -491,50 +483,11 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
 }
 
-CGPoint direction(CGPoint diff) {
-  if (diff.y == 0 && diff.x > 0) {
-    return NSMakePoint(0, 1);
-  } else if (diff.y == 0 && diff.x < 0) {
-    return NSMakePoint(0, -1);
-  } else if (diff.x == 0 && diff.y > 0) {
-    return NSMakePoint(-1, 0);
-  } else if (diff.x == 0 && diff.y < 0) {
-    return NSMakePoint(1, 0);
-  } else {
-    return NSMakePoint(0, 0);
-  }
-}
-
 CAShapeLayer *shapeFromPath(CGPathRef path) {
   CAShapeLayer *layer = [CAShapeLayer layer];
   layer.path = path;
   layer.fillRule = kCAFillRuleEvenOdd;
   return layer;
-}
-
-// Assumes clockwise iteration
-void enlarge(NSMutableArray<NSValue *> *vertex, CGFloat by) {
-  if (by != 0) {
-    NSPoint previousPoint;
-    NSPoint point;
-    NSPoint nextPoint;
-    NSArray<NSValue *> *original = [[NSArray alloc] initWithArray:vertex];
-    NSPoint newPoint;
-    NSPoint displacement;
-    for (NSUInteger i = 0; i < original.count; i += 1){
-      previousPoint = [original[(original.count+i-1)%original.count] pointValue];
-      point = [original[i] pointValue];
-      nextPoint = [original[(i+1)%original.count] pointValue];
-      newPoint = point;
-      displacement = direction(NSMakePoint(point.x - previousPoint.x, point.y - previousPoint.y));
-      newPoint.x += by * displacement.x;
-      newPoint.y += by * displacement.y;
-      displacement = direction(NSMakePoint(nextPoint.x - point.x, nextPoint.y - point.y));
-      newPoint.x += by * displacement.x;
-      newPoint.y += by * displacement.y;
-      [vertex replaceObjectAtIndex:i withObject:@(newPoint)];
-    }
-  }
 }
 
 // Add gap between horizontal candidates
@@ -580,19 +533,13 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   }
 }
 
-- (CGPathRef)drawHighlightedWith:(SquirrelTheme *)theme highlightedRange:(NSRange)highlightedRange backgroundRect:(NSRect)backgroundRect preeditRect:(NSRect)preeditRect containingRect:(NSRect)containingRect extraExpansion:(CGFloat)extraExpansion {
+- (CGPathRef)drawHighlightedWith:(SquirrelTheme *)theme highlightedRange:(NSRange)highlightedRange backgroundRect:(NSRect)backgroundRect preeditRect:(NSRect)preeditRect containingRect:(NSRect)containingRect {
   NSRect currentContainingRect = containingRect;
-  currentContainingRect.size.width += extraExpansion * 2;
-  currentContainingRect.size.height += extraExpansion * 2;
-  currentContainingRect.origin.x -= extraExpansion;
-  currentContainingRect.origin.y -= extraExpansion;
   
   CGFloat halfLinespace = theme.linespace / 2;
   NSRect innerBox = backgroundRect;
-  innerBox.size.width -= (theme.edgeInset.width + 1) * 2 - 2 * extraExpansion;
-  innerBox.origin.x += theme.edgeInset.width + 1 - extraExpansion;
-  innerBox.size.height += 2 * extraExpansion;
-  innerBox.origin.y -= extraExpansion;
+  innerBox.size.width -= (theme.edgeInset.width + 1) * 2;
+  innerBox.origin.x += theme.edgeInset.width + 1;
   if (_preeditRange.length == 0) {
     innerBox.origin.y += theme.edgeInset.height + 1;
     innerBox.size.height -= (theme.edgeInset.height + 1) * 2;
@@ -602,12 +549,12 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   }
   innerBox.size.height -= halfLinespace;
   NSRect outerBox = backgroundRect;
-  outerBox.size.height -= preeditRect.size.height + MAX(0, theme.hilitedCornerRadius + theme.borderWidth) - 2 * extraExpansion;
-  outerBox.size.width -= MAX(0, theme.hilitedCornerRadius + theme.borderWidth) - 2 * extraExpansion;
-  outerBox.origin.x += MAX(0, theme.hilitedCornerRadius + theme.borderWidth) / 2 - extraExpansion;
-  outerBox.origin.y += preeditRect.size.height + MAX(0, theme.hilitedCornerRadius + theme.borderWidth) / 2 - extraExpansion;
+  outerBox.size.height -= preeditRect.size.height + MAX(0, theme.hilitedCornerRadius + theme.borderWidth);
+  outerBox.size.width -= MAX(0, theme.hilitedCornerRadius + theme.borderWidth);
+  outerBox.origin.x += MAX(0, theme.hilitedCornerRadius + theme.borderWidth) / 2;
+  outerBox.origin.y += preeditRect.size.height + MAX(0, theme.hilitedCornerRadius + theme.borderWidth) / 2;
   
-  double effectiveRadius = MAX(0, theme.hilitedCornerRadius + 2 * extraExpansion / theme.hilitedCornerRadius * MAX(0, theme.cornerRadius - theme.hilitedCornerRadius));
+  double effectiveRadius = MAX(0, theme.hilitedCornerRadius);
   CGMutablePathRef path = CGPathCreateMutable();
   
   if (theme.linear){
@@ -625,13 +572,11 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     xyTranslation(highlightedPoints, NSMakePoint(0, -halfLinespace));
     xyTranslation(highlightedPoints2, NSMakePoint(0, -halfLinespace));
     // Expand the boxes to reach proper border
-    enlarge(highlightedPoints, extraExpansion);
     expand(highlightedPoints, innerBox, outerBox);
     removeCorner(highlightedPoints, rightCorners, currentContainingRect);
 
     path = drawSmoothLines(highlightedPoints, rightCorners, 0.3*effectiveRadius, 1.4*effectiveRadius);
     if (highlightedPoints2.count > 0) {
-      enlarge(highlightedPoints2, extraExpansion);
       expand(highlightedPoints2, innerBox, outerBox);
       removeCorner(highlightedPoints2, rightCorners2, currentContainingRect);
       CGPathRef path2 = drawSmoothLines(highlightedPoints2, rightCorners2, 0.3*effectiveRadius, 1.4*effectiveRadius);
@@ -655,7 +600,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
       }
     }
     NSMutableArray<NSValue *> *highlightedPoints = [rectVertex(highlightedRect) mutableCopy];
-    enlarge(highlightedPoints, extraExpansion);
     expand(highlightedPoints, innerBox, outerBox);
     path = drawSmoothLines(highlightedPoints, nil, 0.3*effectiveRadius, 1.4*effectiveRadius);
   }
@@ -666,7 +610,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
 - (void)drawRect:(NSRect)dirtyRect {
   CGPathRef backgroundPath = CGPathCreateMutable();
   CGPathRef highlightedPath = CGPathCreateMutable();
-  CGMutablePathRef candidatePaths = CGPathCreateMutable();
   CGMutablePathRef highlightedPreeditPath = CGPathCreateMutable();
   CGPathRef preeditPath = CGPathCreateMutable();
   SquirrelTheme * theme = self.currentTheme;
@@ -699,20 +642,10 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   }
 
   // Draw highlighted Rect
-  for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
-    NSRange candidateRange = [_candidateRanges[i] rangeValue];
-    if (i == _hilightedIndex) {
-      // Draw highlighted Rect
-      if (candidateRange.length > 0 && theme.highlightedBackColor != nil) {
-        highlightedPath = [self drawHighlightedWith:theme highlightedRange:candidateRange backgroundRect:backgroundRect preeditRect:preeditRect containingRect:containingRect extraExpansion:0];
-      }
-    } else {
-      // Draw other highlighted Rect
-      if (candidateRange.length > 0 && theme.candidateBackColor != nil) {
-        CGPathRef candidatePath = [self drawHighlightedWith:theme highlightedRange:candidateRange backgroundRect:backgroundRect preeditRect:preeditRect containingRect:containingRect extraExpansion:theme.surroundingExtraExpansion];
-        CGPathAddPath(candidatePaths, NULL, candidatePath);
-      }
-    }
+  NSRange candidateRange = [_candidateRanges[_hilightedIndex] rangeValue];
+  // Draw highlighted Rect
+  if (candidateRange.length > 0 && theme.highlightedBackColor != nil) {
+    highlightedPath = [self drawHighlightedWith:theme highlightedRange:candidateRange backgroundRect:backgroundRect preeditRect:preeditRect containingRect:containingRect];
   }
 
   // Draw highlighted part of preedit text
@@ -767,9 +700,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     if (!CGPathIsEmpty(highlightedPath)) {
       CGPathAddPath(backPath, NULL, highlightedPath);
     }
-    if (!CGPathIsEmpty(candidatePaths)) {
-      CGPathAddPath(backPath, NULL, candidatePaths);
-    }
   }
   CAShapeLayer *panelLayer = shapeFromPath(backPath);
   panelLayer.fillColor = theme.backgroundColor.CGColor;
@@ -798,11 +728,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   if (theme.highlightedPreeditColor && !CGPathIsEmpty(highlightedPreeditPath)) {
     CAShapeLayer *layer = shapeFromPath(highlightedPreeditPath);
     layer.fillColor = theme.highlightedPreeditColor.CGColor;
-    [panelLayer addSublayer: layer];
-  }
-  if (theme.candidateBackColor && !CGPathIsEmpty(candidatePaths)) {
-    CAShapeLayer *layer = shapeFromPath(candidatePaths);
-    layer.fillColor = theme.candidateBackColor.CGColor;
     [panelLayer addSublayer: layer];
   }
   if (theme.highlightedBackColor && !CGPathIsEmpty(highlightedPath)) {
@@ -1477,7 +1402,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   CGFloat alpha = alphaValue ? fmin(fmax(alphaValue.doubleValue, 0.0), 1.0) : 1.0;
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
   CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
-  CGFloat surroundingExtraExpansion = [config getDouble:@"style/surrounding_extra_expansion"];
   CGFloat borderHeight = [config getDouble:@"style/border_height"];
   CGFloat borderWidth = [config getDouble:@"style/border_width"];
   CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
@@ -1496,7 +1420,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSColor *candidateTextColor;
   NSColor *highlightedCandidateTextColor;
   NSColor *highlightedCandidateBackColor;
-  NSColor *candidateBackColor;
   NSColor *commentTextColor;
   NSColor *highlightedCommentTextColor;
 
@@ -1551,8 +1474,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     if (highlightedCandidateBackColor == nil) {
       highlightedCandidateBackColor = highlightedBackColor;
     }
-    candidateBackColor =
-        [config getColor:[prefix stringByAppendingString:@"/candidate_back_color"]];
     commentTextColor =
         [config getColor:[prefix stringByAppendingString:@"/comment_text_color"]];
     highlightedCommentTextColor =
@@ -1634,11 +1555,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         [config getOptionalDouble:[prefix stringByAppendingString:@"/hilited_corner_radius"]];
     if (hilitedCornerRadiusOverridden) {
       hilitedCornerRadius = hilitedCornerRadiusOverridden.doubleValue;
-    }
-    NSNumber *surroundingExtraExpansionOverridden =
-        [config getOptionalDouble:[prefix stringByAppendingString:@"/surrounding_extra_expansion"]];
-    if (surroundingExtraExpansionOverridden) {
-      surroundingExtraExpansion = surroundingExtraExpansionOverridden.doubleValue;
     }
     NSNumber *borderHeightOverridden =
         [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
@@ -1803,7 +1719,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   [theme setBackgroundColor:backgroundColor
       highlightedBackColor:highlightedCandidateBackColor
-        candidateBackColor:candidateBackColor
     highlightedPreeditColor:highlightedBackColor
      preeditBackgroundColor:preeditBackgroundColor
                 borderColor:borderColor];
@@ -1817,7 +1732,6 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   [theme setCornerRadius:cornerRadius
      hilitedCornerRadius:hilitedCornerRadius
-       srdExtraExpansion:surroundingExtraExpansion
          shadowSize:shadowSize
                edgeInset:edgeInset
              borderWidth:MIN(borderHeight, borderWidth)
