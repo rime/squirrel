@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>TISInputSourceID</key>
-	<string>im.rime.inputmethod.Squirrel</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -96,7 +94,7 @@
 					<string>Hans</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
-				<true/>
+				<false/>
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
