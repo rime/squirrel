@@ -85,6 +85,10 @@ BUILD_SETTINGS += ARCHS="$(ARCHS)"
 BUILD_SETTINGS += ONLY_ACTIVE_ARCH=NO
 endif
 
+ifdef OS
+BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(OS)"
+endif
+
 release: $(DEPS_CHECK)
 	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Release $(BUILD_SETTINGS) build
