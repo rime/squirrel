@@ -83,10 +83,13 @@ deps: librime data
 ifdef ARCHS
 BUILD_SETTINGS += ARCHS="$(ARCHS)"
 BUILD_SETTINGS += ONLY_ACTIVE_ARCH=NO
+_=$() $()
+export CMAKE_OSX_ARCHITECTURES = $(subst $(_),;,$(ARCHS))
 endif
 
 ifdef OS
 BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(OS)"
+export MACOSX_DEPLOYMENT_TARGET = $(OS)
 endif
 
 release: $(DEPS_CHECK)
