@@ -6,7 +6,7 @@ squirrel_executable="${squirrel_app_root}/Contents/MacOS/Squirrel"
 rime_package_installer="${squirrel_app_root}/Contents/MacOS/rime-install"
 rime_shared_data_path="${squirrel_app_root}/Contents/SharedSupport"
 
-"${squirrel_executable}" --quit
+/usr/bin/sudo -u "${login_user}" /usr/bin/killall Squirrel > /dev/null
 
 if [ -z "${RIME_NO_PREBUILD}" ]; then
     pushd "${rime_shared_data_path}" > /dev/null
