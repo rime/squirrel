@@ -49,8 +49,10 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
 
 @property(nonatomic, strong, readonly) NSString *prefixLabelFormat, *suffixLabelFormat;
+@property(nonatomic, strong, readonly) NSString *statusMessageType;
 
 - (void)setCandidateFormat:(NSString *)candidateFormat;
+- (void)setStatusMessageType:(NSString *)statusMessageType;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedBackColor:(NSColor *)highlightedBackColor
@@ -114,6 +116,14 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
   } else {
     // '%@' is at the end, so suffix label does not exist
     _suffixLabelFormat = nil;
+  }
+}
+
+- (void)setStatusMessageType:(NSString *)type {
+  if ([type isEqualToString: @"long"] || [type isEqualToString: @"short"] || [type isEqualToString: @"mix"]) {
+    _statusMessageType = type;
+  } else {
+    _statusMessageType = @"mix";
   }
 }
 
@@ -1343,8 +1353,23 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   [self show];
 }
 
-- (void)updateStatus:(NSString *)message {
-  _statusMessage = message;
+- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort {
+  SquirrelTheme *theme = _view.currentTheme;
+  if ([theme.statusMessageType isEqualToString:@"mix"]) {
+    if (messageShort) {
+      _statusMessage = messageShort;
+    } else {
+      _statusMessage = messageLong;
+    }
+  } else if ([theme.statusMessageType isEqualToString:@"long"]) {
+    _statusMessage = messageLong;
+  } else if ([theme.statusMessageType isEqualToString:@"short"]) {
+    if (messageShort) {
+      _statusMessage = messageShort;
+    } else if (messageLong) {
+      _statusMessage = [messageLong substringWithRange:[messageLong rangeOfComposedCharacterSequenceAtIndex:0]];
+    }
+  }
 }
 
 - (void)showStatus:(NSString *)message {
@@ -1466,6 +1491,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     theme.memorizeSize = memorizeSizeConfig.boolValue;
   }
   
+  NSString *statusMessageType = [config getString:@"style/status_message_type"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
   NSString *fontName = [config getString:@"style/font_face"];
   CGFloat fontSize = [config getDouble:@"style/font_point"];
@@ -1789,6 +1815,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditAttrs[NSForegroundColorAttributeName] = textColor;
   preeditHighlightedAttrs[NSForegroundColorAttributeName] = highlightedTextColor;
 
+  [theme setStatusMessageType:statusMessageType];
+  
   [theme          setAttrs:attrs
           highlightedAttrs:highlightedAttrs
                 labelAttrs:labelAttrs
