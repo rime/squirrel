@@ -90,8 +90,10 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
 
 @property(nonatomic, strong, readonly) NSString *prefixLabelFormat, *suffixLabelFormat;
+@property(nonatomic, strong, readonly) NSString *statusMessageType;
 
 - (void)setCandidateFormat:(NSString *)candidateFormat;
+- (void)setStatusMessageType:(NSString *)statusMessageType;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -153,6 +155,14 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
     _suffixLabelFormat = nil;
   }
 }
+
+- (void)setStatusMessageType:(NSString *)type {
+   if ([type isEqualToString: @"long"] || [type isEqualToString: @"short"] || [type isEqualToString: @"mix"]) {
+     _statusMessageType = type;
+   } else {
+     _statusMessageType = @"mix";
+   }
+ }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -1250,8 +1260,23 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   [self show];
 }
 
-- (void)updateStatus:(NSString *)message {
-  _statusMessage = message;
+- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort {
+   SquirrelTheme *theme = _view.currentTheme;
+   if ([theme.statusMessageType isEqualToString:@"mix"]) {
+     if (messageShort) {
+       _statusMessage = messageShort;
+     } else {
+       _statusMessage = messageLong;
+     }
+   } else if ([theme.statusMessageType isEqualToString:@"long"]) {
+     _statusMessage = messageLong;
+   } else if ([theme.statusMessageType isEqualToString:@"short"]) {
+     if (messageShort) {
+       _statusMessage = messageShort;
+     } else if (messageLong) {
+       _statusMessage = [messageLong substringWithRange:[messageLong rangeOfComposedCharacterSequenceAtIndex:0]];
+     }
+   }
 }
 
 - (void)showStatus:(NSString *)message {
@@ -1362,6 +1387,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   BOOL inlineCandidate = [config getBool:@"style/inline_candidate"];
   BOOL translucency = [config getBool:@"style/translucency"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
+  NSString *statusMessageType = [config getString:@"style/status_message_type"];
 
   NSString *fontName = [config getString:@"style/font_face"];
   NSInteger fontSize = [config getDouble:@"style/font_point"];
@@ -1670,6 +1696,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditAttrs[NSForegroundColorAttributeName] = textColor;
   preeditHighlightedAttrs[NSForegroundColorAttributeName] = highlightedTextColor;
 
+  [theme setStatusMessageType:statusMessageType];
+  
   [theme          setAttrs:attrs
                 labelAttrs:labelAttrs
           highlightedAttrs:highlightedAttrs
