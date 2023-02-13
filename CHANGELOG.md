@@ -1,3 +1,25 @@
+<a name="0.16.2"></a>
+## 0.16.2 (2023-02-05)
+
+#### 須知
+
+ * 升級安裝後遇輸入法不可用，須手動重新添加 [#704](https://github.com/rime/squirrel/issues/704)
+
+#### 主要更新
+
+ * 更新 Rime 核心算法庫至 [1.8.5](https://github.com/rime/librime/releases/tag/1.8.5)
+ * 修復：橫向候選欄 Tab 鍵應當用作移動插入點 [rime/librime#609](https://github.com/rime/librime/issues/609)
+ * 修復：macOS Mojave 及以下版本單擊 Shift 等修飾鍵失效 [#715](https://github.com/rime/squirrel/issues/715)
+ * 修復：全新安裝只添加一個輸入法選項（簡體中文） [#714](https://github.com/rime/squirrel/issues/714)
+
+
+#### Bug Fixes
+
+*   modifier change event in older macOS ([5c2b7e64](https://github.com/rime/squirrel/commit/5c2b7e64980b7e6b7eb3a8b392163ce89d244f37))
+*   install one input mode or keep previous ones ([3bc6c2c0](https://github.com/rime/squirrel/commit/3bc6c2c0edbb1adaa22e79da65c6f0116b164de7))
+
+
+
 <a name="0.16.1"></a>
 ## 0.16.1 (2023-01-30)
 

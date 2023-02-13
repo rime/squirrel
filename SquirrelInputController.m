@@ -78,13 +78,22 @@ const int N_KEY_ROLL_OVER = 50;
           handled = YES;
           break;
         }
-        int keyCode = event.keyCode;
-        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx, keyCode: %d", sender, modifiers, keyCode);
-        int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
+        //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
+        int rime_keycode = 0;
+        // For flags-changed event, keyCode is available since macOS 10.15 (#715)
+        Bool keyCodeAvailable = NO;
+        if (@available(macOS 10.15, *)) {
+          keyCodeAvailable = YES;
+          rime_keycode = osx_keycode_to_rime_keycode(event.keyCode, 0, 0, 0);
+          //NSLog(@"keyCode: %d", event.keyCode);
+        }
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
         if (changes & OSX_CAPITAL_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Caps_Lock;
+          }
           // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
           // while NSFlagsChanged event has the flag changed already.
           // so it is necessary to revert kLockMask.
@@ -92,18 +101,30 @@ const int N_KEY_ROLL_OVER = 50;
           [self processKey:rime_keycode modifiers:rime_modifiers];
         }
         if (changes & OSX_SHIFT_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Shift_L;
+          }
           release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_CTRL_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Control_L;
+          }
           release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_ALT_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Alt_L;
+          }
           release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_COMMAND_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Super_L;
+          }
           release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           // do not update UI when using Command key

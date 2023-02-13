@@ -2,12 +2,13 @@
 
 set -e
 
-rime_version=1.8.4
+rime_version=1.8.5
+rime_git_hash=08dd95f
 
-rime_archive='rime-a94739f-macOS.tar.bz2'
+rime_archive="rime-${rime_git_hash}-macOS.tar.bz2"
 rime_download_url="https://github.com/rime/librime/releases/download/${rime_version}/${rime_archive}"
 
-rime_deps_archive='rime-deps-a94739f-macOS.tar.bz2'
+rime_deps_archive="rime-deps-${rime_git_hash}-macOS.tar.bz2"
 rime_deps_download_url="https://github.com/rime/librime/releases/download/${rime_version}/${rime_deps_archive}"
 
 mkdir -p download && (

@@ -6,9 +6,11 @@
 #import <string.h>
 
 void RegisterInputSource();
-void ActivateInputSource();
+int GetEnabledInputModes();
 void DeactivateInputSource();
-// BOOL IsInputSourceActive();
+void ActivateInputSource(int input_modes);
+
+#define DEFAULT_INPUT_MODE 1
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
@@ -35,8 +37,9 @@ int main(int argc, char *argv[]) {
   if (argc > 1 && !strcmp("--install", argv[1])) {
     // register and enable Squirrel
     RegisterInputSource();
+    int input_modes = GetEnabledInputModes();
     DeactivateInputSource();
-    ActivateInputSource();
+    ActivateInputSource(input_modes ? input_modes : DEFAULT_INPUT_MODE);
     return 0;
   }
 
