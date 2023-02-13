@@ -209,6 +209,7 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
 @property(nonatomic, readonly) NSRect contentRect;
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
+@property(nonatomic, readonly) NSTextLayoutManager *layoutManager;
 @property(nonatomic, assign) CGFloat seperatorWidth;
 @property(nonatomic, readonly) CAShapeLayer *shape;
 
@@ -216,7 +217,7 @@ static NSString *const kDefaultCandidateFormat = @"%c.\u00A0%@";
                hilightedIndex:(NSInteger)hilightedIndex
                  preeditRange:(NSRange)preeditRange
       highlightedPreeditRange:(NSRange)highlightedPreeditRange;
-- (NSRect)contentRectForRange:(NSRange)range;
+- (NSRect)contentRectForRange:(NSTextRange *)range;
 @end
 
 @implementation SquirrelView
@@ -230,10 +231,8 @@ SquirrelTheme *_darkTheme;
 }
 
 - (BOOL)isDark {
-  if (@available(macOS 10.14, *)) {
-    if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-      return YES;
-    }
+  if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
+    return YES;
   }
   return NO;
 }
@@ -246,6 +245,10 @@ SquirrelTheme *_darkTheme;
   return [self selectTheme:self.isDark];
 }
 
+- (NSTextLayoutManager *)layoutManager {
+  return _textView.textLayoutManager;
+}
+
 - (instancetype)initWithFrame:(NSRect)frameRect {
   self = [super initWithFrame:frameRect];
   if (self) {
@@ -253,50 +256,61 @@ SquirrelTheme *_darkTheme;
     self.layer.masksToBounds = YES;
   }
   _textView = [[NSTextView alloc] initWithFrame:frameRect];
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSZeroSize];
-  textContainer.lineFragmentPadding = 0.0;
   _textView.drawsBackground = NO;
   _textView.editable = NO;
   _textView.selectable = NO;
-  [_textView replaceTextContainer:textContainer];
-  _textView.layoutManager.backgroundLayoutEnabled = YES;
+  self.layoutManager.textContainer.lineFragmentPadding = 0.0;
   _defaultTheme = [[SquirrelTheme alloc] init];
-  if (@available(macOS 10.14, *)) {
-    _darkTheme = [[SquirrelTheme alloc] init];
-  }
+  _darkTheme = [[SquirrelTheme alloc] init];
   _shape = [[CAShapeLayer alloc] init];
   return self;
 }
 
+- (NSTextRange *)convertRange:(NSRange)range {
+  if (range.location == NSNotFound) {
+    return nil;
+  } else {
+    id<NSTextLocation> startLocation = [self.layoutManager locationFromLocation:[self.layoutManager documentRange].location withOffset:range.location];
+    id<NSTextLocation> endLocation = [self.layoutManager locationFromLocation:startLocation withOffset:range.length];
+    return [[NSTextRange alloc] initWithLocation:startLocation endLocation:endLocation];
+  }
+}
+
 // Get the rectangle containing entire contents, expensive to calculate
 - (NSRect)contentRect {
-  NSRange glyphRange = [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
-  NSRect rect = [_textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:_textView.textContainer];
-  __block long actualWidth = 0;
-  [_textView.layoutManager enumerateLineFragmentsForGlyphRange:glyphRange usingBlock:^(CGRect rect, CGRect usedRect, NSTextContainer *textContainer, NSRange glyphRange, BOOL *stop) {
-    NSRange range = [self.textView.layoutManager characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
-    NSAttributedString *str = [self.textView.textStorage attributedSubstringFromRange:range];
-    NSRange nonWhiteRange = [str.string rangeOfCharacterFromSet:NSCharacterSet.whitespaceAndNewlineCharacterSet.invertedSet options:NSBackwardsSearch];
-    if (nonWhiteRange.location != NSNotFound) {
-      NSRange newRange = NSMakeRange(range.location, NSMaxRange(nonWhiteRange));
-      NSRange newGlyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:newRange actualCharacterRange:NULL];
-      CGFloat width = [self.textView.layoutManager boundingRectForGlyphRange:newGlyphRange inTextContainer:self.textView.textContainer].size.width;
-      if (width > actualWidth) {
-        actualWidth = width;
-      }
-    }
-  }];
-  if (actualWidth > 0) {
-    rect.size.width = actualWidth;
+  NSMutableArray<NSValue *> *ranges = [_candidateRanges mutableCopy];
+  if (_preeditRange.length > 0) {
+    [ranges addObject:[NSValue valueWithRange:_preeditRange]];
   }
-  return rect;
+  CGFloat x0 = CGFLOAT_MAX;
+  CGFloat x1 = CGFLOAT_MIN;
+  CGFloat y0 = CGFLOAT_MAX;
+  CGFloat y1 = CGFLOAT_MIN;
+  for (NSUInteger i = 0; i < ranges.count; i += 1) {
+    NSRange range = [ranges[i] rangeValue];
+    NSRect rect = [self contentRectForRange:[self convertRange: range]];
+    x0 = MIN(NSMinX(rect), x0);
+    x1 = MAX(NSMaxX(rect), x1);
+    y0 = MIN(NSMinY(rect), y0);
+    y1 = MAX(NSMaxY(rect), y1);
+  }
+  return NSMakeRect(x0, y0, x1-x0, y1-y0);
 }
 
 // Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
-- (NSRect)contentRectForRange:(NSRange)range {
-  NSRange glyphRange = [_textView.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:NULL];
-  NSRect rect = [_textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:_textView.textContainer];
-  return rect;
+- (NSRect)contentRectForRange:(NSTextRange *)range {
+  __block CGFloat x0 = CGFLOAT_MAX;
+  __block CGFloat x1 = CGFLOAT_MIN;
+  __block CGFloat y0 = CGFLOAT_MAX;
+  __block CGFloat y1 = CGFLOAT_MIN;
+  [self.layoutManager enumerateTextSegmentsInRange:range type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *_, CGRect rect, CGFloat baseline, NSTextContainer *tectContainer) {
+    x0 = MIN(NSMinX(rect), x0);
+    x1 = MAX(NSMaxX(rect), x1);
+    y0 = MIN(NSMinY(rect), y0);
+    y1 = MAX(NSMaxY(rect), y1);
+    return YES;
+  }];
+  return NSMakeRect(x0, y0, x1-x0, y1-y0);
 }
 
 // Will triger - (void)drawRect:(NSRect)dirtyRect
@@ -380,55 +394,51 @@ NSArray<NSValue *> *rectVertex(NSRect rect) {
   ];
 }
 
-void xyTranslation(NSMutableArray<NSValue *> *shape, NSPoint direction) {
-  for (NSUInteger i = 0; i < shape.count; i += 1) {
-    NSPoint point = [shape[i] pointValue];
-    point.x += direction.x;
-    point.y += direction.y;
-    [shape replaceObjectAtIndex:i withObject:@(point)];
-  }
-}
-
 BOOL nearEmptyRect(NSRect rect) {
   return rect.size.height * rect.size.width < 1;
 }
 
 // Calculate 3 boxes containing the text in range. leadingRect and trailingRect are incomplete line rectangle
 // bodyRect is complete lines in the middle
-- (void)multilineRectForRange:(NSRange)charRange leadingRect:(NSRect *)leadingRect bodyRect:(NSRect *)bodyRect trailingRect:(NSRect *)trailingRect extraSurounding:(CGFloat)extraSurounding {
-  NSLayoutManager *layoutManager = _textView.layoutManager;
-  NSTextContainer *textContainer = _textView.textContainer;
-  NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
-  NSRect boundingRect = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
-  NSRange firstLineRange = NSMakeRange(NSNotFound, 0);
-  [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location effectiveRange:&firstLineRange];
-  NSRange lastLineRange = NSMakeRange(NSNotFound, 0);
-  [layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:&lastLineRange];
+- (void)multilineRectForRange:(NSTextRange *)range leadingRect:(NSRect *)leadingRect bodyRect:(NSRect *)bodyRect trailingRect:(NSRect *)trailingRect extraSurounding:(CGFloat)extraSurounding bounds:(NSRect)bounds {
+  NSSize edgeInset = self.currentTheme.edgeInset;
+  NSMutableArray<NSValue *> *lineRects = [[NSMutableArray alloc] init];
+  [self.layoutManager enumerateTextSegmentsInRange:range type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *_, CGRect rect, CGFloat baseline, NSTextContainer *tectContainer) {
+    NSRect newRect = rect;
+    newRect.origin.x += edgeInset.width;
+    newRect.origin.y += edgeInset.height;
+    newRect.size.height += self.currentTheme.linespace;
+    newRect.origin.y -= self.currentTheme.linespace / 2;
+    [lineRects addObject:[NSValue valueWithRect:newRect]];
+    return YES;
+  }];
   
   *leadingRect = NSZeroRect;
-  *bodyRect = boundingRect;
+  *bodyRect = NSZeroRect;
   *trailingRect = NSZeroRect;
 
-  // Multiline, not starting from beginning
-  if (firstLineRange.location < lastLineRange.location && firstLineRange.location < glyphRange.location) {
-    *leadingRect = [layoutManager boundingRectForGlyphRange:NSMakeRange(glyphRange.location, NSMaxRange(firstLineRange)-glyphRange.location) inTextContainer:textContainer];
-    if (!nearEmptyRect(*leadingRect)) {
-      bodyRect->size.height -= leadingRect->size.height;
-      bodyRect->origin.y += leadingRect->size.height;
+  if (lineRects.count == 1) {
+    *bodyRect = [lineRects[0] rectValue];
+  } else if (lineRects.count == 2) {
+    *leadingRect = [lineRects[0] rectValue];
+    *trailingRect = [lineRects[1] rectValue];
+  } else if (lineRects.count > 2) {
+    *leadingRect = [lineRects[0] rectValue];
+    *trailingRect = [lineRects[lineRects.count-1] rectValue];
+    CGFloat x0 = CGFLOAT_MAX;
+    CGFloat x1 = CGFLOAT_MIN;
+    CGFloat y0 = CGFLOAT_MAX;
+    CGFloat y1 = CGFLOAT_MIN;
+    for (NSUInteger i = 1; i < lineRects.count-1; i += 1) {
+      NSRect rect = [lineRects[i] rectValue];
+      x0 = MIN(NSMinX(rect), x0);
+      x1 = MAX(NSMaxX(rect), x1);
+      y0 = MIN(NSMinY(rect), y0);
+      y1 = MAX(NSMaxY(rect), y1);
     }
-  }
-  // Multiline, has trainling characters
-  if (firstLineRange.location < lastLineRange.location && NSMaxRange(lastLineRange) > NSMaxRange(glyphRange)) {
-    *trailingRect = [layoutManager boundingRectForGlyphRange:
-                    NSMakeRange(lastLineRange.location, NSMaxRange(glyphRange)-lastLineRange.location)
-                                                      inTextContainer:textContainer];
-    if (!nearEmptyRect(*trailingRect)) {
-      bodyRect->size.height -= trailingRect->size.height;
-    }
-  }
-  
-  if ((!nearEmptyRect(*leadingRect) && bodyRect->size.height < leadingRect->size.height/2) || (!nearEmptyRect(*trailingRect) && bodyRect->size.height < trailingRect->size.height/2)) {
-    *bodyRect = NSZeroRect;
+    y0 = MIN(NSMaxY(*leadingRect), y0);
+    y1 = MAX(NSMinY(*trailingRect), y1);
+    *bodyRect = NSMakeRect(x0, y0, x1-x0, y1-y0);
   }
   
   if (extraSurounding > 0) {
@@ -443,14 +453,21 @@ BOOL nearEmptyRect(NSRect rect) {
       }
     }
   }
-
-  NSSize edgeInset = self.currentTheme.edgeInset;
-  leadingRect->origin.x += edgeInset.width;
-  leadingRect->origin.y += edgeInset.height;
-  bodyRect->origin.x += edgeInset.width;
-  bodyRect->origin.y += edgeInset.height;
-  trailingRect->origin.x += edgeInset.width;
-  trailingRect->origin.y += edgeInset.height;
+  
+  if (!nearEmptyRect(*leadingRect) && !nearEmptyRect(*trailingRect)) {
+    leadingRect->size.width = NSMaxX(bounds) - leadingRect->origin.x;
+    trailingRect->size.width = NSMaxX(*trailingRect) - NSMinX(bounds);
+    trailingRect->origin.x = NSMinX(bounds);
+    if (!nearEmptyRect(*bodyRect)) {
+      bodyRect->size.width = bounds.size.width;
+      bodyRect->origin.x = bounds.origin.x;
+    } else {
+      CGFloat diff = NSMinY(*trailingRect) - NSMaxY(*leadingRect);
+      leadingRect->size.height += diff / 2;
+      trailingRect->size.height += diff / 2;
+      trailingRect->origin.y -= diff / 2;
+    }
+  }
 }
 
 // Based on the 3 boxes from multilineRectForRange, calculate the vertex of the polygon containing the text in range
@@ -610,7 +627,8 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     innerBox.origin.y += preeditRect.size.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 + 1;
     innerBox.size.height -= theme.edgeInset.height + preeditRect.size.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 + 2;
   }
-  innerBox.size.height -= halfLinespace;
+  innerBox.size.height -= theme.linespace;
+  innerBox.origin.y += halfLinespace;
   NSRect outerBox = backgroundRect;
   outerBox.size.height -= preeditRect.size.height + MAX(0, theme.hilitedCornerRadius + theme.borderWidth) - 2 * extraExpansion;
   outerBox.size.width -= MAX(0, theme.hilitedCornerRadius + theme.borderWidth) - 2 * extraExpansion;
@@ -624,7 +642,7 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     NSRect leadingRect;
     NSRect bodyRect;
     NSRect trailingRect;
-    [self multilineRectForRange:highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect extraSurounding:_seperatorWidth];
+    [self multilineRectForRange:[self convertRange:highlightedRange] leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect extraSurounding:_seperatorWidth bounds:outerBox];
     
     NSMutableArray<NSValue *> *highlightedPoints;
     NSMutableArray<NSValue *> *highlightedPoints2;
@@ -632,8 +650,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     NSMutableSet<NSNumber *> *rightCorners2;
     [self linearMultilineForRect:bodyRect leadingRect:leadingRect trailingRect:trailingRect points1:&highlightedPoints points2:&highlightedPoints2 rightCorners:&rightCorners rightCorners2:&rightCorners2];
 
-    xyTranslation(highlightedPoints, NSMakePoint(0, -halfLinespace));
-    xyTranslation(highlightedPoints2, NSMakePoint(0, -halfLinespace));
     // Expand the boxes to reach proper border
     enlarge(highlightedPoints, extraExpansion);
     expand(highlightedPoints, innerBox, outerBox);
@@ -648,11 +664,11 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
       CGPathAddPath(path, NULL, path2);
     }
   } else {
-    NSRect highlightedRect = [self contentRectForRange:highlightedRange];
+    NSRect highlightedRect = [self contentRectForRange:[self convertRange:highlightedRange]];
     highlightedRect.size.width = backgroundRect.size.width;
     highlightedRect.size.height += theme.linespace;
     highlightedRect.origin = NSMakePoint(backgroundRect.origin.x, highlightedRect.origin.y + theme.edgeInset.height - halfLinespace);
-    if (NSMaxRange(highlightedRange) == _textView.textStorage.length) {
+    if (NSMaxRange(highlightedRange) == _textView.string.length) {
       highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
     }
     if (highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
@@ -696,7 +712,7 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   // Draw preedit Rect
   NSRect preeditRect = NSZeroRect;
   if (_preeditRange.length > 0) {
-    preeditRect = [self contentRectForRange:_preeditRange];
+    preeditRect = [self contentRectForRange:[self convertRange:_preeditRange]];
     preeditRect.size.width = backgroundRect.size.width;
     preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2;
     preeditRect.origin = backgroundRect.origin;
@@ -745,7 +761,7 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     NSRect leadingRect;
     NSRect bodyRect;
     NSRect trailingRect;
-    [self multilineRectForRange:_highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect extraSurounding:0];
+    [self multilineRectForRange:[self convertRange:_highlightedPreeditRange] leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect extraSurounding:0 bounds:outerBox];
     
     NSMutableArray<NSValue *> *highlightedPreeditPoints;
     NSMutableArray<NSValue *> *highlightedPreeditPoints2;
@@ -871,20 +887,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   return _view.currentTheme.inlineCandidate;
 }
 
-void fixDefaultFont(NSMutableAttributedString *text) {
-  [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
-  NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
-  long i = 0;
-  while (i < text.length) {
-    NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
-    if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
-      NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
-      [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
-    }
-    i = currentFontRange.location + currentFontRange.length;
-  }
-}
-
 NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText) {
   NSRange range = [betweenText.string rangeOfComposedCharacterSequenceAtIndex:0];
   NSAttributedString *attributedSeperator = [[NSAttributedString alloc] initWithString:separator attributes:[betweenText attributesAtIndex:0 effectiveRange:nil]];
@@ -900,11 +902,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
 }
 
 + (NSColor *)secondaryTextColor {
-  if(@available(macOS 10.10, *)) {
-    return [NSColor secondaryLabelColor];
-  } else {
-    return [NSColor disabledControlTextColor];
-  }
+  return [NSColor secondaryLabelColor];
 }
 
 - (void)initializeUIStyleForDarkMode:(BOOL)isDark {
@@ -970,23 +968,19 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     self.backgroundColor = [NSColor clearColor];
     NSView *contentView = [[NSView alloc] init];
     _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
-    if (@available(macOS 10.14, *)) {
-      _back = [[NSVisualEffectView alloc] init];
-      _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      _back.material = NSVisualEffectMaterialHUDWindow;
-      _back.state = NSVisualEffectStateActive;
-      _back.wantsLayer = YES;
-      _back.layer.mask = _view.shape;
-      [contentView addSubview:_back];
-    }
+    _back = [[NSVisualEffectView alloc] init];
+    _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    _back.material = NSVisualEffectMaterialHUDWindow;
+    _back.state = NSVisualEffectStateActive;
+    _back.wantsLayer = YES;
+    _back.layer.mask = _view.shape;
+    [contentView addSubview:_back];
     [contentView addSubview:_view];
     [contentView addSubview:_view.textView];
     
     self.contentView = contentView;
     [self initializeUIStyleForDarkMode:NO];
-    if (@available(macOS 10.14, *)) {
-      [self initializeUIStyleForDarkMode:YES];
-    }
+    [self initializeUIStyleForDarkMode:YES];
     _maxHeight = 0;
   }
   return self;
@@ -1021,11 +1015,9 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   [self getCurrentScreen];
   SquirrelTheme *theme = _view.currentTheme;
 
-  if (@available(macOS 10.14, *)) {
-    NSAppearance *requestedAppearance = theme.native ? nil : [NSAppearance appearanceNamed:NSAppearanceNameAqua];
-    if (self.appearance != requestedAppearance) {
-      self.appearance = requestedAppearance;
-    }
+  NSAppearance *requestedAppearance = theme.native ? nil : [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+  if (self.appearance != requestedAppearance) {
+    self.appearance = requestedAppearance;
   }
 
   //Break line if the text is too long, based on screen size.
@@ -1058,7 +1050,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
     if (_preeditRange.length > 0) {
-      NSSize preeditSize = [_view contentRectForRange:_preeditRange].size;
+      NSSize preeditSize = [_view contentRectForRange:[_view convertRange:_preeditRange]].size;
       windowRect.origin.x += preeditSize.height + theme.edgeInset.width;
     }
   } else {
@@ -1093,22 +1085,22 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     self.contentView.boundsRotation = -90;
     _view.textView.boundsRotation = 0;
     [self.contentView setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
+    [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   } else {
     self.contentView.boundsRotation = 0;
     _view.textView.boundsRotation = 0;
     [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
+    [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   }
   BOOL translucency = theme.translucency;
   [_view setFrame:self.contentView.bounds];
   [_view.textView setFrame:self.contentView.bounds];
-  if (@available(macOS 10.14, *)) {
-    if (translucency) {
-      [_back setFrame:self.contentView.bounds];
-      _back.appearance = NSApp.effectiveAppearance;
-      [_back setHidden:NO];
-    } else {
-      [_back setHidden:YES];
-    }
+  if (translucency) {
+    [_back setFrame:self.contentView.bounds];
+    _back.appearance = NSApp.effectiveAppearance;
+    [_back setHidden:NO];
+  } else {
+    [_back setHidden:YES];
   }
   self.alphaValue = theme.alpha;
   [self invalidateShadow];
@@ -1339,11 +1331,8 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     [text appendAttributedString:line];
   }
 
-  // Fix font rendering
-  fixDefaultFont(text);
-
   // text done!
-  [_view.textView.textStorage setAttributedString:text];
+  [_view.textView.textContentStorage setAttributedString:text];
   if (theme.vertical) {
     _view.textView.layoutOrientation = NSTextLayoutOrientationVertical;
   } else {
@@ -1378,15 +1367,16 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   [text addAttribute:NSParagraphStyleAttributeName
                value:theme.paragraphStyle
                range:NSMakeRange(0, text.length)];
-  fixDefaultFont(text);
-  [_view.textView.textStorage setAttributedString:text];
+
+  [_view.textView.textContentStorage setAttributedString:text];
   if (theme.vertical) {
     _view.textView.layoutOrientation = NSTextLayoutOrientationVertical;
   } else {
     _view.textView.layoutOrientation = NSTextLayoutOrientationHorizontal;
   }
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
-  [_view drawViewWith:[[NSArray alloc] init] hilightedIndex:0 preeditRange:emptyRange highlightedPreeditRange:emptyRange];
+  NSArray<NSValue *> *candidateRanges = @[[NSValue valueWithRange: NSMakeRange(0, text.length)]];
+  [_view drawViewWith:candidateRanges hilightedIndex:-1 preeditRange:emptyRange highlightedPreeditRange:emptyRange];
   [self show];
 
   if (_statusTimer) {
@@ -1536,9 +1526,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   BOOL isNative = !colorScheme || [colorScheme isEqualToString:@"native"];
   if (!isNative) {
     NSString *prefix = [@"preset_color_schemes/" stringByAppendingString:colorScheme];
-    if (@available(macOS 10.12, *)) {
-      config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]];
-    }
+    config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]];
     backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
     borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
     preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
