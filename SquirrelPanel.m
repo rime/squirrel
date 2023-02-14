@@ -592,18 +592,9 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     *highlightedPoints = [rectVertex(leadingRect) mutableCopy];
     *highlightedPoints2 = [rectVertex(trailingRect) mutableCopy];
     *rightCorners = [[NSMutableSet<NSNumber *> alloc] initWithObjects:@(2), @(3), nil];
+    *rightCorners2 = [[NSMutableSet<NSNumber *> alloc] initWithObjects:@(0), @(1), nil];
   } else {
     *highlightedPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
-    if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect)) {
-      if (NSMaxX(trailingRect) < NSMaxX(leadingRect) && NSMinX(trailingRect) < NSMinX(leadingRect)) {
-        *rightCorners = [[NSMutableSet<NSNumber *> alloc] initWithObjects:@(0), @(1), @(4), @(5), nil];
-      } else if (NSMaxX(trailingRect) >= NSMaxX(leadingRect) && NSMinX(trailingRect) < NSMinX(leadingRect)) {
-        *rightCorners = [[NSMutableSet<NSNumber *> alloc] initWithObjects:@(0), @(1), nil];
-      }
-    }
-  }
-  if ([*highlightedPoints2 count] > 0) {
-    *rightCorners2 = [[NSMutableSet<NSNumber *> alloc] initWithObjects:@(0), @(1), nil];
   }
 }
 
@@ -688,6 +679,15 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   return path;
 }
 
+- (NSRect)carveInset:(NSRect)rect theme:(SquirrelTheme *)theme {
+  NSRect newRect = rect;
+  newRect.size.height -= (theme.hilitedCornerRadius + theme.borderWidth) * 2;
+  newRect.size.width -= (theme.hilitedCornerRadius + theme.borderWidth) * 2;
+  newRect.origin.x += theme.hilitedCornerRadius + theme.borderWidth;
+  newRect.origin.y += theme.hilitedCornerRadius + theme.borderWidth;
+  return newRect;
+}
+
 // All draws happen here
 - (void)drawRect:(NSRect)dirtyRect {
   CGPathRef backgroundPath = CGPathCreateMutable();
@@ -704,10 +704,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   // Draw preedit Rect
   NSRect backgroundRect = dirtyRect;
   NSRect containingRect = dirtyRect;
-  containingRect.size.height -= (theme.hilitedCornerRadius + theme.borderWidth) * 2;
-  containingRect.size.width -= (theme.hilitedCornerRadius + theme.borderWidth) * 2;
-  containingRect.origin.x += theme.hilitedCornerRadius + theme.borderWidth;
-  containingRect.origin.y += theme.hilitedCornerRadius + theme.borderWidth;
 
   // Draw preedit Rect
   NSRect preeditRect = NSZeroRect;
@@ -719,11 +715,14 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     if (_candidateRanges.count == 0) {
       preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace / 2 - theme.hilitedCornerRadius / 2;
     }
+    containingRect.size.height -= preeditRect.size.height;
+    containingRect.origin.y += preeditRect.size.height;
     if (theme.preeditBackgroundColor != nil) {
       preeditPath = drawSmoothLines(rectVertex(preeditRect), nil, 0, 0);
     }
   }
 
+  containingRect = [self carveInset:containingRect theme:theme];
   // Draw highlighted Rect
   for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
     NSRange candidateRange = [_candidateRanges[i] rangeValue];
@@ -769,6 +768,7 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     NSMutableSet<NSNumber *> *rightCorners2;
     [self linearMultilineForRect:bodyRect leadingRect:leadingRect trailingRect:trailingRect points1:&highlightedPreeditPoints points2:&highlightedPreeditPoints2 rightCorners:&rightCorners rightCorners2:&rightCorners2];
     
+    containingRect = [self carveInset:preeditRect theme:theme];
     expand(highlightedPreeditPoints, innerBox, outerBox);
     removeCorner(highlightedPreeditPoints, rightCorners, containingRect);
     highlightedPreeditPath = drawSmoothLines(highlightedPreeditPoints, rightCorners, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
