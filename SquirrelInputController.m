@@ -4,7 +4,6 @@
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
 #import "macos_keycode.h"
-#import "utf8.h"
 #import <rime_api.h>
 #import <rime/key_table.h>
 
@@ -516,6 +515,13 @@ const int N_KEY_ROLL_OVER = 50;
   }
 }
 
+NSString *substr(const char *str, int length) {
+  char substring[length+1];
+  strncpy(substring, str, length);
+  substring[length] = '\0';
+  return [NSString stringWithCString:substring encoding:NSUTF8StringEncoding];
+}
+
 -(void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
@@ -531,7 +537,8 @@ const int N_KEY_ROLL_OVER = 50;
       _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
                         !rime_get_api()->get_option(_session, "no_inline")) ||
                       rime_get_api()->get_option(_session, "inline");
-      _inlineCandidate = NSApp.squirrelAppDelegate.panel.inlineCandidate;
+      _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
+                          !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
@@ -544,9 +551,9 @@ const int N_KEY_ROLL_OVER = 50;
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
 
-    NSUInteger start = utf8len(preedit, ctx.composition.sel_start);
-    NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
-    NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
+    NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
+    NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
+    NSUInteger caretPos = substr(preedit, ctx.composition.cursor_pos).length;
     NSRange selRange = NSMakeRange(start, end - start);
     if (_inlineCandidate) {
       const char *candidatePreview = ctx.commit_text_preview;

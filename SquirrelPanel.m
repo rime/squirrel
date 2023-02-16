@@ -404,12 +404,14 @@ BOOL nearEmptyRect(NSRect rect) {
   NSSize edgeInset = self.currentTheme.edgeInset;
   NSMutableArray<NSValue *> *lineRects = [[NSMutableArray alloc] init];
   [self.layoutManager enumerateTextSegmentsInRange:range type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *_, CGRect rect, CGFloat baseline, NSTextContainer *tectContainer) {
-    NSRect newRect = rect;
-    newRect.origin.x += edgeInset.width;
-    newRect.origin.y += edgeInset.height;
-    newRect.size.height += self.currentTheme.linespace;
-    newRect.origin.y -= self.currentTheme.linespace / 2;
-    [lineRects addObject:[NSValue valueWithRect:newRect]];
+    if (!nearEmptyRect(rect)) {
+      NSRect newRect = rect;
+      newRect.origin.x += edgeInset.width;
+      newRect.origin.y += edgeInset.height;
+      newRect.size.height += self.currentTheme.linespace;
+      newRect.origin.y -= self.currentTheme.linespace / 2;
+      [lineRects addObject:[NSValue valueWithRect:newRect]];
+    }
     return YES;
   }];
   
@@ -656,25 +658,27 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     }
   } else {
     NSRect highlightedRect = [self contentRectForRange:[self convertRange:highlightedRange]];
-    highlightedRect.size.width = backgroundRect.size.width;
-    highlightedRect.size.height += theme.linespace;
-    highlightedRect.origin = NSMakePoint(backgroundRect.origin.x, highlightedRect.origin.y + theme.edgeInset.height - halfLinespace);
-    if (NSMaxRange(highlightedRange) == _textView.string.length) {
-      highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
-    }
-    if (highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-      if (_preeditRange.length == 0) {
+    if (!nearEmptyRect(highlightedRect)) {
+      highlightedRect.size.width = backgroundRect.size.width;
+      highlightedRect.size.height += theme.linespace;
+      highlightedRect.origin = NSMakePoint(backgroundRect.origin.x, highlightedRect.origin.y + theme.edgeInset.height - halfLinespace);
+      if (NSMaxRange(highlightedRange) == _textView.string.length) {
         highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
-        highlightedRect.origin.y -= theme.edgeInset.height - halfLinespace;
-      } else {
-        highlightedRect.size.height += theme.hilitedCornerRadius / 2;
-        highlightedRect.origin.y -= theme.hilitedCornerRadius / 2;
       }
+      if (highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
+        if (_preeditRange.length == 0) {
+          highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
+          highlightedRect.origin.y -= theme.edgeInset.height - halfLinespace;
+        } else {
+          highlightedRect.size.height += theme.hilitedCornerRadius / 2;
+          highlightedRect.origin.y -= theme.hilitedCornerRadius / 2;
+        }
+      }
+      NSMutableArray<NSValue *> *highlightedPoints = [rectVertex(highlightedRect) mutableCopy];
+      enlarge(highlightedPoints, extraExpansion);
+      expand(highlightedPoints, innerBox, outerBox);
+      path = drawSmoothLines(highlightedPoints, nil, 0.3*effectiveRadius, 1.4*effectiveRadius);
     }
-    NSMutableArray<NSValue *> *highlightedPoints = [rectVertex(highlightedRect) mutableCopy];
-    enlarge(highlightedPoints, extraExpansion);
-    expand(highlightedPoints, innerBox, outerBox);
-    path = drawSmoothLines(highlightedPoints, nil, 0.3*effectiveRadius, 1.4*effectiveRadius);
   }
   return path;
 }
@@ -709,16 +713,18 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   NSRect preeditRect = NSZeroRect;
   if (_preeditRange.length > 0) {
     preeditRect = [self contentRectForRange:[self convertRange:_preeditRange]];
-    preeditRect.size.width = backgroundRect.size.width;
-    preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2;
-    preeditRect.origin = backgroundRect.origin;
-    if (_candidateRanges.count == 0) {
-      preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace / 2 - theme.hilitedCornerRadius / 2;
-    }
-    containingRect.size.height -= preeditRect.size.height;
-    containingRect.origin.y += preeditRect.size.height;
-    if (theme.preeditBackgroundColor != nil) {
-      preeditPath = drawSmoothLines(rectVertex(preeditRect), nil, 0, 0);
+    if (!nearEmptyRect(preeditRect)) {
+      preeditRect.size.width = backgroundRect.size.width;
+      preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2;
+      preeditRect.origin = backgroundRect.origin;
+      if (_candidateRanges.count == 0) {
+        preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace / 2 - theme.hilitedCornerRadius / 2;
+      }
+      containingRect.size.height -= preeditRect.size.height;
+      containingRect.origin.y += preeditRect.size.height;
+      if (theme.preeditBackgroundColor != nil) {
+        preeditPath = drawSmoothLines(rectVertex(preeditRect), nil, 0, 0);
+      }
     }
   }
 
@@ -862,23 +868,25 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     NSPoint point = NSMakePoint(_point.x - self.textView.textContainerInset.width,
                                 _point.y - self.textView.textContainerInset.height);
     NSTextLayoutFragment *fragment = [self.layoutManager textLayoutFragmentForPosition:point];
-    point = NSMakePoint(point.x - NSMinX(fragment.layoutFragmentFrame),
-                        point.y - NSMinY(fragment.layoutFragmentFrame));
-    NSInteger index = [self.layoutManager offsetFromLocation: self.layoutManager.documentRange.location toLocation: fragment.rangeInElement.location];
-    for (NSUInteger i = 0; i < fragment.textLineFragments.count; i += 1) {
-      NSTextLineFragment *lineFragment = fragment.textLineFragments[i];
-      if (CGRectContainsPoint(lineFragment.typographicBounds, point)) {
-        point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
-                            point.y - NSMinY(lineFragment.typographicBounds));
-        index += [lineFragment characterIndexForPoint:point];
-        for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
-          NSRange range = [_candidateRanges[i] rangeValue];
-          if (index >= range.location && index < NSMaxRange(range)) {
-            *_index = i;
-            break;
+    if (fragment) {
+      point = NSMakePoint(point.x - NSMinX(fragment.layoutFragmentFrame),
+                          point.y - NSMinY(fragment.layoutFragmentFrame));
+      NSInteger index = [self.layoutManager offsetFromLocation: self.layoutManager.documentRange.location toLocation: fragment.rangeInElement.location];
+      for (NSUInteger i = 0; i < fragment.textLineFragments.count; i += 1) {
+        NSTextLineFragment *lineFragment = fragment.textLineFragments[i];
+        if (CGRectContainsPoint(lineFragment.typographicBounds, point)) {
+          point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
+                              point.y - NSMinY(lineFragment.typographicBounds));
+          index += [lineFragment characterIndexForPoint:point];
+          for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
+            NSRange range = [_candidateRanges[i] rangeValue];
+            if (index >= range.location && index < NSMaxRange(range)) {
+              *_index = i;
+              break;
+            }
           }
+          break;
         }
-        break;
       }
     }
     return YES;
@@ -893,7 +901,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   SquirrelView *_view;
   NSVisualEffectView *_back;
 
-  NSRange _preeditRange;
   NSRect _screenRect;
   CGFloat _maxHeight;
 
@@ -1013,17 +1020,29 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   return self;
 }
 
+- (NSPoint)mousePosition {
+  NSPoint point = NSEvent.mouseLocation;
+  point = [self convertPointFromScreen:point];
+  return [_view convertPoint:point fromView:nil];
+}
+
 - (void)sendEvent:(NSEvent *)event {
-  if (event.type == NSEventTypeLeftMouseDown) {
-    NSPoint point = NSEvent.mouseLocation;
-    point = [self convertPointFromScreen:point];
-    point = [_view convertPoint:point fromView:nil];
-    NSInteger index = -1;
-    [_view clickAtPoint: point index:&index];
-    if (index >= 0) {
-      [self.inputController selectCandidate:index];
+  switch (event.type) {
+    case NSEventTypeLeftMouseDown: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = -1;
+      if ([_view clickAtPoint: point index:&index]) {
+        if (index >= 0 && index < _candidates.count) {
+          _index = index;
+        }
+      }
+    } break;
+      }
     }
+    default:
+      break;
   }
+  [super sendEvent:event];
 }
 
 - (void)getCurrentScreen {
@@ -1089,8 +1108,8 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
-    if (_preeditRange.length > 0) {
-      NSSize preeditSize = [_view contentRectForRange:[_view convertRange:_preeditRange]].size;
+    if (_view.preeditRange.length > 0) {
+      NSSize preeditSize = [_view contentRectForRange:[_view convertRange:_view.preeditRange]].size;
       windowRect.origin.x += preeditSize.height + theme.edgeInset.width;
     }
   } else {
@@ -1188,7 +1207,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
-  _preeditRange = NSMakeRange(NSNotFound, 0);
+  NSRange preeditRange = NSMakeRange(NSNotFound, 0);
   NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
   // preedit
   if (preedit) {
@@ -1196,23 +1215,22 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     if (selRange.location > 0) {
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                 initWithString:[preedit substringToIndex:selRange.location].precomposedStringWithCanonicalMapping
+                 initWithString:[preedit substringToIndex:selRange.location]
                  attributes:theme.preeditAttrs]];
     }
     if (selRange.length > 0) {
       NSUInteger highlightedPreeditStart = line.length;
       [line appendAttributedString:
                 [[NSAttributedString alloc]
-                    initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
+                    initWithString:[preedit substringWithRange:selRange]
                  attributes:theme.preeditHighlightedAttrs]];
       highlightedPreeditRange = NSMakeRange(highlightedPreeditStart, line.length - highlightedPreeditStart);
     }
-    if (selRange.location + selRange.length < preedit.length) {
+    if (NSMaxRange(selRange) < preedit.length) {
       [line
           appendAttributedString:
               [[NSAttributedString alloc]
-                  initWithString:[preedit substringFromIndex:selRange.location +
-                                                             selRange.length].precomposedStringWithCanonicalMapping
+                  initWithString:[preedit substringFromIndex:NSMaxRange(selRange)]
                attributes:theme.preeditAttrs]];
     }
     [text appendAttributedString:line];
@@ -1221,7 +1239,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
                  value:theme.preeditParagraphStyle
                  range:NSMakeRange(0, text.length)];
 
-    _preeditRange = NSMakeRange(0, text.length);
+    preeditRange = NSMakeRange(0, text.length);
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc]
                     initWithString:@"\n"
@@ -1255,7 +1273,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
       NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
         NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-        labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+        labelString = [NSString stringWithFormat:labelFormat, labels[i]];
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
@@ -1283,7 +1301,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     NSUInteger candidateStart = line.length;
     NSString *candidate = candidates[i];
     NSAttributedString *candidateAttributedString = [[NSAttributedString alloc]
-                                                     initWithString:candidate.precomposedStringWithCanonicalMapping
+                                                     initWithString:candidate
                                                      attributes:attrs];
     CGFloat candidateWidth = [candidateAttributedString boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
     if (candidateWidth <= maxTextWidth * 0.2) {
@@ -1301,7 +1319,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
       NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
         NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
-        labelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+        labelString = [NSString stringWithFormat:labelFormat, labels[i]];
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         char labelCharacter = [labels[0] characterAtIndex:i];
@@ -1321,7 +1339,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
       CGFloat candidateAndLabelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       NSString *comment = comments[i];
       NSAttributedString *commentAttributedString = [[NSAttributedString alloc]
-                                                     initWithString:comment.precomposedStringWithCanonicalMapping
+                                                     initWithString:comment
                                                      attributes:commentAttrs];
       CGFloat commentWidth = [commentAttributedString boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
       if (commentWidth <= maxTextWidth * 0.2) {
@@ -1378,7 +1396,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   } else {
     _view.textView.layoutOrientation = NSTextLayoutOrientationHorizontal;
   }
-  [_view drawViewWith:candidateRanges hilightedIndex:index preeditRange:_preeditRange highlightedPreeditRange:highlightedPreeditRange];
+  [_view drawViewWith:candidateRanges hilightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange];
   [self show];
 }
 
@@ -1403,7 +1421,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
 
 - (void)showStatus:(NSString *)message {
   SquirrelTheme *theme = _view.currentTheme;
-  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.attrs];
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message attributes:theme.attrs];
   [text addAttribute:NSParagraphStyleAttributeName
                value:theme.paragraphStyle
                range:NSMakeRange(0, text.length)];
