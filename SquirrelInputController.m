@@ -155,9 +155,6 @@ const int N_KEY_ROLL_OVER = 50;
           [self rimeUpdate];
         }
       } break;
-      case NSEventTypeLeftMouseDown: {
-        [self commitComposition:_currentClient];
-      } break;
       default:
         break;
     }
@@ -220,6 +217,12 @@ const int N_KEY_ROLL_OVER = 50;
   }
 
   return handled;
+}
+
+- (BOOL)selectCandidate:(NSInteger)index {
+  BOOL success = rime_get_api()->select_candidate_on_current_page(_session, (int) index);
+  [self rimeUpdate];
+  return success;
 }
 
 -(void)onChordTimer:(NSTimer *)timer
@@ -285,7 +288,7 @@ const int N_KEY_ROLL_OVER = 50;
 -(NSUInteger)recognizedEvents:(id)sender
 {
   //NSLog(@"recognizedEvents:");
-  return NSEventMaskKeyDown | NSEventMaskFlagsChanged | NSEventMaskLeftMouseDown;
+  return NSEventMaskKeyDown | NSEventMaskFlagsChanged;
 }
 
 -(void)activateServer:(id)sender
@@ -449,6 +452,7 @@ const int N_KEY_ROLL_OVER = 50;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   panel.position = inputPos;
+  panel.inputController = self;
   [panel showPreedit:preedit
             selRange:selRange
             caretPos:caretPos

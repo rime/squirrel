@@ -857,6 +857,36 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   [_textView setTextContainerInset:NSMakeSize(textFieldOrigin.x, textFieldOrigin.y)];
 }
 
+- (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger *)_index {
+  if (CGPathContainsPoint(_shape.path, nil, _point, NO)) {
+    NSPoint point = NSMakePoint(_point.x - self.textView.textContainerInset.width,
+                                _point.y - self.textView.textContainerInset.height);
+    NSTextLayoutFragment *fragment = [self.layoutManager textLayoutFragmentForPosition:point];
+    point = NSMakePoint(point.x - NSMinX(fragment.layoutFragmentFrame),
+                        point.y - NSMinY(fragment.layoutFragmentFrame));
+    NSInteger index = [self.layoutManager offsetFromLocation: self.layoutManager.documentRange.location toLocation: fragment.rangeInElement.location];
+    for (NSUInteger i = 0; i < fragment.textLineFragments.count; i += 1) {
+      NSTextLineFragment *lineFragment = fragment.textLineFragments[i];
+      if (CGRectContainsPoint(lineFragment.typographicBounds, point)) {
+        point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
+                            point.y - NSMinY(lineFragment.typographicBounds));
+        index += [lineFragment characterIndexForPoint:point];
+        for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
+          NSRange range = [_candidateRanges[i] rangeValue];
+          if (index >= range.location && index < NSMaxRange(range)) {
+            *_index = i;
+            break;
+          }
+        }
+        break;
+      }
+    }
+    return YES;
+  } else {
+    return NO;
+  }
+}
+
 @end
 
 @implementation SquirrelPanel {
@@ -954,10 +984,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
 }
 
 - (instancetype)init {
-  self = [super initWithContentRect:_position
-                          styleMask:NSWindowStyleMaskBorderless
-                            backing:NSBackingStoreBuffered
-                              defer:YES];
+  self = [super initWithContentRect:_position styleMask:NSWindowStyleMaskNonactivatingPanel backing:NSBackingStoreBuffered defer:YES];
   if (self) {
     self.alphaValue = 1.0;
     // _window.level = NSScreenSaverWindowLevel + 1;
@@ -984,6 +1011,19 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     _maxHeight = 0;
   }
   return self;
+}
+
+- (void)sendEvent:(NSEvent *)event {
+  if (event.type == NSEventTypeLeftMouseDown) {
+    NSPoint point = NSEvent.mouseLocation;
+    point = [self convertPointFromScreen:point];
+    point = [_view convertPoint:point fromView:nil];
+    NSInteger index = -1;
+    [_view clickAtPoint: point index:&index];
+    if (index >= 0) {
+      [self.inputController selectCandidate:index];
+    }
+  }
 }
 
 - (void)getCurrentScreen {
