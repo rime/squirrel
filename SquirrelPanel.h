@@ -25,7 +25,8 @@
         candidates:(NSArray*)candidates
           comments:(NSArray*)comments
             labels:(NSArray*)labels
-       highlighted:(NSUInteger)index;
+       highlighted:(NSUInteger)index
+            update:(BOOL)update;
 
 -(void)hide;
 

@@ -906,6 +906,17 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
 
   NSString *_statusMessage;
   NSTimer *_statusTimer;
+  
+  NSString *_preedit;
+  NSRange _selRange;
+  NSUInteger _caretPos;
+  NSArray *_candidates;
+  NSArray *_comments;
+  NSArray *_labels;
+  NSUInteger _index;
+  NSUInteger _cursorIndex;
+  NSPoint _scrollDirection;
+  NSDate *_scrollTime;
 }
 
 - (BOOL)linear {
@@ -1037,6 +1048,78 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
         }
       }
     } break;
+    case NSEventTypeLeftMouseUp: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = -1;
+      if ([_view clickAtPoint: point index:&index]) {
+        if (index >= 0 && index < _candidates.count && index == _index) {
+          [_inputController selectCandidate:index];
+        }
+      }
+    } break;
+    case NSEventTypeMouseEntered: {
+      self.acceptsMouseMovedEvents = YES;
+    } break;
+    case NSEventTypeMouseExited: {
+      self.acceptsMouseMovedEvents = NO;
+      if (_cursorIndex != _index) {
+        [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
+              highlighted:_index update:NO];
+      }
+    } break;
+    case NSEventTypeMouseMoved: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = -1;
+      if ([_view clickAtPoint: point index:&index]) {
+        if (index >= 0 && index < _candidates.count && _cursorIndex != index) {
+          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
+                highlighted:index update:NO];
+        }
+      }
+    } break;
+    case NSEventTypeScrollWheel: {
+      if (event.phase == NSEventPhaseBegan) {
+        _scrollDirection = NSMakePoint(0, 0);
+      } else if (event.phase == NSEventPhaseEnded || (event.phase == NSEventPhaseNone && event.momentumPhase != NSEventPhaseNone)) {
+        if (_scrollDirection.x > 10 && ABS(_scrollDirection.x) > ABS(_scrollDirection.y)) {
+          if (_view.currentTheme.vertical) {
+            [self.inputController pageUp:NO];
+          } else {
+            [self.inputController pageUp:YES];
+          }
+        } else if (_scrollDirection.x < -10 && ABS(_scrollDirection.x) > ABS(_scrollDirection.y)) {
+          if (_view.currentTheme.vertical) {
+            [self.inputController pageUp:YES];
+          } else {
+            [self.inputController pageUp:NO];
+          }
+        } else if (_scrollDirection.y > 10 && ABS(_scrollDirection.x) < ABS(_scrollDirection.y)) {
+          [self.inputController pageUp:YES];
+        } else if (_scrollDirection.y < -10 && ABS(_scrollDirection.x) < ABS(_scrollDirection.y)) {
+          [self.inputController pageUp:NO];
+        }
+        _scrollDirection = NSMakePoint(0, 0);
+      } else if (event.phase == NSEventPhaseNone && event.momentumPhase == NSEventPhaseNone) {
+        if (_scrollTime && [_scrollTime timeIntervalSinceNow] > 1.0) {
+          _scrollDirection = NSMakePoint(0, 0);
+        }
+        _scrollTime = [NSDate now];
+        if ((_scrollDirection.y >= 0 && event.scrollingDeltaY > 0) || (_scrollDirection.y <= 0 && event.scrollingDeltaY < 0)) {
+          _scrollDirection.y += event.scrollingDeltaY;
+        } else {
+          _scrollDirection = NSMakePoint(0, 0);
+        }
+        if (ABS(_scrollDirection.y) > 10) {
+          if (_scrollDirection.y > 10) {
+            [self.inputController pageUp:YES];
+          } else if (_scrollDirection.y < -10) {
+            [self.inputController pageUp:NO];
+          }
+          _scrollDirection = NSMakePoint(0, 0);
+        }
+      } else {
+        _scrollDirection.x += event.scrollingDeltaX;
+        _scrollDirection.y += event.scrollingDeltaY;
       }
     }
     default:
@@ -1183,7 +1266,20 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
          candidates:(NSArray *)candidates
            comments:(NSArray *)comments
              labels:(NSArray *)labels
-        highlighted:(NSUInteger)index {
+        highlighted:(NSUInteger)index
+             update:(BOOL)update {
+  
+  if (update) {
+    _preedit = preedit;
+    _selRange = selRange;
+    _caretPos = caretPos;
+    _candidates = candidates;
+    _comments = comments;
+    _labels = labels;
+    _index = index;
+  }
+  _cursorIndex = index;
+  
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;

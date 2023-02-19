@@ -3,4 +3,5 @@
 
 @interface SquirrelInputController : IMKInputController
 - (BOOL)selectCandidate:(NSInteger)index;
+- (BOOL)pageUp:(BOOL)up;
 @end

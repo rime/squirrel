@@ -224,6 +224,17 @@ const int N_KEY_ROLL_OVER = 50;
   return success;
 }
 
+- (BOOL)pageUp:(BOOL)up {
+  BOOL handled = NO;
+  if (up) {
+    handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
+  } else {
+    handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
+  }
+  [self rimeUpdate];
+  return handled;
+}
+
 -(void)onChordTimer:(NSTimer *)timer
 {
   // chord release triggered by timer
@@ -458,7 +469,8 @@ const int N_KEY_ROLL_OVER = 50;
           candidates:candidates
             comments:comments
               labels:labels
-         highlighted:index];
+         highlighted:index
+              update:YES];
 }
 
 @end // SquirrelController
