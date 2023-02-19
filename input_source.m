@@ -32,11 +32,11 @@ void ActivateInputSource(int enabled_modes) {
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
-    if ([sourceID isEqualToString:kHansInputModeID] &&
+    if ([sourceID isEqualToString:kHansInputModeID] &
         ((enabled_modes & HANS_INPUT_MODE) != 0) ||
-        [sourceID isEqualToString:kHantInputModeID] &&
+        [sourceID isEqualToString:kHantInputModeID] &
         ((enabled_modes & HANT_INPUT_MODE) != 0) ||
-        [sourceID isEqualToString:kCantInputModeID] &&
+        [sourceID isEqualToString:kCantInputModeID] &
         ((enabled_modes & CANT_INPUT_MODE) != 0)) {
       TISEnableInputSource(inputSource);
       NSLog(@"Enabled input source: %@", sourceID);

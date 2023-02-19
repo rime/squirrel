@@ -36,7 +36,7 @@ cd squirrel
 Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 
 ``` sh
-bash librime/install-plugins.sh rime/librime-sample lotem/librime-octagram # ...
+bash librime/install-plugins.sh rime/librime-sample lotem/librime-octagram # rime/librime-charcode rime/librime-legacy hchunhui/librime-lua lotem/librime-proto ...
 ```
 
 ### Shortcut: get the latest librime release
