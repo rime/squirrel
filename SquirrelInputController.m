@@ -121,6 +121,13 @@ const int N_KEY_ROLL_OVER = 50;
           release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
+        if (changes & OSX_FN_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Hyper_L;
+          }
+          release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask;
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
+        }
         if (changes & OSX_COMMAND_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Super_L;
