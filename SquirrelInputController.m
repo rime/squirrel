@@ -220,18 +220,22 @@ const int N_KEY_ROLL_OVER = 50;
 
 - (BOOL)selectCandidate:(NSInteger)index {
   BOOL success = rime_get_api()->select_candidate_on_current_page(_session, (int) index);
-  [self rimeUpdate];
+  if (success) {
+    [self rimeUpdate];
+  }
   return success;
 }
 
 - (BOOL)pageUp:(BOOL)up {
   BOOL handled = NO;
   if (up) {
-    handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
+    handled = rime_get_api()->change_page(_session, True);
   } else {
-    handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
+    handled = rime_get_api()->change_page(_session, False);
   }
-  [self rimeUpdate];
+  if (handled) {
+    [self rimeUpdate];
+  }
   return handled;
 }
 
