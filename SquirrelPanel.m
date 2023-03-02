@@ -231,6 +231,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs {
 @property(nonatomic, readonly) CAShapeLayer *shape;
 
 - (BOOL)isFlipped;
+@property (NS_NONATOMIC_IOSONLY, getter=isFlipped, readonly) BOOL flipped;
 - (void)setText:(NSAttributedString *)text;
 - (void)drawViewWith:(NSRange)hilightedRange
         preeditRange:(NSRange)preeditRange
@@ -331,8 +332,8 @@ NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat
   NSBezierPath *path = [NSBezierPath bezierPath];
   if (vertex.count < 1)
     return path;
-  NSPoint previousPoint = [vertex[vertex.count-1] pointValue];
-  NSPoint point = [vertex[0] pointValue];
+  NSPoint previousPoint = (vertex[vertex.count-1]).pointValue;
+  NSPoint point = (vertex[0]).pointValue;
   NSPoint nextPoint;
   NSPoint control1;
   NSPoint control2;
@@ -345,9 +346,9 @@ NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat
   }
   [path moveToPoint:target];
   for (NSUInteger i = 0; i < vertex.count; i += 1) {
-    previousPoint = [vertex[(vertex.count+i-1)%vertex.count] pointValue];
-    point = [vertex[i] pointValue];
-    nextPoint = [vertex[(i+1)%vertex.count] pointValue];
+    previousPoint = (vertex[(vertex.count+i-1)%vertex.count]).pointValue;
+    point = (vertex[i]).pointValue;
+    nextPoint = (vertex[(i+1)%vertex.count]).pointValue;
     target = point;
     control1 = point;
     diff = NSMakePoint(point.x - previousPoint.x, point.y - previousPoint.y);
@@ -386,10 +387,10 @@ NSArray<NSValue *> *rectVertex(NSRect rect) {
 
 void xyTranslation(NSMutableArray<NSValue *> *shape, NSPoint direction) {
   for (NSUInteger i = 0; i < shape.count; i += 1) {
-    NSPoint point = [shape[i] pointValue];
+    NSPoint point = (shape[i]).pointValue;
     point.x += direction.x;
     point.y += direction.y;
-    [shape replaceObjectAtIndex:i withObject:@(point)];
+    shape[i] = @(point);
   }
 }
 
@@ -493,7 +494,7 @@ NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyRect, NS
 // If the point is outside the innerBox, will extend to reach the outerBox
 void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerBorder) {
   for (NSUInteger i = 0; i < vertex.count; i += 1){
-    NSPoint point = [vertex[i] pointValue];
+    NSPoint point = (vertex[i]).pointValue;
     if (point.x < innerBorder.origin.x) {
       point.x = outerBorder.origin.x;
     } else if (point.x > innerBorder.origin.x+innerBorder.size.width) {
@@ -505,6 +506,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       point.y = outerBorder.origin.y+outerBorder.size.height;
     }
     [vertex replaceObjectAtIndex:i withObject:@(point)];
+    vertex[i] = @(point);
   }
 }
 
