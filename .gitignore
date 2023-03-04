@@ -8,8 +8,8 @@ bin/*
 lib/*
 data/opencc/
 data/plum/
+download/
 package/Squirrel.pkg
-package/archives/*
 package/sign/*.pem
 package/test-*
 *~

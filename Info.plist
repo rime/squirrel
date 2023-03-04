@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>TISInputSourceID</key>
-	<string>im.rime.inputmethod.Squirrel</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
@@ -37,7 +35,7 @@
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hans</string>
-					<string>Han</string>
+					<string>Hant</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
 				<true/>
@@ -65,10 +63,10 @@
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hant</string>
-					<string>Han</string>
+					<string>Hans</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
-				<true/>
+				<false/>
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
@@ -111,13 +109,5 @@
 	<string>dsa_pub.pem</string>
 	<key>TICapsLockLanguageSwitchCapable</key>
 	<true/>
-	<key>tsInputMethodCharacterRepertoireKey</key>
-	<array>
-		<string>Hans</string>
-		<string>Hant</string>
-		<string>Han</string>
-	</array>
-	<key>tsInputMethodIconFileKey</key>
-	<string>rime.pdf</string>
 </dict>
 </plist>
