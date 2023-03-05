@@ -21,7 +21,7 @@
         <customObject id="770" userLabel="SquirrelPanel" customClass="SquirrelPanel"/>
         <menu id="773" userLabel="Menu">
             <items>
-                <menuItem title="Deploy" keyEquivalent="`" id="774">
+                <menuItem title="↺ Deploy" keyEquivalent="`" id="774">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
                     <connections>
                         <action selector="deploy:" target="252" id="795"/>
