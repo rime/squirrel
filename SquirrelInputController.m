@@ -157,8 +157,12 @@ const int N_KEY_ROLL_OVER = 50;
           keyCode, keyChars.UTF8String[0], modifiers & OSX_SHIFT_MASK,
           modifiers & OSX_CAPITAL_MASK);
         if (rime_keycode) {
-          // revert non-modifier function keys' FunctionKeyMask (ForwardDelete, Navigation Keys, F1..F19)
-          int rime_modifiers = osx_modifiers_to_rime_modifiers((keyCode == 0x40 || keyCode == 0x47 || keyCode == 0x4f || keyCode == 0x50 || keyCode >= 0x60 ) ? modifiers ^= OSX_FN_MASK : modifiers);
+          int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
+          // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
+          if (keyCode >= 0x60 || keyCode == 0x50 || keyCode == 0x4f ||
+              keyCode == 0x47 || keyCode == 0x40) {
+            rime_modifiers ^= kHyperMask;
+          }
           handled = [self processKey:rime_keycode modifiers:rime_modifiers];
           [self rimeUpdate];
         }
