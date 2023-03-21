@@ -146,30 +146,30 @@ const int N_KEY_ROLL_OVER = 50;
 
         int keyCode = event.keyCode;
         NSString* keyChars = event.charactersIgnoringModifiers;
-        if (!isalpha(keyChars.UTF8String[0])) {
+        if ((modifiers & OSX_SHIFT_MASK) && !(modifiers & OSX_CTRL_MASK) && !(modifiers & OSX_ALT_MASK)) {
           keyChars = event.characters;
         }
         //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars: [%@]",
         //      sender, modifiers, keyCode, keyChars);
 
         // translate osx keyevents to rime keyevents
-        int rime_keycode = osx_keycode_to_rime_keycode(
-          keyCode, keyChars.UTF8String[0], modifiers & OSX_SHIFT_MASK,
-          modifiers & OSX_CAPITAL_MASK);
-        if (rime_keycode) {
-          int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-          // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
-          if (keyCode >= 0x60 || keyCode == 0x50 || keyCode == 0x4f ||
-              keyCode == 0x47 || keyCode == 0x40) {
+        int rime_keycode = osx_keycode_to_rime_keycode(keyCode, [keyChars characterAtIndex:0],
+                                                       modifiers & OSX_SHIFT_MASK, modifiers & OSX_CAPITAL_MASK);
+        int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
+        // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
+        if (keyCode >= 0x60 || keyCode == 0x50 || keyCode == 0x4f ||
+            keyCode == 0x47 || keyCode == 0x40) {
             rime_modifiers ^= kHyperMask;
-          }
-          handled = [self processKey:rime_keycode modifiers:rime_modifiers];
-          [self rimeUpdate];
         }
+        handled = [self processKey:rime_keycode modifiers:rime_modifiers];
+        [self rimeUpdate];
       } break;
-      case NSEventTypeLeftMouseDown: {
-        [self commitComposition:_currentClient];
-      } break;
+//      case NSEventTypeLeftMouseDown: {
+//        if (_preeditString.length) {
+//          [_currentClient makeFirstResponder:nil];
+//          [self commitComposition:_currentClient];
+//        }
+//      } break;
       default:
         break;
     }
@@ -218,9 +218,11 @@ const int N_KEY_ROLL_OVER = 50;
   if (handled) {
     bool is_chording_key =
     (rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
+    (rime_keycode >= XK_nobreakspace && rime_keycode <= XK_ydiaeresis) ||
     rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
     rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
-    rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
+    rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R ||
+    rime_keycode == XK_Hyper_L;
     if (is_chording_key &&
         rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode modifiers:rime_modifiers];
@@ -297,7 +299,7 @@ const int N_KEY_ROLL_OVER = 50;
 -(NSUInteger)recognizedEvents:(id)sender
 {
   //NSLog(@"recognizedEvents:");
-  return NSEventMaskKeyDown | NSEventMaskFlagsChanged | NSEventMaskLeftMouseDown;
+  return NSEventMaskKeyDown | NSEventMaskFlagsChanged;
 }
 
 -(void)activateServer:(id)sender
@@ -348,13 +350,14 @@ const int N_KEY_ROLL_OVER = 50;
 -(void)commitComposition:(id)sender
 {
   //NSLog(@"commitComposition:");
-  // commit raw input
-  if (_session) {
-    const char* raw_input = rime_get_api()->get_input(_session);
-    if (raw_input) {
-      [self commitString: @(raw_input)];
-      rime_get_api()->clear_composition(_session);
+  if (_session && _preeditString.length > 0) {
+    if ([_preeditString isEqualToString:@"　"]) {
+      const char* raw_input = rime_get_api()->get_input(_session);
+      [self commitString:@(raw_input)];
+    } else { // inline mode
+      [self commitString:_preeditString];
     }
+    rime_get_api()->clear_composition(_session);
   }
 }
 
@@ -577,10 +580,11 @@ const int N_KEY_ROLL_OVER = 50;
         [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
       } else {
         NSRange empty = {0, 0};
-        // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
-        // note this is a full-shape space U+3000; using half shape characters like "..." will result in
-        // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+//        // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
+//        // note this is a full-shape space U+3000; using half shape characters like "..." will result in
+//        // an unstable baseline when composing Chinese characters.
+//        [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+        [self showPreeditString:(preedit ? @"\x02" : @"") selRange:empty caretPos:0];
       }
     }
     // update candidates

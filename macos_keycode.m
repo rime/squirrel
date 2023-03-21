@@ -128,21 +128,22 @@ int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift, int caps)
     return keychar - 'a' + 'A';
   }
 
-  if (keychar >= 0x20 && keychar <= 0x7e) {
+  if ((keychar >= 0x0020 && keychar <= 0x007e) ||
+      (keychar >= 0x00a0 && keychar <= 0x00ff)) {
     return keychar;
   }
-  else if (keychar == 0x1b) {  // ^[
-    return XK_bracketleft;
-  }
-  else if (keychar == 0x1c) {  // ^\
-    return XK_backslash;
-  }
-  else if (keychar == 0x1d) {  // ^]
-    return XK_bracketright;
-  }
-  else if (keychar == 0x1f) {  // ^_
-    return XK_minus;
-  }
+//  else if (keychar == 0x1b) {  // ^[
+//    return XK_bracketleft;
+//  }
+//  else if (keychar == 0x1c) {  // ^\
+//    return XK_backslash;
+//  }
+//  else if (keychar == 0x1d) {  // ^]
+//    return XK_bracketright;
+//  }
+//  else if (keychar == 0x1f) {  // ^_
+//    return XK_minus;
+//  }
 
   return XK_VoidSymbol;
 }

@@ -3,13 +3,20 @@
 #define _MACOS_KEYCODE_H_
 
 // masks
-
-#define OSX_CAPITAL_MASK      1 << 16
-#define OSX_SHIFT_MASK        1 << 17
-#define OSX_CTRL_MASK         1 << 18
-#define OSX_ALT_MASK          1 << 19
-#define OSX_COMMAND_MASK      1 << 20
-#define OSX_FN_MASK           1 << 23
+#define OSX_LEFT_CTRL_MASK     1 << 0
+#define OSX_LEFT_SHIFT_MASK    1 << 1
+#define OSX_RIGHT_SHIFT_MASK   1 << 2
+#define OSX_LEFT_COMMAND_MASK  1 << 3
+#define OSX_RIGHT_COMMAND_MASK 1 << 4
+#define OSX_LEFT_ALT_MASK      1 << 5
+#define OSX_RIGHT_ALT_MASK     1 << 6
+#define OSX_RIGHT_CTRL_MASK    1 << 13
+#define OSX_CAPITAL_MASK       1 << 16
+#define OSX_SHIFT_MASK         1 << 17
+#define OSX_CTRL_MASK          1 << 18
+#define OSX_ALT_MASK           1 << 19
+#define OSX_COMMAND_MASK       1 << 20
+#define OSX_FN_MASK            1 << 23
 
 // key codes
 //
