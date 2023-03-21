@@ -849,7 +849,11 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   highlightedAttrs[NSFontAttributeName] = [NSFont userFontOfSize:kDefaultFontSize];
 
   NSMutableDictionary *labelAttrs = [attrs mutableCopy];
+  labelAttrs[NSFontAttributeName] = [NSFont monospacedDigitSystemFontOfSize:kDefaultFontSize
+                                                                     weight:NSFontWeightRegular];
   NSMutableDictionary *labelHighlightedAttrs = [highlightedAttrs mutableCopy];
+  labelHighlightedAttrs[NSFontAttributeName] = [NSFont monospacedDigitSystemFontOfSize:kDefaultFontSize
+                                                                                weight:NSFontWeightRegular];
 
   NSMutableDictionary *commentAttrs = [[NSMutableDictionary alloc] init];
   commentAttrs[NSForegroundColorAttributeName] = secondaryTextColor;
@@ -1146,7 +1150,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       } else {
         // default: 1. 2. 3...
         NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-        labelString = [NSString stringWithFormat:labelFormat, i+1];
+        labelString = [NSString stringWithFormat:labelFormat, (i+1) % 10];
       }
 
       [line appendAttributedString:
@@ -1167,8 +1171,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     [line appendAttributedString:[[NSAttributedString alloc]
                                      initWithString:candidate.precomposedStringWithCanonicalMapping
                                          attributes:attrs]];
-    // Use left-to-right marks to prevent right-to-left text from changing the
-    // layout of non-candidate text.
+    // Use left-to-right embedding to prevent right-to-left text from changing the layout of the candidate.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
     if (theme.vertical) {
       convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
@@ -1186,7 +1189,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       } else {
         // default: 1. 2. 3...
         NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
-        labelString = [NSString stringWithFormat:labelFormat, i+1];
+        labelString = [NSString stringWithFormat:labelFormat, (i+1) % 10];
       }
       NSUInteger suffixLabelStart = line.length;
       [line appendAttributedString:
@@ -1232,6 +1235,9 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     if (theme.vertical) {
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
     }
+    // Use left-to-right marks to declare the default writing direction and
+    // prevent strong right-to-left characters from setting the wirint direction
+    paragraphStyleCandidate.baseWritingDirection = NSWritingDirectionLeftToRight;
     paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
@@ -1588,11 +1594,12 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
   }
   if (labelFont == nil) {
-    if (fontDescriptor != nil) {
-      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:labelFontSize];
-    } else {
-      labelFont = [NSFont fontWithName:font.fontName size:labelFontSize];
-    }
+//    if (fontDescriptor != nil) {
+//      labelFont = [NSFont fontWithDescriptor:fontDescriptor size:labelFontSize];
+//    } else {
+//      labelFont = [NSFont fontWithName:font.fontName size:labelFontSize];
+//    }
+    labelFont = [NSFont monospacedDigitSystemFontOfSize:labelFontSize weight:NSFontWeightRegular];
   }
   NSFontDescriptor *commentFontDescriptor = nil;
   NSFont *commentFont = nil;
