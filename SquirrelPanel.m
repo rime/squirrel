@@ -242,6 +242,7 @@ SquirrelTheme *_darkTheme;
   _textView.selectable = NO;
   [_textView replaceTextContainer:textContainer];
   _textView.layoutManager.backgroundLayoutEnabled = YES;
+  // _textView.layoutManager.usesFontLeading = NO;
   _defaultTheme = [[SquirrelTheme alloc] init];
   if (@available(macOS 10.14, *)) {
     _darkTheme = [[SquirrelTheme alloc] init];
@@ -399,7 +400,7 @@ BOOL nearEmptyRect(NSRect rect) {
       bodyRect->origin.y += leadingRect->size.height;
     }
   }
-  // Multiline, has trainling characters
+  // Multiline, has trailing characters
   if (firstLineRange.location < lastLineRange.location && NSMaxRange(lastLineRange) > NSMaxRange(glyphRange)) {
     *trailingRect = [layoutManager boundingRectForGlyphRange:
                     NSMakeRange(lastLineRange.location, NSMaxRange(glyphRange)-lastLineRange.location)
@@ -793,9 +794,11 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   long i = 0;
   while (i < text.length) {
     NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
+    NSNumber *baselineOffset = @(charFont.pointSize * -0.1);
     if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
       NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
       [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
+      [text addAttribute:NSBaselineOffsetAttributeName value:baselineOffset range:currentFontRange];
     }
     i = currentFontRange.location + currentFontRange.length;
   }
@@ -988,24 +991,21 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
                                     NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   }
 
-  if (NSMaxX(windowRect) > NSMaxX(_screenRect)) {
-    windowRect.origin.x = NSMaxX(_screenRect) - NSWidth(windowRect);
+  if (NSMaxX(windowRect) > NSMaxX(_screenRect)) { // can only happen with horizontal
+    windowRect.origin.x = NSMinX(_position) - NSWidth(windowRect) - kOffsetHeight;
   }
-  if (NSMinX(windowRect) < NSMinX(_screenRect)) {
-    windowRect.origin.x = NSMinX(_screenRect);
+  if (NSMinX(windowRect) < NSMinX(_screenRect)) { // can only happen with vertical
+    windowRect.origin.x = NSMaxX(_position) + kOffsetHeight;
   }
   if (NSMinY(windowRect) < NSMinY(_screenRect)) {
-    if (theme.vertical) {
+    if (theme.vertical) { // failed attempt: NSMaxY(_position) + kOffsetHeight;
       windowRect.origin.y = NSMinY(_screenRect);
     } else {
       windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
     }
   }
-  if (NSMaxY(windowRect) > NSMaxY(_screenRect)) {
+  if (NSMaxY(windowRect) > NSMaxY(_screenRect)) { // failed attempt: NSMaxY(_position) + kOffsetHeight;
     windowRect.origin.y = NSMaxY(_screenRect) - NSHeight(windowRect);
-  }
-  if (NSMinY(windowRect) < NSMinY(_screenRect)) {
-    windowRect.origin.y = NSMinY(_screenRect);
   }
   [self setFrame:windowRect display:YES];
   // rotate the view, the core in vertical mode!
@@ -1181,9 +1181,11 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     
     [line appendAttributedString:candidateAttributedString];
     
-    // Use left-to-right embedding to prevent right-to-left text from changing the layout of the candidate.
-    [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
-
+    // Use left-to-right embedding to prevent right-to-left text from changing the
+    // layout of non-candidate text.
+    [line addAttribute:NSWritingDirectionAttributeName value:@[@0]
+                 range:NSMakeRange(candidateStart, line.length - candidateStart)];
+    
     if (theme.suffixLabelFormat != nil) {
       NSString *labelString;
       if (labels.count > 1 && i < labels.count) {
@@ -1241,18 +1243,19 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
 
     NSMutableParagraphStyle *paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
     if (i == 0) {
-      paragraphStyleCandidate.paragraphSpacingBefore = theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2;
+//      paragraphStyleCandidate.lineSpacing = theme.linespace + theme.hilitedCornerRadius;
+      paragraphStyleCandidate.paragraphSpacingBefore = theme.preeditLinespace + theme.hilitedCornerRadius;
     } else {
       [text appendAttributedString:separator];
     }
-    if (theme.linear) {
-      paragraphStyleCandidate.lineSpacing = theme.linespace;
+    if (!theme.linear) {
+//      paragraphStyleCandidate.lineSpacing = theme.linespace;
+      paragraphStyleCandidate.headIndent = labelWidth;
     }
     // Use left-to-right marks to declare the default writing direction and
     // prevent strong right-to-left characters from setting the wirint direction
     paragraphStyleCandidate.baseWritingDirection = NSWritingDirectionLeftToRight;
 
-    paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
                  range:NSMakeRange(0, line.length)];
@@ -1415,7 +1418,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
   CGFloat spacing = [config getDouble:@"style/spacing"];
   CGFloat baseOffset = [config getDouble:@"style/base_offset"];
-  CGFloat shadowSize = fmax(0,[config getDouble:@"style/shadow_size"]);
+  CGFloat shadowSize = fmax(0, [config getDouble:@"style/shadow_size"]);
 
   NSColor *backgroundColor;
   NSColor *borderColor;
@@ -1655,14 +1658,23 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
   }
 
+  CGFloat lineHeight = fmax(fmax(fontSize, labelFontSize), commentFontSize) * 1.15;
+
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.paragraphSpacing = lineSpacing / 2;
-  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
+  paragraphStyle.minimumLineHeight = lineHeight + lineSpacing;
+  paragraphStyle.maximumLineHeight = lineHeight + lineSpacing;
+//  paragraphStyle.paragraphSpacing = lineSpacing / 2;
+//  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
+  paragraphStyle.lineSpacing = lineSpacing;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.paragraphSpacing = spacing / 2 + hilitedCornerRadius / 2;
+  preeditParagraphStyle.minimumLineHeight = fontSize * 1.15 + spacing;
+  preeditParagraphStyle.maximumLineHeight = fontSize * 1.15 + spacing;
+//  preeditParagraphStyle.paragraphSpacing = spacing + hilitedCornerRadius - lineSpacing;
+  preeditParagraphStyle.lineSpacing = spacing;
+  preeditParagraphStyle.paragraphSpacing = hilitedCornerRadius;
 
   NSMutableDictionary *attrs = [theme.attrs mutableCopy];
   NSMutableDictionary *highlightedAttrs = [theme.highlightedAttrs mutableCopy];
@@ -1741,7 +1753,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   [theme setCornerRadius:cornerRadius
      hilitedCornerRadius:hilitedCornerRadius
-         shadowSize:shadowSize
+              shadowSize:shadowSize
                edgeInset:edgeInset
              borderWidth:MIN(borderHeight, borderWidth)
                linespace:lineSpacing

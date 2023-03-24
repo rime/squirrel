@@ -5,9 +5,9 @@
 #import <rime_api.h>
 #import <string.h>
 
-void RegisterInputSource(void);
-int GetEnabledInputModes(void);
-void DeactivateInputSource(void);
+void RegisterInputSource();
+int GetEnabledInputModes();
+void DeactivateInputSource();
 void ActivateInputSource(int input_modes);
 
 #define DEFAULT_INPUT_MODE 1

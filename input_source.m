@@ -14,7 +14,7 @@ static NSString *const kCantInputModeID =
 #define HANT_INPUT_MODE (1 << 1)
 #define CANT_INPUT_MODE (1 << 2)
 
-void RegisterInputSource(void) {
+void RegisterInputSource() {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
       NULL, kInstallLocation, strlen((const char *)kInstallLocation), NO);
   if (installedLocationURL) {
@@ -51,7 +51,7 @@ void ActivateInputSource(int enabled_modes) {
   CFRelease(sourceList);
 }
 
-void DeactivateInputSource(void) {
+void DeactivateInputSource() {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
@@ -73,7 +73,7 @@ void DeactivateInputSource(void) {
   CFRelease(sourceList);
 }
 
-int GetEnabledInputModes(void) {
+int GetEnabledInputModes() {
   int input_modes = 0;
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
