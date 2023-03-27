@@ -130,7 +130,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs;
 
 - (void)setCandidateFormat:(NSString *)candidateFormat {
   // in the candiate format, everything other than '%@' is considered part of the label
-  NSRange candidateRange = [candidateFormat rangeOfString:@"%@"];
+  NSRange candidateRange = [candidateFormat rangeOfString:@"%@" options:NSLiteralSearch];
   if (candidateRange.location == NSNotFound) {
     _prefixLabelFormat = candidateFormat;
     _suffixLabelFormat = nil;
@@ -322,7 +322,7 @@ double sign(double number) {
     return 1;
   } else if (number <= -2) {
     return -1;
-  }else {
+  } else {
     return number / 2;
   }
 }
@@ -510,8 +510,8 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
 }
 
-// Add gap between horizontal candidates
-- (void)addGapBetweenHorizontalCandidates:(NSRect *)rect {
+// Add gap between linear candidates
+- (void)addGapBetweenLinearCandidates:(NSRect *)rect {
   if (_highlightedRange.location+_highlightedRange.length == _text.length) {
     if (!nearEmptyRect(*rect)) {
       rect->size.width += _seperatorWidth / 2;
@@ -587,9 +587,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
       NSRect trailingRect;
       [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
 
-      [self addGapBetweenHorizontalCandidates:&leadingRect];
-      [self addGapBetweenHorizontalCandidates:&bodyRect];
-      [self addGapBetweenHorizontalCandidates:&trailingRect];
+      [self addGapBetweenLinearCandidates:&leadingRect];
+      [self addGapBetweenLinearCandidates:&bodyRect];
+      [self addGapBetweenLinearCandidates:&trailingRect];
 
       NSMutableArray<NSValue *> *highlightedPoints;
       NSMutableArray<NSValue *> *highlightedPoints2;
@@ -817,11 +817,11 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   long i = 0;
   while (i < text.length) {
     NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
-    NSNumber *baselineOffset = @(charFont.pointSize * -0.1);
+//    NSNumber *baselineOffset = @(charFont.pointSize * -0.1);
     if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
       NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
       [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
-      [text addAttribute:NSBaselineOffsetAttributeName value:baselineOffset range:currentFontRange];
+//      [text addAttribute:NSBaselineOffsetAttributeName value:baselineOffset range:currentFontRange];
     }
     i = currentFontRange.location + currentFontRange.length;
   }
@@ -965,7 +965,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   NSRect windowRect;
   // in vertical mode, the width and height are interchanged
   NSRect contentRect = _view.contentRect;
-  if ((theme.vertical && NSMidY(_position) / NSHeight(_screenRect) < 0.5) ||
+  if ((theme.vertical && NSMinY(_position) / NSHeight(_screenRect) < 0.5) ||
       (!theme.vertical && NSMinX(_position)+MAX(contentRect.size.width, _maxHeight)+theme.edgeInset.width*2 > NSMaxX(_screenRect))) {
     if (contentRect.size.width >= _maxHeight) {
       _maxHeight = contentRect.size.width;
@@ -979,10 +979,10 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     windowRect.size = NSMakeSize(contentRect.size.height + theme.edgeInset.height * 2,
                                  contentRect.size.width + theme.edgeInset.width * 2);
     // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
-    if (NSMidY(_position) / NSHeight(_screenRect) >= 0.5) {
+    if (NSMinY(_position) / NSHeight(_screenRect) >= 0.5) {
       windowRect.origin.y = NSMinY(_position) - kOffsetHeight - NSHeight(windowRect);
     } else {
-      windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
+      windowRect.origin.y = NSMaxY(_position) + kOffsetHeight + theme.edgeInset.width * 3;
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - windowRect.size.width - kOffsetHeight;
@@ -997,21 +997,25 @@ void fixDefaultFont(NSMutableAttributedString *text) {
                                     NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
   }
 
-  if (NSMaxX(windowRect) > NSMaxX(_screenRect)) { // can only happen with horizontal
-    windowRect.origin.x = NSMinX(_position) - NSWidth(windowRect) - kOffsetHeight;
+  if (NSMaxX(windowRect) > NSMaxX(_screenRect)) {
+    windowRect.origin.x = MIN(NSMinX(_position) - kOffsetHeight, NSMaxX(_screenRect)) - NSWidth(windowRect);
   }
-  if (NSMinX(windowRect) < NSMinX(_screenRect)) { // can only happen with vertical
-    windowRect.origin.x = NSMaxX(_position) + kOffsetHeight;
-  }
-  if (NSMinY(windowRect) < NSMinY(_screenRect)) {
-    if (theme.vertical) { // failed attempt: NSMaxY(_position) + kOffsetHeight;
-      windowRect.origin.y = NSMinY(_screenRect);
+  if (NSMinX(windowRect) < NSMinX(_screenRect)) {
+    if (theme.vertical) {
+      windowRect.origin.x = MAX(NSMaxX(_position) + kOffsetHeight + theme.edgeInset.height * 3, NSMinX(_screenRect));
     } else {
-      windowRect.origin.y = NSMaxY(_position) + kOffsetHeight;
+      windowRect.origin.x = MAX(NSMaxX(_position) + kOffsetHeight + theme.edgeInset.width * 3, NSMinX(_screenRect));
     }
   }
-  if (NSMaxY(windowRect) > NSMaxY(_screenRect)) { // failed attempt: NSMaxY(_position) + kOffsetHeight;
-    windowRect.origin.y = NSMaxY(_screenRect) - NSHeight(windowRect);
+  if (NSMinY(windowRect) < NSMinY(_screenRect)) {
+    if (theme.vertical) {
+      windowRect.origin.y = MAX(NSMaxY(_position) + kOffsetHeight + theme.edgeInset.width * 3, NSMinY(_screenRect));
+    } else {
+      windowRect.origin.y = MAX(NSMaxY(_position) + kOffsetHeight + theme.edgeInset.height * 3, NSMinY(_screenRect));
+    }
+  }
+  if (NSMaxY(windowRect) > NSMaxY(_screenRect)) {
+    windowRect.origin.y = MIN(NSMinY(_position) - kOffsetHeight, NSMaxY(_screenRect)) - NSHeight(windowRect);
   }
   [self setFrame:windowRect display:YES];
   // rotate the view, the core in vertical mode!
@@ -1109,6 +1113,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     NSMutableParagraphStyle *paragraphStylePreedit = [theme.preeditParagraphStyle mutableCopy];
     if (theme.vertical) {
       convertToVerticalGlyph(text, NSMakeRange(0, line.length));
+      // [line addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(0, line.length)];
       paragraphStylePreedit.minimumLineHeight = minimumHeight(theme.preeditAttrs);
     }
     [text addAttribute:NSParagraphStyleAttributeName
@@ -1135,7 +1140,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
         (i == index) ? theme.labelHighlightedAttrs : theme.labelAttrs;
     NSDictionary *commentAttrs =
         (i == index) ? theme.commentHighlightedAttrs : theme.commentAttrs;
-    CGFloat labelWidth = 0.0;
+    NSSize labelSize = NSMakeSize(0, 0);
 
     if (theme.prefixLabelFormat != nil) {
       NSString *labelString;
@@ -1156,12 +1161,13 @@ void fixDefaultFont(NSMutableAttributedString *text) {
                 [[NSAttributedString alloc]
                     initWithString:labelString
                         attributes:labelAttrs]];
-      // get the label size for indent
       if (theme.vertical) {
         convertToVerticalGlyph(line, NSMakeRange(0, line.length));
+        // [line addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(0, line.length)];
       }
+      // get the label size for indent
       if (!theme.linear) {
-        labelWidth = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
+        labelSize = [line boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size;
       }
     }
 
@@ -1173,7 +1179,23 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     // Use left-to-right embedding to prevent right-to-left text from changing the layout of the candidate.
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
     if (theme.vertical) {
-      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
+//      convertToVerticalGlyph(line, NSMakeRange(candidateStart, line.length-candidateStart));
+      [line addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(candidateStart, line.length-candidateStart)];
+    }
+
+    if (i < comments.count && [comments[i] length] != 0) {
+      NSUInteger commentStart = line.length;
+      [line appendAttributedString:[[NSAttributedString alloc]
+                                    initWithString:@" "
+                                    attributes:commentAttrs]];
+      NSString *comment = comments[i];
+      [line appendAttributedString:[[NSAttributedString alloc]
+                                    initWithString:comment.precomposedStringWithCanonicalMapping
+                                    attributes:commentAttrs]];
+      if (theme.vertical) {
+        convertToVerticalGlyph(line, NSMakeRange(commentStart, line.length-commentStart));
+        // [line addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(commentStart, line.length-commentStart)];
+      }
     }
 
     if (theme.suffixLabelFormat != nil) {
@@ -1197,27 +1219,14 @@ void fixDefaultFont(NSMutableAttributedString *text) {
                         attributes:labelAttrs]];
       if (theme.vertical) {
         convertToVerticalGlyph(line, NSMakeRange(suffixLabelStart, line.length-suffixLabelStart));
-      }
-    }
-
-    if (i < comments.count && [comments[i] length] != 0) {
-      NSUInteger commentStart = line.length;
-      [line appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:@" "
-                                           attributes:commentAttrs]];
-      NSString *comment = comments[i];
-      [line appendAttributedString:[[NSAttributedString alloc]
-                                       initWithString:comment.precomposedStringWithCanonicalMapping
-                                           attributes:commentAttrs]];
-      if (theme.vertical) {
-        convertToVerticalGlyph(line, NSMakeRange(commentStart, line.length-commentStart));
+        // [line addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(suffixLabelStart, line.length-suffixLabelStart)];
       }
     }
 
     NSAttributedString *separator = [[NSMutableAttributedString alloc]
                                         initWithString:(theme.linear ? @"  " : @"\n")
-                                            attributes:attrs];
-    _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:0].size.width;
+                                            attributes:labelAttrs];
+    _view.seperatorWidth = [separator boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin].size.width;
 
     NSMutableParagraphStyle *paragraphStyleCandidate;
     if (i == 0) {
@@ -1226,20 +1235,26 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       paragraphStyleCandidate = firstParagraphStyle;
     } else {
       paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
+      NSUInteger separatorStart = text.length;
       [text appendAttributedString:separator];
+      if (theme.vertical) {
+        [text addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(separatorStart, text.length-separatorStart)];
+      }
     }
-    if (!theme.linear) {
-//      paragraphStyleCandidate.lineSpacing = theme.linespace;
-      paragraphStyleCandidate.headIndent = labelWidth;
+    if (theme.linear) {
+      paragraphStyleCandidate.lineSpacing = theme.linespace;
+//      paragraphStyleCandidate.headIndent = labelWidth;
     }
     if (theme.vertical) {
       paragraphStyleCandidate.minimumLineHeight = minimumHeight(attrs);
+      paragraphStyleCandidate.headIndent = labelSize.height;
+    } else {
+      paragraphStyleCandidate.headIndent = labelSize.width;
     }
     // Use left-to-right marks to declare the default writing direction and
     // prevent strong right-to-left characters from setting the wirint direction
     paragraphStyleCandidate.baseWritingDirection = NSWritingDirectionLeftToRight;
 
-    paragraphStyleCandidate.headIndent = labelWidth;
     [line addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
                  range:NSMakeRange(0, line.length)];
@@ -1254,6 +1269,9 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   fixDefaultFont(text);
 
   // text done!
+  // if (theme.vertical) {
+  //   [text addAttribute:NSTextLayoutSectionOrientation value:@(NSTextLayoutOrientationVertical) range:NSMakeRange(0, text.length)];
+  // }
   [_view setText:text];
   [_view drawViewWith:highlightedRange preeditRange:_preeditRange highlightedPreeditRange:highlightedPreeditRange];
   [self show];
@@ -1268,6 +1286,8 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message attributes:theme.commentAttrs];
   if (theme.vertical) {
     convertToVerticalGlyph(text, NSMakeRange(0, text.length));
+    // [text addAttribute:NSVerticalGlyphFormAttributeName value:@true range:NSMakeRange(0, text.length)];
+    // [text addAttribute:NSTextLayoutSectionOrientation value:@(NSTextLayoutOrientationVertical) range:NSMakeRange(0, text.length)];
   }
   [_view setText:text];
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
@@ -1373,11 +1393,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
   NSString *fontName = [config getString:@"style/font_face"];
-  NSInteger fontSize = [config getDouble:@"style/font_point"];
+  CGFloat fontSize = [config getDouble:@"style/font_point"];
   NSString *labelFontName = [config getString:@"style/label_font_face"];
-  NSInteger labelFontSize = [config getDouble:@"style/label_font_point"];
+  CGFloat labelFontSize = [config getDouble:@"style/label_font_point"];
   NSString *commentFontName = [config getString:@"style/comment_font_face"];
-  NSInteger commentFontSize = [config getDouble:@"style/comment_font_point"];
+  CGFloat commentFontSize = [config getDouble:@"style/comment_font_point"];
   CGFloat alpha = fmin(fmax([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
   CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
@@ -1482,7 +1502,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     NSNumber *fontSizeOverridden =
         [config getOptionalDouble:[prefix stringByAppendingString:@"/font_point"]];
     if (fontSizeOverridden) {
-      fontSize = fontSizeOverridden.integerValue;
+      fontSize = fontSizeOverridden.doubleValue;
     }
     NSString *labelFontNameOverridden =
         [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
@@ -1492,7 +1512,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     NSNumber *labelFontSizeOverridden =
         [config getOptionalDouble:[prefix stringByAppendingString:@"/label_font_point"]];
     if (labelFontSizeOverridden) {
-      labelFontSize = labelFontSizeOverridden.integerValue;
+      labelFontSize = labelFontSizeOverridden.doubleValue;
     }
     NSString *commentFontNameOverridden =
         [config getString:[prefix stringByAppendingString:@"/comment_font_face"]];
@@ -1502,7 +1522,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     NSNumber *commentFontSizeOverridden =
         [config getOptionalDouble:[prefix stringByAppendingString:@"/comment_font_point"]];
     if (commentFontSizeOverridden) {
-      commentFontSize = commentFontSizeOverridden.integerValue;
+      commentFontSize = commentFontSizeOverridden.doubleValue;
     }
     NSColor *candidateLabelColorOverridden =
         [config getColor:[prefix stringByAppendingString:@"/label_color"]];
@@ -1621,23 +1641,23 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
   }
 
-  CGFloat lineHeight = fmax(fmax(fontSize, labelFontSize), commentFontSize) * 1.15;
+  // CGFloat lineHeight = fmax(fmax(fontSize, labelFontSize), commentFontSize) * 1.3;
 
   NSMutableParagraphStyle *paragraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.minimumLineHeight = lineHeight + lineSpacing;
-  paragraphStyle.maximumLineHeight = lineHeight + lineSpacing;
-//  paragraphStyle.paragraphSpacing = lineSpacing / 2;
-//  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
-  paragraphStyle.lineSpacing = lineSpacing;
+  // paragraphStyle.minimumLineHeight = lineHeight + lineSpacing;
+  // paragraphStyle.maximumLineHeight = lineHeight + lineSpacing;
+  paragraphStyle.paragraphSpacing = lineSpacing / 2;
+  paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
+  // paragraphStyle.lineSpacing = lineSpacing;
+//  paragraphStyle.defaultTabInterval = fontSize * 1.2;
 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  preeditParagraphStyle.minimumLineHeight = fontSize * 1.15 + spacing;
-  preeditParagraphStyle.maximumLineHeight = fontSize * 1.15 + spacing;
-//  preeditParagraphStyle.paragraphSpacing = spacing + hilitedCornerRadius - lineSpacing;
-  preeditParagraphStyle.lineSpacing = spacing;
-  preeditParagraphStyle.paragraphSpacing = hilitedCornerRadius;
+  // preeditParagraphStyle.minimumLineHeight = fontSize * 1.3 + spacing;
+  // preeditParagraphStyle.maximumLineHeight = fontSize * 1.3 + spacing;
+  preeditParagraphStyle.paragraphSpacing = spacing / 2 + hilitedCornerRadius / 2;
+  // preeditParagraphStyle.lineSpacing = spacing;
 
   NSMutableDictionary *attrs = [theme.attrs mutableCopy];
   NSMutableDictionary *highlightedAttrs = [theme.highlightedAttrs mutableCopy];

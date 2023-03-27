@@ -351,7 +351,7 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session && _preeditString.length > 0) {
-    if ([_preeditString isEqualToString:@"　"]) {
+    if ([_preeditString isEqualToString:@"\u3000"]) {
       const char* raw_input = rime_get_api()->get_input(_session);
       if (raw_input)
         [self commitString:@(raw_input)];
@@ -584,7 +584,7 @@ const int N_KEY_ROLL_OVER = 50;
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
         // note this is a full-shape space U+3000; using half shape characters like "..." will result in
         // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
+        [self showPreeditString:(preedit ? @"\u3000" : @"") selRange:empty caretPos:0];
       }
     }
     // update candidates
