@@ -22,11 +22,13 @@
         candidates:(NSArray*)candidates
           comments:(NSArray*)comments
             labels:(NSArray*)labels
-       highlighted:(NSUInteger)index;
+       highlighted:(NSUInteger)index
+           pageNum:(NSUInteger)pageNum
+          lastPage:(BOOL)lastPage;
 
 -(void)hide;
 
--(void)updateStatus:(NSString*)message;
+-(void)updateStatusLong:(NSString*)messageLong statusShort:(NSString*)messageShort;
 
 -(void)loadConfig:(SquirrelConfig*)config
       forDarkMode:(BOOL)isDark;

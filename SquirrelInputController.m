@@ -4,7 +4,6 @@
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
 #import "macos_keycode.h"
-#import "utf8.h"
 #import <rime_api.h>
 #import <rime/key_table.h>
 
@@ -90,6 +89,7 @@ const int N_KEY_ROLL_OVER = 50;
         }
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
+        _lastModifier = modifiers;
         if (changes & OSX_CAPITAL_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Caps_Lock;
@@ -138,7 +138,6 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
         [self rimeUpdate];
-        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -168,12 +167,6 @@ const int N_KEY_ROLL_OVER = 50;
           [self rimeUpdate];
         }
       } break;
-//      case NSEventTypeLeftMouseDown: {
-//        if (_preeditString.length) {
-//          [_currentClient makeFirstResponder:nil];
-//          [self commitComposition:_currentClient];
-//        }
-//      } break;
       default:
         break;
     }
@@ -352,7 +345,7 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session && _preeditString.length > 0) {
-    if ([_preeditString isEqualToString:@"　"]) {
+    if ([_preeditString isEqualToString:@"\u3000"]) {
       const char* raw_input = rime_get_api()->get_input(_session);
       if (raw_input)
         [self commitString:@(raw_input)];
@@ -459,6 +452,8 @@ const int N_KEY_ROLL_OVER = 50;
                    comments:(NSArray*)comments
                      labels:(NSArray*)labels
                 highlighted:(NSUInteger)index
+                    pageNum:(NSUInteger)pageNum
+                   lastPage:(BOOL)lastPage
 {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
@@ -472,7 +467,9 @@ const int N_KEY_ROLL_OVER = 50;
           candidates:candidates
             comments:comments
               labels:labels
-         highlighted:index];
+         highlighted:index
+             pageNum:pageNum
+            lastPage:lastPage];
 }
 
 @end // SquirrelController
@@ -529,6 +526,13 @@ const int N_KEY_ROLL_OVER = 50;
   }
 }
 
+NSString *substr(const char *str, int length) {
+  char substring[length+1];
+  strncpy(substring, str, length);
+  substring[length] = '\0';
+  return [NSString stringWithCString:substring encoding:NSUTF8StringEncoding];
+}
+
 -(void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
@@ -544,7 +548,8 @@ const int N_KEY_ROLL_OVER = 50;
       _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
                         !rime_get_api()->get_option(_session, "no_inline")) ||
                       rime_get_api()->get_option(_session, "inline");
-      _inlineCandidate = NSApp.squirrelAppDelegate.panel.inlineCandidate;
+      _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
+                          !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
       rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
@@ -557,9 +562,9 @@ const int N_KEY_ROLL_OVER = 50;
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
 
-    NSUInteger start = utf8len(preedit, ctx.composition.sel_start);
-    NSUInteger end = utf8len(preedit, ctx.composition.sel_end);
-    NSUInteger caretPos = utf8len(preedit, ctx.composition.cursor_pos);
+    NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
+    NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
+    NSUInteger caretPos = substr(preedit, ctx.composition.cursor_pos).length;
     NSRange selRange = NSMakeRange(start, end - start);
     if (_inlineCandidate) {
       const char *candidatePreview = ctx.commit_text_preview;
@@ -620,7 +625,9 @@ const int N_KEY_ROLL_OVER = 50;
                     candidates:candidates
                       comments:comments
                         labels:labels
-                   highlighted:ctx.menu.highlighted_candidate_index];
+                   highlighted:ctx.menu.highlighted_candidate_index
+                       pageNum:ctx.menu.page_no
+                      lastPage:ctx.menu.is_last_page];
     rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];

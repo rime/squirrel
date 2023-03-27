@@ -155,7 +155,7 @@
 #pragma mark - Private methods
 
 - (id)cachedValueOfClass:(Class)aClass forKey:(NSString *)key {
-  id value = _cache[key];
+  id value = [_cache objectForKey:key];
   if (value && [value isKindOfClass:aClass]) {
     return value;
   }
