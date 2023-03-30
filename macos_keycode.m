@@ -89,7 +89,7 @@ static struct keycode_mapping_t {
   {OSX_VK_KEYPAD_7, XK_KP_7},
   {OSX_VK_KEYPAD_8, XK_KP_8},
   {OSX_VK_KEYPAD_9, XK_KP_9},
-  //OSX_VK_KEYPAD_CLEAR -> ?
+  {OSX_VK_KEYPAD_CLEAR, XK_Clear},
   {OSX_VK_KEYPAD_COMMA, XK_KP_Separator},
   {OSX_VK_KEYPAD_DOT, XK_KP_Decimal},
   {OSX_VK_KEYPAD_EQUAL, XK_KP_Equal},
