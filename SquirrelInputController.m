@@ -138,6 +138,7 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
         [self rimeUpdate];
+        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -146,7 +147,8 @@ const int N_KEY_ROLL_OVER = 50;
 
         int keyCode = event.keyCode;
         NSString* keyChars = event.charactersIgnoringModifiers;
-        if (!isalpha(keyChars.UTF8String[0])) {
+        if ((modifiers & OSX_SHIFT_MASK) &&
+            !(modifiers & OSX_CTRL_MASK) && !(modifiers & OSX_ALT_MASK)) {
           keyChars = event.characters;
         }
         //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars: [%@]",
@@ -154,7 +156,7 @@ const int N_KEY_ROLL_OVER = 50;
 
         // translate osx keyevents to rime keyevents
         int rime_keycode = osx_keycode_to_rime_keycode(keyCode, keyChars.UTF8String[0],
-            modifiers & OSX_SHIFT_MASK, modifiers & OSX_CAPITAL_MASK);
+                             modifiers & OSX_SHIFT_MASK, modifiers & OSX_CAPITAL_MASK);
         if (rime_keycode) {
           int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
           // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
@@ -177,7 +179,6 @@ const int N_KEY_ROLL_OVER = 50;
     }
   }
 
-  _lastModifier = modifiers;
   _lastEventType = event.type;
 
   return handled;
