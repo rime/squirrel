@@ -90,6 +90,7 @@ const int N_KEY_ROLL_OVER = 50;
         }
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
+        _lastModifier = modifiers;
         if (changes & OSX_CAPITAL_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Caps_Lock;
@@ -138,7 +139,6 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
         [self rimeUpdate];
-        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -459,6 +459,8 @@ const int N_KEY_ROLL_OVER = 50;
                    comments:(NSArray*)comments
                      labels:(NSArray*)labels
                 highlighted:(NSUInteger)index
+                    pageNum:(NSUInteger)pageNum
+                   lastPage:(BOOL)lastPage
 {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
@@ -472,7 +474,9 @@ const int N_KEY_ROLL_OVER = 50;
           candidates:candidates
             comments:comments
               labels:labels
-         highlighted:index];
+         highlighted:index
+             pageNum:pageNum
+            lastPage:lastPage];
 }
 
 @end // SquirrelController
@@ -620,7 +624,9 @@ const int N_KEY_ROLL_OVER = 50;
                     candidates:candidates
                       comments:comments
                         labels:labels
-                   highlighted:ctx.menu.highlighted_candidate_index];
+                   highlighted:ctx.menu.highlighted_candidate_index
+                       pageNum:ctx.menu.page_no
+                      lastPage:ctx.menu.is_last_page];
     rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];

@@ -22,7 +22,9 @@
         candidates:(NSArray*)candidates
           comments:(NSArray*)comments
             labels:(NSArray*)labels
-       highlighted:(NSUInteger)index;
+       highlighted:(NSUInteger)index
+           pageNum:(NSUInteger)pageNum
+          lastPage:(BOOL)lastPage;
 
 -(void)hide;
 
