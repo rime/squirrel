@@ -39,6 +39,8 @@ Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 bash librime/install-plugins.sh rime/librime-sample # ...
 ```
 
+Popular plugins include [librime-lua](https://github.com/hchunhui/librime-lua) and [librime-octagram](https://github.com/lotem/librime-octagram)
+
 ### Shortcut: get the latest librime release
 
 You have the option to skip the following two sections - building Boost and
@@ -61,7 +63,7 @@ export BUILD_UNIVERSAL=1
 
 make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/deps/src/boost_1_75_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_78_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
@@ -90,38 +92,55 @@ https://github.com/rime/librime/blob/master/README-mac.md#install-boost-c-librar
 port install boost -no_static
 ```
 
-### Build dependencies
-
-Again, set `BUILD_UNIVERSAL` to tell `make` that we are building librime as
-universal macOS binaries. Skip this if building only for the native architecture.
-
-Build librime, dependent third-party libraries and data files:
-
-``` sh
-export BUILD_UNIVERSAL=1
-
-make deps
-```
-
 ### Build Squirrel
 
-With all dependencies ready, build `Squirrel.app`:
+* Make sure you have updated all the dependencies. If you cloned squirrel with the command in this guide, you've already done it. But if not, this command will update submodules.
+
+```
+git submodule update --init --recursive
+```
+
+* With all dependencies ready, build `Squirrel.app`:
 
 ``` sh
 make
 ```
 
-To build only for the native architecture, pass variable `ARCHS` to `make`:
+To build only for the native architecture, and/or specify the lowest supported macOS version, pass variable `ARCHS`/`MACOSX_DEPLOYMENT_TARGET` to `make`:
 
 ``` sh
-# for Mac computers with Apple Silicon
-make ARCHS='arm64'
+# for Universal macOS App, targetting Ventura
+make ARCHS='arm64 x86_64' MACOSX_DEPLOYMENT_TARGET='13.0'
 
-# for Intel-based Mac
-make ARCHS='x86_64'
+# for ARM macOS App, targetting Ventura
+make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='13.0'
 ```
 
 ## Install it on your Mac
+
+## Make Package
+
+Just add `package` after `make`
+
+```
+make package ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='13.0'
+```
+
+Define or echo `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
+
+To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable. 
+
+To make notarization work, you also need to save your credential under the same name as above.
+
+```
+xcrun notarytool store-credentials 'your name/org'
+```
+
+You **don't** need to define `DEV_ID` if you don't intend to distribute the package.
+
+## Directly Install
+
+**You might need to precede with sudo, and without a logout, the App might not work properly. Direct install is not very recommended.**
 
 Once built, you can install and try it live on your Mac computer:
 
