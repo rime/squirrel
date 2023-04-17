@@ -35,7 +35,6 @@
 		44CD7D9F1828D981006E9222 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 44CD7D9E1828D981006E9222 /* rime.pdf */; };
 		44E21A9016A653E700C2B08F /* rime_deployer in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8E16A653E700C2B08F /* rime_deployer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		44E21A9116A653E700C2B08F /* rime_dict_manager in CopyFiles */ = {isa = PBXBuildFile; fileRef = 44E21A8F16A653E700C2B08F /* rime_dict_manager */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 44E98EC214AE1AC900847AD6 /* utf8.cpp */; };
 		44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */ = {isa = PBXBuildFile; fileRef = 44F7708E152B3334005CF491 /* dsa_pub.pem */; };
 		44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 44F84AD614E94C490005D70B /* SquirrelPanel.m */; };
 		77AA68142588916F00A592E2 /* hk2s.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = 77AA67E22588916300A592E2 /* hk2s.json */; };
@@ -227,11 +226,6 @@
 		44DA191B152B8CBC00FB8EF0 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hant"; path = "zh-Hant.lproj/MainMenu.xib"; sourceTree = "<group>"; };
 		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
 		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
-		44E98EA514AE16DD00847AD6 /* checked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = checked.h; sourceTree = "<group>"; };
-		44E98EA614AE16DD00847AD6 /* core.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = core.h; sourceTree = "<group>"; };
-		44E98EA714AE16DD00847AD6 /* unchecked.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unchecked.h; sourceTree = "<group>"; };
-		44E98EC114AE1AC900847AD6 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
-		44E98EC214AE1AC900847AD6 /* utf8.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utf8.cpp; sourceTree = "<group>"; };
 		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F84AD514E94C490005D70B /* SquirrelPanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SquirrelPanel.h; sourceTree = "<group>"; };
@@ -305,7 +299,6 @@
 		080E96DDFE201D6D7F000001 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				44E98EA414AE16DD00847AD6 /* utf8 */,
 				44AC95161430CF6000C888FB /* SquirrelApplicationDelegate.h */,
 				44AC95171430CF6000C888FB /* SquirrelApplicationDelegate.m */,
 				44AC95181430CF6000C888FB /* SquirrelInputController.h */,
@@ -315,8 +308,6 @@
 				32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */,
 				4443A8391828CC5100731305 /* input_source.m */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
-				44E98EC114AE1AC900847AD6 /* utf8.h */,
-				44E98EC214AE1AC900847AD6 /* utf8.cpp */,
 				44F84AD514E94C490005D70B /* SquirrelPanel.h */,
 				44F84AD614E94C490005D70B /* SquirrelPanel.m */,
 				7BDB21211C6EF1BE0025E351 /* SquirrelConfig.h */,
@@ -451,16 +442,6 @@
 			name = SharedSupport;
 			sourceTree = "<group>";
 		};
-		44E98EA414AE16DD00847AD6 /* utf8 */ = {
-			isa = PBXGroup;
-			children = (
-				44E98EA514AE16DD00847AD6 /* checked.h */,
-				44E98EA614AE16DD00847AD6 /* core.h */,
-				44E98EA714AE16DD00847AD6 /* unchecked.h */,
-			);
-			path = utf8;
-			sourceTree = "<group>";
-		};
 		7B5488A71D2DAC9D0056A1BE /* plum */ = {
 			isa = PBXGroup;
 			children = (
@@ -575,7 +556,6 @@
 				A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */,
 				44AC951A1430CF6000C888FB /* SquirrelApplicationDelegate.m in Sources */,
 				44AC951B1430CF6000C888FB /* SquirrelInputController.m in Sources */,
-				44E98EC314AE1AC900847AD6 /* utf8.cpp in Sources */,
 				4443A83A1828CC5100731305 /* input_source.m in Sources */,
 				44F84AD714E94C490005D70B /* SquirrelPanel.m in Sources */,
 			);
@@ -625,7 +605,8 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.16.2;
+				CURRENT_PROJECT_VERSION = 0.17.2;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -639,6 +620,8 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Input Method";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -648,7 +631,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
@@ -671,7 +654,8 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0.16.2;
+				CURRENT_PROJECT_VERSION = 0.17.2;
+				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(FRAMEWORK_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
@@ -684,6 +668,8 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Input Method";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -693,7 +679,7 @@
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
 				);
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
 				OTHER_CPLUSPLUSFLAGS = (
 					"-DLEOPARD",
@@ -729,9 +715,11 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -748,14 +736,17 @@
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_1 = "\"$(SRCROOT)/librime/src\"";
 				HEADER_SEARCH_PATHS_QUOTED_FOR_PROJECT_2 = "\"$(SRCROOT)/librime/include\"";
 				LD_RUNPATH_SEARCH_PATHS = (
-					"@loader_path/../Frameworks\n\n@loader_path/../Library/OpenSource\n\n@loader_path/../Library/Frameworks",
+					"@loader_path/../Frameworks",
+					"@loader_path/../Library/OpenSource",
+					"@loader_path/../Library/Frameworks",
 					/usr/lib,
 					/usr/local/lib,
 				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Tk.framework/Headers;
 			};
 			name = Debug;
 		};
@@ -779,10 +770,12 @@
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CONFIGURATION_BUILD_DIR = "$(BUILD_DIR)/Release";
+				DEAD_CODE_STRIPPING = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -802,9 +795,10 @@
 					/usr/lib,
 				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
-				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+				SYSTEM_HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Tk.framework/Headers;
 			};
 			name = Release;
 		};
