@@ -130,6 +130,7 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
         [self rimeUpdate];
+        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -159,7 +160,6 @@ const int N_KEY_ROLL_OVER = 50;
     }
   }
 
-  _lastModifier = modifiers;
   _lastEventType = event.type;
 
   return handled;
