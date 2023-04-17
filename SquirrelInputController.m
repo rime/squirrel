@@ -89,6 +89,7 @@ const int N_KEY_ROLL_OVER = 50;
         }
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
+        _lastModifier = modifiers;
         if (changes & OSX_CAPITAL_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Caps_Lock;
@@ -130,7 +131,6 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
         [self rimeUpdate];
-        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
