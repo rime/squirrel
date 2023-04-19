@@ -6,8 +6,7 @@
 
 ### Prerequisites
 
-Install **Xcode 12.2** or above from App Store, to build Squirrel as a Universal
-app. The minimum required version is *Xcode 10* to build for `x86_64` only.
+The minimum required version is **Xcode 14** to build for **MacOS 13.0+**.
 
 Install **cmake**.
 
@@ -153,3 +152,13 @@ make ARCHS='x86_64' install
 ```
 
 That's it, a verbal journal. Thanks for riming with Squirrel.
+
+## Cleanup Build Artifacts
+```bash
+# Clean up dependencies, including librime, librime-deps, sparkle
+make clean-deps
+
+# Clean up squirrel build files
+make clean
+```
+Typically, you need to run both above commands to fully clean arifacts up.
