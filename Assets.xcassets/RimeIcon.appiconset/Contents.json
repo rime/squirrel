@@ -1,13 +1,13 @@
 {
   "images" : [
     {
-      "filename" : "rime-small-16.png",
+      "filename" : "rime-16 1.png",
       "idiom" : "mac",
       "scale" : "1x",
       "size" : "16x16"
     },
     {
-      "filename" : "rime-small-32.png",
+      "filename" : "rime-32 1.png",
       "idiom" : "mac",
       "scale" : "2x",
       "size" : "16x16"

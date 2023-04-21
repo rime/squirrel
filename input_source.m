@@ -10,7 +10,7 @@ static NSString *const kHantInputModeID =
 #define HANS_INPUT_MODE (1 << 0)
 #define HANT_INPUT_MODE (1 << 1)
 
-void RegisterInputSource() {
+void RegisterInputSource(void) {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
       NULL, kInstallLocation, strlen((const char *)kInstallLocation), NO);
   if (installedLocationURL) {
@@ -28,10 +28,10 @@ void ActivateInputSource(int enabled_modes) {
     NSString *sourceID = (__bridge NSString *)(TISGetInputSourceProperty(
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
-    if ([sourceID isEqualToString:kHansInputModeID] &&
-        ((enabled_modes & HANS_INPUT_MODE) != 0) ||
-        [sourceID isEqualToString:kHantInputModeID] &&
-        ((enabled_modes & HANT_INPUT_MODE) != 0)) {
+    if (([sourceID isEqualToString:kHansInputModeID] &&
+        ((enabled_modes & HANS_INPUT_MODE) != 0)) ||
+        ([sourceID isEqualToString:kHantInputModeID] &&
+        ((enabled_modes & HANT_INPUT_MODE) != 0))) {
       TISEnableInputSource(inputSource);
       NSLog(@"Enabled input source: %@", sourceID);
       CFBooleanRef isSelectable = (CFBooleanRef)TISGetInputSourceProperty(
@@ -45,7 +45,7 @@ void ActivateInputSource(int enabled_modes) {
   CFRelease(sourceList);
 }
 
-void DeactivateInputSource() {
+void DeactivateInputSource(void) {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = CFArrayGetCount(sourceList); i > 0; --i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)(CFArrayGetValueAtIndex(
@@ -66,7 +66,7 @@ void DeactivateInputSource() {
   CFRelease(sourceList);
 }
 
-int GetEnabledInputModes() {
+int GetEnabledInputModes(void) {
   int input_modes = 0;
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
