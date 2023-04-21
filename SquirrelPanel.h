@@ -28,7 +28,7 @@
 
 -(void)hide;
 
--(void)updateStatus:(NSString*)message;
+-(void)updateStatusLong:(NSString*)messageLong statusShort:(NSString*)messageShort;
 
 -(void)loadConfig:(SquirrelConfig*)config
       forDarkMode:(BOOL)isDark;

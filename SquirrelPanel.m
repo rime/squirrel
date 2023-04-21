@@ -91,9 +91,12 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *pagingParagraphStyle;
 
-@property(nonatomic, strong, readonly) NSString *prefixLabelFormat, *suffixLabelFormat;
+@property(nonatomic, strong, readonly) NSString *prefixLabelFormat;
+@property(nonatomic, strong, readonly) NSString *suffixLabelFormat;
+@property(nonatomic, strong, readonly) NSString *statusMessageType;
 
 - (void)setCandidateFormat:(NSString *)candidateFormat;
+- (void)setStatusMessageType:(NSString *)statusMessageType;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
@@ -134,7 +137,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 
 - (void)setCandidateFormat:(NSString *)candidateFormat {
   // in the candiate format, everything other than '%@' is considered part of the label
-  NSRange candidateRange = [candidateFormat rangeOfString:@"%@" options:NSLiteralSearch];
+  NSRange candidateRange = [candidateFormat rangeOfString:@"%@"];
   if (candidateRange.location == NSNotFound) {
     _prefixLabelFormat = candidateFormat;
     _suffixLabelFormat = nil;
@@ -158,6 +161,14 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   }
 }
 
+- (void)setStatusMessageType:(NSString *)type {
+  if ([type isEqualToString: @"long"] || [type isEqualToString: @"short"] || [type isEqualToString: @"mix"]) {
+    _statusMessageType = type;
+  } else {
+    _statusMessageType = @"mix";
+  }
+}
+
 - (void)setBackgroundColor:(NSColor *)backgroundColor
      highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
@@ -176,7 +187,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
             borderWidth:(double)borderWidth
               linespace:(double)linespace
        preeditLinespace:(double)preeditLinespace
-                  alpha:(CGFloat)alpha
+                  alpha:(double)alpha
            translucency:(BOOL)translucency
                  linear:(BOOL)linear
                vertical:(BOOL)vertical
@@ -236,12 +247,11 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, readonly) NSRect contentRect;
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
-@property(nonatomic, assign) CGFloat seperatorWidth;
 @property(nonatomic, readonly) CAShapeLayer *shape;
 
 - (BOOL)isFlipped;
 @property (NS_NONATOMIC_IOSONLY, getter=isFlipped, readonly) BOOL flipped;
-- (void)     drawViewWith:(NSRange)hilightedRange
+- (void)     drawViewWith:(NSRange)highlightedRange
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
               pagingRange:(NSRange)pagingRange;
@@ -282,10 +292,10 @@ SquirrelTheme *_darkTheme;
     self.layer.masksToBounds = YES;
   }
   _textView = [[NSTextView alloc] initWithFrame:frameRect];
-  // Use textStorage to store text and manage all text layout and draws
   NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSZeroSize];
   textContainer.lineFragmentPadding = 0.0;
   _textView.drawsBackground = NO;
+  _textView.editable = NO;
   _textView.selectable = NO;
   [_textView replaceTextContainer:textContainer];
   _textView.layoutManager.backgroundLayoutEnabled = YES;
@@ -295,7 +305,6 @@ SquirrelTheme *_darkTheme;
   _shape = [[CAShapeLayer alloc] init];
   if (@available(macOS 10.14, *)) {
     _darkTheme = [[SquirrelTheme alloc] init];
-//    _textView.usesAdaptiveColorMappingForDarkAppearance = YES;
   }
   return self;
 }
@@ -315,11 +324,11 @@ SquirrelTheme *_darkTheme;
 }
 
 // Will triger - (void)drawRect:(NSRect)dirtyRect
-- (void)     drawViewWith:(NSRange)hilightedRange
+- (void)     drawViewWith:(NSRange)highlightedRange
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
               pagingRange:(NSRange)pagingRange {
-  _highlightedRange = hilightedRange;
+  _highlightedRange = highlightedRange;
   _preeditRange = preeditRange;
   _highlightedPreeditRange = highlightedPreeditRange;
   _pagingRange = pagingRange;
@@ -532,7 +541,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSBezierPath *pagingPath;
   NSBezierPath *candidatePath;
   SquirrelTheme * theme = self.currentTheme;
-  
+
   [NSBezierPath setDefaultLineWidth:0];
   NSRect backgroundRect = dirtyRect;
   NSRect textField = NSInsetRect(backgroundRect, theme.edgeInset.width, theme.edgeInset.height);
@@ -542,10 +551,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   if (_preeditRange.length > 0) {
     preeditRect = [self contentRectForRange:_preeditRange];
     preeditRect.size.width = backgroundRect.size.width;
-    preeditRect.size.height += theme.edgeInset.height/2 + theme.preeditLinespace;
+    preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace;
     preeditRect.origin = backgroundRect.origin;
     if (_highlightedRange.length == 0) {
-      preeditRect.size.height += theme.edgeInset.height*3/2 - theme.preeditLinespace;
+      preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace;
     }
     if (theme.preeditBackgroundColor != nil) {
       preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
@@ -557,9 +566,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   if (_pagingRange.length > 0) {
     pagingRect = [self contentRectForRange:_pagingRange];
     pagingRect.size.width = backgroundRect.size.width;
-    pagingRect.size.height += theme.edgeInset.height/2;
+    pagingRect.size.height += theme.edgeInset.height;
     pagingRect.origin.x = backgroundRect.origin.x;
-    pagingRect.origin.y += theme.edgeInset.height*3/2;
+    pagingRect.origin.y += theme.edgeInset.height;
     if (theme.preeditBackgroundColor != nil) {
       pagingPath = drawSmoothLines(rectVertex(pagingRect), 0, 0);
     }
@@ -575,15 +584,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     candidateRect.origin.y += theme.edgeInset.height/2;
   }
 
-  NSRect outerBox = NSInsetRect(candidateRect, theme.edgeInset.width, theme.edgeInset.height/2);
-  NSRect innerBox = NSInsetRect(outerBox, theme.hilitedCornerRadius+1, theme.hilitedCornerRadius+1);
-//  if (_preeditRange.length == 0) {
-//    innerBox.origin.y += theme.edgeInset.height;
-//    innerBox.size.height -= theme.edgeInset.height;
-//    outerBox.origin.y += theme.edgeInset.height / 2;
-//    outerBox.size.height -= theme.edgeInset.height / 2;
-//  }
-  
+  NSRect outerBox = NSInsetRect(candidateRect, theme.edgeInset.width/2, 0);
+  NSRect innerBox = NSInsetRect(outerBox, theme.edgeInset.width/2+1, halfLinespace+1);
+
   if (theme.preeditBackgroundColor != NULL) {
     candidatePath = drawSmoothLines(rectVertex(outerBox), 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
   }
@@ -647,8 +650,16 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     NSRect trailingRect;
     [self multilineRectForRange:_highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
 
-    NSRect outerBox = NSInsetRect(preeditRect, theme.edgeInset.width/2, theme.edgeInset.height/2);
-    NSRect innerBox = NSInsetRect(outerBox, theme.edgeInset.width/2 + 1, theme.edgeInset.height/2 + 1);
+    NSRect outerBox = preeditRect;
+    outerBox.size.width -= theme.edgeInset.width;
+    outerBox.size.height -= theme.edgeInset.height/2 + theme.hilitedCornerRadius/2;
+    outerBox.origin.x += theme.edgeInset.width/2;
+    outerBox.origin.y += theme.edgeInset.height/2;
+    NSRect innerBox = preeditRect;
+    innerBox.size.width -= theme.edgeInset.width * 2 + 2;
+    innerBox.size.height -= theme.edgeInset.height * 2 + theme.preeditLinespace;
+    innerBox.origin.x += theme.edgeInset.width + 1;
+    innerBox.origin.y += theme.edgeInset.height + 1;
 
     NSMutableArray<NSValue *> *highlightedPreeditPoints;
     NSMutableArray<NSValue *> *highlightedPreeditPoints2;
@@ -668,15 +679,15 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     }
   }
 
-  backgroundPath = drawSmoothLines(rectVertex(backgroundRect), theme.cornerRadius*0.3, theme.cornerRadius*1.4);
+  backgroundPath = drawSmoothLines(rectVertex(backgroundRect), 0.3*theme.cornerRadius, 1.4*theme.cornerRadius);
   _shape.path = backgroundPath.quartzPath;
-  
+
   NSRect borderRect = NSInsetRect(backgroundRect, theme.edgeInset.width/2 - theme.borderWidth/2, theme.edgeInset.height/2 - theme.borderWidth/2);
   borderPath = drawSmoothLines(rectVertex(borderRect), 0.3*theme.cornerRadius, 1.4*theme.cornerRadius);
   borderPath.lineWidth = theme.borderWidth;
   // Nothing should extend beyond backgroundPath
   [backgroundPath addClip];
-  
+
   // This block of code enables independent transparencies in highlighted colour and background colour.
   // Disabled because of the flaw: edges or rounded corners of the heighlighted area are rendered with undesirable shadows.
 #if 0
@@ -710,11 +721,16 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   [preeditPath setWindingRule:NSEvenOddWindingRule];
 #endif
 
-  if (theme.preeditBackgroundColor && ![pagingPath isEmpty]) {
+  if (theme.preeditBackgroundColor &&
+      (_preeditRange.length > 0 || _highlightedRange.length > 0)) {
     [theme.preeditBackgroundColor setFill];
     [backgroundPath fill];
-    [theme.backgroundColor setFill];
-    [candidatePath fill];
+    if (_highlightedRange.length > 0){
+      [[NSColor clearColor] setFill];
+      [candidatePath fill];
+      [theme.backgroundColor setFill];
+      [candidatePath fill];
+    }
   } else {
     [theme.backgroundColor setFill];
     [backgroundPath fill];
@@ -738,7 +754,6 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     [borderPath stroke];
   }
 
-  [_textView setTextContainerInset:theme.edgeInset];
   NSRange glyphRange = [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
   [_textView.layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textField.origin];
 
@@ -1100,7 +1115,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
   // candidates
   CGFloat separatorWidth = NSWidth([[[NSAttributedString alloc] initWithString:(theme.linear ? @"  " : @"\n") attributes:theme.attrs] boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin]);
-//  _view.seperatorWidth = separatorWidth;
   CGFloat candidateTextWidth = 0 - separatorWidth;
   NSRange highlightedRange = NSMakeRange(NSNotFound, 0);
   NSUInteger i;
@@ -1186,14 +1200,10 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     NSMutableAttributedString *separator = [[NSMutableAttributedString alloc] initWithString:separtatorString attributes:attrs];
 
     NSMutableParagraphStyle *paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
-    if (i == 0) {
-//      paragraphStyleCandidate.paragraphSpacingBefore = theme.linespace / 2;
-    } else {
+    if (i > 0) {
       [text appendAttributedString:separator];
     }
-    if (theme.linear) {
-//      paragraphStyleCandidate.lineSpacing = theme.linespace;
-    } else {
+    if (!theme.linear) {
       paragraphStyleCandidate.headIndent = labelWidth;
     }
     [line addAttribute:NSParagraphStyleAttributeName value:paragraphStyleCandidate range:NSMakeRange(0, line.length)];
@@ -1223,7 +1233,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
     fixDefaultFont(paging);
     NSMutableParagraphStyle *paragraphStylePaging = [theme.pagingParagraphStyle mutableCopy];
-//    paragraphStylePaging.minimumLineHeight = minimumHeight(theme.pagingAttrs);
     [paging addAttribute:NSParagraphStyleAttributeName
                    value:paragraphStylePaging
                    range:NSMakeRange(0, paging.length)];
@@ -1241,15 +1250,30 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   [self show];
 }
 
-- (void)updateStatus:(NSString *)message {
-  _statusMessage = message;
+- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort {
+  SquirrelTheme *theme = _view.currentTheme;
+  if ([theme.statusMessageType isEqualToString:@"mix"]) {
+    if (messageShort) {
+      _statusMessage = messageShort;
+    } else {
+      _statusMessage = messageLong;
+    }
+  } else if ([theme.statusMessageType isEqualToString:@"long"]) {
+    _statusMessage = messageLong;
+  } else if ([theme.statusMessageType isEqualToString:@"short"]) {
+    if (messageShort) {
+      _statusMessage = messageShort;
+    } else if (messageLong) {
+      _statusMessage = [messageLong substringWithRange:[messageLong rangeOfComposedCharacterSequenceAtIndex:0]];
+    }
+  }
 }
 
 - (void)showStatus:(NSString *)message {
   SquirrelTheme *theme = _view.currentTheme;
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.commentAttrs];
-
   fixDefaultFont(text);
+
   [_view.textView.textStorage setAttributedString:text];
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
@@ -1353,6 +1377,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   BOOL inlinePreedit = [config getBool:@"style/inline_preedit"];
   BOOL inlineCandidate = [config getBool:@"style/inline_candidate"];
   BOOL translucency = [config getBool:@"style/translucency"];
+  NSString *statusMessageType = [config getString:@"style/status_message_type"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
   NSString *fontName = [config getString:@"style/font_face"];
@@ -1695,6 +1720,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditHighlightedAttrs[NSVerticalGlyphFormAttributeName] = vertical ? @YES : @NO;
   pagingAttrs[NSVerticalGlyphFormAttributeName] = vertical ? @YES : @NO;
 
+  [theme setStatusMessageType:statusMessageType];
+  
   [theme          setAttrs:attrs
                 labelAttrs:labelAttrs
           highlightedAttrs:highlightedAttrs
