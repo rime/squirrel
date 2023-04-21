@@ -805,8 +805,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   while (i < text.length) {
     NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
     if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
-      NSFontWeight fontWeight = [[charFont.fontDescriptor.fontAttributes objectForKey:NSFontWeightTrait] doubleValue];
-      NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize weight:NSFontWeightThin];
+      NSFont *defaultFont = [NSFont systemFontOfSize:charFont.pointSize];
       [text addAttribute:NSFontAttributeName value:defaultFont range:currentFontRange];
     }
     i = NSMaxRange(currentFontRange);
@@ -1165,7 +1164,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     [line addAttribute:NSWritingDirectionAttributeName value:@[@0] range:NSMakeRange(candidateStart, line.length-candidateStart)];
 
     if (i < comments.count && [comments[i] length] != 0) {
-      NSUInteger commentStart = line.length;
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
                                                                    attributes:commentAttrs]];
       NSString *comment = comments[i];
@@ -1187,7 +1185,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
         NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%lu"];
         suffixLabelString = [[NSString stringWithFormat:labelFormat, (i + 1) % 10] stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
       }
-      NSUInteger suffixLabelStart = line.length;
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:suffixLabelString
                                                                    attributes:attrs]];
     }
@@ -1225,6 +1222,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   NSRange pagingRange = NSMakeRange(NSNotFound, 0);
 
   if (numCandidates && theme.showPaging) {
+
     [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.attrs]];
 
     NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] initWithString:@""
