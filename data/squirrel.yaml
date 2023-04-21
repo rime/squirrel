@@ -28,6 +28,7 @@ style:
   #candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
+  show_paging : true
 
   corner_radius: 10
   hilited_corner_radius: 0

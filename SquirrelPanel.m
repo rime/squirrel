@@ -73,6 +73,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, readonly) CGFloat preeditLinespace;
 @property(nonatomic, readonly) CGFloat alpha;
 @property(nonatomic, readonly) BOOL translucency;
+@property(nonatomic, readonly) BOOL showPaging;
 @property(nonatomic, readonly) BOOL linear;
 @property(nonatomic, readonly) BOOL vertical;
 @property(nonatomic, readonly) BOOL inlinePreedit;
@@ -112,6 +113,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
        preeditLinespace:(CGFloat)preeditLinespace
                   alpha:(CGFloat)alpha
            translucency:(BOOL)translucency
+             showPaging:(BOOL)showPaging
                  linear:(BOOL)linear
                vertical:(BOOL)vertical
           inlinePreedit:(BOOL)inlinePreedit
@@ -189,6 +191,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
        preeditLinespace:(double)preeditLinespace
                   alpha:(double)alpha
            translucency:(BOOL)translucency
+             showPaging:(BOOL)showPaging
                  linear:(BOOL)linear
                vertical:(BOOL)vertical
           inlinePreedit:(BOOL)inlinePreedit
@@ -200,6 +203,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   _linespace = linespace;
   _alpha = alpha;
   _translucency = translucency;
+  _showPaging = showPaging;
   _preeditLinespace = preeditLinespace;
   _linear = linear;
   _vertical = vertical;
@@ -790,6 +794,10 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   return _view.currentTheme.inlineCandidate;
 }
 
+- (BOOL)showPaging {
+  return _view.currentTheme.showPaging;
+}
+
 void fixDefaultFont(NSMutableAttributedString *text) {
   [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
   NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
@@ -1216,7 +1224,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   // paging indication
   NSRange pagingRange = NSMakeRange(NSNotFound, 0);
 
-  if (numCandidates) {
+  if (numCandidates && theme.showPaging) {
     [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.attrs]];
 
     NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] initWithString:@""
@@ -1377,6 +1385,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   BOOL inlinePreedit = [config getBool:@"style/inline_preedit"];
   BOOL inlineCandidate = [config getBool:@"style/inline_candidate"];
   BOOL translucency = [config getBool:@"style/translucency"];
+  BOOL showPaging = [config getBool:@"style/show_paging"];
   NSString *statusMessageType = [config getString:@"style/status_message_type"];
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
@@ -1475,6 +1484,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         [config getOptionalBool:[prefix stringByAppendingString:@"/translucency"]];
     if (translucencyOverridden) {
       translucency = translucencyOverridden.boolValue;
+    }
+    NSNumber *showPagingOverridden =
+        [config getOptionalBool:[prefix stringByAppendingString:@"/show_paging"]];
+    if (showPagingOverridden) {
+      showPaging = showPagingOverridden.boolValue;
     }
     NSString *candidateFormatOverridden =
         [config getString:[prefix stringByAppendingString:@"/candidate_format"]];
@@ -1754,6 +1768,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         preeditLinespace:spacing
                    alpha:(alpha == 0 ? 1.0 : alpha)
             translucency:translucency
+              showPaging:showPaging
                   linear:linear
                 vertical:vertical
            inlinePreedit:inlinePreedit
