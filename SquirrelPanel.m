@@ -244,21 +244,27 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @interface SquirrelView : NSView
 
 @property(nonatomic, readonly) NSTextView *textView;
-@property(nonatomic, readonly) NSRange highlightedRange;
+@property(nonatomic, readonly) NSArray<NSValue *> *candidateRanges;
+@property(nonatomic, readonly) NSInteger highlightedIndex;
 @property(nonatomic, readonly) NSRange preeditRange;
 @property(nonatomic, readonly) NSRange highlightedPreeditRange;
 @property(nonatomic, readonly) NSRange pagingRange;
 @property(nonatomic, readonly) NSRect contentRect;
+@property(nonatomic, readonly) NSMutableArray<NSValue *> *candidatePathRefs;
+@property(nonatomic, readonly) NSMutableArray<NSValue *> *pagingRects;
+@property(nonatomic, readonly) NSUInteger buttonEffect;
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
 @property(nonatomic, readonly) CAShapeLayer *shape;
 
 - (BOOL)isFlipped;
 @property (NS_NONATOMIC_IOSONLY, getter=isFlipped, readonly) BOOL flipped;
-- (void)     drawViewWith:(NSRange)highlightedRange
+- (void)     drawViewWith:(NSArray<NSValue *> *)candidateRanges
+         highlightedIndex:(NSInteger)highlightedIndex
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
-              pagingRange:(NSRange)pagingRange;
+              pagingRange:(NSRange)pagingRange
+             buttonEffect:(NSUInteger)buttonEffect;
 - (NSRect)contentRectForRange:(NSRange)range;
 @end
 
@@ -306,6 +312,8 @@ SquirrelTheme *_darkTheme;
   _textView.layoutManager.usesFontLeading = NO;
   _textView.layoutManager.typesetterBehavior = NSTypesetterBehavior_10_4;
   _defaultTheme = [[SquirrelTheme alloc] init];
+  _candidatePathRefs = [NSMutableArray arrayWithCapacity:_candidateRanges.count];
+  _pagingRects = [NSMutableArray arrayWithCapacity:2];
   _shape = [[CAShapeLayer alloc] init];
   if (@available(macOS 10.14, *)) {
     _darkTheme = [[SquirrelTheme alloc] init];
@@ -328,14 +336,18 @@ SquirrelTheme *_darkTheme;
 }
 
 // Will triger - (void)drawRect:(NSRect)dirtyRect
-- (void)     drawViewWith:(NSRange)highlightedRange
+- (void)     drawViewWith:(NSArray<NSValue *>*)candidateRanges
+         highlightedIndex:(NSInteger)highlightedIndex
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
-              pagingRange:(NSRange)pagingRange {
-  _highlightedRange = highlightedRange;
+              pagingRange:(NSRange)pagingRange
+             buttonEffect:(NSUInteger)buttonEffect {
+  _candidateRanges = candidateRanges;
+  _highlightedIndex = highlightedIndex;
   _preeditRange = preeditRange;
   _highlightedPreeditRange = highlightedPreeditRange;
   _pagingRange = pagingRange;
+  _buttonEffect = buttonEffect;
   self.needsDisplay = YES;
 }
 
@@ -533,6 +545,16 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   }
 }
 
+CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
+  CGMutablePathRef path = CGPathCreateMutable();
+  CGPathMoveToPoint(path, NULL, vertex[3].pointValue.x, vertex[3].pointValue.y);
+  for (NSUInteger i = 0; i < vertex.count; i++){
+    CGPathAddLineToPoint(path, NULL, vertex[i].pointValue.x, vertex[i].pointValue.y);
+  }
+  CGPathCloseSubpath(path);
+  return path;
+}
+
 // All draws happen here
 - (void)drawRect:(NSRect)dirtyRect {
   NSBezierPath *backgroundPath;
@@ -543,7 +565,9 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
   NSBezierPath *highlightedPreeditPath2;
   NSBezierPath *preeditPath;
   NSBezierPath *pagingPath;
-  NSBezierPath *candidatePath;
+  NSBezierPath *candidatesPath;
+  NSBezierPath *pageUpPath;
+  NSBezierPath *pageDownPath;
   SquirrelTheme * theme = self.currentTheme;
 
   [NSBezierPath setDefaultLineWidth:0];
@@ -557,7 +581,7 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     preeditRect.size.width = backgroundRect.size.width;
     preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace;
     preeditRect.origin = backgroundRect.origin;
-    if (_highlightedRange.length == 0) {
+    if (_highlightedIndex == NSNotFound) {
       preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace;
     }
     if (theme.preeditBackgroundColor != nil) {
@@ -576,41 +600,91 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
     if (theme.preeditBackgroundColor != nil) {
       pagingPath = drawSmoothLines(rectVertex(pagingRect), 0, 0);
     }
+    NSRect pageUpRect = [self contentRectForRange:NSMakeRange(_pagingRange.location, 1)];
+    pageUpRect.size.height += theme.edgeInset.height/2;
+    pageUpRect.size.width += theme.hilitedCornerRadius/2;
+    pageUpRect.origin.y += theme.edgeInset.height;
+    pageUpRect.origin.x += theme.edgeInset.width - theme.hilitedCornerRadius/2;
+    _pagingRects[0] = [NSValue valueWithRect:pageUpRect];
+    NSRect pageDownRect = [self contentRectForRange:NSMakeRange(NSMaxRange(_pagingRange)-1, 1)];
+    pageDownRect.size.height += theme.edgeInset.height/2;
+    pageDownRect.size.width += theme.hilitedCornerRadius/2;
+    pageDownRect.origin.y += theme.edgeInset.height;
+    pageDownRect.origin.x += theme.edgeInset.width;
+    _pagingRects[1] = [NSValue valueWithRect:pageDownRect];
+    if (theme.highlightedPreeditColor != nil) {
+      pageUpPath = drawSmoothLines(rectVertex(pageUpRect), theme.edgeInset.width/4, theme.edgeInset.height/4);
+      pageDownPath = drawSmoothLines(rectVertex(pageDownRect), theme.edgeInset.width/4, theme.edgeInset.height/4);
+    }
   }
 
   // Draw candidate Rect
-  CGFloat halfLinespace = theme.linespace / 2;
-  NSRect candidateRect = backgroundRect;
-  candidateRect.size.height -= preeditRect.size.height + pagingRect.size.height;
-  candidateRect.origin.y += preeditRect.size.height;
-  if (_preeditRange.length == 0) {
-    candidateRect.size.height -= theme.edgeInset.height/2;
-    candidateRect.origin.y += theme.edgeInset.height/2;
-  }
+  if (_highlightedIndex != NSNotFound) {
+    CGFloat halfLinespace = theme.linespace/2;
+    NSRect candidatesRect = backgroundRect;
+    candidatesRect.size.height -= preeditRect.size.height + pagingRect.size.height;
+    candidatesRect.origin.y += preeditRect.size.height;
+    if (_preeditRange.length == 0) {
+      candidatesRect.size.height -= theme.edgeInset.height/2;
+      candidatesRect.origin.y += theme.edgeInset.height/2;
+    }
+    if (_pagingRange.length == 0) {
+      candidatesRect.size.height -= theme.edgeInset.height/2;
+    }
+    NSRect outerBox = NSInsetRect(candidatesRect, theme.edgeInset.width/2, 0);
+    NSRect innerBox = NSInsetRect(outerBox, theme.edgeInset.width/2+1, halfLinespace+1);
 
-  NSRect outerBox = NSInsetRect(candidateRect, theme.edgeInset.width/2, 0);
-  NSRect innerBox = NSInsetRect(outerBox, theme.edgeInset.width/2+1, halfLinespace+1);
+    if (theme.preeditBackgroundColor != NULL) {
+      candidatesPath = drawSmoothLines(rectVertex(outerBox), 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+    }
 
-  if (theme.preeditBackgroundColor != NULL) {
-    candidatePath = drawSmoothLines(rectVertex(outerBox), 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
-  }
-
-  // Drawhighlighted Rect
-  if (_highlightedRange.length > 0 && theme.highlightedStripColor != nil) {
     if (theme.linear) {
-      NSRect leadingRect;
-      NSRect bodyRect;
-      NSRect trailingRect;
-      [self multilineRectForRange:_highlightedRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
+      for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
+        NSRange candidateRange = _candidateRanges[i].rangeValue;
+        NSRect leadingRect;
+        NSRect bodyRect;
+        NSRect trailingRect;
+        [self multilineRectForRange:candidateRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
 
-      NSMutableArray<NSValue *> *highlightedPoints;
-      NSMutableArray<NSValue *> *highlightedPoints2;
-      // Handles the special case where containing boxes are separated
-      if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
-        highlightedPoints = [rectVertex(leadingRect) mutableCopy];
-        highlightedPoints2 = [rectVertex(trailingRect) mutableCopy];
-      } else {
-        highlightedPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
+        NSMutableArray<NSValue *> *candidatePoints;
+        NSMutableArray<NSValue *> *candidatePoints2;
+        // Handles the special case where containing boxes are separated
+        if (nearEmptyRect(bodyRect) && !nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
+          candidatePoints = [rectVertex(leadingRect) copy];
+          candidatePoints2 = [rectVertex(trailingRect) copy];
+        } else {
+          candidatePoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) copy];
+        }
+
+        CGMutablePathRef candidatePathRef = polygonPathForVertex(candidatePoints);
+        if (candidatePoints2.count > 0) {
+          CGPathAddPath(candidatePathRef, NULL, polygonPathForVertex(candidatePoints2));
+        }
+        _candidatePathRefs[i] = (__bridge NSValue * _Nonnull)(candidatePathRef);
+
+        if (i == _highlightedIndex && theme.highlightedStripColor != nil) {
+          highlightedPath = drawSmoothLines(candidatePoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+          if (candidatePoints2.count > 0) {
+            highlightedPath2 = drawSmoothLines(candidatePoints2, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+          }
+        }
+      }
+    } else {
+      for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
+        NSRange candidateRange = _candidateRanges[i].rangeValue;
+        NSRect candidateRect = [self contentRectForRange:candidateRange];
+        candidateRect.size.width = textField.size.width;
+        candidateRect.origin.x = textField.origin.x;
+        candidateRect.origin.y += theme.edgeInset.height;
+        NSMutableArray<NSValue *> *candidatePoints = [rectVertex(candidateRect) mutableCopy];
+        expand(candidatePoints, innerBox, outerBox);
+
+        CGMutablePathRef candidatePathRef = polygonPathForVertex(candidatePoints);
+        _candidatePathRefs[i] = (__bridge NSValue * _Nonnull)(candidatePathRef);
+
+        if (i == _highlightedIndex && theme.highlightedStripColor != nil) {
+          highlightedPath = drawSmoothLines(candidatePoints, theme.hilitedCornerRadius*0.3, theme.hilitedCornerRadius*1.4);
+        }
       }
 
 //      xyTranslation(highlightedPoints, NSMakePoint(0, -halfLinespace));
@@ -726,31 +800,46 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 #endif
 
   if (theme.preeditBackgroundColor &&
-      (_preeditRange.length > 0 || _highlightedRange.length > 0)) {
+      (_preeditRange.length > 0 || _highlightedIndex != NSNotFound)) {
     [theme.preeditBackgroundColor setFill];
     [backgroundPath fill];
-    if (_highlightedRange.length > 0){
+    if (_highlightedIndex != NSNotFound){
       [[NSColor clearColor] setFill];
-      [candidatePath fill];
+      [candidatesPath fill];
       [theme.backgroundColor setFill];
-      [candidatePath fill];
+      [candidatesPath fill];
     }
   } else {
     [theme.backgroundColor setFill];
     [backgroundPath fill];
   }
-  if (theme.highlightedStripColor && ![highlightedPath isEmpty]) {
+  if (_highlightedIndex != NSNotFound && theme.highlightedStripColor) {
     [theme.highlightedStripColor setFill];
     [highlightedPath fill];
     if (![highlightedPath2 isEmpty]) {
       [highlightedPath2 fill];
     }
   }
-  if (theme.highlightedPreeditColor && ![highlightedPreeditPath isEmpty]) {
-    [theme.highlightedPreeditColor setFill];
-    [highlightedPreeditPath fill];
-    if (![highlightedPreeditPath2 isEmpty]) {
-      [highlightedPreeditPath2 fill];
+  if (theme.highlightedPreeditColor) {
+    if (_buttonEffect == NSPageUpFunctionKey) {
+      [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectRollover] setFill];
+      [pageUpPath fill];
+    } if (_buttonEffect == NSBeginFunctionKey) {
+      [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectDisabled] setFill];
+      [pageUpPath fill];
+    } else if (_buttonEffect == NSPageDownFunctionKey) {
+      [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectRollover] setFill];
+      [pageDownPath fill];
+    } else if (_buttonEffect == NSEndFunctionKey) {
+      [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectDisabled] setFill];
+      [pageDownPath fill];
+    }
+    if(![highlightedPreeditPath isEmpty]) {
+      [theme.highlightedPreeditColor setFill];
+      [highlightedPreeditPath fill];
+      if (![highlightedPreeditPath2 isEmpty]) {
+        [highlightedPreeditPath2 fill];
+      }
     }
   }
   if (theme.borderColor && (theme.borderWidth > 0)) {
@@ -763,17 +852,50 @@ void expand(NSMutableArray<NSValue *> *vertex, NSRect innerBorder, NSRect outerB
 
 }
 
+- (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger *)_index {
+  if (CGPathContainsPoint(_shape.path, nil, _point, NO)) {
+    NSPoint point = NSMakePoint(_point.x - self.textView.textContainerInset.width,
+                                _point.y - self.textView.textContainerInset.height);
+    if (_pagingRects[0] != nil && NSMouseInRect(point, _pagingRects[0].rectValue, YES)) {
+      *_index = NSPageUpFunctionKey;
+      return YES;
+    } else if (_pagingRects[1] != nil && NSMouseInRect(point, _pagingRects[1].rectValue, YES)) {
+      *_index = NSPageDownFunctionKey;
+      return YES;
+    }
+    for (NSUInteger i = 0; i < _candidatePathRefs.count; i += 1) {
+      CGPathRef pathRef = (__bridge CGPathRef)([_candidatePathRefs objectAtIndex:i]);
+      if (CGPathContainsPoint(pathRef, NULL, point, NO)) {
+        *_index = i;
+        return YES;
+      }
+    }
+  }
+  return NO;
+}
+
 @end
 
 @implementation SquirrelPanel {
   SquirrelView *_view;
   NSVisualEffectView *_back;
 
-  NSRange _preeditRange;
   NSRect _screenRect;
   CGFloat _maxHeight;
   CGFloat _maxTextWidth;
 
+  NSString *_preedit;
+  NSRange _selRange;
+  NSUInteger _caretPos;
+  NSArray *_candidates;
+  NSArray *_comments;
+  NSArray *_labels;
+  NSUInteger _index;
+  NSUInteger _pageNum;
+  NSInteger _buttonEffect;
+  BOOL _lastPage;
+  NSUInteger _cursorIndex;
+  
   NSString *_statusMessage;
   NSTimer *_statusTimer;
 }
@@ -883,7 +1005,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
 - (instancetype)init {
   self = [super initWithContentRect:_position
-                          styleMask:NSWindowStyleMaskBorderless
+                          styleMask:NSWindowStyleMaskNonactivatingPanel
                             backing:NSBackingStoreBuffered
                               defer:YES];
   if (self) {
@@ -915,6 +1037,64 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     _maxHeight = 0;
   }
   return self;
+}
+
+- (NSPoint)mousePosition {
+  NSPoint point = NSEvent.mouseLocation;
+  point = [self convertPointFromScreen:point];
+  return [_view convertPoint:point fromView:nil];
+}
+
+- (void)sendEvent:(NSEvent *)event {
+  switch (event.type) {
+    case NSEventTypeLeftMouseDown: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = NSNotFound;
+      if ([_view clickAtPoint:point index:&index]) {
+        if ((index >= 0 && index < _candidates.count) ||
+            index == NSPageUpFunctionKey || index == NSPageDownFunctionKey) {
+          _index = index;
+        }
+      }
+    } break;
+    case NSEventTypeLeftMouseUp: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = NSNotFound;
+      if ([_view clickAtPoint: point index:&index]) {
+        if (((index >= 0 && index < _candidates.count) || index == NSPageUpFunctionKey ||
+             index == NSPageDownFunctionKey) && index == _index) {
+          [_inputController selectCandidate:index];
+        }
+      }
+    } break;
+    case NSEventTypeMouseEntered: {
+      self.acceptsMouseMovedEvents = YES;
+    } break;
+    case NSEventTypeMouseExited: {
+      self.acceptsMouseMovedEvents = NO;
+      if (_cursorIndex != _index) {
+        [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
+              highlighted:_index pageNum:_pageNum lastPage:_lastPage buttonEffect:NSNotFound update:NO];
+      }
+    } break;
+    case NSEventTypeMouseMoved: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = NSNotFound;
+      if ([_view clickAtPoint: point index:&index]) {
+        if (index >= 0 && index < _candidates.count && _cursorIndex != index) {
+          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
+                highlighted:index pageNum:_pageNum lastPage:_lastPage buttonEffect:NSNotFound update:NO];
+        } else if (index == NSPageUpFunctionKey || index == NSPageDownFunctionKey ||
+                   index == NSBeginFunctionKey || index == NSEndFunctionKey) {
+          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
+                highlighted:_index pageNum:_pageNum lastPage:_lastPage buttonEffect:index update:NO];
+        }
+      }
+    } break;
+    default:
+      break;
+  }
+  [super sendEvent:event];
 }
 
 - (void)getCurrentScreen {
@@ -983,8 +1163,8 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     }
     // Make the first candidate fixed at the left of cursor
     windowRect.origin.x = NSMinX(_position) - (sweepVertical ? kOffsetHeight : 0) - NSWidth(windowRect);
-    if (!sweepVertical && _preeditRange.length > 0) {
-      NSSize preeditSize = [_view contentRectForRange:_preeditRange].size;
+    if (!sweepVertical && _view.preeditRange.length > 0) {
+      NSSize preeditSize = [_view contentRectForRange:_view.preeditRange].size;
       windowRect.origin.x += preeditSize.height + theme.edgeInset.width / 2;
     }
   } else {
@@ -1060,7 +1240,29 @@ void fixDefaultFont(NSMutableAttributedString *text) {
              labels:(NSArray *)labels
         highlighted:(NSUInteger)index
             pageNum:(NSUInteger)pageNum
-           lastPage:(BOOL)lastPage {
+           lastPage:(BOOL)lastPage
+       buttonEffect:(NSUInteger)buttonEffect
+             update:(BOOL)update {
+  if (update) {
+    _preedit = preedit;
+    _selRange = selRange;
+    _caretPos = caretPos;
+    _candidates = candidates;
+    _comments = comments;
+    _labels = labels;
+    _index = index;
+    _pageNum = pageNum;
+    _lastPage = lastPage;
+  }
+  _cursorIndex = index;
+  if (buttonEffect == NSPageUpFunctionKey || buttonEffect == NSBeginFunctionKey) {
+    _buttonEffect = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
+  } else if (buttonEffect == NSPageDownFunctionKey || buttonEffect == NSEndFunctionKey) {
+    _buttonEffect = lastPage ? NSEndFunctionKey : NSPageDownFunctionKey;
+  } else {
+    _buttonEffect = NSNotFound;
+  }
+
   NSUInteger numCandidates = candidates.count;
   if (numCandidates || (preedit && preedit.length)) {
     _statusMessage = nil;
@@ -1082,7 +1284,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSUInteger candidateStartPos = 0;
-  _preeditRange = NSMakeRange(NSNotFound, 0);
+  NSRange preeditRange = NSMakeRange(NSNotFound, 0);
   NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
   // preedit
   if (preedit) {
@@ -1110,9 +1312,9 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     [preeditLine addAttribute:NSParagraphStyleAttributeName
                         value:paragraphStylePreedit
                         range:NSMakeRange(0, preeditLine.length)];
-    
+
     [text appendAttributedString:preeditLine];
-    _preeditRange = NSMakeRange(0, text.length);
+    preeditRange = NSMakeRange(0, text.length);
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
                                                                    attributes:theme.preeditAttrs]];
@@ -1121,9 +1323,9 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   }
 
   // candidates
+  NSMutableArray<NSValue *> *candidateRanges = [[NSMutableArray alloc] init];
   CGFloat separatorWidth = NSWidth([[[NSAttributedString alloc] initWithString:(theme.linear ? @"  " : @"\n") attributes:theme.attrs] boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin]);
   CGFloat candidateTextWidth = 0 - separatorWidth;
-  NSRange highlightedRange = NSMakeRange(NSNotFound, 0);
   NSUInteger i;
   for (i = 0; i < candidates.count; ++i) {
     NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
@@ -1212,9 +1414,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       paragraphStyleCandidate.headIndent = labelWidth;
     }
     [line addAttribute:NSParagraphStyleAttributeName value:paragraphStyleCandidate range:NSMakeRange(0, line.length)];
-    if (i == index) {
-      highlightedRange = NSMakeRange(text.length, line.length);
-    }
+    [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length, line.length)]];
     [text appendAttributedString:line];
   }
 
@@ -1228,14 +1428,14 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] initWithString:@""
                                                                                attributes:theme.pagingAttrs];
 
-    [paging appendAttributedString:[[NSMutableAttributedString alloc] initWithString:(pageNum ? @"◀" : @"◁")
-                                                                          attributes:theme.pagingAttrs]];
+    [paging appendAttributedString:[[NSAttributedString alloc] initWithString:(pageNum ? @"◀" : @"◁")
+                                                                   attributes:theme.pagingAttrs]];
 
-    [paging appendAttributedString:[[NSMutableAttributedString alloc] initWithString:[NSString stringWithFormat:@" %lu ", pageNum+1]
-                                                                          attributes:theme.pagingAttrs]];
+    [paging appendAttributedString:[[NSAttributedString alloc] initWithString:[NSString stringWithFormat:@" %lu ", pageNum+1]
+                                                                   attributes:theme.pagingAttrs]];
 
-    [paging appendAttributedString:[[NSMutableAttributedString alloc] initWithString:(lastPage ? @"▷" : @"▶")
-                                                                          attributes:theme.pagingAttrs]];
+    [paging appendAttributedString:[[NSAttributedString alloc] initWithString:(lastPage ? @"▷" : @"▶")
+                                                                   attributes:theme.pagingAttrs]];
 
     fixDefaultFont(paging);
     NSMutableParagraphStyle *paragraphStylePaging = [theme.pagingParagraphStyle mutableCopy];
@@ -1251,7 +1451,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
   // text done!
-  [_view drawViewWith:highlightedRange preeditRange:_preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange];
+  [_view drawViewWith:candidateRanges highlightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange buttonEffect:_buttonEffect];
   
   [self show];
 }
@@ -1284,7 +1484,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
-  [_view drawViewWith:emptyRange preeditRange:emptyRange highlightedPreeditRange:emptyRange pagingRange:emptyRange];
+  [_view drawViewWith:@[] highlightedIndex:NSNotFound preeditRange:emptyRange highlightedPreeditRange:emptyRange pagingRange:emptyRange buttonEffect:NSNotFound];
   [self show];
 
   if (_statusTimer) {
@@ -1657,6 +1857,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   pagingParagraphStyle.alignment = NSTextAlignmentRight;
+  pagingParagraphStyle.tailIndent = -hilitedCornerRadius/2;
 
   // Use left-to-right marks to declare the default writing direction and prevent strong right-to-left
   // characters from setting the writing direction in case the label are direction-less symbols

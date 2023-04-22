@@ -1,8 +1,8 @@
 #import <Cocoa/Cocoa.h>
-
+#import "SquirrelInputController.h"
 @class SquirrelConfig;
 
-@interface SquirrelPanel : NSWindow
+@interface SquirrelPanel : NSPanel
 
 // Linear candidate list, as opposed to stacked candidate list.
 @property(nonatomic, readonly) BOOL linear;
@@ -12,9 +12,10 @@
 @property(nonatomic, readonly) BOOL inlinePreedit;
 // Show first candidate inline
 @property(nonatomic, readonly) BOOL inlineCandidate;
-
 // position of input caret on screen.
 @property(nonatomic, assign) NSRect position;
+
+@property(nonatomic, assign) SquirrelInputController *inputController;
 
 -(void)showPreedit:(NSString*)preedit
           selRange:(NSRange)selRange
@@ -24,7 +25,9 @@
             labels:(NSArray*)labels
        highlighted:(NSUInteger)index
            pageNum:(NSUInteger)pageNum
-          lastPage:(BOOL)lastPage;
+          lastPage:(BOOL)lastPage
+      buttonEffect:(NSUInteger)buttonEffect
+            update:(BOOL)update;
 
 -(void)hide;
 

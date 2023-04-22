@@ -230,6 +230,21 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
+- (BOOL)selectCandidate:(NSInteger)index {
+  BOOL handled = NO;
+  if (index == NSPageUpFunctionKey) {
+    handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
+  } else if (index == NSPageDownFunctionKey) {
+    handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
+  } else if (index >= 0 && index < 10) {
+    handled = rime_get_api()->select_candidate_on_current_page(_session, (int) index);
+  }
+  if (handled) {
+    [self rimeUpdate];
+  }
+  return handled;
+}
+
 -(void)onChordTimer:(NSTimer *)timer
 {
   // chord release triggered by timer
@@ -461,6 +476,7 @@ const int N_KEY_ROLL_OVER = 50;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   panel.position = inputPos;
+  panel.inputController = self;
   [panel showPreedit:preedit
             selRange:selRange
             caretPos:caretPos
@@ -469,7 +485,9 @@ const int N_KEY_ROLL_OVER = 50;
               labels:labels
          highlighted:index
              pageNum:pageNum
-            lastPage:lastPage];
+            lastPage:lastPage
+        buttonEffect:NSNotFound
+              update:YES];
 }
 
 @end // SquirrelController

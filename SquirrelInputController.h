@@ -2,5 +2,5 @@
 #import <InputMethodKit/InputMethodKit.h>
 
 @interface SquirrelInputController : IMKInputController
-
+- (BOOL)selectCandidate:(NSInteger)index;
 @end
