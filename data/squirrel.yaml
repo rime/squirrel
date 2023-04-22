@@ -1,13 +1,13 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.37'
+config_version: '0.38'
 
 # options: last | default | _custom_
 # last: the last used latin keyboard layout
 # default: US (ABC) keyboard layout
 # _custom_: keyboard layout of your choice, e.g. 'com.apple.keylayout.USExtended' or simply 'USExtended'
-keyboard_layout: default
+keyboard_layout: last
 
 # for veteran chord-typist
 chord_duration: 0.1  # seconds

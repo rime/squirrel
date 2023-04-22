@@ -1,5 +1,6 @@
 #import <Cocoa/Cocoa.h>
 #import "SquirrelInputController.h"
+
 @class SquirrelConfig;
 
 @interface SquirrelPanel : NSPanel

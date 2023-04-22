@@ -23,7 +23,8 @@ PLUM_DATA = bin/rime-install \
 OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
-DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA)
+SPARKLE_FRAMEWORK = Frameworks/Sparkle.framework
+DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
 OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
@@ -83,6 +84,12 @@ deps: librime data
 ifdef ARCHS
 BUILD_SETTINGS += ARCHS="$(ARCHS)"
 BUILD_SETTINGS += ONLY_ACTIVE_ARCH=NO
+_=$() $()
+export CMAKE_OSX_ARCHITECTURES = $(subst $(_),;,$(ARCHS))
+endif
+
+ifdef MACOSX_DEPLOYMENT_TARGET
+BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)"
 endif
 
 release: $(DEPS_CHECK)
@@ -93,10 +100,38 @@ debug: $(DEPS_CHECK)
 	bash package/add_data_files
 	xcodebuild -project Squirrel.xcodeproj -configuration Debug $(BUILD_SETTINGS) build
 
+.PHONY: sparkle copy-sparkle-framework
+
+$(SPARKLE_FRAMEWORK):
+	git submodule update --init --recursive Sparkle
+	$(MAKE) sparkle
+
+sparkle:
+	xcodebuild -project Sparkle/Sparkle.xcodeproj -configuration Release $(BUILD_SETTINGS) build
+	$(MAKE) copy-sparkle-framework
+
+copy-sparkle-framework:
+	mkdir -p Frameworks
+	cp -RP Sparkle/build/Release/Sparkle.framework Frameworks/
+
+clean-sparkle:
+	rm -rf Frameworks/* > /dev/null 2>&1 || true
+	rm -rf Sparkle/build > /dev/null 2>&1 || true
+
 .PHONY: package archive sign-archive
 
 package: release
+ifdef DEV_ID
+	package/sign.bash $(DEV_ID)
+endif
 	bash package/make_package
+ifdef DEV_ID
+	productsign --sign "Developer ID Installer: $(DEV_ID)" package/Squirrel.pkg package/Squirrel-signed.pkg
+	rm package/Squirrel.pkg
+	mv package/Squirrel-signed.pkg package/Squirrel.pkg
+	xcrun notarytool submit package/Squirrel.pkg --keychain-profile "$(DEV_ID)" --wait
+	xcrun stapler staple package/Squirrel.pkg
+endif
 
 archive: package
 	bash package/make_archive
@@ -136,3 +171,4 @@ clean:
 clean-deps:
 	$(MAKE) -C plum clean
 	$(MAKE) -C librime xcode/clean
+	$(MAKE) clean-sparkle

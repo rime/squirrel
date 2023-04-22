@@ -3,7 +3,7 @@
     新詩醉墨時一揮
     別後寄我無辭遠
 
-    　　——歐陽修
+    　　　——歐陽修
 
 今由　[中州韻輸入法引擎／Rime Input Method Engine](https://rime.im)
 及其他開源技術強力驅動
