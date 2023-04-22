@@ -476,7 +476,7 @@ BOOL nearEmptyRect(NSRect rect) {
   lastLineRect.size.width = textContainer.size.width - lastLineRect.origin.x;
   NSRange lastLineRange = [layoutManager glyphRangeForBoundingRect:lastLineRect inTextContainer:textContainer];
   NSGlyphProperty glyphProperty = [layoutManager propertyForGlyphAtIndex:NSMaxRange(lastLineRange)-1];
-  while (lastLineRange.length>0 && (glyphProperty & NSGlyphPropertyElastic && glyphProperty & NSGlyphPropertyControlCharacter)) {
+  while (lastLineRange.length>0 && (glyphProperty & NSGlyphPropertyElastic & NSGlyphPropertyControlCharacter)) {
     lastLineRange.length -= 1;
     glyphProperty = [layoutManager propertyForGlyphAtIndex:NSMaxRange(lastLineRange)-1];
   }
@@ -686,38 +686,6 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
           highlightedPath = drawSmoothLines(candidatePoints, theme.hilitedCornerRadius*0.3, theme.hilitedCornerRadius*1.4);
         }
       }
-
-//      xyTranslation(highlightedPoints, NSMakePoint(0, -halfLinespace));
-//      xyTranslation(highlightedPoints2, NSMakePoint(0, -halfLinespace));
-//      innerBox.size.height -= halfLinespace;
-      // Expand the boxes to reach proper border
-//      expand(highlightedPoints, innerBox, outerBox);
-//      expand(highlightedPoints2, innerBox, outerBox);
-      highlightedPath = drawSmoothLines(highlightedPoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
-      if (highlightedPoints2.count > 0) {
-        highlightedPath2 = drawSmoothLines(highlightedPoints2, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
-      }
-    } else {
-      NSRect highlightedRect = [self contentRectForRange:_highlightedRange];
-      highlightedRect.size.width = textField.size.width;
-//      highlightedRect.size.height += halfLinespace;
-      highlightedRect.origin.x = textField.origin.x;
-      highlightedRect.origin.y += theme.edgeInset.height;
-      //      if (_highlightedRange.location+_highlightedRange.length == _text.length) {
-      //        highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
-      //      }
-      //      if (_highlightedRange.location - ((_preeditRange.location == NSNotFound ? 0 : _preeditRange.location)+_preeditRange.length) <= 1) {
-      //        if (_preeditRange.length == 0) {
-      //          highlightedRect.size.height += theme.edgeInset.height - halfLinespace;
-      //          highlightedRect.origin.y -= theme.edgeInset.height - halfLinespace;
-      //        } else {
-      //          highlightedRect.size.height += theme.hilitedCornerRadius / 2;
-      //          highlightedRect.origin.y -= theme.hilitedCornerRadius / 2;
-      //        }
-      //      }
-      NSMutableArray<NSValue *> *highlightedPoints = [rectVertex(highlightedRect) mutableCopy];
-      expand(highlightedPoints, innerBox, outerBox);
-      highlightedPath = drawSmoothLines(highlightedPoints, theme.hilitedCornerRadius*0.3, theme.hilitedCornerRadius*1.4);
     }
   }
 
@@ -730,7 +698,7 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
 
     NSRect outerBox = preeditRect;
     outerBox.size.width -= theme.edgeInset.width;
-    outerBox.size.height -= theme.edgeInset.height/2 + theme.hilitedCornerRadius/2;
+    outerBox.size.height -= theme.edgeInset.height/2 + + theme.preeditLinespace - theme.hilitedCornerRadius/2;
     outerBox.origin.x += theme.edgeInset.width/2;
     outerBox.origin.y += theme.edgeInset.height/2;
     NSRect innerBox = preeditRect;
@@ -1417,13 +1385,11 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length, line.length)]];
     [text appendAttributedString:line];
   }
-
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.attrs]];
   // paging indication
   NSRange pagingRange = NSMakeRange(NSNotFound, 0);
 
   if (numCandidates && theme.showPaging) {
-
-    [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.attrs]];
 
     NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] initWithString:@""
                                                                                attributes:theme.pagingAttrs];

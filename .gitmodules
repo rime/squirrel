@@ -6,3 +6,7 @@
 	path = plum
 	url = https://github.com/groverlynn/plum.git
 	branch = test
+[submodule "Sparkle"]
+	path = Sparkle
+	url = https://github.com/sparkle-project/Sparkle
+	branch = master
