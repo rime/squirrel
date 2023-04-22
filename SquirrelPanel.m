@@ -701,10 +701,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
   CGPathRef preeditPath = CGPathCreateMutable();
   SquirrelTheme * theme = self.currentTheme;
 
-  NSPoint textFieldOrigin = dirtyRect.origin;
-  textFieldOrigin.y += theme.edgeInset.height;
-  textFieldOrigin.x += theme.edgeInset.width;
-
   // Draw preedit Rect
   NSRect backgroundRect = dirtyRect;
   NSRect containingRect = dirtyRect;
@@ -860,7 +856,6 @@ void removeCorner(NSMutableArray<NSValue *> *highlightedPoints, NSMutableSet<NSN
     }
     [panelLayer addSublayer: layer];
   }
-  [_textView setTextContainerInset:NSMakeSize(textFieldOrigin.x, textFieldOrigin.y)];
 }
 
 - (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger *)_index {
@@ -1162,6 +1157,7 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
     self.appearance = requestedAppearance;
   }
 
+  [_view.textView setTextContainerInset: theme.edgeInset];
   //Break line if the text is too long, based on screen size.
   CGFloat textWidth = [self getMaxTextWidth:theme];
   CGFloat maxTextHeight = theme.vertical ? _screenRect.size.width - theme.edgeInset.width * 2 : _screenRect.size.height - theme.edgeInset.height * 2;
