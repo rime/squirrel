@@ -9,6 +9,7 @@ lib/*
 data/opencc/
 data/plum/
 download/
+Frameworks/
 package/Squirrel.pkg
 package/sign/*.pem
 package/test-*
