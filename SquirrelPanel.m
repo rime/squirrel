@@ -1902,6 +1902,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSMutableParagraphStyle *preeditParagraphStyle =
       [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.paragraphSpacing = spacing / 2 + hilitedCornerRadius / 2;
+  preeditParagraphStyle.lineSpacing = lineSpacing;
 
   NSMutableDictionary *attrs = [theme.attrs mutableCopy];
   NSMutableDictionary *highlightedAttrs = [theme.highlightedAttrs mutableCopy];
