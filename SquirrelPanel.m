@@ -584,9 +584,6 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
     if (_highlightedIndex == NSNotFound) {
       preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace;
     }
-    if (theme.preeditBackgroundColor != nil) {
-      preeditPath = drawSmoothLines(rectVertex(preeditRect), 0, 0);
-    }
   }
 
   // Draw paging Rect
@@ -597,9 +594,7 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
     pagingRect.size.height += theme.edgeInset.height;
     pagingRect.origin.x = backgroundRect.origin.x;
     pagingRect.origin.y += theme.edgeInset.height;
-    if (theme.preeditBackgroundColor != nil) {
-      pagingPath = drawSmoothLines(rectVertex(pagingRect), 0, 0);
-    }
+
     NSRect pageUpRect = [self contentRectForRange:NSMakeRange(_pagingRange.location, 1)];
     pageUpRect.size.height += theme.edgeInset.height/2;
     pageUpRect.size.width += theme.hilitedCornerRadius/2;
@@ -1251,7 +1246,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   SquirrelTheme *theme = _view.currentTheme;
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
-  NSUInteger candidateStartPos = 0;
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
   NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
   // preedit
@@ -1287,7 +1281,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"
                                                                    attributes:theme.preeditAttrs]];
     }
-    candidateStartPos = text.length;
   }
 
   // candidates
