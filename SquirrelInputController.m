@@ -548,7 +548,7 @@ NSString *substr(const char *str, int length) {
   char substring[length+1];
   strncpy(substring, str, length);
   substring[length] = '\0';
-  return [NSString stringWithCString:substring encoding:NSUTF8StringEncoding];
+  return [NSString stringWithUTF8String:substring];
 }
 
 -(void)rimeUpdate
