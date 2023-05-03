@@ -27,7 +27,7 @@
        highlighted:(NSUInteger)index
            pageNum:(NSUInteger)pageNum
           lastPage:(BOOL)lastPage
-      buttonEffect:(NSUInteger)buttonEffect
+          turnPage:(NSUInteger)turnPage
             update:(BOOL)update;
 
 -(void)hide;

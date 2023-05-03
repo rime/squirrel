@@ -206,14 +206,16 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
-- (BOOL)selectCandidate:(NSInteger)index {
+- (BOOL)actionWithCandidate:(NSInteger)index {
   BOOL handled = NO;
   if (index == NSPageUpFunctionKey) {
     handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
   } else if (index == NSPageDownFunctionKey) {
     handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
   } else if (index >= 0 && index < 10) {
-    handled = rime_get_api()->select_candidate_on_current_page(_session, (int) index);
+    handled = rime_get_api()->select_candidate_on_current_page(_session, (int)index);
+  } else if (index >= -10 && index <= -1) { // -1-index for deletion
+    handled = rime_get_api()->delete_candidate_on_current_page(_session, (int)-1-index);
   }
   if (handled) {
     [self rimeUpdate];
@@ -462,7 +464,7 @@ const int N_KEY_ROLL_OVER = 50;
          highlighted:index
              pageNum:pageNum
             lastPage:lastPage
-        buttonEffect:NSNotFound
+            turnPage:NSNotFound
               update:YES];
 }
 

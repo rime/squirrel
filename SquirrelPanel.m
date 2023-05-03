@@ -187,13 +187,13 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   _borderColor = borderColor;
 }
 
-- (void)setCornerRadius:(double)cornerRadius
-    hilitedCornerRadius:(double)hilitedCornerRadius
+- (void)setCornerRadius:(CGFloat)cornerRadius
+    hilitedCornerRadius:(CGFloat)hilitedCornerRadius
               edgeInset:(NSSize)edgeInset
-            borderWidth:(double)borderWidth
-              linespace:(double)linespace
-       preeditLinespace:(double)preeditLinespace
-                  alpha:(double)alpha
+            borderWidth:(CGFloat)borderWidth
+              linespace:(CGFloat)linespace
+       preeditLinespace:(CGFloat)preeditLinespace
+                  alpha:(CGFloat)alpha
            translucency:(BOOL)translucency
              showPaging:(BOOL)showPaging
                  linear:(BOOL)linear
@@ -256,7 +256,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, readonly) NSRect contentRect;
 @property(nonatomic, readonly) NSMutableArray<NSValue *> *candidatePathRefs;
 @property(nonatomic, readonly) NSMutableArray<NSValue *> *pagingRects;
-@property(nonatomic, readonly) NSUInteger buttonEffect;
+@property(nonatomic, readonly) NSUInteger pagingButton;
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
 @property(nonatomic, readonly) CAShapeLayer *shape;
@@ -268,7 +268,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
               pagingRange:(NSRange)pagingRange
-             buttonEffect:(NSUInteger)buttonEffect;
+             pagingButton:(NSUInteger)pagingButton;
 - (NSRect)contentRectForRange:(NSRange)range;
 @end
 
@@ -345,13 +345,13 @@ SquirrelTheme *_darkTheme;
              preeditRange:(NSRange)preeditRange
   highlightedPreeditRange:(NSRange)highlightedPreeditRange
               pagingRange:(NSRange)pagingRange
-             buttonEffect:(NSUInteger)buttonEffect {
+             pagingButton:(NSUInteger)pagingButton {
   _candidateRanges = candidateRanges;
   _highlightedIndex = highlightedIndex;
   _preeditRange = preeditRange;
   _highlightedPreeditRange = highlightedPreeditRange;
   _pagingRange = pagingRange;
-  _buttonEffect = buttonEffect;
+  _pagingButton = pagingButton;
   self.needsDisplay = YES;
 }
 
@@ -729,16 +729,16 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
     }
   }
   if (theme.highlightedPreeditColor) {
-    if (_buttonEffect == NSPageUpFunctionKey) {
+    if (_pagingButton == NSPageUpFunctionKey) {
       [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectRollover] setFill];
       [pageUpPath fill];
-    } if (_buttonEffect == NSBeginFunctionKey) {
+    } if (_pagingButton == NSBeginFunctionKey) {
       [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectDisabled] setFill];
       [pageUpPath fill];
-    } else if (_buttonEffect == NSPageDownFunctionKey) {
+    } else if (_pagingButton == NSPageDownFunctionKey) {
       [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectRollover] setFill];
       [pageDownPath fill];
-    } else if (_buttonEffect == NSEndFunctionKey) {
+    } else if (_pagingButton == NSEndFunctionKey) {
       [[theme.highlightedPreeditColor colorWithSystemEffect:NSColorSystemEffectDisabled] setFill];
       [pageDownPath fill];
     }
@@ -755,9 +755,9 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
     [borderPath stroke];
   }
 
-  NSRange glyphRange = [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
-  [_textView.layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textField.origin];
-
+//  NSRange glyphRange = [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
+//  [_textView.layoutManager drawGlyphsForGlyphRange:glyphRange atPoint:textField.origin];
+  [_textView setTextContainerInset:theme.edgeInset];
 }
 
 - (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger *)_index {
@@ -800,7 +800,7 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
   NSArray *_labels;
   NSUInteger _index;
   NSUInteger _pageNum;
-  NSInteger _buttonEffect;
+  NSInteger _turnPage;
   BOOL _lastPage;
   NSUInteger _cursorIndex;
   
@@ -831,7 +831,7 @@ CGMutablePathRef polygonPathForVertex(NSArray<NSValue *> *vertex) {
 void fixDefaultFont(NSMutableAttributedString *text) {
   [text fixFontAttributeInRange:NSMakeRange(0, text.length)];
   NSRange currentFontRange = NSMakeRange(NSNotFound, 0);
-  long i = 0;
+  NSUInteger i = 0;
   while (i < text.length) {
     NSFont *charFont = [text attribute:NSFontAttributeName atIndex:i effectiveRange:&currentFontRange];
     if ([charFont.fontName isEqualToString:@"AppleColorEmoji"]) {
@@ -891,7 +891,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
   NSMutableDictionary *pagingAttrs = [[NSMutableDictionary alloc] init];
   pagingAttrs[NSForegroundColorAttributeName] = [NSColor controlAccentColor];
-  pagingAttrs[NSFontAttributeName] = [NSFont fontWithName:@"AppleSymbols" size:kDefaultFontSize/1.5];
+  pagingAttrs[NSFontAttributeName] = [NSFont fontWithName:@"AppleSymbols" size:kDefaultFontSize];
 
   NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
   NSParagraphStyle *preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
@@ -923,6 +923,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     self.level = CGShieldingWindowLevel();
     self.hasShadow = YES;
     self.opaque = NO;
+    self.floatingPanel = YES;
     self.backgroundColor = [NSColor clearColor];
     NSView *contentView = [[NSView alloc] init];
     _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
@@ -936,6 +937,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       [contentView addSubview:_back];
     }
     [contentView addSubview:_view];
+    [contentView addSubview:_view.textView];
 
     self.contentView = contentView;
     [self initializeUIStyleForDarkMode:NO];
@@ -955,7 +957,8 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
 - (void)sendEvent:(NSEvent *)event {
   switch (event.type) {
-    case NSEventTypeLeftMouseDown: {
+    case NSEventTypeLeftMouseDown:
+    case NSEventTypeRightMouseDown: {
       NSPoint point = [self mousePosition];
       NSInteger index = NSNotFound;
       if ([_view clickAtPoint:point index:&index]) {
@@ -968,21 +971,31 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     case NSEventTypeLeftMouseUp: {
       NSPoint point = [self mousePosition];
       NSInteger index = NSNotFound;
-      if ([_view clickAtPoint: point index:&index]) {
+      if ([_view clickAtPoint:point index:&index]) {
         if (((index >= 0 && index < _candidates.count) || index == NSPageUpFunctionKey ||
              index == NSPageDownFunctionKey) && index == _index) {
-          [_inputController selectCandidate:index];
+          [_inputController actionWithCandidate:index];
+        }
+      }
+    } break;
+    case NSEventTypeRightMouseUp: {
+      NSPoint point = [self mousePosition];
+      NSInteger index = NSNotFound;
+      if ([_view clickAtPoint:point index:&index]) {
+        if ((index >= 0 && index < _candidates.count) && index == _index) {
+          [_inputController actionWithCandidate:-1-index]; // negative index for deletion
         }
       }
     } break;
     case NSEventTypeMouseEntered: {
+      [[NSCursor arrowCursor] push];
       self.acceptsMouseMovedEvents = YES;
     } break;
     case NSEventTypeMouseExited: {
       self.acceptsMouseMovedEvents = NO;
       if (_cursorIndex != _index) {
         [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-              highlighted:_index pageNum:_pageNum lastPage:_lastPage buttonEffect:NSNotFound update:NO];
+              highlighted:_index pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
       }
     } break;
     case NSEventTypeMouseMoved: {
@@ -990,12 +1003,14 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       NSInteger index = NSNotFound;
       if ([_view clickAtPoint: point index:&index]) {
         if (index >= 0 && index < _candidates.count && _cursorIndex != index) {
+          [[NSCursor pointingHandCursor] push];
           [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-                highlighted:index pageNum:_pageNum lastPage:_lastPage buttonEffect:NSNotFound update:NO];
+                highlighted:index pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
         } else if (index == NSPageUpFunctionKey || index == NSPageDownFunctionKey ||
-                   index == NSBeginFunctionKey || index == NSEndFunctionKey) {
+                   index == NSBeginFunctionKey || index == NSEndFunctionKey) { // borrow corresponding unicodes for readability
+          [[NSCursor pointingHandCursor] push];
           [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-                highlighted:_index pageNum:_pageNum lastPage:_lastPage buttonEffect:index update:NO];
+                highlighted:_index pageNum:_pageNum lastPage:_lastPage turnPage:index update:NO];
         }
       }
     } break;
@@ -1041,10 +1056,11 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   _maxTextWidth = theme.vertical
   ? NSHeight(_screenRect) * textWidthRatio - theme.edgeInset.height * 2
   : NSWidth(_screenRect) * textWidthRatio - theme.edgeInset.width * 2;
+  CGFloat maxTextHeight = theme.vertical ? NSWidth(_screenRect) - theme.edgeInset.width * 2 : NSHeight(_screenRect) - theme.edgeInset.height * 2;
   if (textWidth > _maxTextWidth) {
     textWidth = _maxTextWidth;
   }
-  _view.textView.textContainer.containerSize = NSMakeSize(textWidth, 0);
+  _view.textView.textContainer.containerSize = NSMakeSize(textWidth, maxTextHeight);
   NSRect contentRect = _view.contentRect;
   if (contentRect.size.width > textWidth) {
     contentRect.size.width = textWidth;
@@ -1057,7 +1073,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       _maxHeight = contentRect.size.width;
     } else {
       contentRect.size.width = _maxHeight;
-      _view.textView.textContainer.containerSize = NSMakeSize(_maxHeight, 0);
+      _view.textView.textContainer.containerSize = NSMakeSize(_maxHeight, maxTextHeight);
     }
   }
 
@@ -1077,7 +1093,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     windowRect.origin.x = NSMinX(_position) - (sweepVertical ? kOffsetHeight : 0) - NSWidth(windowRect);
     if (!sweepVertical && _view.preeditRange.length > 0) {
       NSSize preeditSize = [_view contentRectForRange:_view.preeditRange].size;
-      windowRect.origin.x += preeditSize.height + theme.edgeInset.width / 2;
+      windowRect.origin.x += preeditSize.height + theme.edgeInset.width;
     }
   } else {
     windowRect.size = NSMakeSize(contentRect.size.width + theme.edgeInset.width * 2,
@@ -1091,7 +1107,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
       }
       windowRect.origin.y = NSMinY(_position) - NSHeight(windowRect);
     } else {
-      windowRect.origin = NSMakePoint(NSMinX(_position) - theme.edgeInset.width / 2,
+      windowRect.origin = NSMakePoint(NSMinX(_position) - theme.edgeInset.width,
                                       NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
     }
   }
@@ -1111,14 +1127,24 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   [self setFrame:windowRect display:YES];
   // rotate the view, the core in vertical mode!
   if (theme.vertical) {
+//    self.contentView.boundsRotation = -90;
+//    [self.contentView setBoundsSize:NSMakeSize(insetRectSize.height, insetRectSize.width)];
+//    [self.contentView setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
     self.contentView.boundsRotation = -90.0;
+    _view.textView.boundsRotation = 0;
     [self.contentView setBoundsOrigin:NSMakePoint(0, windowRect.size.width)];
+//    [self.contentView setBoundsSize:NSMakeSize(windowRect.size.height, windowRect.size.width)];
+    [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   } else {
     self.contentView.boundsRotation = 0;
+    _view.textView.boundsRotation = 0;
     [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
+//    [self.contentView setBoundsSize:NSMakeSize(windowRect.size.width, windowRect.size.height)];
+    [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   }
-  BOOL translucency = theme.translucency;
   [_view setFrame:self.contentView.bounds];
+  [_view.textView setFrame:self.contentView.bounds];
+  BOOL translucency = theme.translucency;
   if (@available(macOS 10.14, *)) {
     if (translucency) {
       [_back setFrame:self.contentView.bounds];
@@ -1153,7 +1179,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
         highlighted:(NSUInteger)index
             pageNum:(NSUInteger)pageNum
            lastPage:(BOOL)lastPage
-       buttonEffect:(NSUInteger)buttonEffect
+           turnPage:(NSUInteger)turnPage
              update:(BOOL)update {
   if (update) {
     _preedit = preedit;
@@ -1172,12 +1198,12 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   }
   _cursorIndex = index;
 
-  if (buttonEffect == NSPageUpFunctionKey || buttonEffect == NSBeginFunctionKey) {
-    _buttonEffect = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
-  } else if (buttonEffect == NSPageDownFunctionKey || buttonEffect == NSEndFunctionKey) {
-    _buttonEffect = lastPage ? NSEndFunctionKey : NSPageDownFunctionKey;
+  if (turnPage == NSPageUpFunctionKey || turnPage == NSBeginFunctionKey) {
+    _turnPage = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
+  } else if (turnPage == NSPageDownFunctionKey || turnPage == NSEndFunctionKey) {
+    _turnPage = lastPage ? NSEndFunctionKey : NSPageDownFunctionKey;
   } else {
-    _buttonEffect = NSNotFound;
+    _turnPage = NSNotFound;
   }
 
   if (numCandidates || (preedit && preedit.length)) {
@@ -1301,7 +1327,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
         suffixLabelString = [[NSString stringWithFormat:labelFormat, (i + 1) % 10] stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
       }
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:suffixLabelString
-                                                                   attributes:labelAttrs]];
+                                                                   attributes:attrs]];
     }
 
     fixDefaultFont(line);
@@ -1320,7 +1346,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     } else {
       paragraphStyleCandidate.headIndent = labelWidth;
     }
-    NSMutableAttributedString *separator = [[NSMutableAttributedString alloc] initWithString:separtatorString attributes:theme.labelAttrs];
+    NSAttributedString *separator = [[NSAttributedString alloc] initWithString:separtatorString attributes:theme.attrs];
 
     if (i > 0) {
       [text appendAttributedString:separator];
@@ -1359,13 +1385,16 @@ void fixDefaultFont(NSMutableAttributedString *text) {
     [text appendAttributedString:paging];
   }
 
+  // extra line fragment will not actually be drawn but ensures the spacing after the last line/paragraph
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.showPaging ? theme.pagingAttrs : theme.attrs]];
+
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
   [_view.textView.textStorage setAttributedString:text];
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
   // text done!
-  [_view drawViewWith:candidateRanges highlightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange buttonEffect:_buttonEffect];
-  
+  [_view drawViewWith:candidateRanges highlightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange pagingButton:_turnPage];
+
   [self show];
 }
 
@@ -1398,7 +1427,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
-  [_view drawViewWith:@[] highlightedIndex:NSNotFound preeditRange:emptyRange highlightedPreeditRange:emptyRange pagingRange:emptyRange buttonEffect:NSNotFound];
+  [_view drawViewWith:@[] highlightedIndex:NSNotFound preeditRange:emptyRange highlightedPreeditRange:emptyRange pagingRange:emptyRange pagingButton:NSNotFound];
   [self show];
 
   if (_statusTimer) {
@@ -1438,8 +1467,7 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
       // If the font name is not valid, NSFontDescriptor will still create something for us.
       // However, when we draw the actual text, Squirrel will crash if there is any font descriptor
       // with invalid font name.
-      [validFontDescriptors addObject:[NSFontDescriptor fontDescriptorWithName:fontName
-                                                                          size:0.0]];
+      [validFontDescriptors addObject:[NSFontDescriptor fontDescriptorWithName:fontName size:0.0]];
     }
   }
   if (validFontDescriptors.count == 0) {
@@ -1748,7 +1776,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       commentFont = [NSFont fontWithName:font.fontName size:commentFontSize];
     }
   }
-  NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize/1.5];
+  NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize];
 
   CGFloat lineHeight = font.ascender - font.descender;
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -1762,7 +1790,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditParagraphStyle.paragraphSpacing = spacing/2;
 
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  pagingParagraphStyle.alignment = NSTextAlignmentRight;
+  pagingParagraphStyle.alignment = NSTextAlignmentLeft;
+  pagingParagraphStyle.minimumLineHeight = pagingFont.ascender - pagingFont.descender;
 
   // Use left-to-right marks to declare the default writing direction and prevent strong right-to-left
   // characters from setting the writing direction in case the label are direction-less symbols
@@ -1798,7 +1827,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   pagingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  pagingAttrs[NSSuperscriptAttributeName] = @(-1);
+//  pagingAttrs[NSSuperscriptAttributeName] = @(-1);
 
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
 
