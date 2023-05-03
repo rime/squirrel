@@ -60,6 +60,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 @property(nonatomic, assign) BOOL native;
 
 @property(nonatomic, strong, readonly) NSColor *backgroundColor;
+@property(nonatomic, strong, readonly) NSColor *backgroundImage;
 @property(nonatomic, strong, readonly) NSColor *highlightedStripColor;
 @property(nonatomic, strong, readonly) NSColor *highlightedPreeditColor;
 @property(nonatomic, strong, readonly) NSColor *preeditBackgroundColor;
@@ -100,6 +101,7 @@ static NSString *const kDefaultCandidateFormat = @"%c. %@";
 - (void)setStatusMessageType:(NSString *)statusMessageType;
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
+           backgroundImage:(NSColor *)backgroundImage
      highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
@@ -172,11 +174,13 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 }
 
 - (void)setBackgroundColor:(NSColor *)backgroundColor
+           backgroundImage:(NSColor *)backgroundImage
      highlightedStripColor:(NSColor *)highlightedStripColor
    highlightedPreeditColor:(NSColor *)highlightedPreeditColor
     preeditBackgroundColor:(NSColor *)preeditBackgroundColor
                borderColor:(NSColor *)borderColor {
   _backgroundColor = backgroundColor;
+  _backgroundImage = backgroundImage;
   _highlightedStripColor = highlightedStripColor;
   _highlightedPreeditColor = highlightedPreeditColor;
   _preeditBackgroundColor = preeditBackgroundColor;
@@ -1513,6 +1517,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   CGFloat baseOffset = [config getDouble:@"style/base_offset"];
 
   NSColor *backgroundColor;
+  NSColor *backgroundImage;
   NSColor *borderColor;
   NSColor *preeditBackgroundColor;
   NSColor *candidateLabelColor;
@@ -1540,6 +1545,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]];
     }
     backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]];
+    backgroundImage = [config getImage:[prefix stringByAppendingString:@"/back_image"]];
     borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
     preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
     textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
@@ -1849,6 +1855,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       pagingParagraphStyle:pagingParagraphStyle];
 
   [theme setBackgroundColor:backgroundColor
+            backgroundImage:backgroundImage
       highlightedStripColor:highlightedCandidateBackColor
     highlightedPreeditColor:highlightedBackColor
      preeditBackgroundColor:preeditBackgroundColor

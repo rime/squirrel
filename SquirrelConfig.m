@@ -97,7 +97,6 @@
     return _cache[option] = @(value);
   }
   return [_baseConfig getOptionalInt:option];
-
 }
 
 - (NSNumber *)getOptionalDouble:(NSString *)option {
@@ -136,6 +135,19 @@
     return color;
   }
   return [_baseConfig getColor:option];
+}
+
+- (NSColor *)getImage:(NSString *)option {
+  NSColor *cachedValue = [self cachedValueOfClass:[NSColor class] forKey:option];
+  if (cachedValue) {
+    return cachedValue;
+  }
+  NSColor *color = [self colorFromImage:[self getString:option]];
+  if (color) {
+    _cache[option] = color;
+    return color;
+  }
+  return [_baseConfig getImage:option];
 }
 
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName {
@@ -188,4 +200,17 @@
   }
 }
 
+- (NSColor *)colorFromImage:(NSString *)image {
+  if (image == nil) {
+    return nil;
+  }
+  NSFileManager* fileManager = [NSFileManager defaultManager];
+  [fileManager changeCurrentDirectoryPath:[@"~/Library/Rime" stringByStandardizingPath]];
+  NSString *imageFile = [image stringByStandardizingPath];
+  if ([fileManager fileExistsAtPath:imageFile]) {
+    NSColor *color = [NSColor colorWithPatternImage:[[NSImage alloc] initWithContentsOfFile:imageFile]];
+    return color;
+  }
+  return nil;
+}
 @end

@@ -26,6 +26,8 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 - (NSString *)getString:(NSString *)option;
 // 0xaabbggrr or 0xbbggrr
 - (NSColor *)getColor:(NSString *)option;
+// file path (absolute or relative to ~/Library/Rime)
+- (NSColor *)getImage:(NSString *)option;
 
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName;
 
