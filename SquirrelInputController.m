@@ -523,6 +523,10 @@ const int N_KEY_ROLL_OVER = 50;
 }
 
 NSString *substr(const char *str, int length) {
+  if (str == NULL) {
+    return @"";
+  }
+  length = length > sizeof(str) ? sizeof(str) : length;
   char substring[length+1];
   strncpy(substring, str, length);
   substring[length] = '\0';
