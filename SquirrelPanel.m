@@ -719,6 +719,10 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   [preeditPath setWindingRule:NSEvenOddWindingRule];
 #endif
 
+  if (theme.backgroundImage) {
+    [theme.backgroundImage setFill];
+    [backgroundPath fill];
+  }
   [theme.backgroundColor setFill];
   [backgroundPath fill];
   if (theme.preeditBackgroundColor &&
