@@ -1423,6 +1423,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 - (void)showStatus:(NSString *)message {
   SquirrelTheme *theme = _view.currentTheme;
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.commentAttrs];
+  [text addAttribute:NSKernAttributeName value:@(0) range:NSMakeRange(0, text.length)];
   fixDefaultFont(text);
 
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
