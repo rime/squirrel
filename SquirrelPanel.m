@@ -647,9 +647,9 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
 
   // Draw highlighted part of preedit text
   if (_highlightedPreeditRange.length > 0 && theme.highlightedPreeditColor != nil) {
-    NSRect boundBox = preeditRect;
+    NSRect innerBox = NSInsetRect(preeditRect, theme.edgeInset.width, theme.edgeInset.height);
     if (_highlightedIndex != NSNotFound) {
-      boundBox.size.height -= theme.preeditLinespace/2;
+      innerBox.size.height -= theme.preeditLinespace/2 - theme.edgeInset.height;
     }
     NSRect leadingRect;
     NSRect bodyRect;
@@ -665,10 +665,10 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
     } else {
       highlightedPreeditPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
     }
-    shrink(highlightedPreeditPoints, boundBox);
+    shrink(highlightedPreeditPoints, innerBox);
     highlightedPreeditPath = drawSmoothLines(highlightedPreeditPoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
     if (highlightedPreeditPoints2.count > 0) {
-      shrink(highlightedPreeditPoints2, boundBox);
+      shrink(highlightedPreeditPoints2, innerBox);
       [highlightedPreeditPath appendBezierPath:drawSmoothLines(highlightedPreeditPoints2, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius)];
     }
   }
@@ -889,7 +889,7 @@ void fixDefaultFont(NSMutableAttributedString *text) {
 
   NSMutableDictionary *pagingAttrs = [[NSMutableDictionary alloc] init];
   pagingAttrs[NSForegroundColorAttributeName] = [NSColor controlAccentColor];
-  pagingAttrs[NSFontAttributeName] = [NSFont fontWithName:@"AppleSymbols" size:kDefaultFontSize/1.5];
+  pagingAttrs[NSFontAttributeName] = [NSFont fontWithName:@"AppleSymbols" size:kDefaultFontSize];
 
   NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
   NSParagraphStyle *preeditParagraphStyle = [NSParagraphStyle defaultParagraphStyle];
@@ -1388,9 +1388,8 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   }
 
   // extra line fragment will not actually be drawn but ensures the spacing after the last line
-  if (numCandidates) {
-    [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
-  }
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+
 
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
   [_view.textView.textStorage setAttributedString:text];
@@ -1779,22 +1778,22 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
       commentFont = [NSFont fontWithName:font.fontName size:commentFontSize * scaleFactor];
     }
   }
-  NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize/1.5 * scaleFactor];
+  NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize * scaleFactor];
 
-  CGFloat lineHeight = font.ascender - font.descender;
+  CGFloat lineHeight = ceil(font.ascender - font.descender);
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   paragraphStyle.alignment = NSTextAlignmentLeft;
-  paragraphStyle.minimumLineHeight = lineHeight + lineSpacing/2 * scaleFactor;
-  paragraphStyle.lineSpacing = lineSpacing/2 * scaleFactor;
+  paragraphStyle.minimumLineHeight = lineHeight + ceil(lineSpacing * scaleFactor)/2;
+  paragraphStyle.lineSpacing = ceil(lineSpacing * scaleFactor)/2;
 
   NSMutableParagraphStyle *preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.alignment = NSTextAlignmentLeft;
   preeditParagraphStyle.minimumLineHeight = lineHeight;
-  preeditParagraphStyle.paragraphSpacing = spacing/2 * scaleFactor;
+  preeditParagraphStyle.paragraphSpacing = ceil(spacing * scaleFactor)/2;
 
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   pagingParagraphStyle.alignment = NSTextAlignmentLeft;
-  pagingParagraphStyle.minimumLineHeight = pagingFont.ascender - pagingFont.descender;
+  pagingParagraphStyle.minimumLineHeight = ceil(pagingFont.ascender - pagingFont.descender);
 
   // Use left-to-right marks to declare the default writing direction and prevent strong right-to-left
   // characters from setting the writing direction in case the label are direction-less symbols
@@ -1901,16 +1900,16 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
      preeditBackgroundColor:preeditBackgroundColor
                 borderColor:borderColor];
 
-  borderHeight = MAX(borderHeight, cornerRadius - cornerRadius / sqrt(2)) * scaleFactor;
-  borderWidth = MAX(borderWidth, cornerRadius - cornerRadius / sqrt(2)) * scaleFactor;
+  borderHeight = ceil(MAX(borderHeight, cornerRadius - cornerRadius / sqrt(2)) * scaleFactor);
+  borderWidth = ceil(MAX(borderWidth, cornerRadius - cornerRadius / sqrt(2)) * scaleFactor);
   NSSize edgeInset = vertical ? NSMakeSize(borderHeight, borderWidth) : NSMakeSize(borderWidth, borderHeight);
 
-  [theme setCornerRadius:cornerRadius * scaleFactor
-     hilitedCornerRadius:hilitedCornerRadius * scaleFactor
+  [theme setCornerRadius:ceil(cornerRadius * scaleFactor)
+     hilitedCornerRadius:ceil(hilitedCornerRadius * scaleFactor)
                edgeInset:edgeInset
              borderWidth:MAX(borderHeight, borderWidth)
-               linespace:lineSpacing * scaleFactor
-        preeditLinespace:spacing * scaleFactor
+               linespace:ceil(lineSpacing * scaleFactor)
+        preeditLinespace:ceil(spacing * scaleFactor)
              scaleFactor:scaleFactor
                    alpha:(alpha == 0 ? 1.0 : alpha)
             translucency:translucency
