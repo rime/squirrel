@@ -328,9 +328,13 @@ SquirrelTheme *_darkTheme;
 
 // Get the rectangle containing entire contents, expensive to calculate
 - (NSRect)contentRect {
-  NSRange glyphRange = [_textView.layoutManager glyphRangeForTextContainer:_textView.textContainer];
-  NSRect rect = [_textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:_textView.textContainer];
-  return rect;
+  [_textView.layoutManager ensureLayoutForTextContainer:_textView.textContainer];
+  NSRect rect = [_textView.layoutManager usedRectForTextContainer:_textView.textContainer];
+  NSRect extraRect = [_textView.layoutManager extraLineFragmentRect];
+  if (!NSIsEmptyRect(extraRect)) {
+    rect.size.height -= extraRect.size.height;
+  }
+  return NSIntegralRect(rect);
 }
 
 // Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
@@ -450,13 +454,13 @@ BOOL nearEmptyRect(NSRect rect) {
   NSPoint startPoint = [layoutManager locationForGlyphAtIndex:glyphRange.location];
   NSPoint endPoint = [layoutManager locationForGlyphAtIndex:NSMaxRange(glyphRange)];
   NSRange leadingLineRange = NSMakeRange(NSNotFound, 0);
-  NSRect leadingLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:glyphRange.location effectiveRange:&leadingLineRange];
+  NSRect leadingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location effectiveRange:&leadingLineRange];
   if (NSMaxRange(leadingLineRange) >= NSMaxRange(glyphRange)) {
     *bodyRect = NSMakeRect(NSMinX(leadingLineRect)+startPoint.x+edgeInset.width, NSMinY(leadingLineRect)+edgeInset.height, endPoint.x-startPoint.x, NSHeight(leadingLineRect));
   } else {
     *leadingRect = NSMakeRect(NSMinX(leadingLineRect)+startPoint.x+edgeInset.width, NSMinY(leadingLineRect)+edgeInset.height, NSWidth(leadingLineRect)-startPoint.x, NSHeight(leadingLineRect));
     NSRange trailingLineRange = NSMakeRange(NSNotFound, 0);
-    NSRect trailingLineRect = [layoutManager lineFragmentRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:&trailingLineRange];
+    NSRect trailingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:&trailingLineRange];
     *trailingRect = NSMakeRect(NSMinX(trailingLineRect)+edgeInset.width, NSMinY(trailingLineRect)+edgeInset.height, endPoint.x, NSHeight(trailingLineRect));
     NSRange bodyLineRange = NSMakeRange(NSMaxRange(leadingLineRange), trailingLineRange.location-NSMaxRange(leadingLineRange));
     if (bodyLineRange.length > 0) {
@@ -1055,9 +1059,6 @@ void fixDefaultFont(NSMutableAttributedString *text) {
   }
   _view.textView.textContainer.containerSize = NSMakeSize(textWidth, maxTextHeight);
   NSRect contentRect = _view.contentRect;
-  if (contentRect.size.width > textWidth) {
-    contentRect.size.width = textWidth;
-  }
 
   // in vertical mode, the width and height are interchanged
   if ((theme.vertical && NSMinY(_position) / NSHeight(_screenRect) <= textWidthRatio) ||
@@ -1782,18 +1783,18 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize * scaleFactor];
 
   CGFloat lineHeight = ceil(font.ascender - font.descender);
-  NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  paragraphStyle.alignment = NSTextAlignmentLeft;
-  paragraphStyle.minimumLineHeight = lineHeight + ceil(lineSpacing * scaleFactor)/2;
-  paragraphStyle.lineSpacing = ceil(lineSpacing * scaleFactor)/2;
-
   NSMutableParagraphStyle *preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   preeditParagraphStyle.alignment = NSTextAlignmentLeft;
   preeditParagraphStyle.minimumLineHeight = lineHeight;
   preeditParagraphStyle.paragraphSpacing = ceil(spacing * scaleFactor)/2;
 
+  NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  paragraphStyle.alignment = NSTextAlignmentJustified;
+  paragraphStyle.minimumLineHeight = lineHeight + ceil(lineSpacing * scaleFactor)/2;
+  paragraphStyle.lineSpacing = ceil(lineSpacing * scaleFactor)/2;
+
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-  pagingParagraphStyle.alignment = NSTextAlignmentLeft;
+  pagingParagraphStyle.alignment = NSTextAlignmentCenter;
   pagingParagraphStyle.minimumLineHeight = ceil(pagingFont.ascender - pagingFont.descender);
 
   // Use left-to-right marks to declare the default writing direction and prevent strong right-to-left
@@ -1869,14 +1870,14 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   preeditHighlightedAttrs[NSVerticalGlyphFormAttributeName] = vertical ? @YES : @NO;
   pagingAttrs[NSVerticalGlyphFormAttributeName] = vertical ? @YES : @NO;
 
-  attrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  labelAttrs[NSKernAttributeName] =  @(fontSize * scaleFactor / 10);
-  highlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  labelHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  commentAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  commentHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  preeditAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
-  preeditHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10);
+  attrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  labelAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  highlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  labelHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  commentAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  commentHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  preeditAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
+  preeditHighlightedAttrs[NSKernAttributeName] = @(fontSize * scaleFactor / 10.0);
 
   [theme setStatusMessageType:statusMessageType];
 
