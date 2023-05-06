@@ -338,8 +338,8 @@ SquirrelTheme *_darkTheme;
   NSRect finalLineRect = [_textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:NULL withoutAdditionalLayout:YES];
   // integral the size of the window rect to avoid pixel jumping
   CGFloat scaleFactor = self.currentTheme.scaleFactor;
-  rect.size.height = ceil((NSMaxY(finalLineRect) - rect.origin.y) / scaleFactor) * scaleFactor;
-  rect.size.width = ceil(rect.size.width / scaleFactor) * scaleFactor;;
+  rect.size.height = round((NSMaxY(finalLineRect) - rect.origin.y) / scaleFactor) * scaleFactor;
+  rect.size.width = round(rect.size.width / scaleFactor) * scaleFactor;;
   return rect;
 }
 
@@ -1788,11 +1788,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSFont *pagingFont = [NSFont fontWithName:@"AppleSymbols" size:labelFontSize * scaleFactor];
 
   CGFloat fontLineHeight = MAX(font.ascender - font.descender, [NSFont systemFontOfSize:fontSize].ascender - [NSFont systemFontOfSize:fontSize].descender);
-//  fontLineHeight = ceil(fontLineHeight / scaleFactor) * scaleFactor;
   CGFloat commentLineHeight = MAX(commentFont.ascender - commentFont.descender, [NSFont systemFontOfSize:commentFontSize].ascender - [NSFont systemFontOfSize:commentFontSize].descender);
-//  commentLineHeight = ceil(commentLineHeight / scaleFactor) * scaleFactor;
   CGFloat labelLineHeight = MAX(labelFont.ascender - labelFont.descender, [NSFont systemFontOfSize:labelFontSize].ascender - [NSFont systemFontOfSize:labelFontSize].descender);
-//  labelLineHeight = ceil(labelLineHeight / scaleFactor) * scaleFactor;
   CGFloat lineHeight = MAX(fontLineHeight, MAX(commentLineHeight, labelLineHeight));
 
   NSMutableParagraphStyle *preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
