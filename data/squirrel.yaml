@@ -29,6 +29,7 @@ style:
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
   show_paging : true
+  remember_size: true
 
   corner_radius: 10
   hilited_corner_radius: 0
