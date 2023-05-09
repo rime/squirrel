@@ -137,17 +137,17 @@
   return [_baseConfig getColor:option];
 }
 
-- (NSColor *)getImage:(NSString *)option {
+- (NSColor *)getPattern:(NSString *)option {
   NSColor *cachedValue = [self cachedValueOfClass:[NSColor class] forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
-  NSColor *color = [self colorFromImage:[self getString:option]];
-  if (color) {
-    _cache[option] = color;
-    return color;
+  NSColor *pattern = [self patternFromFile:[self getString:option]];
+  if (pattern) {
+    _cache[option] = pattern;
+    return pattern;
   }
-  return [_baseConfig getImage:option];
+  return [_baseConfig getPattern:option];
 }
 
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName {
@@ -200,16 +200,16 @@
   }
 }
 
-- (NSColor *)colorFromImage:(NSString *)image {
-  if (image == nil) {
+- (NSColor *)patternFromFile:(NSString *)filePath {
+  if (filePath == nil) {
     return nil;
   }
   NSFileManager* fileManager = [NSFileManager defaultManager];
   [fileManager changeCurrentDirectoryPath:[@"~/Library/Rime" stringByStandardizingPath]];
-  NSString *imageFile = [image stringByStandardizingPath];
-  if ([fileManager fileExistsAtPath:imageFile]) {
-    NSColor *color = [NSColor colorWithPatternImage:[[NSImage alloc] initWithContentsOfFile:imageFile]];
-    return color;
+  NSString *patternFile = [filePath stringByStandardizingPath];
+  if ([fileManager fileExistsAtPath:patternFile]) {
+    NSColor *pattern = [NSColor colorWithPatternImage:[[NSImage alloc] initWithContentsOfFile:patternFile]];
+    return pattern;
   }
   return nil;
 }
