@@ -1381,7 +1381,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   NSRange pagingRange = NSMakeRange(NSNotFound, 0);
   if (numCandidates && theme.showPaging) {
     [text appendAttributedString:[[NSAttributedString alloc] initWithString:theme.linear ? (useTab ? @"\t" : @"  ") : @"\n" attributes:theme.attrs]];
-    pagingRange = NSMakeRange(text.length, paging.length);
+    NSUInteger pagingStart = text.length;
     if (theme.linear) {
       [text appendAttributedString:paging];
       NSMutableParagraphStyle *paragraphStylePaging = [theme.paragraphStyle mutableCopy];
@@ -1398,6 +1398,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
       [paging addAttribute:NSParagraphStyleAttributeName value:paragraphStylePaging range:NSMakeRange(0, paging.length)];
       [text appendAttributedString:paging];
     }
+    pagingRange = NSMakeRange(pagingStart, paging.length);
   }
 
   // extra line fragment will not actually be drawn but ensures the spacing after the last line
@@ -1820,7 +1821,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  pagingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
+  pagingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset - (linear ? 0.0 : labelFontSize * 0.2));
   attrs[NSKernAttributeName] = @(kerning);
   highlightedAttrs[NSKernAttributeName] = @(kerning);
   labelAttrs[NSKernAttributeName] = @(kerning);
