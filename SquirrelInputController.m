@@ -20,6 +20,7 @@ const int N_KEY_ROLL_OVER = 50;
 @implementation SquirrelInputController {
   id _currentClient;
   NSString *_preeditString;
+  NSString *_inlineString;
   NSRange _selRange;
   NSUInteger _caretPos;
   NSArray *_candidates;
@@ -206,18 +207,22 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
-- (BOOL)actionWithCandidate:(NSInteger)index {
+- (BOOL)perform:(NSUInteger)action onIndex:(NSUInteger)index {
   BOOL handled = NO;
-  if (index == NSPageUpFunctionKey) {
+  if (index == NSPageUpFunctionKey && action == kSELECT) {
     handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
-  } else if (index == NSPageDownFunctionKey) {
+  } else if (index == NSPageDownFunctionKey && action == kSELECT) {
     handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
   } else if (index >= 0 && index < 10) {
-    handled = rime_get_api()->select_candidate_on_current_page(_session, (int)index);
-  } else if (index >= -10 && index <= -1) { // -1-index for deletion
-    handled = rime_get_api()->delete_candidate_on_current_page(_session, (int)-1-index);
+    if (action == kSELECT) {
+      handled = rime_get_api()->select_candidate_on_current_page(_session, (int)index);
+    } else if (action == kCHOOSE) {
+      handled = rime_get_api()->choose_candidate_on_current_page(_session, (int)index);
+    } else if (action == kDELETE) {
+      handled = rime_get_api()->delete_candidate_on_current_page(_session, (int)index);
+    }
   }
-  if (handled) {
+  if (handled && action != kCHOOSE) {
     [self rimeUpdate];
   }
   return handled;
@@ -410,11 +415,11 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
 
-  if ([_preeditString isEqualToString:preedit] &&
+  if ([_inlineString isEqualToString:preedit] &&
       _caretPos == pos && _selRange.location == range.location && _selRange.length == range.length)
     return;
 
-  _preeditString = preedit;
+  _inlineString = preedit;
   _selRange = range;
   _caretPos = pos;
 
@@ -447,6 +452,7 @@ const int N_KEY_ROLL_OVER = 50;
                 highlighted:(NSUInteger)index
                     pageNum:(NSUInteger)pageNum
                    lastPage:(BOOL)lastPage
+                     update:(BOOL)update
 {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
@@ -465,7 +471,7 @@ const int N_KEY_ROLL_OVER = 50;
              pageNum:pageNum
             lastPage:lastPage
             turnPage:NSNotFound
-              update:YES];
+              update:update];
 }
 
 @end // SquirrelController
@@ -547,7 +553,7 @@ NSString *substr(const char *str, int length) {
       _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
                           !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
-      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
+      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit && !status.is_disabled);
     }
     rime_get_api()->free_status(&status);
   }
@@ -557,6 +563,8 @@ NSString *substr(const char *str, int length) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
+    BOOL update = [_preeditString isEqualToString:preeditText] ? NSNotFound : YES;
+    if (update) _preeditString = preeditText;
 
     NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
     NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
@@ -566,21 +574,21 @@ NSString *substr(const char *str, int length) {
       const char *candidatePreview = ctx.commit_text_preview;
       NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
       if (_inlinePreedit) {
-        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
-          candidatePreviewText = [candidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
+        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < _preeditString.length)) {
+          candidatePreviewText = [candidatePreviewText stringByAppendingString:[_preeditString substringWithRange:NSMakeRange(caretPos, _preeditString.length-caretPos)]];
         }
-        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(preeditText.length-caretPos)];
+        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(_preeditString.length-caretPos)];
       } else {
         if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
           candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
-        } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
-          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
+        } else if ((NSMaxRange(selRange) < _preeditString.length) && (caretPos <= selRange.location)) {
+          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(_preeditString.length-NSMaxRange(selRange)))];
         }
         [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
       }
     } else {
       if (_inlinePreedit) {
-        [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
+        [self showPreeditString:_preeditString selRange:selRange caretPos:caretPos];
       } else {
         NSRange empty = {0, 0};
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
@@ -615,7 +623,7 @@ NSString *substr(const char *str, int length) {
     } else {
       labels = @[];
     }
-    [self showPanelWithPreedit:(_inlinePreedit ? nil : preeditText)
+    [self showPanelWithPreedit:(_inlinePreedit ? nil : _preeditString)
                       selRange:selRange
                       caretPos:caretPos
                     candidates:candidates
@@ -623,7 +631,8 @@ NSString *substr(const char *str, int length) {
                         labels:labels
                    highlighted:ctx.menu.highlighted_candidate_index
                        pageNum:ctx.menu.page_no
-                      lastPage:ctx.menu.is_last_page];
+                      lastPage:ctx.menu.is_last_page
+                        update:update];
     rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];

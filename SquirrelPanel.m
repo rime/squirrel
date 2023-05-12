@@ -255,6 +255,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, readonly) NSRange highlightedPreeditRange;
 @property(nonatomic, readonly) NSRange pagingRange;
 @property(nonatomic, readonly) NSRect contentRect;
+@property(nonatomic, readonly) NSRect preeditBlockRect;
 @property(nonatomic, readonly) NSMutableArray<NSBezierPath *> *candidatePaths;
 @property(nonatomic, readonly) NSMutableArray<NSValue *> *pagingRects;
 @property(nonatomic, readonly) NSUInteger pagingButton;
@@ -570,6 +571,7 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
       preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace/2;
     }
   }
+  _preeditBlockRect = preeditRect;
 
   // Draw paging Rect
   NSRect pagingRect = NSZeroRect;
@@ -762,18 +764,18 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   }
 }
 
-- (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger *)_index {
-  if (CGPathContainsPoint(_shape.path, NULL, _point, NO)) {
-    if (_pagingRects[0] != nil && NSPointInRect(_point, _pagingRects[0].rectValue)) {
-      *_index = NSPageUpFunctionKey;
+- (BOOL)convertClickSpot:(NSPoint)spot toIndex:(NSUInteger *)index {
+  if (NSPointInRect(spot, self.bounds)) {
+    if (_pagingRects[0] != nil && NSPointInRect(spot, _pagingRects[0].rectValue)) {
+      *index = NSPageUpFunctionKey;
       return YES;
-    } else if (_pagingRects[1] != nil && NSPointInRect(_point, _pagingRects[1].rectValue)) {
-      *_index = NSPageDownFunctionKey;
+    } else if (_pagingRects[1] != nil && NSPointInRect(spot, _pagingRects[1].rectValue)) {
+      *index = NSPageDownFunctionKey;
       return YES;
     }
     for (NSUInteger i = 0; i < _candidatePaths.count; i++) {
-      if ([_candidatePaths[i] containsPoint:_point]) {
-        *_index = i;
+      if ([_candidatePaths[i] containsPoint:spot]) {
+        *index = i;
         return YES;
       }
     }
@@ -801,7 +803,7 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   NSUInteger _pageNum;
   NSInteger _turnPage;
   BOOL _lastPage;
-  NSUInteger _cursorIndex;
+  BOOL _mouseDown;
   
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -970,34 +972,35 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
 }
 
 - (void)sendEvent:(NSEvent *)event {
+  BOOL handled = NO;
+  NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
+  NSUInteger cursorIndex = NSNotFound;
   switch (event.type) {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown: {
-      NSPoint point = [self mousePosition];
-      NSInteger index = NSNotFound;
-      if ([_view clickAtPoint:point index:&index]) {
-        if ((index >= 0 && index < _candidates.count) ||
-            index == NSPageUpFunctionKey || index == NSPageDownFunctionKey) {
-          _index = index;
+      if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
+        if ((cursorIndex >= 0 && cursorIndex < _candidates.count) ||
+            cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey) {
+          _index = cursorIndex;
+          _mouseDown = YES;
+          handled = YES;
         }
       }
     } break;
     case NSEventTypeLeftMouseUp: {
-      NSPoint point = [self mousePosition];
-      NSInteger index = NSNotFound;
-      if ([_view clickAtPoint:point index:&index]) {
-        if (((index >= 0 && index < _candidates.count) || index == NSPageUpFunctionKey ||
-             index == NSPageDownFunctionKey) && index == _index) {
-          [_inputController actionWithCandidate:index];
+      if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
+        if (cursorIndex == _index && ((cursorIndex >= 0 && cursorIndex < _candidates.count) ||
+            cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey)) {
+          handled = [_inputController perform:kSELECT onIndex:cursorIndex];
+          _mouseDown = NO;
         }
       }
     } break;
     case NSEventTypeRightMouseUp: {
-      NSPoint point = [self mousePosition];
-      NSInteger index = NSNotFound;
-      if ([_view clickAtPoint:point index:&index]) {
-        if ((index >= 0 && index < _candidates.count) && index == _index) {
-          [_inputController actionWithCandidate:-1-index]; // negative index for deletion
+      if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
+        if (cursorIndex == _index && (cursorIndex >= 0 && cursorIndex < _candidates.count)) {
+          handled = [_inputController perform:kDELETE onIndex:cursorIndex];
+          _mouseDown = NO;
         }
       }
     } break;
@@ -1006,29 +1009,30 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     } break;
     case NSEventTypeMouseExited: {
       self.acceptsMouseMovedEvents = NO;
-      if (_cursorIndex != _index) {
-        [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-              highlighted:_index pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
-      }
     } break;
     case NSEventTypeMouseMoved: {
-      NSPoint point = [self mousePosition];
-      NSInteger index = NSNotFound;
-      if ([_view clickAtPoint: point index:&index]) {
-        if (index >= 0 && index < _candidates.count && _cursorIndex != index) {
-          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-                highlighted:index pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
-        } else if (index == NSPageUpFunctionKey || index == NSPageDownFunctionKey ||
-                   index == NSBeginFunctionKey || index == NSEndFunctionKey) { // borrow corresponding unicodes for readability
-          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels
-                highlighted:_index pageNum:_pageNum lastPage:_lastPage turnPage:index update:NO];
+      if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
+        if (cursorIndex >= 0 && cursorIndex < _candidates.count && _index != cursorIndex) {
+          [_inputController perform:kCHOOSE onIndex:cursorIndex];
+          _index = cursorIndex;
+          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels highlighted:cursorIndex pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
+          handled = YES;
+        } else if (cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey ||
+                   cursorIndex == NSBeginFunctionKey || cursorIndex == NSEndFunctionKey) { // borrow corresponding unicodes for readability
+          [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels highlighted:_index pageNum:_pageNum lastPage:_lastPage turnPage:cursorIndex update:NO];
+          handled = YES;
         }
       }
+    } break;
+    case NSEventTypeLeftMouseDragged: {
+      _mouseDown = NO;
+      [self performWindowDragWithEvent:event];
+      handled = YES;
     } break;
     default:
       break;
   }
-  [super sendEvent:event];
+  if (!handled) [super sendEvent:event];
 }
 
 - (void)getCurrentScreen {
@@ -1178,6 +1182,10 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
            lastPage:(BOOL)lastPage
            turnPage:(NSUInteger)turnPage
              update:(BOOL)update {
+  if (update == NSNotFound && _index != index &&
+      _pageNum == pageNum && _lastPage == lastPage) {
+    update = NO;
+  }
   if (update) {
     _preedit = preedit;
     _selRange = selRange;
@@ -1193,7 +1201,6 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   if (numCandidates == 0) {
     _index = index = NSNotFound;
   }
-  _cursorIndex = index;
 
   if (turnPage == NSPageUpFunctionKey || turnPage == NSBeginFunctionKey) {
     _turnPage = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
@@ -1411,7 +1418,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   // text done!
   [_view drawViewWith:candidateRanges highlightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange pagingButton:_turnPage];
 
-  [self show];
+  if (update) [self show];
 }
 
 - (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort {

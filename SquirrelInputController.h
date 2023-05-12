@@ -2,5 +2,9 @@
 #import <InputMethodKit/InputMethodKit.h>
 
 @interface SquirrelInputController : IMKInputController
-- (BOOL)actionWithCandidate:(NSInteger)index;
+- (BOOL)perform:(NSUInteger)action onIndex:(NSUInteger)index;
 @end
+
+#define kSELECT 0x1
+#define kDELETE 0x2
+#define kCHOOSE 0x3
