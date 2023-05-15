@@ -92,24 +92,25 @@ const int N_KEY_ROLL_OVER = 50;
           [self processKey:rime_keycode modifiers:rime_modifiers];
         }
         if (changes & OSX_SHIFT_MASK) {
-          release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+          release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_CTRL_MASK) {
-          release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+          release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_ALT_MASK) {
-          release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+          release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_FN_MASK) {
-          release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+          release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
         if (changes & OSX_COMMAND_MASK) {
-          release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+          release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
+          _lastEventCount = eventCount;
           // do not update UI when using Command key
           break;
         }
