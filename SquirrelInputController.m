@@ -91,26 +91,26 @@ const int N_KEY_ROLL_OVER = 50;
           } break;
           case kVK_Shift:
           case kVK_RightShift: {
-            release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & OSX_SHIFT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           } break;
           case kVK_Control:
           case kVK_RightControl: {
-            release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & OSX_CTRL_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           } break;
           case kVK_Option:
           case kVK_RightOption: {
-            release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           } break;
           case kVK_Function: {
-            release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
           } break;
           case kVK_Command:
           case kVK_RightCommand: {
-            release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount <= 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & OSX_COMMAND_MASK ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             goto saveStatus;
           }
@@ -118,9 +118,6 @@ const int N_KEY_ROLL_OVER = 50;
             break;
         }
         [self rimeUpdate];
-      saveStatus:
-        _lastEventCount = eventCount;
-        _lastModifier = modifiers;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -150,6 +147,11 @@ const int N_KEY_ROLL_OVER = 50;
       default:
         break;
     }
+  }
+
+  saveStatus: if (event.type == NSEventTypeFlagsChanged) {
+    _lastModifier = modifiers;
+    _lastEventCount = eventCount;
   }
   return handled;
 }
