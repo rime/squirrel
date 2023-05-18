@@ -89,7 +89,6 @@ const int N_KEY_ROLL_OVER = 50;
         }
         int release_mask = 0;
         NSUInteger changes = _lastModifier ^ modifiers;
-        _lastModifier = modifiers;
         if (changes & OSX_CAPITAL_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Caps_Lock;
@@ -160,6 +159,7 @@ const int N_KEY_ROLL_OVER = 50;
     }
   }
 
+  if (event.type == NSEventTypeFlagsChanged) _lastModifier = modifiers;
   _lastEventType = event.type;
 
   return handled;
