@@ -255,7 +255,6 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, readonly) NSRange highlightedPreeditRange;
 @property(nonatomic, readonly) NSRange pagingRange;
 @property(nonatomic, readonly) NSRect contentRect;
-@property(nonatomic, readonly) NSRect preeditBlockRect;
 @property(nonatomic, readonly) NSMutableArray<NSBezierPath *> *candidatePaths;
 @property(nonatomic, readonly) NSMutableArray<NSValue *> *pagingRects;
 @property(nonatomic, readonly) NSUInteger pagingButton;
@@ -306,6 +305,7 @@ SquirrelTheme *_darkTheme;
   if (self) {
     self.wantsLayer = YES;
     self.layer.masksToBounds = YES;
+    self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
   }
   _textView = [[NSTextView alloc] initWithFrame:frameRect];
   NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSZeroSize];
@@ -571,7 +571,6 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
       preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace/2;
     }
   }
-  _preeditBlockRect = preeditRect;
 
   // Draw paging Rect
   NSRect pagingRect = NSZeroRect;
@@ -804,6 +803,7 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   NSInteger _turnPage;
   BOOL _lastPage;
   BOOL _mouseDown;
+  NSPoint _scrollLocus;
   
   NSString *_statusMessage;
   NSTimer *_statusTimer;
@@ -965,19 +965,13 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   return self;
 }
 
-- (NSPoint)mousePosition {
-  NSPoint point = NSEvent.mouseLocation;
-  point = [self convertPointFromScreen:point];
-  return [_view convertPoint:point fromView:nil];
-}
-
 - (void)sendEvent:(NSEvent *)event {
   BOOL handled = NO;
-  NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
-  NSUInteger cursorIndex = NSNotFound;
   switch (event.type) {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown: {
+      NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
+      NSUInteger cursorIndex = NSNotFound;
       if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if ((cursorIndex >= 0 && cursorIndex < _candidates.count) ||
             cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey) {
@@ -988,18 +982,22 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
       }
     } break;
     case NSEventTypeLeftMouseUp: {
+      NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
+      NSUInteger cursorIndex = NSNotFound;
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index && ((cursorIndex >= 0 && cursorIndex < _candidates.count) ||
             cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey)) {
-          handled = [_inputController perform:kSELECT onIndex:cursorIndex];
+          handled = [self.inputController perform:kSELECT onIndex:cursorIndex];
           _mouseDown = NO;
         }
       }
     } break;
     case NSEventTypeRightMouseUp: {
+      NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
+      NSUInteger cursorIndex = NSNotFound;
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index && (cursorIndex >= 0 && cursorIndex < _candidates.count)) {
-          handled = [_inputController perform:kDELETE onIndex:cursorIndex];
+          handled = [self.inputController perform:kDELETE onIndex:cursorIndex];
           _mouseDown = NO;
         }
       }
@@ -1011,9 +1009,11 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
       self.acceptsMouseMovedEvents = NO;
     } break;
     case NSEventTypeMouseMoved: {
+      NSPoint spot = [_view convertPoint:[self mouseLocationOutsideOfEventStream] fromView:nil];
+      NSUInteger cursorIndex = NSNotFound;
       if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex >= 0 && cursorIndex < _candidates.count && _index != cursorIndex) {
-          [_inputController perform:kCHOOSE onIndex:cursorIndex];
+          [self.inputController perform:kCHOOSE onIndex:cursorIndex];
           _index = cursorIndex;
           [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels highlighted:cursorIndex pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
           handled = YES;
@@ -1028,6 +1028,35 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
       _mouseDown = NO;
       [self performWindowDragWithEvent:event];
       handled = YES;
+    } break;
+    case NSEventTypeScrollWheel: {
+      CGFloat scrollThreshold = [_view.currentTheme.attrs[NSParagraphStyleAttributeName] minimumLineHeight];
+      if (event.phase == NSEventPhaseBegan) {
+        _scrollLocus = NSZeroPoint;
+        handled = YES;
+      } else if ((event.phase == NSEventPhaseNone || event.momentumPhase == NSEventPhaseNone) &&
+                 _scrollLocus.x != NSNotFound && _scrollLocus.y != NSNotFound) {
+        // determine scrolling direction by confining to sectors within ±30º of any axis
+        if (ABS(event.scrollingDeltaX) > ABS(event.scrollingDeltaY) * sqrt(3)) {
+          _scrollLocus.x += event.scrollingDeltaX * (event.hasPreciseScrollingDeltas ? 1 : 10);
+        } else if (ABS(event.scrollingDeltaY) > ABS(event.scrollingDeltaX) * sqrt(3)) {
+          _scrollLocus.y += event.scrollingDeltaY * (event.hasPreciseScrollingDeltas ? 1 : 10);
+        }
+        // compare accumulated locus length against threshold and limit paging to max once
+        if (_scrollLocus.x > scrollThreshold) {
+          handled = [self.inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageDownFunctionKey : NSPageUpFunctionKey)];
+          _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
+        } else if (_scrollLocus.y > scrollThreshold) {
+          handled = [self.inputController perform:kSELECT onIndex:NSPageUpFunctionKey];
+          _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
+        } else if (_scrollLocus.x < -scrollThreshold) {
+          handled = [self.inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageUpFunctionKey : NSPageDownFunctionKey)];
+          _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
+        } else if (_scrollLocus.y < -scrollThreshold) {
+          handled = [self.inputController perform:kSELECT onIndex:NSPageDownFunctionKey];
+          _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
+        }
+      }
     } break;
     default:
       break;
@@ -1145,6 +1174,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   [_view.textView setBoundsOrigin:NSMakePoint(0.0, 0.0)];
   [_view setFrame:self.contentView.bounds];
   [_view.textView setFrame:NSInsetRect(self.contentView.bounds, theme.edgeInset.width, theme.edgeInset.height)];
+
   BOOL translucency = theme.translucency;
   if (@available(macOS 10.14, *)) {
     if (translucency) {
@@ -1182,9 +1212,8 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
            lastPage:(BOOL)lastPage
            turnPage:(NSUInteger)turnPage
              update:(BOOL)update {
-  if (update == NSNotFound && _index != index &&
-      _pageNum == pageNum && _lastPage == lastPage) {
-    update = NO;
+  if (update == NSNotFound) {
+    update = _index != index && _pageNum == pageNum && _lastPage == lastPage ? NO : YES;
   }
   if (update) {
     _preedit = preedit;
