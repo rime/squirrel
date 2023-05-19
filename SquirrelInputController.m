@@ -53,7 +53,6 @@ const int N_KEY_ROLL_OVER = 50;
 
   _currentClient = sender;
   NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
-  uint32_t eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGAnyInputEventType);
   BOOL handled = NO;
 
   @autoreleasepool {
@@ -83,7 +82,12 @@ const int N_KEY_ROLL_OVER = 50;
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         CGKeyCode keyCode = CGEventGetIntegerValueField(event.CGEvent, kCGKeyboardEventKeycode);
         int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
-
+        int eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventFlagsChanged) +
+                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventKeyDown) +
+                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventLeftMouseDown) +
+                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventRightMouseDown) +
+                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventOtherMouseDown);
+        _lastModifier = modifiers;
         switch (keyCode) {
           case kVK_CapsLock: {
             rime_modifiers ^= kLockMask;
@@ -118,6 +122,7 @@ const int N_KEY_ROLL_OVER = 50;
             break;
         }
         [self rimeUpdate];
+      saveStatus: _lastEventCount = eventCount;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -147,11 +152,6 @@ const int N_KEY_ROLL_OVER = 50;
       default:
         break;
     }
-  }
-
-  saveStatus: if (event.type == NSEventTypeFlagsChanged) {
-    _lastModifier = modifiers;
-    _lastEventCount = eventCount;
   }
   return handled;
 }
