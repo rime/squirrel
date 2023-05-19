@@ -761,6 +761,7 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
     borderLayer.strokeColor = [theme.borderColor CGColor];
     [panelLayer addSublayer:borderLayer];
   }
+  [_textView setTextContainerInset:theme.edgeInset];
 }
 
 - (BOOL)convertClickSpot:(NSPoint)spot toIndex:(NSUInteger *)index {
@@ -789,7 +790,7 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   NSVisualEffectView *_back;
 
   NSRect _screenRect;
-  CGFloat _maxHeight;
+  NSSize _maxSize;
   CGFloat _maxTextWidth;
 
   NSString *_preedit;
@@ -960,7 +961,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     if (@available(macOS 10.14, *)) {
       [self initializeUIStyleForDarkMode:YES];
     }
-    _maxHeight = 0;
+    _maxSize = NSZeroSize;
   }
   return self;
 }
@@ -1101,24 +1102,36 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   }
   _view.textView.textContainer.size = NSMakeSize(textWidth, maxTextHeight);
 
-  // in vertical mode, the width and height are interchanged
+  bool sweepVertical = NSWidth(_position) > NSHeight(_position);
   NSRect contentRect = _view.contentRect;
-  if (theme.rememberSize && (theme.vertical ? (NSMinY(_position) / NSHeight(_screenRect) <= textWidthRatio) :
-      ((NSMinX(_position) + MAX(contentRect.size.width, _maxHeight) + theme.edgeInset.width * 2 > NSMaxX(_screenRect))))) {
-    if (contentRect.size.width >= _maxHeight) {
-      _maxHeight = contentRect.size.width;
-    } else {
-      contentRect.size.width = _maxHeight;
-      _view.textView.textContainer.size = NSMakeSize(_maxHeight, maxTextHeight);
+  NSRect maxContentRect = contentRect;
+  // remember panel size (fix the top leading anchor of the panel in screen coordiantes)
+  if (theme.rememberSize) {
+    if (theme.vertical ? (NSMinY(_position) / NSHeight(_screenRect) <= textWidthRatio) :
+        (sweepVertical ? (NSMinX(_position) / NSWidth(_screenRect) > textWidthRatio) :
+         (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + theme.edgeInset.width > NSMaxX(_screenRect)))) {
+      if (NSWidth(maxContentRect) >= _maxSize.width) {
+        _maxSize.width = NSWidth(maxContentRect);
+      } else {
+        maxContentRect.size.width = _maxSize.width;
+        _view.textView.textContainer.size = NSMakeSize(_maxSize.width, maxTextHeight);
+      }
+    }
+    if (theme.vertical ? (NSMinX(_position) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? kOffsetHeight : 0)) :
+        (NSMinY(_position) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? 0 : kOffsetHeight))) {
+      if (NSHeight(maxContentRect) >= _maxSize.height) {
+        _maxSize.height = NSHeight(maxContentRect);
+      } else {
+        maxContentRect.size.height = _maxSize.height;
+      }
     }
   }
 
   // the sweep direction of the client app changes the behavior of adjusting squirrel panel position
   NSRect windowRect;
-  bool sweepVertical = NSWidth(_position) > NSHeight(_position);
   if (theme.vertical) {
-    windowRect.size = NSMakeSize(ceil(contentRect.size.height + theme.edgeInset.height * 2),
-                                 ceil(contentRect.size.width + theme.edgeInset.width * 2));
+    windowRect.size = NSMakeSize(NSHeight(maxContentRect) + theme.edgeInset.height * 2,
+                                 NSWidth(maxContentRect) + theme.edgeInset.width * 2);
     // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
     if (NSMinY(_position) / NSHeight(_screenRect) > textWidthRatio) {
       windowRect.origin.y = NSMinY(_position) + (sweepVertical ? theme.edgeInset.width : -kOffsetHeight) - NSHeight(windowRect);
@@ -1129,11 +1142,11 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     windowRect.origin.x = NSMinX(_position) - (sweepVertical ? kOffsetHeight : 0) - NSWidth(windowRect);
     if (!sweepVertical && _view.preeditRange.length > 0) {
       NSRect preeditRect = [_view contentRectForRange:_view.preeditRange];
-      windowRect.origin.x += ceil(NSHeight(preeditRect) + theme.edgeInset.height);
+      windowRect.origin.x += NSHeight(preeditRect) + theme.edgeInset.height;
     }
   } else {
-    windowRect.size = NSMakeSize(ceil(contentRect.size.width + theme.edgeInset.width * 2),
-                                 ceil(contentRect.size.height + theme.edgeInset.height * 2));
+    windowRect.size = NSMakeSize(NSWidth(maxContentRect) + theme.edgeInset.width * 2,
+                                 NSHeight(maxContentRect) + theme.edgeInset.height * 2);
     if (sweepVertical) {
       // To avoid jumping left and right while typing, use the lefter screen when typing on righter, and vice versa
       if (NSMinX(_position) / NSWidth(_screenRect) > textWidthRatio) {
@@ -1161,31 +1174,38 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     windowRect.origin.y = (sweepVertical ? NSMaxY(_screenRect) : NSMinY(_position)-kOffsetHeight) - NSHeight(windowRect);
   }
 
-  [self setFrame:windowRect display:YES];
+  if (theme.vertical) {
+    windowRect.origin.x += NSHeight(maxContentRect) - NSHeight(contentRect);
+    windowRect.size.width -= NSHeight(maxContentRect) - NSHeight(contentRect);
+  } else {
+    windowRect.origin.y += NSHeight(maxContentRect) - NSHeight(contentRect);
+    windowRect.size.height -= NSHeight(maxContentRect) - NSHeight(contentRect);
+  }
+  [self setFrame:NSIntegralRectWithOptions(windowRect, NSAlignAllEdgesOutward) display:YES];
   // rotate the view, the core in vertical mode!
   if (theme.vertical) {
-    self.contentView.boundsRotation = -90.0;
-    [self.contentView setBoundsOrigin:NSMakePoint(0.0, windowRect.size.width)];
+    [self.contentView setBoundsRotation:-90.0];
+    [self.contentView setBoundsOrigin:NSMakePoint(0.0, NSWidth(windowRect))];
   } else {
-    self.contentView.boundsRotation = 0.0;
+    [self.contentView setBoundsRotation:0.0];
     [self.contentView setBoundsOrigin:NSMakePoint(0.0, 0.0)];
   }
-  _view.textView.boundsRotation = 0.0;
-  [_view.textView setBoundsOrigin:NSMakePoint(0.0, 0.0)];
+  [_view.textView setBoundsRotation:0.0];
+  [_view.textView setBoundsOrigin:_view.textView.textContainerOrigin];
   [_view setFrame:self.contentView.bounds];
-  [_view.textView setFrame:NSInsetRect(self.contentView.bounds, theme.edgeInset.width, theme.edgeInset.height)];
+  [_view.textView setFrame:self.contentView.bounds];
 
   BOOL translucency = theme.translucency;
   if (@available(macOS 10.14, *)) {
     if (translucency) {
       [_back setFrame:self.contentView.bounds];
-      _back.appearance = NSApp.effectiveAppearance;
+      [_back setAppearance:NSApp.effectiveAppearance];
       [_back setHidden:NO];
     } else {
       [_back setHidden:YES];
     }
   }
-  self.alphaValue = theme.alpha;
+  [self setAlphaValue:theme.alpha];
   [self invalidateShadow];
   [self orderFront:nil];
   // voila !
@@ -1197,7 +1217,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     _statusTimer = nil;
   }
   [self orderOut:nil];
-  _maxHeight = 0;
+  _maxSize = NSZeroSize;
 }
 
 // Main function to add attributes to text output from librime
@@ -1231,12 +1251,18 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
     _index = index = NSNotFound;
   }
 
-  if (turnPage == NSPageUpFunctionKey || turnPage == NSBeginFunctionKey) {
-    _turnPage = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
-  } else if (turnPage == NSPageDownFunctionKey || turnPage == NSEndFunctionKey) {
-    _turnPage = lastPage ? NSEndFunctionKey : NSPageDownFunctionKey;
-  } else {
-    _turnPage = NSNotFound;
+  switch(turnPage) {
+    case NSPageUpFunctionKey:
+    case NSBeginFunctionKey: {
+      _turnPage = pageNum ? NSPageUpFunctionKey : NSBeginFunctionKey;
+    } break;
+    case NSPageDownFunctionKey:
+    case NSEndFunctionKey: {
+      _turnPage = lastPage ? NSEndFunctionKey : NSPageDownFunctionKey;
+    } break;
+    default: {
+      _turnPage = NSNotFound;
+    } break;
   }
 
   if (numCandidates || (preedit && preedit.length)) {
@@ -1398,7 +1424,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
       paragraphStyleCandidate.headIndent = labelWidth;
     }
     if (i == numCandidates-1 && theme.showPaging) {
-      maxLineWidth = MAX(maxLineWidth, _maxHeight);
+      maxLineWidth = MAX(maxLineWidth, _maxSize.width);
       useTab = !((theme.linear ? lineWidth : pagingWidth) >= maxLineWidth);
     }
     NSAttributedString *separator = [[NSAttributedString alloc] initWithString:separtatorString attributes:theme.attrs];
