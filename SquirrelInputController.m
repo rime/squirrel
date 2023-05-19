@@ -24,7 +24,7 @@ const int N_KEY_ROLL_OVER = 50;
   NSUInteger _caretPos;
   NSArray *_candidates;
   NSUInteger _lastModifier;
-  uint32_t _lastEventCount;
+  int _lastEventCount;
   RimeSessionId _session;
   NSString *_schemaId;
   BOOL _inlinePreedit;
@@ -52,7 +52,11 @@ const int N_KEY_ROLL_OVER = 50;
 
   _currentClient = sender;
   NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
-  uint32_t eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGAnyInputEventType);
+  int eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventFlagsChanged) +
+                   CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventKeyDown) +
+                   CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventLeftMouseDown) +
+                   CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventRightMouseDown) +
+                   CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventOtherMouseDown);
   BOOL handled = NO;
 
   @autoreleasepool {
@@ -82,7 +86,7 @@ const int N_KEY_ROLL_OVER = 50;
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         CGKeyCode keyCode = CGEventGetIntegerValueField(event.CGEvent, kCGKeyboardEventKeycode);
         int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
-        _lastModifier = modifiers;
+
         if (changes & OSX_CAPITAL_MASK) {
           rime_modifiers ^= kLockMask;
           [self processKey:rime_keycode modifiers:rime_modifiers];
