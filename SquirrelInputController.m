@@ -25,7 +25,7 @@ const int N_KEY_ROLL_OVER = 50;
   NSUInteger _caretPos;
   NSArray *_candidates;
   NSUInteger _lastModifier;
-  uint32_t _lastEventCount;
+  int _lastEventCount;
   RimeSessionId _session;
   NSString *_schemaId;
   BOOL _inlinePreedit;
