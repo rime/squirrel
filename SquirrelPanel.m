@@ -1080,7 +1080,6 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
 
 // Get the window size, it will be the dirtyRect in SquirrelView.drawRect
 - (void)show {
-  [self getCurrentScreen];
   SquirrelTheme *theme = _view.currentTheme;
 
   if (@available(macOS 10.14, *)) {
@@ -1092,10 +1091,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
 
   //Break line if the text is too long, based on screen size.
   CGFloat textWidth = _view.textView.textStorage.size.width;
-  NSFont *currentFont = theme.attrs[NSFontAttributeName];
-  CGFloat fontScale = currentFont.pointSize / 12.0;
-  CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + fontScale / 12.0);
-  _maxTextWidth = theme.vertical ? (NSHeight(_screenRect) * textWidthRatio - theme.edgeInset.height * 2) : (NSWidth(_screenRect) * textWidthRatio - theme.edgeInset.width * 2);
+  CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   CGFloat maxTextHeight = theme.vertical ? (NSWidth(_screenRect) - theme.edgeInset.width * 2) : (NSHeight(_screenRect) - theme.edgeInset.height * 2);
   if (textWidth > _maxTextWidth) {
     textWidth = _maxTextWidth;
@@ -1282,6 +1278,9 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   }
 
   SquirrelTheme *theme = _view.currentTheme;
+  [self getCurrentScreen];
+  CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
+  _maxTextWidth = theme.vertical ? (NSHeight(_screenRect) * textWidthRatio - theme.edgeInset.height * 2) : (NSWidth(_screenRect) * textWidthRatio - theme.edgeInset.width * 2);
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
