@@ -709,12 +709,6 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
   [self.layer addSublayer:panelLayer];
   if (theme.preeditBackgroundColor &&
       (_preeditRange.length > 0 || _highlightedIndex != NSNotFound)) {
-    if (_highlightedIndex != NSNotFound && theme.highlightedStripColor) {
-      CAShapeLayer *highlightedLayer = [[CAShapeLayer alloc] init];
-      highlightedLayer.path = [highlightedPath quartzPath];
-      highlightedLayer.fillColor = [theme.highlightedStripColor CGColor];
-      [panelLayer addSublayer:highlightedLayer];
-    }
     CAShapeLayer *nonCandidateLayer = [[CAShapeLayer alloc] init];
     nonCandidateBlockPath = [backgroundPath copy];
     if (![candidateBlockPath isEmpty]) {
@@ -725,6 +719,12 @@ void shrink(NSMutableArray<NSValue *> *vertex, NSRect boundBox) {
     nonCandidateLayer.path = [nonCandidateBlockPath quartzPath];
     nonCandidateLayer.fillColor = [theme.preeditBackgroundColor CGColor];
     [panelLayer addSublayer:nonCandidateLayer];
+  }
+  if (_highlightedIndex != NSNotFound && theme.highlightedStripColor) {
+    CAShapeLayer *highlightedLayer = [[CAShapeLayer alloc] init];
+    highlightedLayer.path = [highlightedPath quartzPath];
+    highlightedLayer.fillColor = [theme.highlightedStripColor CGColor];
+    [panelLayer addSublayer:highlightedLayer];
   }
   if (theme.highlightedPreeditColor) {
     if (_pagingRange.length > 0) {
@@ -1656,8 +1656,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]];
     preeditBackgroundColor = [config getColor:[prefix stringByAppendingString:@"/preedit_back_color"]];
     textColor = [config getColor:[prefix stringByAppendingString:@"/text_color"]];
-    highlightedTextColor =
-        [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
+    highlightedTextColor = [config getColor:[prefix stringByAppendingString:@"/hilited_text_color"]];
     if (highlightedTextColor == nil) {
       highlightedTextColor = textColor;
     }
@@ -1895,11 +1894,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
   backgroundColor = backgroundColor ? backgroundColor : [NSColor controlBackgroundColor];
-  borderColor = borderColor ? borderColor : [NSColor gridColor];
-  preeditBackgroundColor = preeditBackgroundColor ? preeditBackgroundColor : [NSColor windowBackgroundColor];
+  borderColor = borderColor ? borderColor : isNative ? [NSColor gridColor] : nil;
+  preeditBackgroundColor = preeditBackgroundColor ? preeditBackgroundColor : isNative ? [NSColor windowBackgroundColor] : nil;
   candidateTextColor = candidateTextColor ? candidateTextColor : [NSColor controlTextColor];
   highlightedCandidateTextColor = highlightedCandidateTextColor ? highlightedCandidateTextColor : [NSColor selectedMenuItemTextColor];
-  highlightedCandidateBackColor = highlightedCandidateBackColor ? highlightedCandidateBackColor : [NSColor selectedContentBackgroundColor];
+  highlightedCandidateBackColor = highlightedCandidateBackColor ? highlightedCandidateBackColor : isNative ? [NSColor selectedContentBackgroundColor] : nil;
   candidateLabelColor = candidateLabelColor ? candidateLabelColor :
     isNative ? [NSColor controlAccentColor] : blendColors(highlightedCandidateBackColor, highlightedCandidateTextColor);
   highlightedCandidateLabelColor = highlightedCandidateLabelColor ? highlightedCandidateLabelColor :
@@ -1908,7 +1907,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   highlightedCommentTextColor = highlightedCommentTextColor ? highlightedCommentTextColor : [NSColor alternateSelectedControlTextColor];
   textColor = textColor ? textColor : [NSColor textColor];
   highlightedTextColor = highlightedTextColor ? highlightedTextColor : [NSColor selectedTextColor];
-  highlightedBackColor = highlightedBackColor ? highlightedBackColor : [NSColor selectedTextBackgroundColor];
+  highlightedBackColor = highlightedBackColor ? highlightedBackColor : isNative ? [NSColor selectedTextBackgroundColor] : nil;
 
   attrs[NSForegroundColorAttributeName] = candidateTextColor;
   labelAttrs[NSForegroundColorAttributeName] = candidateLabelColor;
