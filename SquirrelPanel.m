@@ -1505,6 +1505,7 @@ void fixDefaultFont(NSMutableAttributedString *text, BOOL vertical) {
   _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
 
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
+  _maxSize = NSZeroSize; // disable remember_size for status messages
   [_view drawViewWith:@[] highlightedIndex:NSNotFound preeditRange:emptyRange highlightedPreeditRange:emptyRange pagingRange:emptyRange pagingButton:NSNotFound];
   [self show];
 
