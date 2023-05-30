@@ -541,6 +541,7 @@ NSString *substr(const char *str, int length) {
 {
   //NSLog(@"rimeUpdate");
   [self rimeConsumeCommittedText];
+  BOOL switcher = rime_get_api()->get_option(_session, "dumb");
 
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
@@ -555,7 +556,7 @@ NSString *substr(const char *str, int length) {
       _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
                           !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
-      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
+      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit && !switcher);
     }
     rime_get_api()->free_status(&status);
   }
@@ -575,7 +576,7 @@ NSString *substr(const char *str, int length) {
     if (_inlineCandidate) {
       const char *candidatePreview = ctx.commit_text_preview;
       NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
-      if (_inlinePreedit) {
+      if (_inlinePreedit && !switcher) {
         if ((caretPos >= NSMaxRange(selRange)) && (caretPos < _preeditString.length)) {
           candidatePreviewText = [candidatePreviewText stringByAppendingString:[_preeditString substringWithRange:NSMakeRange(caretPos, _preeditString.length-caretPos)]];
         }
@@ -589,7 +590,7 @@ NSString *substr(const char *str, int length) {
         [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
       }
     } else {
-      if (_inlinePreedit) {
+      if (_inlinePreedit && !switcher) {
         [self showPreeditString:_preeditString selRange:selRange caretPos:caretPos];
       } else {
         NSRange empty = {0, 0};
@@ -625,7 +626,7 @@ NSString *substr(const char *str, int length) {
     } else {
       labels = @[];
     }
-    [self showPanelWithPreedit:(_inlinePreedit ? nil : _preeditString)
+    [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : _preeditString)
                       selRange:selRange
                       caretPos:caretPos
                     candidates:candidates
