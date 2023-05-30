@@ -39,10 +39,8 @@ style:
   line_spacing: 5
   # space between preedit and candidates in non-inline mode
   spacing: 10
-  # space betweeen letters and characters, a.k.a. tracking
-  kerning: 1
 
-  #candidate_format: '%c. %@'
+  #candidate_format: '%c %@'
 
   # adjust the base line of vertical text
   #base_offset: 6
@@ -253,8 +251,8 @@ preset_color_schemes:
     inline_preedit: true                             # 单行显示，false双行显示
     candidate_format: "%c\u2005%@\u2005"             # 用 1/6 em 空格 U+2005 来控制编号 %c 和候选词 %@ 前后的空间。
     corner_radius: 2                                 # 候选条圆角
-    border_height: 3                                 # 窗口边界高度，大于圆角半径×(1-1/√2)才生效
-    border_width: 8                                  # 窗口边界宽度，大于圆角半径×(1-1/√2)才生效
+    border_height: 3                                 # 窗口边界高度，大于圆角半径才生效
+    border_width: 8                                  # 窗口边界宽度，大于圆角半径才生效
     back_color: 0xeeffffff                           # 候选条背景色
     border_color: 0xE0B693                           # 边框色
     font_face: "HYQiHei-55S Book,HanaMinA Regular"   # 候选词字体
@@ -279,8 +277,8 @@ preset_color_schemes:
     candidate_format: "%c\u2005%@"          # 用 1/6 em 空格 U+2005 来控制编号 %c 和候选词 %@ 前后的空间。
     corner_radius: 5                        # 候选条圆角
     hilited_corner_radius: 3                # 高亮圆角
-    border_height: 6                        # 窗口边界高度，大于圆角半径×(1-1/√2)才生效
-    border_width: 6                         # 窗口边界宽度，大于圆角半径×(1-1/√2)才生效
+    border_height: 6                        # 窗口边界高度，大于圆角半径才生效
+    border_width: 6                         # 窗口边界宽度，大于圆角半径才生效
     font_face: "PingFangSC"                 # 候选词字体
     font_point: 16                          # 候选字词大小
     label_font_point: 14                    # 候选编号大小

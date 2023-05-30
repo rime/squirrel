@@ -417,11 +417,11 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
 
-  if ([_inlineString isEqualToString:preedit] &&
+  if ([_preeditString isEqualToString:preedit] &&
       _caretPos == pos && _selRange.location == range.location && _selRange.length == range.length)
     return;
 
-  _inlineString = preedit;
+  _preeditString = preedit;
   _selRange = range;
   _caretPos = pos;
 
@@ -454,7 +454,6 @@ const int N_KEY_ROLL_OVER = 50;
                 highlighted:(NSUInteger)index
                     pageNum:(NSUInteger)pageNum
                    lastPage:(BOOL)lastPage
-                     update:(BOOL)update
 {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
@@ -473,7 +472,7 @@ const int N_KEY_ROLL_OVER = 50;
              pageNum:pageNum
             lastPage:lastPage
             turnPage:NSNotFound
-              update:update];
+              update:YES];
 }
 
 @end // SquirrelController
@@ -534,7 +533,7 @@ NSString *substr(const char *str, int length) {
   char substring[length+1];
   strncpy(substring, str, length);
   substring[length] = '\0';
-  return [NSString stringWithUTF8String:substring];
+  return @(substring);
 }
 
 -(void)rimeUpdate
@@ -566,8 +565,6 @@ NSString *substr(const char *str, int length) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
-    BOOL update = [_preeditString isEqualToString:preeditText] ? NSNotFound : YES;
-    if (update) _preeditString = preeditText;
 
     NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
     NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
@@ -577,21 +574,21 @@ NSString *substr(const char *str, int length) {
       const char *candidatePreview = ctx.commit_text_preview;
       NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
       if (_inlinePreedit && !switcher) {
-        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < _preeditString.length)) {
-          candidatePreviewText = [candidatePreviewText stringByAppendingString:[_preeditString substringWithRange:NSMakeRange(caretPos, _preeditString.length-caretPos)]];
+        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
+          candidatePreviewText = [candidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
         }
-        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(_preeditString.length-caretPos)];
+        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(preeditText.length-caretPos)];
       } else {
         if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
           candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
-        } else if ((NSMaxRange(selRange) < _preeditString.length) && (caretPos <= selRange.location)) {
-          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(_preeditString.length-NSMaxRange(selRange)))];
+        } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
+          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
         }
         [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
       }
     } else {
       if (_inlinePreedit && !switcher) {
-        [self showPreeditString:_preeditString selRange:selRange caretPos:caretPos];
+        [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
       } else {
         NSRange empty = {0, 0};
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
@@ -626,7 +623,7 @@ NSString *substr(const char *str, int length) {
     } else {
       labels = @[];
     }
-    [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : _preeditString)
+    [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : preeditText)
                       selRange:selRange
                       caretPos:caretPos
                     candidates:candidates
@@ -634,8 +631,7 @@ NSString *substr(const char *str, int length) {
                         labels:labels
                    highlighted:ctx.menu.highlighted_candidate_index
                        pageNum:ctx.menu.page_no
-                      lastPage:ctx.menu.is_last_page
-                        update:update];
+                      lastPage:ctx.menu.is_last_page];
     rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];
