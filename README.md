@@ -23,7 +23,7 @@
 您可能還需要 Rime 用於其他操作系統的發行版：
 
   * ibus-rime 及 fcitx-rime 用於 Linux
-  * 【小狼毫】用於 Windows XP, Windows 7 ~ Windows 10
+  * 【小狼毫】用於 Windows
 
 安裝輸入法
 ---
