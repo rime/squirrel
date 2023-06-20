@@ -345,13 +345,8 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session && _preeditString.length > 0) {
-    if ([_preeditString isEqualToString:@"\u3000"]) {
-      const char* raw_input = rime_get_api()->get_input(_session);
-      if (raw_input)
-        [self commitString:@(raw_input)];
-    } else { // inline mode
-      [self commitString:_preeditString];
-    }
+    NSString *composition = [self composedString:sender];
+    [self commitString:composition];
     rime_get_api()->clear_composition(_session);
   }
 }
@@ -388,6 +383,30 @@ const int N_KEY_ROLL_OVER = 50;
 -(NSMenu*)menu
 {
   return NSApp.squirrelAppDelegate.menu;
+}
+
+- (NSAttributedString *)originalString:(id)sender
+{
+  const char* raw_input = rime_get_api()->get_input(_session);
+  NSAttributedString *originalString = [[NSAttributedString alloc] initWithString:@(raw_input)];
+  return originalString;
+}
+
+- (id)composedString:(id)sender
+{
+  RIME_STRUCT(RimeContext, ctx);
+  const char *preedit = ctx.composition.preedit;
+  if (!preedit)
+    return @"";
+  if (rime_get_api()->get_option(_session, "soft_cursor")) {
+    int caretPos = ctx.composition.cursor_pos;
+    char composed[strlen(preedit)-3];
+    for (int i = 0; i < strlen(preedit)-3; ++i) {
+      composed[i] = preedit[i < caretPos ? i : i+3];
+    }
+    return @(composed);
+  }
+  return @(preedit);
 }
 
 -(NSArray*)candidates:(id)sender
