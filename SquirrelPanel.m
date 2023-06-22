@@ -355,7 +355,7 @@ SquirrelTheme *_darkTheme;
     NSRange lineCharRange = [layoutManager characterRangeForGlyphRange:lineRange actualGlyphRange:NULL];
     rect.origin.y = NSMaxY(blockRect);
     usedRect.origin.y = NSMaxY(blockRect);
-    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline;
+    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline + lineHeight/2 - refFontHeight/2;
     rect.size.height = lineHeight;
     usedRect.size.height = MAX(NSHeight(usedRect), lineHeight);
     if (style.lineSpacing > 0) {
@@ -390,8 +390,9 @@ SquirrelTheme *_darkTheme;
       }
       CGFloat runBaseline = [layoutManager defaultBaselineOffsetForFont:runFont];
       CGFloat runFontHeight = [layoutManager defaultLineHeightForFont:runFont];
+      CGFloat resizedRefBaseline = [layoutManager defaultBaselineOffsetForFont:resizedRefFont];
       CGFloat resizedRefFontHeight = [layoutManager defaultLineHeightForFont:resizedRefFont];
-      runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - resizedRefFontHeight)/4;
+      runGlyphPosition.y = alignment - baselineOffset;
       if (verticalLayout) {
         if (runFont.verticalFont.isVertical) {
           runGlyphPosition.x += MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
