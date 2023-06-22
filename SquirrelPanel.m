@@ -391,12 +391,10 @@ SquirrelTheme *_darkTheme;
       CGFloat runBaseline = [layoutManager defaultBaselineOffsetForFont:runFont];
       CGFloat runFontHeight = [layoutManager defaultLineHeightForFont:runFont];
       CGFloat resizedRefFontHeight = [layoutManager defaultLineHeightForFont:resizedRefFont];
-      CGFloat resizedRefBaseline = [layoutManager defaultBaselineOffsetForFont:resizedRefFont];
-      CGFloat runFontOvershoot = MAX(0.0, runFontHeight - runBaseline - resizedRefFontHeight + resizedRefBaseline)/2;
-      runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
+      runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - resizedRefFontHeight)/4;
       if (verticalLayout) {
         if (runFont.verticalFont.isVertical) {
-          runGlyphPosition.x += runFontOvershoot;
+          runGlyphPosition.x += MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
         } else {
           runGlyphPosition.y += runBaseline - runFontHeight/2;
         }
