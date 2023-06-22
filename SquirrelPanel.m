@@ -413,9 +413,9 @@ SquirrelTheme *_darkTheme;
 // Get the rectangle containing entire contents, expensive to calculate
 - (NSRect)contentRect {
   [self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-  NSRect rect = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer];
+  NSRect firstLineRect = [self.textView.layoutManager lineFragmentRectForGlyphAtIndex:0 effectiveRange:NULL];
   NSRect extraLineRect = [self.textView.layoutManager extraLineFragmentRect];
-  rect.size.height -= NSHeight(extraLineRect);
+  NSRect rect = NSMakeRect(NSMinX(firstLineRect), NSMaxY(firstLineRect), NSWidth(firstLineRect), NSMinY(extraLineRect)-NSMaxY(firstLineRect));
   return rect;
 }
 
@@ -663,9 +663,13 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   NSRect candidateBlockRect = NSZeroRect;
   if (_candidateRanges.count > 0) {
     CGFloat fontSize = MAX([theme.attrs[NSFontAttributeName] pointSize], MAX([theme.commentAttrs[NSFontAttributeName] pointSize], [theme.labelAttrs[NSFontAttributeName] pointSize]));
-    NSFont *refFont =  CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, fontSize, (CFStringRef) @"zh"));
+    NSFont *refFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, fontSize, (CFStringRef) @"zh"));
     NSRange candidateBlockRange = NSUnionRange(_candidateRanges[0].rangeValue, theme.linear && _pagingRange.length >0 ? _pagingRange : _candidateRanges[_candidateRanges.count-1].rangeValue);
     candidateBlockRect = [self setLineRectForRange:candidateBlockRange atOrigin:lineOrigin withReferenceFont:(theme.vertical ? refFont.verticalFont : refFont) paragraphStyle:theme.paragraphStyle];
+    lineOrigin.y = NSMaxY(candidateBlockRect);
+  } else if (_preeditRange.length == 0) { // status message
+    NSFont *statusRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.commentAttrs[NSFontAttributeName] pointSize], (CFStringRef) @"zh"));
+    candidateBlockRect = [self setLineRectForRange:NSMakeRange(1, self.textView.textStorage.length-2) atOrigin:lineOrigin withReferenceFont:(theme.vertical ? statusRefFont.verticalFont : statusRefFont) paragraphStyle:[NSParagraphStyle defaultParagraphStyle]];
     lineOrigin.y = NSMaxY(candidateBlockRect);
   }
   NSRect pagingLineRect = NSZeroRect;
@@ -1381,7 +1385,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   SquirrelTheme *theme = _view.currentTheme;
   [self getMaxTextWidth];
 
-  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
+  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:theme.preeditAttrs]; // trick to force space before first line
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
   NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
   CGFloat preeditWidth = 0.0;
@@ -1398,7 +1402,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       [preeditLine appendAttributedString:[[NSAttributedString alloc]
                                            initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
                                            attributes:theme.preeditHighlightedAttrs]];
-      highlightedPreeditRange = NSMakeRange(highlightedPreeditStart, preeditLine.length - highlightedPreeditStart);
+      highlightedPreeditRange = NSMakeRange(text.length + highlightedPreeditStart, preeditLine.length - highlightedPreeditStart);
     }
     if (NSMaxRange(selRange) < preedit.length) {
       [preeditLine appendAttributedString:[[NSAttributedString alloc]
@@ -1410,8 +1414,8 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
                         value:theme.preeditParagraphStyle
                         range:NSMakeRange(0, preeditLine.length)];
 
+    preeditRange = NSMakeRange(text.length, preeditLine.length);
     [text appendAttributedString:preeditLine];
-    preeditRange = NSMakeRange(0, text.length);
     preeditWidth = NSWidth([preeditLine boundingRectWithSize:NSZeroSize options:NSStringDrawingUsesLineFragmentOrigin]);
     if (numCandidates) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.preeditAttrs]];
@@ -1593,7 +1597,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
 - (void)showStatus:(NSString *)message {
   SquirrelTheme *theme = _view.currentTheme;
-  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.commentAttrs];
+  NSMutableAttributedString *text =  [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:theme.commentAttrs];
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.commentAttrs]];
+  [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.commentAttrs]];
 
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
   [_view.textView.textStorage setAttributedString:text];
