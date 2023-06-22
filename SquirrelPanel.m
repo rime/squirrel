@@ -341,6 +341,7 @@ SquirrelTheme *_darkTheme;
   NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
   NSRect blockRect = NSMakeRect(origin.x, origin.y, 0, 0);
   BOOL verticalLayout = textContainer.layoutOrientation == NSTextLayoutOrientationVertical;
+  NSRect refFontBBox = [refFont boundingRectForFont];
   CGFloat refFontHeight = [layoutManager defaultLineHeightForFont:refFont];
   CGFloat refBaseline = [layoutManager defaultBaselineOffsetForFont:refFont];
   CGFloat lineHeight = MAX(style.lineHeightMultiple > 0 ? refFontHeight * style.lineHeightMultiple : refFontHeight, style.minimumLineHeight);
@@ -355,7 +356,7 @@ SquirrelTheme *_darkTheme;
     NSRange lineCharRange = [layoutManager characterRangeForGlyphRange:lineRange actualGlyphRange:NULL];
     rect.origin.y = NSMaxY(blockRect);
     usedRect.origin.y = NSMaxY(blockRect);
-    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline + lineHeight/2 - refFontHeight/2;
+    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline + MAX(0.0, lineHeight - NSHeight(refFontBBox))/2;
     rect.size.height = lineHeight;
     usedRect.size.height = MAX(NSHeight(usedRect), lineHeight);
     if (style.lineSpacing > 0) {
@@ -372,7 +373,11 @@ SquirrelTheme *_darkTheme;
       usedRect.origin.y += style.paragraphSpacingBefore;
       alignment += style.paragraphSpacingBefore;
     }
-    [layoutManager setLineFragmentRect:rect forGlyphRange:lineRange usedRect:NSIntersectionRect(usedRect, rect)];
+    blockRect = NSUnionRect(blockRect, rect);
+    usedRect = NSIntersectionRect(usedRect, rect);
+    rect = [self.textView backingAlignedRect:rect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+    usedRect = [self.textView backingAlignedRect:usedRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+    [layoutManager setLineFragmentRect:rect forGlyphRange:lineRange usedRect:usedRect];
 
     // typesetting glyphs
     NSRange fontRunRange = NSMakeRange(NSNotFound, 0);
@@ -381,29 +386,28 @@ SquirrelTheme *_darkTheme;
       NSPoint runGlyphPosition = [layoutManager locationForGlyphAtIndex:j];
       NSUInteger runCharLocation = [layoutManager characterIndexForGlyphAtIndex:j];
       NSFont *runFont = [textStorage attribute:NSFontAttributeName atIndex:runCharLocation effectiveRange:&fontRunRange];
-      NSFont *resizedRefFont = [NSFont fontWithDescriptor:refFont.fontDescriptor size:runFont.pointSize];
+      NSRect runFontBBox = [runFont boundingRectForFont];
       CGFloat baselineOffset = [[textStorage attribute:NSBaselineOffsetAttributeName atIndex:runCharLocation effectiveRange:NULL] doubleValue];
       NSRange runRange = NSIntersectionRange(fontRunRange, [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j]);
       if (verticalLayout) {
         runFont = runFont.verticalFont;
-        resizedRefFont = resizedRefFont.verticalFont;
       }
       CGFloat runBaseline = [layoutManager defaultBaselineOffsetForFont:runFont];
       CGFloat runFontHeight = [layoutManager defaultLineHeightForFont:runFont];
-      CGFloat resizedRefBaseline = [layoutManager defaultBaselineOffsetForFont:resizedRefFont];
-      CGFloat resizedRefFontHeight = [layoutManager defaultLineHeightForFont:resizedRefFont];
-      runGlyphPosition.y = alignment - baselineOffset;
       if (verticalLayout) {
-        if (runFont.verticalFont.isVertical) {
-          runGlyphPosition.x += MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
+        runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - NSHeight(runFontBBox))/4;
+        if (runFont.isVertical) {
+          runGlyphPosition.x += MAX(0.0, runFontHeight - NSHeight(runFontBBox))/2;
         } else {
           runGlyphPosition.y += runBaseline - runFontHeight/2;
         }
+      } else {
+        runGlyphPosition.y = alignment - baselineOffset;
       }
-      [layoutManager setLocation:runGlyphPosition forStartOfGlyphRange:runRange];
+      NSRect lineDrawnRect = [self.textView backingAlignedRect:NSMakeRect(rect.origin.x, rect.origin.y, runGlyphPosition.x, runGlyphPosition.y) options:(NSAlignAllEdgesInward|NSAlignRectFlipped)];
+      [layoutManager setLocation:NSMakePoint(NSWidth(lineDrawnRect), NSHeight(lineDrawnRect)) forStartOfGlyphRange:runRange];
       j = NSMaxRange(runRange);
     }
-    blockRect = NSUnionRect(blockRect, rect);
     i = NSMaxRange(lineRange);
   }
   return blockRect;
@@ -865,8 +869,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     }
   }
   [self.textView setTextContainerInset:theme.edgeInset];
-  // get sharp emojis on non-retina screens
-  [self.textView.layer setContentsScale:self.window.backingScaleFactor*3];
 }
 
 - (BOOL)convertClickSpot:(NSPoint)spot toIndex:(NSUInteger *)index {
