@@ -404,7 +404,7 @@ SquirrelTheme *_darkTheme;
       } else {
         runGlyphPosition.y = alignment - baselineOffset;
       }
-      NSRect lineDrawnRect = [self.textView backingAlignedRect:NSMakeRect(rect.origin.x, rect.origin.y, runGlyphPosition.x, runGlyphPosition.y) options:(NSAlignAllEdgesInward|NSAlignRectFlipped)];
+      NSRect lineDrawnRect = [self.textView backingAlignedRect:NSMakeRect(rect.origin.x, rect.origin.y, runGlyphPosition.x, runGlyphPosition.y) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
       [layoutManager setLocation:NSMakePoint(NSWidth(lineDrawnRect), NSHeight(lineDrawnRect)) forStartOfGlyphRange:runRange];
       j = NSMaxRange(runRange);
     }
@@ -1454,7 +1454,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       NSString *prefixLabelString;
       NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
       if (labels.count > 1 && i < labels.count) {
-        prefixLabelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCompatibilityMapping;
+        prefixLabelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         NSString *labelCharacter = [[labels[0] substringWithRange:NSMakeRange(i, 1)] stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
@@ -1483,7 +1483,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       [line appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
                                                                    attributes:commentAttrs]];
       NSString *comment = comments[i];
-      [line appendAttributedString:[[NSAttributedString alloc] initWithString:comment.precomposedStringWithCompatibilityMapping
+      [line appendAttributedString:[[NSAttributedString alloc] initWithString:comment.precomposedStringWithCanonicalMapping
                                                                    attributes:commentAttrs]];
     }
 
