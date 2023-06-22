@@ -355,7 +355,7 @@ SquirrelTheme *_darkTheme;
     NSRange lineCharRange = [layoutManager characterRangeForGlyphRange:lineRange actualGlyphRange:NULL];
     rect.origin.y = NSMaxY(blockRect);
     usedRect.origin.y = NSMaxY(blockRect);
-    CGFloat alignment = verticalLayout ? lineHeight/2 : (refBaseline + lineHeight/2 - refFontHeight/2);
+    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline;
     rect.size.height = lineHeight;
     usedRect.size.height = MAX(NSHeight(usedRect), lineHeight);
     if (style.lineSpacing > 0) {
@@ -382,6 +382,7 @@ SquirrelTheme *_darkTheme;
       NSUInteger runCharLocation = [layoutManager characterIndexForGlyphAtIndex:j];
       NSFont *runFont = [textStorage attribute:NSFontAttributeName atIndex:runCharLocation effectiveRange:&fontRunRange];
       NSFont *resizedRefFont = [NSFont fontWithDescriptor:refFont.fontDescriptor size:runFont.pointSize];
+      CGFloat baselineOffset = [[textStorage attribute:NSBaselineOffsetAttributeName atIndex:runCharLocation effectiveRange:NULL] doubleValue];
       NSRange runRange = NSIntersectionRange(fontRunRange, [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j]);
       if (verticalLayout) {
         runFont = runFont.verticalFont;
@@ -392,7 +393,7 @@ SquirrelTheme *_darkTheme;
       CGFloat resizedRefFontHeight = [layoutManager defaultLineHeightForFont:resizedRefFont];
       CGFloat resizedRefBaseline = [layoutManager defaultBaselineOffsetForFont:resizedRefFont];
       CGFloat runFontOvershoot = MAX(0.0, runFontHeight - runBaseline - resizedRefFontHeight + resizedRefBaseline)/2;
-      runGlyphPosition.y = alignment + MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
+      runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
       if (verticalLayout) {
         if (runFont.verticalFont.isVertical) {
           runGlyphPosition.x += runFontOvershoot;
@@ -758,14 +759,14 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   // Draw paging Rect
   if (_pagingRange.length > 0) {
     CGFloat buttonPadding = theme.linear ? MIN(_seperatorWidth/2, theme.hilitedCornerRadius) : theme.hilitedCornerRadius;
-    NSRect pageUpRect = [self contentRectForRange:NSMakeRange(_pagingRange.location, 1)];
-    pageUpRect.origin.x -= buttonPadding;
-    pageUpRect.size.width += buttonPadding;
-    pageUpPath = drawSmoothLines(rectVertex(pageUpRect), 0.06*NSHeight(pageUpRect), 0.28*NSWidth(pageUpRect));
-    _pagingPaths[0] = pageUpPath;
     NSRect pageDownRect = [self contentRectForRange:NSMakeRange(NSMaxRange(_pagingRange)-1, 1)];
     pageDownRect.size.width += buttonPadding;
     pageDownPath = drawSmoothLines(rectVertex(pageDownRect), 0.06*NSHeight(pageDownRect), 0.28*NSWidth(pageDownRect));
+    NSRect pageUpRect = [self contentRectForRange:NSMakeRange(_pagingRange.location, 1)];
+    pageUpRect.origin.x -= buttonPadding;
+    pageUpRect.size.width = NSWidth(pageDownRect); // bypass the bug of getting wrong glyph position when tab is presented
+    pageUpPath = drawSmoothLines(rectVertex(pageUpRect), 0.06*NSHeight(pageUpRect), 0.28*NSWidth(pageUpRect));
+    _pagingPaths[0] = pageUpPath;
     _pagingPaths[1] = pageDownPath;
   }
 
@@ -1563,7 +1564,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
   [_view.textView.textStorage setAttributedString:text];
-  [_view.textView setLayoutOrientation: theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
+  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
 
   // text done!
   [_view drawViewWith:candidateRanges highlightedIndex:index preeditRange:preeditRange highlightedPreeditRange:highlightedPreeditRange pagingRange:pagingRange pagingButton:turnPage];
@@ -1596,7 +1597,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
   [_view.textView.textStorage setAttributedString:text];
-  _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
+  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
 
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
   _maxSize = NSZeroSize; // disable remember_size for status messages
@@ -1942,12 +1943,12 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   highlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   labelAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   labelHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  commentAttrs[NSBaselineOffsetAttributeName] =@(baseOffset);
+  commentAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   commentHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
   preeditHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset);
-  pagingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset - (linear ? 0.0 : labelFontSize * 0.2));
-  pagingHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset - (linear ? 0.0 : labelFontSize * 0.2));
+  pagingAttrs[NSBaselineOffsetAttributeName] = @(baseOffset - (linear ? 0.0 : labelFontSize * 0.1));
+  pagingHighlightedAttrs[NSBaselineOffsetAttributeName] = @(baseOffset - (linear ? 0.0 : labelFontSize * 0.1));
 
   preeditAttrs[NSLigatureAttributeName] = @0;
   preeditHighlightedAttrs[NSLigatureAttributeName] = @0;
