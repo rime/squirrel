@@ -90,6 +90,7 @@ static NSString *const kDefaultCandidateFormat = @"%c %@";
 @property(nonatomic, strong, readonly) NSParagraphStyle *paragraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *preeditParagraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *pagingParagraphStyle;
+@property(nonatomic, strong, readonly) NSParagraphStyle *statusParagraphStyle;
 
 @property(nonatomic, strong, readonly) NSString *prefixLabelFormat;
 @property(nonatomic, strong, readonly) NSString *suffixLabelFormat;
@@ -132,7 +133,8 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 
 - (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
      preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
-      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle;
+      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
+      statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle;
 
 @end
 
@@ -238,10 +240,12 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 
 - (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
      preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
-      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle {
+      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
+      statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle{
   _paragraphStyle = paragraphStyle;
   _preeditParagraphStyle = preeditParagraphStyle;
   _pagingParagraphStyle = pagingParagraphStyle;
+  _statusParagraphStyle = statusParagraphStyle;
 }
 
 @end
@@ -672,7 +676,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     lineOrigin.y = NSMaxY(candidateBlockRect);
   } else if (_preeditRange.length == 0) { // status message
     NSFont *statusRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.commentAttrs[NSFontAttributeName] pointSize], (CFStringRef) @"zh"));
-    candidateBlockRect = [self setLineRectForRange:NSMakeRange(1, self.textView.textStorage.length-2) atOrigin:lineOrigin withReferenceFont:(theme.vertical ? statusRefFont.verticalFont : statusRefFont) paragraphStyle:[NSParagraphStyle defaultParagraphStyle]];
+    candidateBlockRect = [self setLineRectForRange:NSMakeRange(1, self.textView.textStorage.length-2) atOrigin:lineOrigin withReferenceFont:(theme.vertical ? statusRefFont.verticalFont : statusRefFont) paragraphStyle:theme.statusParagraphStyle];
     lineOrigin.y = NSMaxY(candidateBlockRect);
   }
   NSRect pagingLineRect = NSZeroRect;
@@ -1018,16 +1022,20 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   NSMutableParagraphStyle *preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+  NSMutableParagraphStyle *statusParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
   preeditParagraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
   preeditParagraphStyle.alignment = NSTextAlignmentLeft;
   paragraphStyle.alignment = NSTextAlignmentLeft;
   pagingParagraphStyle.alignment = NSTextAlignmentLeft;
+  statusParagraphStyle.alignment = NSTextAlignmentLeft;
+
   // Use left-to-right marks to declare the default writing direction and prevent strong right-to-left
   // characters from setting the writing direction in case the label are direction-less symbols
   preeditParagraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
   paragraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
   pagingParagraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
+  statusParagraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
 
   [theme          setAttrs:attrs
           highlightedAttrs:highlightedAttrs
@@ -1041,7 +1049,8 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     pagingHighlightedAttrs:pagingHighlightedAttrs];
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle
-      pagingParagraphStyle:pagingParagraphStyle];
+      pagingParagraphStyle:pagingParagraphStyle
+      statusParagraphStyle:statusParagraphStyle];
 }
 
 - (instancetype)init {
@@ -1598,11 +1607,14 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
 - (void)showStatus:(NSString *)message {
   SquirrelTheme *theme = _view.currentTheme;
+
   NSMutableAttributedString *text =  [[NSMutableAttributedString alloc] initWithString:@"\n" attributes:theme.commentAttrs];
   [text appendAttributedString:[[NSAttributedString alloc] initWithString:message.precomposedStringWithCanonicalMapping attributes:theme.commentAttrs]];
   [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.commentAttrs]];
 
+  [text addAttribute:NSParagraphStyleAttributeName value:theme.statusParagraphStyle range:NSMakeRange(0, text.length)];
   [text fixAttributesInRange:NSMakeRange(0, text.length)];
+
   [_view.textView.textStorage setAttributedString:text];
   [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
 
@@ -1924,6 +1936,10 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   pagingParagraphStyle.minimumLineHeight = pagingFont.ascender - pagingFont.descender;
   pagingParagraphStyle.maximumLineHeight = pagingFont.ascender - pagingFont.descender;
 
+  NSMutableParagraphStyle *statusParagraphStyle = [theme.statusParagraphStyle mutableCopy];
+  statusParagraphStyle.minimumLineHeight = commentFontHeight;
+  statusParagraphStyle.maximumLineHeight = commentFontHeight;
+
   NSMutableDictionary *attrs = [theme.attrs mutableCopy];
   NSMutableDictionary *highlightedAttrs = [theme.highlightedAttrs mutableCopy];
   NSMutableDictionary *labelAttrs = [theme.labelAttrs mutableCopy];
@@ -2014,7 +2030,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle
-      pagingParagraphStyle:pagingParagraphStyle];
+      pagingParagraphStyle:pagingParagraphStyle
+      statusParagraphStyle:statusParagraphStyle];
 
   [theme setBackgroundColor:backgroundColor
             backgroundImage:backgroundImage
