@@ -1583,11 +1583,12 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
                                            initWithString:[preedit substringFromIndex:NSMaxRange(selRange)].precomposedStringWithCanonicalMapping
                                            attributes:theme.preeditAttrs]];
     }
-
     // force caret to be rendered horizontally in vertical layout
-    [preeditLine addAttribute:NSVerticalGlyphFormAttributeName
-                        value:@NO
-                        range:NSMakeRange(caretPos, 1)];
+    if (caretPos != NSNotFound) {
+      [preeditLine addAttribute:NSVerticalGlyphFormAttributeName
+                          value:@NO
+                          range:NSMakeRange(caretPos, 1)];
+    }
     [preeditLine addAttribute:NSParagraphStyleAttributeName
                         value:theme.preeditParagraphStyle
                         range:NSMakeRange(0, preeditLine.length)];

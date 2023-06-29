@@ -644,7 +644,7 @@ NSString *substr(const char *str, int length) {
     }
     [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : preeditText)
                       selRange:selRange
-                      caretPos:caretPos
+                      caretPos:switcher ? NSNotFound : caretPos
                     candidates:candidates
                       comments:comments
                         labels:labels
