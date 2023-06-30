@@ -926,17 +926,24 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     borderPath.windingRule = NSEvenOddWindingRule;
   }
 
-  // set layers]
+  // set layers
   _shape.path = [backgroundPath quartzPath];
   _shape.fillColor = [[NSColor whiteColor] CGColor];
+  _shape.cornerRadius = theme.cornerRadius;
   CAShapeLayer *textContainerLayer = [[CAShapeLayer alloc] init];
   textContainerLayer.path = [textContainerPath quartzPath];
   textContainerLayer.fillColor = [[NSColor whiteColor] CGColor];
-  [self.layer setSublayers: NULL];
-  CAShapeLayer *panelLayer = [[CAShapeLayer alloc] init];
+  textContainerLayer.cornerRadius = theme.hilitedCornerRadius;
+  [self.layer setSublayers:NULL];
+  self.layer.cornerRadius = theme.cornerRadius;
   if (theme.backgroundImage) {
-    panelLayer.backgroundColor = [theme.backgroundImage CGColor];
+    CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
+    backgroundLayer.path = [backgroundPath quartzPath];
+    backgroundLayer.fillColor = [theme.backgroundImage CGColor];
+    backgroundLayer.cornerRadius = theme.cornerRadius;
+    [self.layer addSublayer:backgroundLayer];
   }
+  CAShapeLayer *panelLayer = [[CAShapeLayer alloc] init];
   panelLayer.path = [textContainerPath quartzPath];
   panelLayer.fillColor = [theme.backgroundColor CGColor];
   [self.layer addSublayer:panelLayer];
@@ -1832,6 +1839,7 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
 }
 
 - (void)showStatus:(NSString *)message {
+  [self getMaxTextWidth];
   SquirrelTheme *theme = _view.currentTheme;
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc]
                                      initWithString:message.precomposedStringWithCanonicalMapping
