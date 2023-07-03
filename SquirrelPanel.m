@@ -1910,13 +1910,8 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   CTFontRef systemFontRef = CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, 0.0, (CFStringRef) @"zh");
   NSFontDescriptor *systemFontDescriptor = CFBridgingRelease(CTFontCopyFontDescriptor(systemFontRef));
   CFRelease(systemFontRef);
-  NSArray *fallbackDescriptors;
-  if (@available(macOS 12.0, *)) {
-    fallbackDescriptors = [[validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count-1)] arrayByAddingObject:systemFontDescriptor];
-  } else {
-    NSFontDescriptor *emojiFontDescriptor = [NSFontDescriptor fontDescriptorWithName:@"AppleColorEmoji" size:0.0];
-    fallbackDescriptors = [[validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count-1)] arrayByAddingObjectsFromArray:@[systemFontDescriptor, emojiFontDescriptor]];
-  }
+  NSFontDescriptor *emojiFontDescriptor = [NSFontDescriptor fontDescriptorWithName:@"AppleColorEmoji" size:0.0];
+  NSArray *fallbackDescriptors = [[validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count-1)] arrayByAddingObjectsFromArray:@[systemFontDescriptor, emojiFontDescriptor]];
   NSDictionary *attributes = @{NSFontCascadeListAttribute:fallbackDescriptors};
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
@@ -1926,15 +1921,19 @@ static CGFloat getLineHeight(NSFont *font, BOOL vertical) {
     font = font.verticalFont;
   }
   CGFloat lineHeight = font.ascender - font.descender;
-  NSArray *fallbackList = [font.fontDescriptor objectForKey:NSFontCascadeListAttribute];
-  for (NSFontDescriptor *fallback in fallbackList) {
-    NSFont *fallbackFont = [NSFont fontWithDescriptor:fallback size:font.pointSize];
-    if (vertical) {
-      fallbackFont = fallbackFont.verticalFont;
+  if (@available(macOS 12.0, *)) {
+    return lineHeight;
+  } else {
+    NSArray *fallbackList = [font.fontDescriptor objectForKey:NSFontCascadeListAttribute];
+    for (NSFontDescriptor *fallback in fallbackList) {
+      NSFont *fallbackFont = [NSFont fontWithDescriptor:fallback size:font.pointSize];
+      if (vertical) {
+        fallbackFont = fallbackFont.verticalFont;
+      }
+      lineHeight = MAX(lineHeight, fallbackFont.ascender - fallbackFont.descender);
     }
-    lineHeight = MAX(lineHeight, fallbackFont.ascender - fallbackFont.descender);
+    return lineHeight;
   }
-  return lineHeight;
 }
 
 static void updateCandidateListLayout(BOOL *isLinearCandidateList, SquirrelConfig *config, NSString *prefix) {
@@ -2184,6 +2183,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSMutableParagraphStyle *pagingParagraphStyle = [theme.pagingParagraphStyle mutableCopy];
   pagingParagraphStyle.minimumLineHeight = pagingFont.ascender - pagingFont.descender;
   pagingParagraphStyle.maximumLineHeight = pagingFont.ascender - pagingFont.descender;
+  pagingParagraphStyle.paragraphSpacingBefore = pagingFont.leading;
 
   NSMutableParagraphStyle *statusParagraphStyle = [theme.statusParagraphStyle mutableCopy];
   statusParagraphStyle.minimumLineHeight = commentFontHeight;
