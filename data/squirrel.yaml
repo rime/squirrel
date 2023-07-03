@@ -39,6 +39,8 @@ style:
   line_spacing: 5
   # space between preedit and candidates in non-inline mode
   spacing: 10
+  # line length of preedit and candidates (fixed if value > 0, flexible/auto-adjust otherwise)
+  line_length: 0
 
   #candidate_format: '%c %@'
 

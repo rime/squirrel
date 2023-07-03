@@ -70,6 +70,7 @@ static NSString *const kDefaultCandidateFormat = @"%c %@";
 @property(nonatomic, readonly) CGFloat preeditLinespace;
 @property(nonatomic, readonly) CGFloat alpha;
 @property(nonatomic, readonly) CGFloat translucency;
+@property(nonatomic, readonly) CGFloat lineLength;
 @property(nonatomic, readonly) BOOL showPaging;
 @property(nonatomic, readonly) BOOL rememberSize;
 @property(nonatomic, readonly) BOOL linear;
@@ -113,6 +114,7 @@ static NSString *const kDefaultCandidateFormat = @"%c %@";
        preeditLinespace:(CGFloat)preeditLinespace
                   alpha:(CGFloat)alpha
            translucency:(CGFloat)translucency
+             lineLength:(CGFloat)lineLength
              showPaging:(BOOL)showPaging
            rememberSize:(BOOL)rememberSize
                  linear:(BOOL)linear
@@ -195,6 +197,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
        preeditLinespace:(CGFloat)preeditLinespace
                   alpha:(CGFloat)alpha
            translucency:(CGFloat)translucency
+             lineLength:(CGFloat)lineLength
              showPaging:(BOOL)showPaging
            rememberSize:(BOOL)rememberSize
                  linear:(BOOL)linear
@@ -208,6 +211,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   _preeditLinespace = preeditLinespace;
   _alpha = alpha;
   _translucency = translucency;
+  _lineLength = lineLength;
   _showPaging = showPaging;
   _rememberSize = rememberSize;
   _linear = linear;
@@ -321,7 +325,7 @@ SquirrelTheme *_darkTheme;
   if (@available(macOS 12.0, *)) {
     _layoutManager = [[NSTextLayoutManager alloc] init];
     _layoutManager.usesFontLeading = NO;
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
     _layoutManager.textContainer = textContainer;
     NSTextContentStorage *textStorage = [[NSTextContentStorage alloc] init];
     [textStorage addTextLayoutManager:_layoutManager];
@@ -339,7 +343,7 @@ SquirrelTheme *_darkTheme;
     _textView.layoutManager.backgroundLayoutEnabled = YES;
     _textView.layoutManager.usesFontLeading = NO;
     _textView.layoutManager.typesetterBehavior = NSTypesetterLatestBehavior;
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
+    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
     [_textView replaceTextContainer:textContainer];
   }
   _defaultTheme = [[SquirrelTheme alloc] init];
@@ -1342,6 +1346,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   NSRect screenRect = [_screen visibleFrame];
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   _maxTextWidth = (theme.vertical ? NSHeight(screenRect) : NSWidth(screenRect)) * textWidthRatio - (theme.hilitedCornerRadius + theme.edgeInset.width) * 2;
+  if (theme.lineLength > 0) {
+    _maxTextWidth = MIN(theme.lineLength, _maxTextWidth);
+  }
 }
 
 // Get the window size, it will be the dirtyRect in SquirrelView.drawRect
@@ -1371,11 +1378,16 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   bool sweepVertical = NSWidth(_position) > NSHeight(_position);
   NSRect contentRect = _view.contentRect;
   NSRect maxContentRect = NSInsetRect(contentRect, theme.hilitedCornerRadius, 0);
-  // remember panel size (fix the top leading anchor of the panel in screen coordiantes)
-  if (theme.rememberSize) {
-    if (theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + kOffsetHeight) :
-        (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) >  NSWidth(screenRect) * textWidthRatio + kOffsetHeight) :
-         (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + theme.hilitedCornerRadius + theme.edgeInset.width > NSMaxX(screenRect)))) {
+  if (theme.lineLength > 0) { // fixed line length / text width
+    if (_maxSize.width > 0) { // only applicable to non-status
+      maxContentRect.size.width = _maxTextWidth;
+    }
+  }
+  if (theme.rememberSize) { // remember panel size (fix the top leading anchor of the panel in screen coordiantes)
+    if ((theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + kOffsetHeight) :
+         (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) >  NSWidth(screenRect) * textWidthRatio + kOffsetHeight) :
+          (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + theme.hilitedCornerRadius + theme.edgeInset.width > NSMaxX(screenRect)))) &&
+        theme.lineLength == 0) {
       if (NSWidth(maxContentRect) >= _maxSize.width) {
         _maxSize.width = NSWidth(maxContentRect);
       } else {
@@ -1564,6 +1576,9 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
 
   SquirrelTheme *theme = _view.currentTheme;
   [self getMaxTextWidth];
+  if (theme.lineLength > 0) {
+    _maxSize.width = MIN(theme.lineLength, _maxTextWidth);
+  }
 
   NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
@@ -1851,7 +1866,7 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
   [_view.textView.textStorage setAttributedString:text];
   [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
 
-  _maxSize = NSZeroSize; // disable remember_size for status messages
+  _maxSize = NSZeroSize; // disable remember_size and fixed line_length for status messages
   NSRange emptyRange = NSMakeRange(NSNotFound, 0);
   [_view     drawViewWith:@[]
          highlightedIndex:NSNotFound
@@ -1997,6 +2012,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
   CGFloat spacing = [config getDouble:@"style/spacing"];
   CGFloat baseOffset = [config getDouble:@"style/base_offset"];
+  CGFloat lineLength = MAX([config getDouble:@"style/line_length"], 0.0);
 
   NSColor *backgroundColor;
   NSColor *backgroundImage;
@@ -2147,6 +2163,10 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     if (baseOffsetOverridden) {
       baseOffset = baseOffsetOverridden.doubleValue;
     }
+    NSNumber *lineLengthOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/line_length"]];
+    if (lineLengthOverridden) {
+      lineLength = MAX(lineLengthOverridden.doubleValue, 0.0);
+    }
   }
 
   fontSize = fontSize ? fontSize : kDefaultFontSize;
@@ -2289,6 +2309,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         preeditLinespace:spacing
                    alpha:(alpha == 0 ? 1.0 : alpha)
             translucency:translucency
+              lineLength:lineLength
               showPaging:showPaging
             rememberSize:rememberSize
                   linear:linear
