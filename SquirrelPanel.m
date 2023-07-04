@@ -272,6 +272,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, assign) CGFloat seperatorWidth;
 @property(nonatomic, readonly) CAShapeLayer *shape;
 @property(nonatomic, getter=isFlipped, readonly) BOOL flipped;
+@property(nonatomic, readonly) BOOL wantsUpdateLayer;
 
 - (void)     drawViewWith:(NSArray<NSValue *> *)candidateRanges
          highlightedIndex:(NSUInteger)highlightedIndex
@@ -294,6 +295,10 @@ SquirrelTheme *_darkTheme;
 
 // Need flipped coordinate system, as required by textStorage
 - (BOOL)isFlipped {
+  return YES;
+}
+
+- (BOOL)wantsUpdateLayer {
   return YES;
 }
 
@@ -320,6 +325,7 @@ SquirrelTheme *_darkTheme;
     self.wantsLayer = YES;
     self.layer.masksToBounds = YES;
     self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
+    self.layerContentsPlacement = NSViewLayerContentsPlacementBottomLeft;
   }
 
   if (@available(macOS 12.0, *)) {
@@ -728,7 +734,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 }
 
 // All draws happen here
-- (void)drawRect:(NSRect)dirtyRect {
+- (void)updateLayer {
   NSBezierPath *backgroundPath;
   NSBezierPath *borderPath;
   NSBezierPath *textContainerPath;
@@ -741,7 +747,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   SquirrelTheme *theme = self.currentTheme;
   NSPoint lineOrigin = NSZeroPoint;
 
-  NSRect backgroundRect = dirtyRect;
+  NSRect backgroundRect = self.bounds;
   NSRect textContainerRect = NSInsetRect(backgroundRect, theme.edgeInset.width, theme.edgeInset.height);
   NSRect preeditRect = NSZeroRect;
   NSRect candidateBlockRect = NSZeroRect;
@@ -1395,12 +1401,13 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
         [textContainer setSize:NSMakeSize(_maxSize.width + theme.hilitedCornerRadius * 2, maxTextHeight)];
       }
     }
-    if (theme.vertical ? (NSMinX(_position) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? kOffsetHeight : 0)) :
-        (NSMinY(_position) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? 0 : kOffsetHeight))) {
+    if (theme.vertical ? (NSMinX(_position) - NSMinX(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? kOffsetHeight : 0)) :
+        (NSMinY(_position) - NSMinY(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? 0 : kOffsetHeight))) {
       if (NSHeight(maxContentRect) >= _maxSize.height) {
         _maxSize.height = NSHeight(maxContentRect);
       } else {
         maxContentRect.size.height = _maxSize.height;
+        [textContainer setSize:NSMakeSize(_maxTextWidth + theme.hilitedCornerRadius * 2, _maxSize.height)];
       }
     }
   }
