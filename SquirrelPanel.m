@@ -1102,7 +1102,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 }
 
 + (NSColor *)secondaryTextColor {
-  if(@available(macOS 10.10, *)) {
+  if (@available(macOS 10.10, *)) {
     return [NSColor secondaryLabelColor];
   } else {
     return [NSColor disabledControlTextColor];
@@ -1262,9 +1262,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index || cursorIndex == _turnPage) {
           [self.inputController perform:kSELECT onIndex:cursorIndex];
-          _mouseDown = NO;
         }
       }
+      _mouseDown = NO;
     } break;
     case NSEventTypeRightMouseUp: {
       NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream fromView:nil];
@@ -1272,9 +1272,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index && (cursorIndex >= 0 && cursorIndex < _candidates.count)) {
           [self.inputController perform:kDELETE onIndex:cursorIndex];
-          _mouseDown = NO;
         }
       }
+      _mouseDown = NO;
     } break;
     case NSEventTypeMouseEntered: {
       self.acceptsMouseMovedEvents = YES;
@@ -1907,6 +1907,18 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
           colorWithAlphaComponent:foregroundColor.alphaComponent];
 }
 
+static inline NSColor *inverseColor(NSColor *color) {
+  if (color == nil) {
+    return nil;
+  } else {
+    return [NSColor colorWithColorSpace:color.colorSpace
+                                    hue:color.hueComponent
+                             saturation:color.saturationComponent
+                             brightness:1-color.brightnessComponent
+                                  alpha:color.alphaComponent];
+  }
+}
+
 static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
   if (fullname == nil) {
     return nil;
@@ -2251,6 +2263,26 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
   NSColor *accentColor = [[self class] accentColor];
+
+  if (@available(macOS 10.14, *)) {
+    if (theme.translucency > 0 &&
+        ((backgroundColor.brightnessComponent >= 0.5 && isDark) ||
+         (backgroundColor.brightnessComponent < 0.5 && !isDark))) {
+      backgroundColor = inverseColor(backgroundColor);
+      borderColor = inverseColor(borderColor) ;
+      preeditBackgroundColor = inverseColor(preeditBackgroundColor);
+      candidateTextColor = inverseColor(candidateTextColor);
+      highlightedCandidateTextColor = [inverseColor(highlightedCandidateTextColor) highlightWithLevel:highlightedCandidateTextColor.brightnessComponent];
+      highlightedCandidateBackColor = [inverseColor(highlightedCandidateBackColor) shadowWithLevel:1-highlightedCandidateBackColor.brightnessComponent];
+      candidateLabelColor = inverseColor(candidateLabelColor);
+      highlightedCandidateLabelColor = [inverseColor(highlightedCandidateLabelColor) highlightWithLevel:highlightedCandidateLabelColor.brightnessComponent];
+      commentTextColor = inverseColor(commentTextColor);
+      highlightedCommentTextColor = [inverseColor(highlightedCommentTextColor) highlightWithLevel:highlightedCommentTextColor.brightnessComponent];
+      textColor = inverseColor(textColor);
+      highlightedTextColor = [inverseColor(highlightedTextColor) highlightWithLevel:highlightedTextColor.brightnessComponent];
+      highlightedBackColor = [inverseColor(highlightedBackColor) shadowWithLevel:1-highlightedBackColor.brightnessComponent];
+    }
+  }
 
   backgroundColor = backgroundColor ? backgroundColor : [NSColor controlBackgroundColor];
   borderColor = borderColor ? borderColor : isNative ? [NSColor gridColor] : nil;
