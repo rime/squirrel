@@ -61,7 +61,7 @@ export BUILD_UNIVERSAL=1
 
 make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_81_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_78_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
@@ -115,10 +115,10 @@ To build only for the native architecture, pass variable `ARCHS` to `make`:
 
 ``` sh
 # for Mac computers with Apple Silicon
-make ARCHS='arm64'
+make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.13'
 
 # for Intel-based Mac
-make ARCHS='x86_64'
+make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.13'
 ```
 
 ## Install it on your Mac
