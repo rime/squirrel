@@ -281,7 +281,6 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
               pagingRange:(NSRange)pagingRange
              pagingButton:(NSUInteger)pagingButton;
 - (NSRect)contentRectForRange:(NSRange)range;
-- (NSRect)contentRectForTextRange:(NSTextRange *)range API_AVAILABLE(macos(12.0));
 - (NSRect)setLineRectForRange:(NSRange)charRange
                      atOrigin:(NSPoint)origin
             withReferenceFont:(NSFont *)refFont
@@ -477,20 +476,15 @@ SquirrelTheme *_darkTheme;
   return contentRect;
 }
 
-// Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
-- (NSRect)contentRectForTextRange:(NSTextRange *)range API_AVAILABLE(macos(12.0)) {
-  __block NSRect contentRect = NSZeroRect;
-  [self.layoutManager enumerateTextSegmentsInRange:range type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
-    contentRect = NSUnionRect(contentRect, segmentRect);
-    return YES;
-  }];
-  return contentRect;
-}
-
+// Get the rectangle containing the range of text, will first convert to glyph or text range, expensive to calculate
 - (NSRect)contentRectForRange:(NSRange)range {
   if (@available(macOS 12.0, *)) {
     NSTextRange *textRange = [self getTextRangeFromRange:range];
-    NSRect contentRect = [self contentRectForTextRange:textRange];
+    __block NSRect contentRect = NSZeroRect;
+    [self.layoutManager enumerateTextSegmentsInRange:textRange type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
+      contentRect = NSUnionRect(contentRect, segmentRect);
+      return YES;
+    }];
     return contentRect;
   } else {
     NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:NULL];
@@ -592,7 +586,7 @@ BOOL nearEmptyRect(NSRect rect) {
 }
 
 // Calculate 3 boxes containing the text in range. leadingRect and trailingRect are incomplete line rectangle
-// bodyRect is complete lines in the middle
+// bodyRect is the complete line fragment in the middle if the range spans no less than one full line
 - (void)multilineRectForRange:(NSRange)charRange leadingRect:(NSRect *)leadingRect bodyRect:(NSRect *)bodyRect trailingRect:(NSRect *)trailingRect {
   NSSize edgeInset = self.currentTheme.edgeInset;
   *leadingRect = NSZeroRect;
@@ -635,15 +629,15 @@ BOOL nearEmptyRect(NSRect rect) {
     NSLayoutManager *layoutManager = self.textView.layoutManager;
     NSTextContainer *textContainer = self.textView.textContainer;
     NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
-    NSPoint startPoint = [layoutManager locationForGlyphAtIndex:glyphRange.location];
-    NSPoint endPoint = [layoutManager locationForGlyphAtIndex:NSMaxRange(glyphRange)];
+    CGFloat startX = [layoutManager locationForGlyphAtIndex:glyphRange.location].x;
+    CGFloat endX = NSMaxX([layoutManager boundingRectForGlyphRange:NSMakeRange(NSMaxRange(glyphRange)-1, 1) inTextContainer:textContainer]);
     NSRect boundingRect = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
     NSRange leadingLineRange = NSMakeRange(NSNotFound, 0);
     NSRect leadingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location effectiveRange:&leadingLineRange withoutAdditionalLayout:YES];
-    if (NSMaxRange(leadingLineRange) > NSMaxRange(glyphRange)) {
-      *bodyRect = NSMakeRect(NSMinX(leadingLineRect) + startPoint.x + edgeInset.width,
+    if (NSMaxRange(leadingLineRange) >= NSMaxRange(glyphRange)) {
+      *bodyRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
                              NSMinY(leadingLineRect) + edgeInset.height,
-                             endPoint.x - startPoint.x, NSHeight(leadingLineRect));
+                             endX - startX, NSHeight(leadingLineRect));
     } else {
       CGFloat rightEdge = MAX(NSMaxX(leadingLineRect) - self.currentTheme.hilitedCornerRadius, NSMaxX(boundingRect));
       NSRange trailingLineRange = NSMakeRange(NSNotFound, 0);
@@ -654,22 +648,22 @@ BOOL nearEmptyRect(NSRect rect) {
           *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(leadingLineRect) + edgeInset.height,
                                  rightEdge - leftEdge, NSMaxY(trailingLineRect) - NSMinY(leadingLineRect));
         } else {
-          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startPoint.x + edgeInset.width,
+          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
                                     NSMinY(leadingLineRect) + edgeInset.height,
-                                    rightEdge - NSMinX(leadingLineRect) - startPoint.x, NSHeight(leadingLineRect));
+                                    rightEdge - NSMinX(leadingLineRect) - startX, NSHeight(leadingLineRect));
           *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMaxY(leadingLineRect) + edgeInset.height,
                                  rightEdge - leftEdge, NSMaxY(trailingLineRect) - NSMaxY(leadingLineRect));
         }
       } else {
         *trailingRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(trailingLineRect) + edgeInset.height,
-                                   NSMinX(trailingLineRect) + endPoint.x - leftEdge, NSHeight(trailingLineRect));
+                                   NSMinX(trailingLineRect) + endX - leftEdge, NSHeight(trailingLineRect));
         if (glyphRange.location == leadingLineRange.location) {
           *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(leadingLineRect) + edgeInset.height,
                                  rightEdge - leftEdge, NSMinY(trailingLineRect) - NSMinY(leadingLineRect));
         } else {
-          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startPoint.x + edgeInset.width,
+          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
                                     NSMinY(leadingLineRect) + edgeInset.height,
-                                    rightEdge - NSMinX(leadingLineRect) - startPoint.x, NSHeight(leadingLineRect));
+                                    rightEdge - NSMinX(leadingLineRect) - startX, NSHeight(leadingLineRect));
           NSRange bodyLineRange = NSMakeRange(NSMaxRange(leadingLineRange), trailingLineRange.location-NSMaxRange(leadingLineRange));
           if (bodyLineRange.length > 0) {
             *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMaxY(leadingLineRect) + edgeInset.height,
@@ -765,10 +759,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       candidateBlockRect = NSInsetRect([self contentRectForRange:candidateBlockRange], 0.0, -theme.linespace/2);
       candidateBlockRect.origin = lineOrigin;
       lineOrigin.y = NSMaxY(candidateBlockRect);
-    } else if (_preeditRange.length == 0) { // status message
-      candidateBlockRect = [self contentRectForTextRange:self.layoutManager.textContentManager.documentRange];
-      candidateBlockRect.origin = lineOrigin;
-      lineOrigin.y = NSMaxY(candidateBlockRect);
     }
     if (!theme.linear && _pagingRange.length > 0) {
       pagingLineRect = [self contentRectForRange:_pagingRange];
@@ -833,15 +823,34 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
         NSRect bodyRect;
         NSRect trailingRect;
         [self multilineRectForRange:candidateRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-        leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSInsetRect(leadingRect, -highlightPadding, -theme.linespace/2);
-        bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSInsetRect(bodyRect, -highlightPadding, -theme.linespace/2);
-        trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSInsetRect(trailingRect, -highlightPadding, -theme.linespace/2);
+        leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSInsetRect(leadingRect, -highlightPadding, 0);
+        bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSInsetRect(bodyRect, -highlightPadding, 0);
+        trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSInsetRect(trailingRect, -highlightPadding, 0);
         if (@available(macOS 12.0, *)) {
           if (_preeditRange.length == 0) {
-            leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSOffsetRect(leadingRect, 0.0, theme.linespace/2);
-            bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSOffsetRect(bodyRect, 0.0, theme.linespace/2);
-            trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSOffsetRect(trailingRect, 0.0, theme.linespace/2);
+            leadingRect.origin.y += theme.linespace/2;
+            bodyRect.origin.y += theme.linespace/2;
+            trailingRect.origin.y += theme.linespace/2;
           }
+        }
+        if (!NSIsEmptyRect(leadingRect)) {
+          leadingRect.origin.y -= theme.linespace/2;
+          leadingRect.size.height += theme.linespace/2;
+          leadingRect = [self backingAlignedRect:leadingRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+        }
+        if (!NSIsEmptyRect(trailingRect)) {
+          trailingRect.size.height += theme.linespace/2;
+          trailingRect = [self backingAlignedRect:trailingRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+        }
+        if (!NSIsEmptyRect(bodyRect)) {
+          if (NSIsEmptyRect(leadingRect)) {
+            bodyRect.origin.y -= theme.linespace/2;
+            bodyRect.size.height += theme.linespace/2;
+          }
+          if (NSIsEmptyRect(trailingRect)) {
+            bodyRect.size.height += theme.linespace/2;
+          }
+          bodyRect = [self backingAlignedRect:bodyRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
         }
         NSMutableArray<NSValue *> *candidatePoints;
         NSMutableArray<NSValue *> *candidatePoints2;
@@ -870,6 +879,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
             candidateRect = NSOffsetRect(candidateRect, 0.0, theme.linespace/2);
           }
         }
+        candidateRect = [self backingAlignedRect:candidateRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
         NSMutableArray<NSValue *> *candidatePoints = [rectVertex(candidateRect) mutableCopy];
         NSBezierPath *candidatePath = drawSmoothLines(candidatePoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
         _candidatePaths[i] = candidatePath;
@@ -885,9 +895,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     NSRect bodyRect;
     NSRect trailingRect;
     [self multilineRectForRange:_highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-    leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSIntersectionRect(leadingRect, innerBox);
-    bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSIntersectionRect(bodyRect, innerBox);
-    trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSIntersectionRect(trailingRect, innerBox);
+    leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(leadingRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+    bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(bodyRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+    trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(trailingRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
     NSMutableArray<NSValue *> *highlightedPreeditPoints;
     NSMutableArray<NSValue *> *highlightedPreeditPoints2;
     // Handles the special case where containing boxes are separated
@@ -921,6 +931,8 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
         pageUpRect = NSOffsetRect(pageUpRect, 0.0, theme.linespace/2);
       }
     }
+    pageDownRect = [self backingAlignedRect:pageDownRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+    pageUpRect = [self backingAlignedRect:pageUpRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
     pageDownPath = drawSmoothLines(rectVertex(pageDownRect), 0.06*NSHeight(pageDownRect), 0.28*NSWidth(pageDownRect));
     pageUpPath = drawSmoothLines(rectVertex(pageUpRect), 0.06*NSHeight(pageUpRect), 0.28*NSWidth(pageUpRect));
     _pagingPaths[0] = pageUpPath;
@@ -1091,14 +1103,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
 - (BOOL)inlineCandidate {
   return _view.currentTheme.inlineCandidate;
-}
-
-- (BOOL)showPaging {
-  return _view.currentTheme.showPaging;
-}
-
-- (BOOL)rememberSize {
-  return _view.currentTheme.rememberSize;
 }
 
 + (NSColor *)secondaryTextColor {
@@ -1647,7 +1651,7 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
   [paging appendAttributedString:pageUpString];
 
   [paging appendAttributedString:[[NSAttributedString alloc]
-                                  initWithString:[NSString stringWithFormat:@"%lu", pageNum+1]
+                                  initWithString:[NSString stringWithFormat:@" %lu ", pageNum+1]
                                   attributes:theme.pagingAttrs]];
 
   NSGlyphInfo *forwardOutline = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4968"
@@ -1808,12 +1812,8 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
     } else {
       NSMutableParagraphStyle *paragraphStylePaging = [theme.pagingParagraphStyle mutableCopy];
       if (useTab) {
-        [paging insertAttributedString:[[NSAttributedString alloc] initWithString:@"\t"
-                                                                       attributes:theme.pagingAttrs]
-                               atIndex:paging.length-1];
-        [paging insertAttributedString:[[NSAttributedString alloc] initWithString:@"\t"
-                                                                       attributes:theme.pagingAttrs]
-                               atIndex:1];
+        [paging replaceCharactersInRange:NSMakeRange(1, 1) withString:@"\t"];
+        [paging replaceCharactersInRange:NSMakeRange(paging.length-2, 1) withString:@"\t"];
         paragraphStylePaging.tabStops = @[[[NSTextTab alloc] initWithType:NSCenterTabStopType
                                                                  location:maxLineWidth/2],
                                           [[NSTextTab alloc] initWithType:NSRightTabStopType
