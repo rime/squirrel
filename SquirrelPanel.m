@@ -984,13 +984,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       [panelLayer addSublayer:candidateLayer];
     }
   }
-  if (theme.borderColor && ![borderPath isEmpty]) {
-    CAShapeLayer *borderLayer = [[CAShapeLayer alloc] init];
-    borderLayer.path = [borderPath quartzPath];
-    borderLayer.fillColor = [theme.borderColor CGColor];
-    borderLayer.fillRule = kCAFillRuleEvenOdd;
-    [panelLayer addSublayer:borderLayer];
-  }
   CIFilter *backColorFilter = [CIFilter filterWithName:@"CISourceATopCompositing"];
   panelLayer.compositingFilter = backColorFilter;
   if (_highlightedIndex != NSNotFound && theme.highlightedStripColor) {
@@ -1036,6 +1029,13 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       highlightedPreeditLayer.mask = textContainerLayer;
       [self.layer addSublayer:highlightedPreeditLayer];
     }
+  }
+  if (theme.borderColor && ![borderPath isEmpty]) {
+    CAShapeLayer *borderLayer = [[CAShapeLayer alloc] init];
+    borderLayer.path = [borderPath quartzPath];
+    borderLayer.fillColor = [theme.borderColor CGColor];
+    borderLayer.fillRule = kCAFillRuleEvenOdd;
+    [panelLayer addSublayer:borderLayer];
   }
   [self.textView setTextContainerInset:theme.edgeInset];
 }
