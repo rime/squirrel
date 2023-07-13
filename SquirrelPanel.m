@@ -1220,7 +1220,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     // ^ May fix visibility issue in fullscreen games.
     self.level = CGShieldingWindowLevel();
     self.hasShadow = YES;
-    self.opaque = NO;
     self.backgroundColor = [NSColor clearColor];
     NSView *contentView = [[NSView alloc] init];
     _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
@@ -1244,6 +1243,10 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     _maxSize = NSZeroSize;
   }
   return self;
+}
+
+- (BOOL)isOpaque {
+  return NO;
 }
 
 - (void)sendEvent:(NSEvent *)event {
@@ -1385,7 +1388,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   CGFloat maxTextHeight = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - theme.edgeInset.height * 2;
   [textContainer setSize:NSMakeSize(_maxTextWidth + theme.hilitedCornerRadius * 2, maxTextHeight)];
 
-  bool sweepVertical = NSWidth(_position) > NSHeight(_position);
+  BOOL sweepVertical = NSWidth(_position) > NSHeight(_position);
   NSRect contentRect = _view.contentRect;
   NSRect maxContentRect = NSInsetRect(contentRect, theme.hilitedCornerRadius, 0);
   if (theme.lineLength > 0) { // fixed line length / text width
