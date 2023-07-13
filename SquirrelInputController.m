@@ -20,7 +20,8 @@ const int N_KEY_ROLL_OVER = 50;
 @implementation SquirrelInputController {
   id _currentClient;
   NSString *_preeditString;
-  NSString *_inlineString;
+  NSAttributedString *_originalString;
+  NSString *_composedString;
   NSRange _selRange;
   NSUInteger _caretPos;
   NSArray *_candidates;
@@ -345,13 +346,8 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session && _preeditString.length > 0) {
-    if ([_preeditString isEqualToString:@"　"]) {
-      const char* raw_input = rime_get_api()->get_input(_session);
-      if (raw_input)
-        [self commitString:@(raw_input)];
-    } else { // inline mode
-      [self commitString:_preeditString];
-    }
+    NSString *composition = [self composedString:sender];
+    [self commitString:composition];
     rime_get_api()->clear_composition(_session);
   }
 }
@@ -390,6 +386,16 @@ const int N_KEY_ROLL_OVER = 50;
   return NSApp.squirrelAppDelegate.menu;
 }
 
+-(NSAttributedString *)originalString:(id)sender
+{
+  return _originalString;
+}
+
+-(id)composedString:(id)sender
+{
+  return _composedString;
+}
+
 -(NSArray*)candidates:(id)sender
 {
   return _candidates;
@@ -407,6 +413,8 @@ const int N_KEY_ROLL_OVER = 50;
             replacementRange:NSMakeRange(NSNotFound, 0)];
 
   _preeditString = @"";
+  _composedString = @"";
+  _originalString = [[NSAttributedString alloc] initWithString:@""];
 
   [NSApp.squirrelAppDelegate.panel hide];
 }
@@ -565,6 +573,24 @@ NSString *substr(const char *str, int length) {
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
+
+    // update composed string
+    if (!preedit || switcher) {
+      _composedString = @"";
+    } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
+      int caretPos = ctx.composition.cursor_pos;
+      char composed[strlen(preedit)-3];
+      for (int i = 0; i < strlen(preedit)-3; ++i) {
+        composed[i] = preedit[i < caretPos ? i : i+3];
+      }
+      _composedString = [@(composed) stringByReplacingOccurrencesOfString:@" " withString:@""];
+    } else {
+      _composedString = [@(preedit) stringByReplacingOccurrencesOfString:@" " withString:@""];
+    }
+
+    // update raw input
+    const char *raw_input = rime_get_api()->get_input(_session);
+    _originalString = [[NSAttributedString alloc] initWithString:@(raw_input)];
 
     NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
     NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
