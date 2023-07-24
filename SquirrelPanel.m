@@ -6,43 +6,47 @@
 @implementation NSBezierPath (BezierPathQuartzUtilities)
 // This method works only in OS X v10.2 and later.
 - (CGPathRef)quartzPath {
-  // Need to begin a path here.
-  CGPathRef immutablePath = NULL;
-  // Then draw the path elements.
-  NSUInteger numElements = self.elementCount;
-  if (numElements > 0) {
-    CGMutablePathRef path = CGPathCreateMutable();
-    NSPoint points[3];
-    BOOL didClosePath = YES;
-    for (NSUInteger i = 0; i < numElements; i++) {
-      switch ([self elementAtIndex:i associatedPoints:points]) {
-        case NSMoveToBezierPathElement:
-          CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
-          break;
-        case NSLineToBezierPathElement:
-          CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
-          didClosePath = NO;
-          break;
-        case NSCurveToBezierPathElement:
-          CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
-                                points[1].x, points[1].y,
-                                points[2].x, points[2].y);
-          didClosePath = NO;
-          break;
-        case NSClosePathBezierPathElement:
-          CGPathCloseSubpath(path);
-          didClosePath = YES;
-          break;
+  if (@available(macOS 14.0, *)) {
+    return self.CGPath;
+  } else {
+    // Need to begin a path here.
+    CGPathRef immutablePath = NULL;
+    // Then draw the path elements.
+    NSUInteger numElements = self.elementCount;
+    if (numElements > 0) {
+      CGMutablePathRef path = CGPathCreateMutable();
+      NSPoint points[3];
+      BOOL didClosePath = YES;
+      for (NSUInteger i = 0; i < numElements; i++) {
+        switch ([self elementAtIndex:i associatedPoints:points]) {
+          case NSMoveToBezierPathElement:
+            CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
+            break;
+          case NSLineToBezierPathElement:
+            CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
+            didClosePath = NO;
+            break;
+          case NSCurveToBezierPathElement:
+            CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
+                                  points[1].x, points[1].y,
+                                  points[2].x, points[2].y);
+            didClosePath = NO;
+            break;
+          case NSClosePathBezierPathElement:
+            CGPathCloseSubpath(path);
+            didClosePath = YES;
+            break;
+        }
       }
+     // Be sure the path is closed or Quartz may not do valid hit detection.
+      if (!didClosePath) {
+        CGPathCloseSubpath(path);
+      }
+      immutablePath = CFAutorelease(CGPathCreateCopy(path));
+      CGPathRelease(path);
     }
-    // Be sure the path is closed or Quartz may not do valid hit detection.
-    if (!didClosePath) {
-      CGPathCloseSubpath(path);
-    }
-    immutablePath = CFAutorelease(CGPathCreateCopy(path));
-    CGPathRelease(path);
+    return immutablePath;
   }
-  return immutablePath;
 }
 @end
 
@@ -122,21 +126,21 @@ static NSString *const kDefaultCandidateFormat = @"%c %@";
           inlinePreedit:(BOOL)inlinePreedit
         inlineCandidate:(BOOL)inlineCandidate;
 
-- (void)       setAttrs:(NSMutableDictionary *)attrs
-       highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
-             labelAttrs:(NSMutableDictionary *)labelAttrs
-  labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
-           commentAttrs:(NSMutableDictionary *)commentAttrs
-commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
-           preeditAttrs:(NSMutableDictionary *)preeditAttrs
-preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
-            pagingAttrs:(NSMutableDictionary *)pagingAttrs
- pagingHighlightedAttrs:(NSMutableDictionary *)pagingHighlightedAttrs;
+- (void)         setAttrs:(NSMutableDictionary *)attrs
+         highlightedAttrs:(NSMutableDictionary *)highlightedAttrs
+               labelAttrs:(NSMutableDictionary *)labelAttrs
+    labelHighlightedAttrs:(NSMutableDictionary *)labelHighlightedAttrs
+             commentAttrs:(NSMutableDictionary *)commentAttrs
+  commentHighlightedAttrs:(NSMutableDictionary *)commentHighlightedAttrs
+             preeditAttrs:(NSMutableDictionary *)preeditAttrs
+  preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
+              pagingAttrs:(NSMutableDictionary *)pagingAttrs
+   pagingHighlightedAttrs:(NSMutableDictionary *)pagingHighlightedAttrs;
 
-- (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
-     preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
-      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
-      statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle;
+- (void)setParagraphStyle:(NSParagraphStyle *)paragraphStyle
+    preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
+     pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
+     statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle;
 
 @end
 
@@ -169,7 +173,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 }
 
 - (void)setStatusMessageType:(NSString *)type {
-  if ([type isEqualToString: @"long"] || [type isEqualToString: @"short"] || [type isEqualToString: @"mix"]) {
+  if ([type isEqualToString:@"long"] || [type isEqualToString:@"short"] || [type isEqualToString:@"mix"]) {
     _statusMessageType = type;
   } else {
     _statusMessageType = @"mix";
@@ -229,7 +233,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
              preeditAttrs:(NSMutableDictionary *)preeditAttrs
   preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
               pagingAttrs:(NSMutableDictionary *)pagingAttrs
-   pagingHighlightedAttrs:(NSMutableDictionary *)pagingHighlightedAttrs{
+   pagingHighlightedAttrs:(NSMutableDictionary *)pagingHighlightedAttrs {
   _attrs = attrs;
   _highlightedAttrs = highlightedAttrs;
   _labelAttrs = labelAttrs;
@@ -242,10 +246,10 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
   _pagingHighlightedAttrs = pagingHighlightedAttrs;
 }
 
-- (void) setParagraphStyle:(NSParagraphStyle *)paragraphStyle
-     preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
-      pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
-      statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle{
+- (void)setParagraphStyle:(NSParagraphStyle *)paragraphStyle
+    preeditParagraphStyle:(NSParagraphStyle *)preeditParagraphStyle
+     pagingParagraphStyle:(NSParagraphStyle *)pagingParagraphStyle
+     statusParagraphStyle:(NSParagraphStyle *)statusParagraphStyle {
   _paragraphStyle = paragraphStyle;
   _preeditParagraphStyle = preeditParagraphStyle;
   _pagingParagraphStyle = pagingParagraphStyle;
@@ -257,6 +261,7 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @interface SquirrelView : NSView
 
 @property(nonatomic, readonly) NSTextView *textView;
+@property(nonatomic, readonly) NSEdgeInsets insets;
 @property(nonatomic, readonly) NSArray<NSValue *> *candidateRanges;
 @property(nonatomic, readonly) NSUInteger highlightedIndex;
 @property(nonatomic, readonly) NSRange preeditRange;
@@ -269,22 +274,24 @@ preeditHighlightedAttrs:(NSMutableDictionary *)preeditHighlightedAttrs
 @property(nonatomic, readonly) BOOL isDark;
 @property(nonatomic, readonly) NSTextLayoutManager *layoutManager API_AVAILABLE(macos(12.0));
 @property(nonatomic, strong, readonly) SquirrelTheme *currentTheme;
-@property(nonatomic, assign) CGFloat seperatorWidth;
+@property(nonatomic, assign) CGFloat separatorWidth;
 @property(nonatomic, readonly) CAShapeLayer *shape;
-@property(nonatomic, getter=isFlipped, readonly) BOOL flipped;
+@property(nonatomic, getter = isFlipped, readonly) BOOL flipped;
 @property(nonatomic, readonly) BOOL wantsUpdateLayer;
 
-- (void)     drawViewWith:(NSArray<NSValue *> *)candidateRanges
-         highlightedIndex:(NSUInteger)highlightedIndex
-             preeditRange:(NSRange)preeditRange
-  highlightedPreeditRange:(NSRange)highlightedPreeditRange
-              pagingRange:(NSRange)pagingRange
-             pagingButton:(NSUInteger)pagingButton;
+- (void) drawViewWithInsets:(NSEdgeInsets)insets
+            candidateRanges:(NSArray<NSValue *> *)candidateRanges
+           highlightedIndex:(NSUInteger)highlightedIndex
+               preeditRange:(NSRange)preeditRange
+    highlightedPreeditRange:(NSRange)highlightedPreeditRange
+                pagingRange:(NSRange)pagingRange
+               pagingButton:(NSUInteger)pagingButton;
 - (NSRect)contentRectForRange:(NSRange)range;
 - (NSRect)setLineRectForRange:(NSRange)charRange
-                     atOrigin:(NSPoint)origin
+                     atOrigin:(NSPoint *)origin
             withReferenceFont:(NSFont *)refFont
                paragraphStyle:(NSParagraphStyle *)style;
+
 @end
 
 @implementation SquirrelView
@@ -322,35 +329,39 @@ SquirrelTheme *_darkTheme;
   self = [super initWithFrame:frameRect];
   if (self) {
     self.wantsLayer = YES;
+    self.layer.geometryFlipped = YES;
     self.layer.masksToBounds = YES;
     self.layerContentsRedrawPolicy = NSViewLayerContentsRedrawOnSetNeedsDisplay;
-    self.layerContentsPlacement = NSViewLayerContentsPlacementBottomLeft;
   }
 
   if (@available(macOS 12.0, *)) {
     _layoutManager = [[NSTextLayoutManager alloc] init];
     _layoutManager.usesFontLeading = NO;
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
+    NSTextContainer *textContainer = [[NSTextContainer alloc]
+                                      initWithSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
     _layoutManager.textContainer = textContainer;
     NSTextContentStorage *textStorage = [[NSTextContentStorage alloc] init];
     [textStorage addTextLayoutManager:_layoutManager];
-    _textView = [[NSTextView alloc] initWithFrame:frameRect textContainer:_layoutManager.textContainer];
-    _textView.drawsBackground = NO;
-    _textView.editable = NO;
-    _textView.selectable = NO;
-    _textView.wantsLayer = NO;
+    _textView = [[NSTextView alloc] initWithFrame:frameRect
+                                    textContainer:_layoutManager.textContainer];
   } else {
-    _textView = [[NSTextView alloc] initWithFrame:frameRect];
-    _textView.drawsBackground = NO;
-    _textView.editable = NO;
-    _textView.selectable = NO;
-    _textView.wantsLayer = NO;
-    _textView.layoutManager.backgroundLayoutEnabled = YES;
-    _textView.layoutManager.usesFontLeading = NO;
-    _textView.layoutManager.typesetterBehavior = NSTypesetterLatestBehavior;
-    NSTextContainer *textContainer = [[NSTextContainer alloc] initWithContainerSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
-    [_textView replaceTextContainer:textContainer];
+    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    layoutManager.backgroundLayoutEnabled = YES;
+    layoutManager.usesFontLeading = NO;
+    layoutManager.typesetterBehavior = NSTypesetterLatestBehavior;
+    NSTextContainer *textContainer = [[NSTextContainer alloc]
+                                      initWithContainerSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
+    [layoutManager addTextContainer:textContainer];
+    NSTextStorage *textStorage = [[NSTextStorage alloc] init];
+    [textStorage addLayoutManager:layoutManager];
+    _textView = [[NSTextView alloc] initWithFrame:frameRect
+                                    textContainer:textContainer];
   }
+  _textView.drawsBackground = NO;
+  _textView.editable = NO;
+  _textView.selectable = NO;
+  _textView.wantsLayer = NO;
+
   _defaultTheme = [[SquirrelTheme alloc] init];
   _shape = [[CAShapeLayer alloc] init];
   if (@available(macOS 10.14, *)) {
@@ -363,7 +374,7 @@ SquirrelTheme *_darkTheme;
   if (range.location == NSNotFound) {
     return nil;
   } else {
-    NSTextContentManager *contentManager = self.layoutManager.textContentManager;
+    NSTextContentManager *contentManager = _layoutManager.textContentManager;
     id<NSTextLocation> startLocation = [contentManager locationFromLocation:contentManager.documentRange.location withOffset:range.location];
     id<NSTextLocation> endLocation = [contentManager locationFromLocation:startLocation withOffset:range.length];
     return [[NSTextRange alloc] initWithLocation:startLocation endLocation:endLocation];
@@ -371,21 +382,21 @@ SquirrelTheme *_darkTheme;
 }
 
 - (NSRect)setLineRectForRange:(NSRange)charRange
-                     atOrigin:(NSPoint)origin
+                     atOrigin:(NSPoint *)origin
             withReferenceFont:(NSFont *)refFont
                paragraphStyle:(NSParagraphStyle *)style {
-  NSLayoutManager *layoutManager = self.textView.layoutManager;
-  NSTextContainer *textContainer = self.textView.textContainer;
-  NSTextStorage *textStorage = self.textView.textStorage;
+  NSLayoutManager *layoutManager = _textView.layoutManager;
+  NSTextContainer *textContainer = _textView.textContainer;
+  NSTextStorage *textStorage = _textView.textStorage;
 
   NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
-  NSRect blockRect = NSMakeRect(origin.x, origin.y, 0, 0);
   BOOL verticalLayout = textContainer.layoutOrientation == NSTextLayoutOrientationVertical;
   CGFloat refFontHeight = refFont.ascender - refFont.descender;
   CGFloat refBaseline = refFont.ascender;
   CGFloat lineHeight = MAX(style.lineHeightMultiple > 0 ? refFontHeight * style.lineHeightMultiple : refFontHeight, style.minimumLineHeight);
   lineHeight = style.maximumLineHeight > 0 ? MIN(lineHeight, style.maximumLineHeight) : lineHeight;
 
+  NSRect blockRect = NSZeroRect;
   NSUInteger i = glyphRange.location;
   NSRange lineRange = NSMakeRange(i, 0);
   while (i < NSMaxRange(glyphRange)) {
@@ -393,30 +404,29 @@ SquirrelTheme *_darkTheme;
     NSRect rect = [layoutManager lineFragmentRectForGlyphAtIndex:i effectiveRange:&lineRange];
     NSRect usedRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:i effectiveRange:NULL];
     NSRange lineCharRange = [layoutManager characterRangeForGlyphRange:lineRange actualGlyphRange:NULL];
-    rect.origin.y = NSMaxY(blockRect);
-    usedRect.origin.y = NSMaxY(blockRect);
-    CGFloat alignment = verticalLayout ? lineHeight/2 : refBaseline + MAX(0.0, lineHeight - refFontHeight)/2;
+    rect.origin.y = origin->y;
+    usedRect.origin.y = origin->y;
     rect.size.height = lineHeight;
     usedRect.size.height = MAX(NSHeight(usedRect), lineHeight);
+    CGFloat alignment = verticalLayout ? lineHeight / 2 : refBaseline + MAX(0.0, lineHeight - refFontHeight) / 2;
     if (style.lineSpacing > 0) {
       rect.size.height = lineHeight + style.lineSpacing;
       usedRect.size.height = MAX(NSHeight(usedRect), lineHeight + style.lineSpacing);
-      alignment += style.lineSpacing/2;
+      alignment += style.lineSpacing / 2;
     }
-    if (style.paragraphSpacing > 0 && [textStorage.string characterAtIndex:NSMaxRange(lineCharRange)-1] == '\n') {
+    if (style.paragraphSpacing > 0 && NSMaxRange(lineCharRange) != textStorage.length &&
+        [textStorage.string characterAtIndex:NSMaxRange(lineCharRange) - 1] == '\n') {
       rect.size.height += style.paragraphSpacing;
     }
-    if (style.paragraphSpacingBefore > 0 && (lineCharRange.location == 0 ||
-                                             [textStorage.string characterAtIndex:lineCharRange.location-1] == '\n')) {
+    if (style.paragraphSpacingBefore > 0 && lineCharRange.location != 0 &&
+        [textStorage.string characterAtIndex:lineCharRange.location - 1] == '\n') {
       rect.size.height += style.paragraphSpacingBefore;
       usedRect.origin.y += style.paragraphSpacingBefore;
       alignment += style.paragraphSpacingBefore;
     }
+    [layoutManager setLineFragmentRect:rect forGlyphRange:lineRange usedRect:NSIntersectionRect(usedRect, rect)];
     blockRect = NSUnionRect(blockRect, rect);
-    usedRect = NSIntersectionRect(usedRect, rect);
-    rect = [self.textView backingAlignedRect:rect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    usedRect = [self.textView backingAlignedRect:usedRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    [layoutManager setLineFragmentRect:rect forGlyphRange:lineRange usedRect:usedRect];
+    origin->y = NSMaxY(rect);
 
     // typesetting glyphs
     NSRange fontRunRange = NSMakeRange(NSNotFound, 0);
@@ -427,7 +437,8 @@ SquirrelTheme *_darkTheme;
       NSFont *runFont = [textStorage attribute:NSFontAttributeName atIndex:runCharLocation effectiveRange:&fontRunRange];
       NSFont *resizedRefFont = [NSFont fontWithDescriptor:refFont.fontDescriptor size:runFont.pointSize];
       CGFloat baselineOffset = [[textStorage attribute:NSBaselineOffsetAttributeName atIndex:runCharLocation effectiveRange:NULL] doubleValue];
-      NSRange runRange = NSIntersectionRange(fontRunRange, [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j]);
+      NSRange fontRunGlyphRange = [layoutManager characterRangeForGlyphRange:fontRunRange actualGlyphRange:NULL];
+      NSRange runRange = NSIntersectionRange(fontRunGlyphRange, [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j]);
       if (verticalLayout) {
         runFont = runFont.verticalFont;
         resizedRefFont = resizedRefFont.verticalFont;
@@ -436,17 +447,16 @@ SquirrelTheme *_darkTheme;
       CGFloat runFontHeight = runFont.ascender - runFont.descender;
       CGFloat resizedRefFontHeight = resizedRefFont.ascender - resizedRefFont.descender;
       if (verticalLayout) {
-        runGlyphPosition.y = alignment - baselineOffset + MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
+        runGlyphPosition.y = alignment - baselineOffset + ceil(MAX(0.0, runFontHeight - resizedRefFontHeight)/4);
         if (runFont.isVertical) {
-          runGlyphPosition.x += MAX(0.0, runFontHeight - resizedRefFontHeight)/2;
+          runGlyphPosition.x += ceil(MAX(0.0, runFontHeight - resizedRefFontHeight)/2);
         } else {
           runGlyphPosition.y += runBaseline - runFontHeight/2;
         }
       } else {
         runGlyphPosition.y = alignment - baselineOffset;
       }
-      NSRect lineDrawnRect = [self.textView backingAlignedRect:NSMakeRect(rect.origin.x, rect.origin.y, runGlyphPosition.x, runGlyphPosition.y) options:(NSAlignAllEdgesInward|NSAlignRectFlipped)];
-      [layoutManager setLocation:NSMakePoint(NSWidth(lineDrawnRect), NSHeight(lineDrawnRect)) forStartOfGlyphRange:runRange];
+      [layoutManager setLocation:runGlyphPosition forStartOfGlyphRange:runRange];
       j = NSMaxRange(runRange);
     }
     i = NSMaxRange(lineRange);
@@ -456,24 +466,14 @@ SquirrelTheme *_darkTheme;
 
 // Get the rectangle containing entire contents, expensive to calculate
 - (NSRect)contentRect {
-  NSRect contentRect;
   if (@available(macOS 12.0, *)) {
-    [self.layoutManager ensureLayoutForRange:self.layoutManager.textContentManager.documentRange];
-    contentRect = [self.layoutManager usageBoundsForTextContainer];
+    [_layoutManager ensureLayoutForRange:_layoutManager.textContentManager.documentRange];
+    return NSInsetRect([_layoutManager usageBoundsForTextContainer],
+                       -_textView.textContainer.lineFragmentPadding, 0);
   } else {
-    [self.textView.layoutManager ensureLayoutForTextContainer:self.textView.textContainer];
-    contentRect = [self.textView.layoutManager usedRectForTextContainer:self.textView.textContainer];
+    [_textView.layoutManager ensureLayoutForTextContainer:_textView.textContainer];
+    return [_textView.layoutManager usedRectForTextContainer:_textView.textContainer];
   }
-  if (_candidateRanges.count > 0) {
-    if (_preeditRange.length == 0) {
-      contentRect.origin.y -= self.currentTheme.linespace/2;
-      contentRect.size.height += self.currentTheme.linespace/2;
-    }
-    if (self.currentTheme.linear || _pagingRange.length == 0) {
-      contentRect.size.height += self.currentTheme.linespace/2;
-    }
-  }
-  return contentRect;
 }
 
 // Get the rectangle containing the range of text, will first convert to glyph or text range, expensive to calculate
@@ -481,28 +481,39 @@ SquirrelTheme *_darkTheme;
   if (@available(macOS 12.0, *)) {
     NSTextRange *textRange = [self getTextRangeFromRange:range];
     __block NSRect contentRect = NSZeroRect;
-    [self.layoutManager enumerateTextSegmentsInRange:textRange type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
+    [_layoutManager enumerateTextSegmentsInRange:textRange
+                                            type:NSTextLayoutManagerSegmentTypeStandard
+                                         options:NSTextLayoutManagerSegmentOptionsRangeNotRequired
+                                      usingBlock:
+     ^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
       contentRect = NSUnionRect(contentRect, segmentRect);
       return YES;
     }];
     return contentRect;
   } else {
-    NSRange glyphRange = [self.textView.layoutManager glyphRangeForCharacterRange:range actualCharacterRange:NULL];
-    NSRect rect = [self.textView.layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:self.textView.textContainer];
-    NSRect firstLineRect = [self.textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location effectiveRange:NULL];
-    NSRect finalLineRect = [self.textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:NULL];
-    NSRect contentRect = NSMakeRect(NSMinX(rect), NSMinY(firstLineRect), NSWidth(rect), NSMaxY(finalLineRect) - NSMinY(firstLineRect));
+    NSRange glyphRange = [_textView.layoutManager glyphRangeForCharacterRange:range
+                                                         actualCharacterRange:NULL];
+    NSRect rect = [_textView.layoutManager boundingRectForGlyphRange:glyphRange
+                                                     inTextContainer:_textView.textContainer];
+    NSRect firstLineRect = [_textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location
+                                                                         effectiveRange:NULL];
+    NSRect finalLineRect = [_textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange) - 1
+                                                                         effectiveRange:NULL];
+    NSRect contentRect = NSMakeRect(NSMinX(rect), NSMinY(firstLineRect),
+                                    NSWidth(rect), NSMaxY(finalLineRect) - NSMinY(firstLineRect));
     return contentRect;
   }
 }
 
 // Will triger - (void)drawRect:(NSRect)dirtyRect
-- (void)     drawViewWith:(NSArray<NSValue *>*)candidateRanges
-         highlightedIndex:(NSUInteger)highlightedIndex
-             preeditRange:(NSRange)preeditRange
-  highlightedPreeditRange:(NSRange)highlightedPreeditRange
-              pagingRange:(NSRange)pagingRange
-             pagingButton:(NSUInteger)pagingButton {
+- (void) drawViewWithInsets:(NSEdgeInsets)insets
+            candidateRanges:(NSArray<NSValue *> *)candidateRanges
+           highlightedIndex:(NSUInteger)highlightedIndex
+               preeditRange:(NSRange)preeditRange
+    highlightedPreeditRange:(NSRange)highlightedPreeditRange
+                pagingRange:(NSRange)pagingRange
+               pagingButton:(NSUInteger)pagingButton {
+  _insets = insets;
   _candidateRanges = candidateRanges;
   _highlightedIndex = highlightedIndex;
   _preeditRange = preeditRange;
@@ -514,67 +525,52 @@ SquirrelTheme *_darkTheme;
   self.needsDisplay = YES;
 }
 
-// A tweaked sign function, to winddown corner radius when the size is small
-double sign(double number) {
-  if (number >= 2) {
-    return 1;
-  } else if (number <= -2) {
-    return -1;
-  } else {
-    return number / 2;
-  }
-}
-
 // Bezier cubic curve, which has continuous roundness
-NSBezierPath *drawSmoothLines(NSArray<NSValue *> *vertex, CGFloat alpha, CGFloat beta) {
+NSBezierPath * drawRoundedPolygon(NSArray<NSValue *> *vertex, CGFloat radius) {
   NSBezierPath *path = [NSBezierPath bezierPath];
-  if (vertex.count < 1)
+  if (vertex.count < 1) {
     return path;
-  NSPoint previousPoint = vertex[vertex.count-1].pointValue;
-  NSPoint point = vertex[0].pointValue;
+  }
+  NSPoint previousPoint = vertex.lastObject.pointValue;
+  NSPoint point = vertex.firstObject.pointValue;
   NSPoint nextPoint;
-  NSPoint control1;
-  NSPoint control2;
-  NSPoint target = previousPoint;
+  NSPoint startPoint;
+  NSPoint endPoint = previousPoint;
+  CGFloat arcRadius;
   CGVector diff = CGVectorMake(point.x - previousPoint.x, point.y - previousPoint.y);
   if (ABS(diff.dx) >= ABS(diff.dy)) {
-    target.x += sign(diff.dx/beta)*beta;
+    endPoint.x += diff.dx / 2;
+    endPoint.y = point.y;
   } else {
-    target.y += sign(diff.dy/beta)*beta;
+    endPoint.y += diff.dy / 2;
+    endPoint.x = point.x;
   }
-  [path moveToPoint:target];
+  [path moveToPoint:endPoint];
   for (NSUInteger i = 0; i < vertex.count; ++i) {
-    previousPoint = vertex[(vertex.count+i-1)%vertex.count].pointValue;
+    startPoint = endPoint;
     point = vertex[i].pointValue;
-    nextPoint = vertex[(i+1)%vertex.count].pointValue;
-    target = point;
-    control1 = point;
-    diff = CGVectorMake(point.x - previousPoint.x, point.y - previousPoint.y);
-    if (ABS(diff.dx) >= ABS(diff.dy)) {
-      target.x -= sign(diff.dx/beta)*beta;
-      control1.x -= sign(diff.dx/beta)*alpha;
-    } else {
-      target.y -= sign(diff.dy/beta)*beta;
-      control1.y -= sign(diff.dy/beta)*alpha;
-    }
-    [path lineToPoint:target];
-    target = point;
-    control2 = point;
+    nextPoint = vertex[(i + 1) % vertex.count].pointValue;
+    arcRadius = MIN(radius, MAX(ABS(point.x - startPoint.x), ABS(point.y - startPoint.y)));
+    endPoint = point;
     diff = CGVectorMake(nextPoint.x - point.x, nextPoint.y - point.y);
     if (ABS(diff.dx) > ABS(diff.dy)) {
-      control2.x += sign(diff.dx/beta)*alpha;
-      target.x += sign(diff.dx/beta)*beta;
+      endPoint.x += diff.dx / 2;
+      arcRadius = MIN(arcRadius, ABS(diff.dx) / 2);
+      endPoint.y = nextPoint.y;
+      point.y = nextPoint.y;
     } else {
-      control2.y += sign(diff.dy/beta)*alpha;
-      target.y += sign(diff.dy/beta)*beta;
+      endPoint.y += diff.dy / 2;
+      arcRadius = MIN(arcRadius, ABS(diff.dy) / 2);
+      endPoint.x = nextPoint.x;
+      point.x = nextPoint.x;
     }
-    [path curveToPoint:target controlPoint1:control1 controlPoint2:control2];
+    [path appendBezierPathWithArcFromPoint:point toPoint:endPoint radius:arcRadius];
   }
   [path closePath];
   return path;
 }
 
-NSArray<NSValue *> *rectVertex(NSRect rect) {
+NSArray<NSValue *> * rectVertex(NSRect rect) {
   return @[@(rect.origin),
            @(NSMakePoint(rect.origin.x, rect.origin.y + rect.size.height)),
            @(NSMakePoint(rect.origin.x + rect.size.width, rect.origin.y + rect.size.height)),
@@ -588,16 +584,16 @@ BOOL nearEmptyRect(NSRect rect) {
 // Calculate 3 boxes containing the text in range. leadingRect and trailingRect are incomplete line rectangle
 // bodyRect is the complete line fragment in the middle if the range spans no less than one full line
 - (void)multilineRectForRange:(NSRange)charRange leadingRect:(NSRect *)leadingRect bodyRect:(NSRect *)bodyRect trailingRect:(NSRect *)trailingRect {
-  NSSize edgeInset = self.currentTheme.edgeInset;
-  *leadingRect = NSZeroRect;
-  *bodyRect = NSZeroRect;
-  *trailingRect = NSZeroRect;
   if (@available(macOS 12.0, *)) {
     NSTextRange *textRange = [self getTextRangeFromRange:charRange];
     NSMutableArray<NSValue *> *lineRects = [[NSMutableArray alloc] init];
-    [self.layoutManager enumerateTextSegmentsInRange:textRange type:NSTextLayoutManagerSegmentTypeStandard options:NSTextLayoutManagerSegmentOptionsRangeNotRequired usingBlock:^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
+    [_layoutManager enumerateTextSegmentsInRange:textRange
+                                            type:NSTextLayoutManagerSegmentTypeStandard
+                                         options:NSTextLayoutManagerSegmentOptionsRangeNotRequired
+                                      usingBlock:
+     ^(NSTextRange *segmentRange, CGRect segmentRect, CGFloat baseline, NSTextContainer *textContainer) {
       if (!nearEmptyRect(segmentRect)) {
-        [lineRects addObject:[NSValue valueWithRect:NSOffsetRect(segmentRect, edgeInset.width, edgeInset.height)]];
+        [lineRects addObject:[NSValue valueWithRect:segmentRect]];
       }
       return YES;
     }];
@@ -616,57 +612,60 @@ BOOL nearEmptyRect(NSRect rect) {
       } else {
         *trailingRect = lastLineRect;
         if (NSMinX(firstLineRect) == NSMinX(lastLineRect)) {
-          *bodyRect = NSUnionRect(firstLineRect, lineRects[lineRects.count-2].rectValue);
+          *bodyRect = NSUnionRect(firstLineRect, lineRects[lineRects.count - 2].rectValue);
         } else {
           *leadingRect = firstLineRect;
           if (lineRects.count > 2) {
-            *bodyRect = NSUnionRect(lineRects[1].rectValue, lineRects[lineRects.count-2].rectValue);
+            *bodyRect = NSUnionRect(lineRects[1].rectValue, lineRects[lineRects.count - 2].rectValue);
           }
         }
       }
     }
   } else {
-    NSLayoutManager *layoutManager = self.textView.layoutManager;
-    NSTextContainer *textContainer = self.textView.textContainer;
-    NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
+    NSLayoutManager *layoutManager = _textView.layoutManager;
+    NSTextContainer *textContainer = _textView.textContainer;
+    NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange
+                                               actualCharacterRange:NULL];
     CGFloat startX = [layoutManager locationForGlyphAtIndex:glyphRange.location].x;
-    CGFloat endX = NSMaxX([layoutManager boundingRectForGlyphRange:NSMakeRange(NSMaxRange(glyphRange)-1, 1) inTextContainer:textContainer]);
-    NSRect boundingRect = [layoutManager boundingRectForGlyphRange:glyphRange inTextContainer:textContainer];
+    CGFloat endX = NSMaxX([layoutManager boundingRectForGlyphRange:NSMakeRange(NSMaxRange(glyphRange) - 1, 1)
+                                                   inTextContainer:textContainer]);
+    NSRect boundingRect = [layoutManager boundingRectForGlyphRange:glyphRange
+                                                   inTextContainer:textContainer];
     NSRange leadingLineRange = NSMakeRange(NSNotFound, 0);
-    NSRect leadingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location effectiveRange:&leadingLineRange withoutAdditionalLayout:YES];
+    NSRect leadingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphRange.location
+                                                                 effectiveRange:&leadingLineRange];
     if (NSMaxRange(leadingLineRange) >= NSMaxRange(glyphRange)) {
-      *bodyRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
-                             NSMinY(leadingLineRect) + edgeInset.height,
+      *bodyRect = NSMakeRect(NSMinX(leadingLineRect) + startX,
+                             NSMinY(leadingLineRect),
                              endX - startX, NSHeight(leadingLineRect));
     } else {
-      CGFloat rightEdge = MAX(NSMaxX(leadingLineRect) - self.currentTheme.hilitedCornerRadius, NSMaxX(boundingRect));
+      CGFloat rightEdge = MAX(NSMaxX(leadingLineRect) - textContainer.lineFragmentPadding, NSMaxX(boundingRect));
       NSRange trailingLineRange = NSMakeRange(NSNotFound, 0);
-      NSRect trailingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange)-1 effectiveRange:&trailingLineRange withoutAdditionalLayout:YES];
-      CGFloat leftEdge = MIN(NSMinX(trailingLineRect) + self.currentTheme.hilitedCornerRadius, NSMinX(boundingRect));
+      NSRect trailingLineRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:NSMaxRange(glyphRange) - 1
+                                                                    effectiveRange:&trailingLineRange];
+      CGFloat leftEdge = MIN(NSMinX(trailingLineRect) + textContainer.lineFragmentPadding, NSMinX(boundingRect));
       if (NSMaxRange(trailingLineRange) == NSMaxRange(glyphRange)) {
         if (glyphRange.location == leadingLineRange.location) {
-          *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(leadingLineRect) + edgeInset.height,
+          *bodyRect = NSMakeRect(leftEdge, NSMinY(leadingLineRect),
                                  rightEdge - leftEdge, NSMaxY(trailingLineRect) - NSMinY(leadingLineRect));
         } else {
-          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
-                                    NSMinY(leadingLineRect) + edgeInset.height,
+          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX, NSMinY(leadingLineRect),
                                     rightEdge - NSMinX(leadingLineRect) - startX, NSHeight(leadingLineRect));
-          *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMaxY(leadingLineRect) + edgeInset.height,
+          *bodyRect = NSMakeRect(leftEdge, NSMaxY(leadingLineRect),
                                  rightEdge - leftEdge, NSMaxY(trailingLineRect) - NSMaxY(leadingLineRect));
         }
       } else {
-        *trailingRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(trailingLineRect) + edgeInset.height,
+        *trailingRect = NSMakeRect(leftEdge, NSMinY(trailingLineRect),
                                    NSMinX(trailingLineRect) + endX - leftEdge, NSHeight(trailingLineRect));
         if (glyphRange.location == leadingLineRange.location) {
-          *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMinY(leadingLineRect) + edgeInset.height,
+          *bodyRect = NSMakeRect(leftEdge, NSMinY(leadingLineRect),
                                  rightEdge - leftEdge, NSMinY(trailingLineRect) - NSMinY(leadingLineRect));
         } else {
-          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX + edgeInset.width,
-                                    NSMinY(leadingLineRect) + edgeInset.height,
+          *leadingRect = NSMakeRect(NSMinX(leadingLineRect) + startX,
+                                    NSMinY(leadingLineRect),
                                     rightEdge - NSMinX(leadingLineRect) - startX, NSHeight(leadingLineRect));
-          NSRange bodyLineRange = NSMakeRange(NSMaxRange(leadingLineRange), trailingLineRange.location-NSMaxRange(leadingLineRange));
-          if (bodyLineRange.length > 0) {
-            *bodyRect = NSMakeRect(leftEdge + edgeInset.width, NSMaxY(leadingLineRect) + edgeInset.height,
+          if (trailingLineRange.location > NSMaxRange(leadingLineRange)) {
+            *bodyRect = NSMakeRect(leftEdge, NSMaxY(leadingLineRect),
                                    rightEdge - leftEdge, NSMinY(trailingLineRect) - NSMaxY(leadingLineRect));
           }
         }
@@ -684,28 +683,31 @@ NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyRect, NS
   } else if (nearEmptyRect(leadingRect) && nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
     return rectVertex(bodyRect);
   } else if (nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
-    NSArray<NSValue *> * leadingVertex = rectVertex(leadingRect);
-    NSArray<NSValue *> * bodyVertex = rectVertex(bodyRect);
+    NSArray<NSValue *> *leadingVertex = rectVertex(leadingRect);
+    NSArray<NSValue *> *bodyVertex = rectVertex(bodyRect);
     return @[leadingVertex[0], leadingVertex[1], bodyVertex[0], bodyVertex[1], bodyVertex[2], leadingVertex[3]];
   } else if (nearEmptyRect(leadingRect) && !nearEmptyRect(bodyRect)) {
-    NSArray<NSValue *> * trailingVertex = rectVertex(trailingRect);
-    NSArray<NSValue *> * bodyVertex = rectVertex(bodyRect);
+    NSArray<NSValue *> *trailingVertex = rectVertex(trailingRect);
+    NSArray<NSValue *> *bodyVertex = rectVertex(bodyRect);
     return @[bodyVertex[0], trailingVertex[1], trailingVertex[2], trailingVertex[3], bodyVertex[2], bodyVertex[3]];
-  } else if (!nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && nearEmptyRect(bodyRect) && NSMaxX(leadingRect)>NSMinX(trailingRect)) {
-    NSArray<NSValue *> * leadingVertex = rectVertex(leadingRect);
-    NSArray<NSValue *> * trailingVertex = rectVertex(trailingRect);
-    return @[leadingVertex[0], leadingVertex[1], trailingVertex[0], trailingVertex[1], trailingVertex[2], trailingVertex[3], leadingVertex[2], leadingVertex[3]];
+  } else if (!nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) &&
+             nearEmptyRect(bodyRect) && NSMaxX(leadingRect) > NSMinX(trailingRect)) {
+    NSArray<NSValue *> *leadingVertex = rectVertex(leadingRect);
+    NSArray<NSValue *> *trailingVertex = rectVertex(trailingRect);
+    return @[leadingVertex[0], leadingVertex[1], trailingVertex[0], trailingVertex[1],
+             trailingVertex[2], trailingVertex[3], leadingVertex[2], leadingVertex[3]];
   } else if (!nearEmptyRect(leadingRect) && !nearEmptyRect(trailingRect) && !nearEmptyRect(bodyRect)) {
-    NSArray<NSValue *> * leadingVertex = rectVertex(leadingRect);
-    NSArray<NSValue *> * bodyVertex = rectVertex(bodyRect);
-    NSArray<NSValue *> * trailingVertex = rectVertex(trailingRect);
-    return @[leadingVertex[0], leadingVertex[1], bodyVertex[0], trailingVertex[1], trailingVertex[2], trailingVertex[3], bodyVertex[2], leadingVertex[3]];
+    NSArray<NSValue *> *leadingVertex = rectVertex(leadingRect);
+    NSArray<NSValue *> *bodyVertex = rectVertex(bodyRect);
+    NSArray<NSValue *> *trailingVertex = rectVertex(trailingRect);
+    return @[leadingVertex[0], leadingVertex[1], bodyVertex[0], trailingVertex[1],
+             trailingVertex[2], trailingVertex[3], bodyVertex[2], leadingVertex[3]];
   } else {
     return @[];
   }
 }
 
-NSColor *hooverColor(NSColor *color, BOOL darkTheme) {
+NSColor * hooverColor(NSColor *color, BOOL darkTheme) {
   if (@available(macOS 10.14, *)) {
     return [color colorWithSystemEffect:NSColorSystemEffectRollover];
   }
@@ -716,7 +718,7 @@ NSColor *hooverColor(NSColor *color, BOOL darkTheme) {
   }
 }
 
-NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
+NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   if (@available(macOS 10.14, *)) {
     return [color colorWithSystemEffect:NSColorSystemEffectDisabled];
   }
@@ -739,209 +741,235 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   NSBezierPath *pageDownPath;
 
   SquirrelTheme *theme = self.currentTheme;
-  NSPoint lineOrigin = NSZeroPoint;
-
   NSRect backgroundRect = self.bounds;
   NSRect textContainerRect = NSInsetRect(backgroundRect, theme.edgeInset.width, theme.edgeInset.height);
+  CGFloat linePadding = _textView.textContainer.lineFragmentPadding;
+
+  NSRange visibleRange;
+  if (@available(macOS 12.0, *)) {
+    visibleRange = NSMakeRange(0, _textView.textContentStorage.textStorage.length);
+  } else {
+    NSRange containerGlyphRange = {NSNotFound, 0};
+    [_textView.layoutManager textContainerForGlyphAtIndex:0 effectiveRange:&containerGlyphRange];
+    visibleRange = [_textView.layoutManager characterRangeForGlyphRange:containerGlyphRange actualGlyphRange:NULL];
+  }
+
+  NSRange preeditRange = NSIntersectionRange(_preeditRange, visibleRange);
+  NSRange candidateBlockRange = NSIntersectionRange(NSUnionRange(_candidateRanges.firstObject.rangeValue, theme.linear && _pagingRange.length > 0 ? _pagingRange : _candidateRanges.lastObject.rangeValue), visibleRange);
+  NSRange pagingRange = NSIntersectionRange(_pagingRange, visibleRange);
+
   NSRect preeditRect = NSZeroRect;
   NSRect candidateBlockRect = NSZeroRect;
   NSRect pagingLineRect = NSZeroRect;
-
+  NSRect statusRect = NSZeroRect;
   if (@available(macOS 12.0, *)) {
-    if (_preeditRange.length > 0) {
-      preeditRect = [self contentRectForRange:_preeditRange];
-      preeditRect.size.height += theme.preeditLinespace;
-      preeditRect.origin = lineOrigin;
-      lineOrigin.y = NSMaxY(preeditRect);
+    if (preeditRange.length > 0) {
+      preeditRect = [self contentRectForRange:preeditRange];
+      if (candidateBlockRange.length > 0) {
+        preeditRect.size.height += theme.preeditLinespace;
+      }
     }
-    if (_candidateRanges.count > 0) {
-      NSRange candidateBlockRange = NSUnionRange(_candidateRanges.firstObject.rangeValue, theme.linear && _pagingRange.length > 0 ? _pagingRange : _candidateRanges.lastObject.rangeValue);
-      candidateBlockRect = NSInsetRect([self contentRectForRange:candidateBlockRange], 0.0, -theme.linespace/2);
-      candidateBlockRect.origin = lineOrigin;
-      lineOrigin.y = NSMaxY(candidateBlockRect);
+    if (candidateBlockRange.length > 0) {
+      candidateBlockRect = NSInsetRect([self contentRectForRange:candidateBlockRange], 0.0, -theme.linespace / 2);
+      if (preeditRange.length == 0) {
+        candidateBlockRect.origin.y += theme.linespace / 2;
+      }
+    } else if (preeditRange.length == 0) { // status message
+      statusRect = [self contentRectForRange:visibleRange];
     }
-    if (!theme.linear && _pagingRange.length > 0) {
-      pagingLineRect = [self contentRectForRange:_pagingRange];
-      pagingLineRect.origin = lineOrigin;
-      lineOrigin.y = NSMaxY(pagingLineRect);
+    if (!theme.linear && pagingRange.length > 0) {
+      pagingLineRect = [self contentRectForRange:pagingRange];
+      pagingLineRect.origin.y -= theme.pagingParagraphStyle.paragraphSpacingBefore;
+      pagingLineRect.size.height += theme.pagingParagraphStyle.paragraphSpacingBefore;
     }
   } else {
-    // perform typesetting to get vertically centered layout and get the block rect
-    if (_preeditRange.length > 0) {
-      NSFont *preeditRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.preeditAttrs[NSFontAttributeName] pointSize], (CFStringRef) @"zh"));
-      preeditRect = [self setLineRectForRange:_preeditRange atOrigin:lineOrigin withReferenceFont:(theme.vertical ? preeditRefFont.verticalFont : preeditRefFont) paragraphStyle:theme.preeditParagraphStyle];
-      lineOrigin.y = NSMaxY(preeditRect);
+    NSPoint lineOrigin = NSZeroPoint;
+    if (preeditRange.length > 0) {
+      NSFont *preeditRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.preeditAttrs[NSFontAttributeName] pointSize], (CFStringRef)@"zh"));
+      preeditRect = [self setLineRectForRange:preeditRange
+                                     atOrigin:&lineOrigin
+                            withReferenceFont:(theme.vertical ? preeditRefFont.verticalFont : preeditRefFont)
+                               paragraphStyle:theme.preeditParagraphStyle];
     }
-    if (_candidateRanges.count > 0) {
-      CGFloat fontSize = MAX([theme.attrs[NSFontAttributeName] pointSize], MAX([theme.commentAttrs[NSFontAttributeName] pointSize], [theme.labelAttrs[NSFontAttributeName] pointSize]));
-      NSFont *refFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, fontSize, (CFStringRef) @"zh"));
-      NSRange candidateBlockRange = NSUnionRange(_candidateRanges.firstObject.rangeValue, theme.linear && _pagingRange.length > 0 ? _pagingRange : _candidateRanges.lastObject.rangeValue);
-      candidateBlockRect = [self setLineRectForRange:candidateBlockRange atOrigin:lineOrigin withReferenceFont:(theme.vertical ? refFont.verticalFont : refFont) paragraphStyle:theme.paragraphStyle];
-      lineOrigin.y = NSMaxY(candidateBlockRect);
-    } else if (_preeditRange.length == 0) { // status message
-      NSFont *statusRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.commentAttrs[NSFontAttributeName] pointSize], (CFStringRef) @"zh"));
-      candidateBlockRect = [self setLineRectForRange:NSMakeRange(0, self.textView.textStorage.length) atOrigin:lineOrigin withReferenceFont:(theme.vertical ? statusRefFont.verticalFont : statusRefFont) paragraphStyle:theme.statusParagraphStyle];
-      lineOrigin.y = NSMaxY(candidateBlockRect);
+    if (candidateBlockRange.length > 0) {
+      CGFloat fontSize = MAX([theme.attrs[NSFontAttributeName] pointSize],
+                             MAX([theme.commentAttrs[NSFontAttributeName] pointSize],
+                                 [theme.labelAttrs[NSFontAttributeName] pointSize]));
+      NSFont *refFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, fontSize, (CFStringRef)@"zh"));
+      candidateBlockRect = [self setLineRectForRange:candidateBlockRange
+                                            atOrigin:&lineOrigin
+                                   withReferenceFont:(theme.vertical ? refFont.verticalFont : refFont)
+                                      paragraphStyle:theme.paragraphStyle];
+      if (preeditRange.length == 0) {
+        candidateBlockRect.size.height += theme.linespace / 2;
+      }
+      if (theme.linear || pagingRange.length == 0) {
+        candidateBlockRect.size.height += theme.linespace / 2;
+      }
+    } else if (preeditRange.length == 0) { // status message
+      NSFont *statusRefFont = CFBridgingRelease(CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, [theme.commentAttrs[NSFontAttributeName] pointSize], (CFStringRef)@"zh"));
+      statusRect = [self setLineRectForRange:visibleRange
+                                    atOrigin:&lineOrigin
+                           withReferenceFont:(theme.vertical ? statusRefFont.verticalFont : statusRefFont)
+                              paragraphStyle:theme.statusParagraphStyle];
     }
-    if (!theme.linear && _pagingRange.length > 0) {
-      pagingLineRect = [self setLineRectForRange:_pagingRange atOrigin:lineOrigin withReferenceFont:theme.pagingAttrs[NSFontAttributeName] paragraphStyle:theme.pagingParagraphStyle];
-      lineOrigin.y = NSMaxY(pagingLineRect);
-    }
-  }
-  if (_candidateRanges.count > 0) {
-    if (_preeditRange.length == 0) {
-      candidateBlockRect.origin.y -= theme.linespace/2;
-      candidateBlockRect.size.height += theme.linespace/2;
-    }
-    if (theme.linear || _pagingRange.length == 0) {
-      candidateBlockRect.size.height += theme.linespace/2;
+    if (!theme.linear && pagingRange.length > 0) {
+      pagingLineRect = [self setLineRectForRange:pagingRange
+                                        atOrigin:&lineOrigin
+                               withReferenceFont:theme.pagingAttrs[NSFontAttributeName]
+                                  paragraphStyle:theme.pagingParagraphStyle];
     }
   }
 
   [NSBezierPath setDefaultLineWidth:0];
   // Draw preedit Rect
-  if (_preeditRange.length > 0) {
+  if (preeditRange.length > 0) {
     preeditRect.size.width = textContainerRect.size.width;
     preeditRect.origin = textContainerRect.origin;
+    // Draw highlighted part of preedit text
+    NSRange highlightedPreeditRange = NSIntersectionRange(_highlightedPreeditRange, visibleRange);
+    if (highlightedPreeditRange.length > 0 && theme.highlightedPreeditColor != nil) {
+      NSRect innerBox = NSInsetRect(preeditRect, linePadding, 0);
+      if (candidateBlockRange.length > 0) {
+        innerBox.size.height -= theme.preeditLinespace;
+      }
+      NSRect leadingRect = NSZeroRect;
+      NSRect bodyRect = NSZeroRect;
+      NSRect trailingRect = NSZeroRect;
+      [self multilineRectForRange:highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
+      leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect
+      : NSIntersectionRect(NSOffsetRect(leadingRect, textContainerRect.origin.x, textContainerRect.origin.y), innerBox);
+      bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect
+      : NSIntersectionRect(NSOffsetRect(bodyRect, textContainerRect.origin.x, textContainerRect.origin.y), innerBox);
+      trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect
+      : NSIntersectionRect(NSOffsetRect(trailingRect, textContainerRect.origin.x, textContainerRect.origin.y), innerBox);
+      NSMutableArray<NSValue *> *highlightedPreeditPoints;
+      NSMutableArray<NSValue *> *highlightedPreeditPoints2;
+      // Handles the special case where containing boxes are separated
+      if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) && !NSIsEmptyRect(trailingRect)
+          && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
+        highlightedPreeditPoints = [rectVertex(leadingRect) mutableCopy];
+        highlightedPreeditPoints2 = [rectVertex(trailingRect) mutableCopy];
+      } else {
+        highlightedPreeditPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
+      }
+      highlightedPreeditPath = drawRoundedPolygon(highlightedPreeditPoints, MIN(theme.hilitedCornerRadius, theme.preeditParagraphStyle.maximumLineHeight/3));
+      if (highlightedPreeditPoints2.count > 0) {
+        [highlightedPreeditPath appendBezierPath:drawRoundedPolygon(highlightedPreeditPoints2, MIN(theme.hilitedCornerRadius, theme.preeditParagraphStyle.maximumLineHeight/3))];
+      }
+    }
   }
 
   // Draw candidate Rect
-  if (_candidateRanges.count > 0) {
+  if (candidateBlockRange.length > 0) {
     candidateBlockRect.size.width = textContainerRect.size.width;
     candidateBlockRect.origin.x = textContainerRect.origin.x;
-    candidateBlockRect.origin.y += theme.edgeInset.height;
-    if (theme.preeditBackgroundColor != nil) {
-      candidateBlockPath = drawSmoothLines(rectVertex(candidateBlockRect), 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
-    }
+    candidateBlockRect.origin.y += textContainerRect.origin.y;
+    candidateBlockRect = NSIntersectionRect(candidateBlockRect, textContainerRect);
+    candidateBlockPath = drawRoundedPolygon(rectVertex(candidateBlockRect), theme.hilitedCornerRadius);
 
     // Draw candidate highlight rect
-    if (theme.linear) {
-      CGFloat highlightPadding = MIN(_seperatorWidth/2, theme.hilitedCornerRadius);
-      for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
-        NSRange candidateRange = _candidateRanges[i].rangeValue;
-        NSRect leadingRect;
-        NSRect bodyRect;
-        NSRect trailingRect;
+    for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
+      NSRange candidateRange = NSIntersectionRange([_candidateRanges[i] rangeValue], visibleRange);
+      if (candidateRange.length == 0) {
+        break;
+      }
+      if (theme.linear) {
+        NSRect leadingRect = NSZeroRect;
+        NSRect bodyRect = NSZeroRect;
+        NSRect trailingRect = NSZeroRect;
         [self multilineRectForRange:candidateRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-        leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSInsetRect(leadingRect, -highlightPadding, 0);
-        bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSInsetRect(bodyRect, -highlightPadding, 0);
-        trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSInsetRect(trailingRect, -highlightPadding, 0);
-        if (@available(macOS 12.0, *)) {
-          if (_preeditRange.length == 0) {
-            leadingRect.origin.y += theme.linespace/2;
-            bodyRect.origin.y += theme.linespace/2;
-            trailingRect.origin.y += theme.linespace/2;
-          }
+        leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : NSInsetRect(NSOffsetRect(leadingRect, textContainerRect.origin.x, textContainerRect.origin.y), -MIN(_separatorWidth / 2, linePadding), 0);
+        bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : NSInsetRect(NSOffsetRect(bodyRect, textContainerRect.origin.x, textContainerRect.origin.y), -MIN(_separatorWidth / 2, linePadding), 0);
+        trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : NSInsetRect(NSOffsetRect(trailingRect, textContainerRect.origin.x, textContainerRect.origin.y), -MIN(_separatorWidth / 2, linePadding), 0);
+        if (preeditRange.length == 0) {
+          leadingRect.origin.y += theme.linespace / 2;
+          bodyRect.origin.y += theme.linespace / 2;
+          trailingRect.origin.y += theme.linespace / 2;
         }
         if (!NSIsEmptyRect(leadingRect)) {
-          leadingRect.origin.y -= theme.linespace/2;
-          leadingRect.size.height += theme.linespace/2;
-          leadingRect = [self backingAlignedRect:leadingRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+          leadingRect.origin.y -= theme.linespace / 2;
+          leadingRect.size.height += theme.linespace / 2;
+          leadingRect = NSIntersectionRect(leadingRect, candidateBlockRect);
         }
         if (!NSIsEmptyRect(trailingRect)) {
-          trailingRect.size.height += theme.linespace/2;
-          trailingRect = [self backingAlignedRect:trailingRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+          trailingRect.size.height += theme.linespace / 2;
+          trailingRect = NSIntersectionRect(trailingRect, candidateBlockRect);
         }
         if (!NSIsEmptyRect(bodyRect)) {
           if (NSIsEmptyRect(leadingRect)) {
-            bodyRect.origin.y -= theme.linespace/2;
-            bodyRect.size.height += theme.linespace/2;
+            bodyRect.origin.y -= theme.linespace / 2;
+            bodyRect.size.height += theme.linespace / 2;
           }
           if (NSIsEmptyRect(trailingRect)) {
-            bodyRect.size.height += theme.linespace/2;
+            bodyRect.size.height += theme.linespace / 2;
           }
-          bodyRect = [self backingAlignedRect:bodyRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+          bodyRect = NSIntersectionRect(bodyRect, candidateBlockRect);
         }
         NSMutableArray<NSValue *> *candidatePoints;
         NSMutableArray<NSValue *> *candidatePoints2;
         // Handles the special case where containing boxes are separated
-        if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) && !NSIsEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
+        if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) &&
+            !NSIsEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
           candidatePoints = [rectVertex(leadingRect) mutableCopy];
           candidatePoints2 = [rectVertex(trailingRect) mutableCopy];
         } else {
           candidatePoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
         }
-        NSBezierPath *candidatePath = drawSmoothLines(candidatePoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+        NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
         if (candidatePoints2.count > 0) {
-          [candidatePath appendBezierPath:drawSmoothLines(candidatePoints2, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius)];
+          [candidatePath appendBezierPath:drawRoundedPolygon(candidatePoints2, theme.hilitedCornerRadius)];
         }
         _candidatePaths[i] = candidatePath;
-      }
-    } else {
-      for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
-        NSRange candidateRange = _candidateRanges[i].rangeValue;
-        NSRect candidateRect = NSInsetRect([self contentRectForRange:candidateRange], 0.0, -theme.linespace/2);
+      } else {
+        NSRect candidateRect = NSInsetRect([self contentRectForRange:candidateRange], 0.0, -theme.linespace / 2);
         candidateRect.size.width = textContainerRect.size.width;
         candidateRect.origin.x = textContainerRect.origin.x;
-        candidateRect.origin.y += theme.edgeInset.height;
-        if (@available(macOS 12.0, *)) {
-          if (_preeditRange.length == 0) {
-            candidateRect = NSOffsetRect(candidateRect, 0.0, theme.linespace/2);
-          }
+        candidateRect.origin.y += textContainerRect.origin.y;
+        if (preeditRange.length == 0) {
+          candidateRect.origin.y += theme.linespace / 2;
         }
-        candidateRect = [self backingAlignedRect:candidateRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
+        candidateRect = NSIntersectionRect(candidateRect, candidateBlockRect);
         NSMutableArray<NSValue *> *candidatePoints = [rectVertex(candidateRect) mutableCopy];
-        NSBezierPath *candidatePath = drawSmoothLines(candidatePoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+        NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
         _candidatePaths[i] = candidatePath;
       }
-    }
-  }
-
-  // Draw highlighted part of preedit text
-  if (_highlightedPreeditRange.length > 0 && theme.highlightedPreeditColor != nil) {
-    NSRect innerBox = NSInsetRect(preeditRect, theme.hilitedCornerRadius, 0);
-    innerBox.size.height -= theme.preeditLinespace;
-    NSRect leadingRect;
-    NSRect bodyRect;
-    NSRect trailingRect;
-    [self multilineRectForRange:_highlightedPreeditRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-    leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(leadingRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(bodyRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect : [self backingAlignedRect:NSIntersectionRect(trailingRect, innerBox) options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    NSMutableArray<NSValue *> *highlightedPreeditPoints;
-    NSMutableArray<NSValue *> *highlightedPreeditPoints2;
-    // Handles the special case where containing boxes are separated
-    if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) && !NSIsEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
-      highlightedPreeditPoints = [rectVertex(leadingRect) mutableCopy];
-      highlightedPreeditPoints2 = [rectVertex(trailingRect) mutableCopy];
-    } else {
-      highlightedPreeditPoints = [multilineRectVertex(leadingRect, bodyRect, trailingRect) mutableCopy];
-    }
-    highlightedPreeditPath = drawSmoothLines(highlightedPreeditPoints, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
-    if (highlightedPreeditPoints2.count > 0) {
-      [highlightedPreeditPath appendBezierPath:drawSmoothLines(highlightedPreeditPoints2, 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius)];
     }
   }
 
   // Draw paging Rect
-  if (_pagingRange.length > 0) {
-    CGFloat buttonPadding = theme.linear ? MIN(_seperatorWidth/2, theme.hilitedCornerRadius) : theme.hilitedCornerRadius;
-    NSRect pageDownRect = NSOffsetRect([self contentRectForRange:NSMakeRange(NSMaxRange(_pagingRange)-1, 1)], theme.edgeInset.width, theme.edgeInset.height);
+  if (pagingRange.length > 0) {
+    CGFloat buttonPadding = theme.linear ? MIN(_separatorWidth / 2, linePadding) : linePadding;
+    NSRect pageDownRect = NSOffsetRect([self contentRectForRange:NSMakeRange(NSMaxRange(pagingRange) - 1, 1)],
+                                       textContainerRect.origin.x, textContainerRect.origin.y);
     pageDownRect.size.width += buttonPadding;
-    NSRect pageUpRect = NSOffsetRect([self contentRectForRange:NSMakeRange(_pagingRange.location, 1)], theme.edgeInset.width, theme.edgeInset.height);
+    NSRect pageUpRect = NSOffsetRect([self contentRectForRange:NSMakeRange(pagingRange.location, 1)],
+                                     textContainerRect.origin.x, textContainerRect.origin.y);
     pageUpRect.origin.x -= buttonPadding;
     pageUpRect.size.width = NSWidth(pageDownRect); // bypass the bug of getting wrong glyph position when tab is presented
     if (theme.linear) {
-      pageDownRect = NSInsetRect(pageDownRect, 0.0, -theme.linespace/2);
-      pageUpRect = NSInsetRect(pageUpRect, 0.0, -theme.linespace/2);
+      pageDownRect = NSInsetRect(pageDownRect, 0.0, -theme.linespace / 2);
+      pageUpRect = NSInsetRect(pageUpRect, 0.0, -theme.linespace / 2);
     }
-    if (@available(macOS 12.0, *)) {
-      if (_preeditRange.length == 0) {
-        pageDownRect = NSOffsetRect(pageDownRect, 0.0, theme.linespace/2);
-        pageUpRect = NSOffsetRect(pageUpRect, 0.0, theme.linespace/2);
-      }
+    if (preeditRange.length == 0) {
+      pageDownRect = NSOffsetRect(pageDownRect, 0.0, theme.linespace / 2);
+      pageUpRect = NSOffsetRect(pageUpRect, 0.0, theme.linespace / 2);
     }
-    pageDownRect = [self backingAlignedRect:pageDownRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    pageUpRect = [self backingAlignedRect:pageUpRect options:(NSAlignAllEdgesOutward|NSAlignRectFlipped)];
-    pageDownPath = drawSmoothLines(rectVertex(pageDownRect), 0.06*NSHeight(pageDownRect), 0.28*NSWidth(pageDownRect));
-    pageUpPath = drawSmoothLines(rectVertex(pageUpRect), 0.06*NSHeight(pageUpRect), 0.28*NSWidth(pageUpRect));
+    pageDownRect = NSIntersectionRect(pageDownRect, textContainerRect);
+    pageUpRect = NSIntersectionRect(pageUpRect, textContainerRect);
+    pageDownPath = drawRoundedPolygon(rectVertex(pageDownRect),
+                                      MIN(theme.hilitedCornerRadius, MIN(NSWidth(pageDownRect), NSHeight(pageDownRect))/3));
+    pageUpPath = drawRoundedPolygon(rectVertex(pageUpRect),
+                                    MIN(theme.hilitedCornerRadius, MIN(NSWidth(pageUpRect), NSHeight(pageUpRect))/3));
     _pagingPaths[0] = pageUpPath;
     _pagingPaths[1] = pageDownPath;
   }
 
   // Draw borders
-  backgroundPath = drawSmoothLines(rectVertex(backgroundRect), 0.3*theme.cornerRadius, 1.4*theme.cornerRadius);
-  textContainerPath = drawSmoothLines(rectVertex(textContainerRect), 0.3*theme.hilitedCornerRadius, 1.4*theme.hilitedCornerRadius);
+  backgroundPath = drawRoundedPolygon(rectVertex(backgroundRect),
+                                      MIN(theme.cornerRadius, NSHeight(backgroundRect)/3));
+  textContainerPath = drawRoundedPolygon(rectVertex(textContainerRect),
+                                         MIN(theme.hilitedCornerRadius, NSHeight(textContainerRect)/3));
   if (theme.edgeInset.width > 0 || theme.edgeInset.height > 0) {
     borderPath = [backgroundPath copy];
     [borderPath appendBezierPath:textContainerPath];
@@ -951,18 +979,18 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   // set layers
   _shape.path = [backgroundPath quartzPath];
   _shape.fillColor = [[NSColor whiteColor] CGColor];
-  _shape.cornerRadius = theme.cornerRadius;
+  _shape.cornerRadius = MIN(theme.cornerRadius, NSHeight(backgroundRect)/3);
   CAShapeLayer *textContainerLayer = [[CAShapeLayer alloc] init];
   textContainerLayer.path = [textContainerPath quartzPath];
   textContainerLayer.fillColor = [[NSColor whiteColor] CGColor];
-  textContainerLayer.cornerRadius = theme.hilitedCornerRadius;
+  textContainerLayer.cornerRadius = MIN(theme.hilitedCornerRadius, NSHeight(textContainerRect)/3);
   [self.layer setSublayers:NULL];
-  self.layer.cornerRadius = theme.cornerRadius;
+  self.layer.cornerRadius = MIN(theme.cornerRadius, NSHeight(backgroundRect)/3);
   if (theme.backgroundImage) {
     CAShapeLayer *backgroundLayer = [[CAShapeLayer alloc] init];
     backgroundLayer.path = [backgroundPath quartzPath];
     backgroundLayer.fillColor = [theme.backgroundImage CGColor];
-    backgroundLayer.cornerRadius = theme.cornerRadius;
+    backgroundLayer.cornerRadius = MIN(theme.cornerRadius, NSHeight(backgroundRect)/3);
     [self.layer addSublayer:backgroundLayer];
   }
   CAShapeLayer *panelLayer = [[CAShapeLayer alloc] init];
@@ -975,7 +1003,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     }
   }
   if (theme.preeditBackgroundColor &&
-      (_preeditRange.length > 0 || !NSIsEmptyRect(pagingLineRect))) {
+      (preeditRange.length > 0 || !NSIsEmptyRect(pagingLineRect))) {
     panelLayer.fillColor = [theme.preeditBackgroundColor CGColor];
     if (![candidateBlockPath isEmpty]) {
       CAShapeLayer *candidateLayer = [[CAShapeLayer alloc] init];
@@ -986,7 +1014,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   }
   CIFilter *backColorFilter = [CIFilter filterWithName:@"CISourceATopCompositing"];
   panelLayer.compositingFilter = backColorFilter;
-  if (_highlightedIndex != NSNotFound && theme.highlightedStripColor) {
+  if (_highlightedIndex < _candidatePaths.count && theme.highlightedStripColor) {
     CAShapeLayer *highlightedLayer = [[CAShapeLayer alloc] init];
     highlightedPath = _candidatePaths[_highlightedIndex];
     highlightedLayer.path = [highlightedPath quartzPath];
@@ -998,7 +1026,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     [self.layer addSublayer:highlightedLayer];
   }
   NSColor *buttonColor = theme.linear ? theme.highlightedStripColor : theme.highlightedPreeditColor;
-  if (_pagingRange.length > 0 && buttonColor) {
+  if (pagingRange.length > 0 && buttonColor) {
     CAShapeLayer *pagingLayer = [[CAShapeLayer alloc] init];
     switch (_pagingButton) {
       case NSPageUpFunctionKey: {
@@ -1022,7 +1050,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     [self.layer addSublayer:pagingLayer];
   }
   if (theme.highlightedPreeditColor) {
-    if(![highlightedPreeditPath isEmpty]) {
+    if (![highlightedPreeditPath isEmpty]) {
       CAShapeLayer *highlightedPreeditLayer = [[CAShapeLayer alloc] init];
       highlightedPreeditLayer.path = [highlightedPreeditPath quartzPath];
       highlightedPreeditLayer.fillColor = [theme.highlightedPreeditColor CGColor];
@@ -1037,7 +1065,8 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     borderLayer.fillRule = kCAFillRuleEvenOdd;
     [panelLayer addSublayer:borderLayer];
   }
-  [self.textView setTextContainerInset:theme.edgeInset];
+
+  [_textView display];
 }
 
 - (BOOL)convertClickSpot:(NSPoint)spot toIndex:(NSUInteger *)index {
@@ -1084,9 +1113,13 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   BOOL _lastPage;
   BOOL _mouseDown;
   NSPoint _scrollLocus;
-  
+
   NSString *_statusMessage;
   NSTimer *_statusTimer;
+}
+
+- (BOOL)isFloatingPanel {
+  return YES;
 }
 
 - (BOOL)linear {
@@ -1128,9 +1161,13 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
   NSColor *secondaryTextColor = [[self class] secondaryTextColor];
   NSColor *accentColor = [[self class] accentColor];
-  NSFont *userFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFontOfSize:0.0].fontName) size:kDefaultFontSize];
-  NSFont *userMonoFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFixedPitchFontOfSize:0.0].fontName) size:kDefaultFontSize];
-  NSFont *symbolFont = [NSFont fontWithDescriptor:[[NSFontDescriptor fontDescriptorWithName:@"AppleSymbols" size:0.0] fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitUIOptimized] size:kDefaultFontSize];
+  NSFont *userFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFontOfSize:0.0].fontName)
+                                           size:kDefaultFontSize];
+  NSFont *userMonoFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFixedPitchFontOfSize:0.0].fontName)
+                                               size:kDefaultFontSize];
+  NSFont *symbolFont = [NSFont fontWithDescriptor:[[NSFontDescriptor fontDescriptorWithName:@"AppleSymbols" size:0.0]
+                                                   fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitUIOptimized]
+                                             size:kDefaultFontSize];
   NSMutableDictionary *defaultAttrs = [[NSMutableDictionary alloc] init];
 
   NSMutableDictionary *attrs = [defaultAttrs mutableCopy];
@@ -1172,7 +1209,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   pagingAttrs[NSFontAttributeName] = symbolFont;
 
   NSMutableDictionary *pagingHighlightedAttrs = [defaultAttrs mutableCopy];
-  pagingHighlightedAttrs[NSForegroundColorAttributeName] =  theme.linear ? [NSColor alternateSelectedControlTextColor] : [NSColor selectedMenuItemTextColor];
+  pagingHighlightedAttrs[NSForegroundColorAttributeName] = theme.linear ? [NSColor alternateSelectedControlTextColor] : [NSColor selectedMenuItemTextColor];
   pagingHighlightedAttrs[NSFontAttributeName] = symbolFont;
 
   NSMutableParagraphStyle *preeditParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
@@ -1180,7 +1217,7 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   NSMutableParagraphStyle *pagingParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   NSMutableParagraphStyle *statusParagraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
 
-  preeditParagraphStyle.lineBreakMode = NSLineBreakByCharWrapping;
+  preeditParagraphStyle.lineBreakMode = NSLineBreakByWordWrapping;
   preeditParagraphStyle.alignment = NSTextAlignmentLeft;
   paragraphStyle.alignment = NSTextAlignmentLeft;
   pagingParagraphStyle.alignment = NSTextAlignmentLeft;
@@ -1193,16 +1230,16 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   pagingParagraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
   statusParagraphStyle.baseWritingDirection = NSWritingDirectionLeftToRight;
 
-  [theme          setAttrs:attrs
-          highlightedAttrs:highlightedAttrs
-                labelAttrs:labelAttrs
-     labelHighlightedAttrs:labelHighlightedAttrs
-              commentAttrs:commentAttrs
-   commentHighlightedAttrs:commentHighlightedAttrs
-              preeditAttrs:preeditAttrs
-   preeditHighlightedAttrs:preeditHighlightedAttrs
-               pagingAttrs:pagingAttrs
-    pagingHighlightedAttrs:pagingHighlightedAttrs];
+  [theme           setAttrs:attrs
+           highlightedAttrs:highlightedAttrs
+                 labelAttrs:labelAttrs
+      labelHighlightedAttrs:labelHighlightedAttrs
+               commentAttrs:commentAttrs
+    commentHighlightedAttrs:commentHighlightedAttrs
+               preeditAttrs:preeditAttrs
+    preeditHighlightedAttrs:preeditHighlightedAttrs
+                pagingAttrs:pagingAttrs
+     pagingHighlightedAttrs:pagingHighlightedAttrs];
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle
       pagingParagraphStyle:pagingParagraphStyle
@@ -1211,18 +1248,21 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
 
 - (instancetype)init {
   self = [super initWithContentRect:_position
-                          styleMask:(NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless)
+                          styleMask:NSWindowStyleMaskNonactivatingPanel|NSWindowStyleMaskBorderless
                             backing:NSBackingStoreBuffered
                               defer:YES];
+
   if (self) {
     self.alphaValue = 1.0;
     // _window.level = NSScreenSaverWindowLevel + 1;
     // ^ May fix visibility issue in fullscreen games.
     self.level = CGShieldingWindowLevel();
-    self.hasShadow = YES;
+    self.hasShadow = NO;
+    self.opaque = NO;
+    self.displaysWhenScreenProfileChanges = YES;
     self.backgroundColor = [NSColor clearColor];
     NSView *contentView = [[NSView alloc] init];
-    _view = [[SquirrelView alloc] initWithFrame:self.contentView.frame];
+    _view = [[SquirrelView alloc] initWithFrame:self.contentView.bounds];
     if (@available(macOS 10.14, *)) {
       _back = [[NSVisualEffectView alloc] init];
       _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
@@ -1245,15 +1285,12 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   return self;
 }
 
-- (BOOL)isOpaque {
-  return NO;
-}
-
 - (void)sendEvent:(NSEvent *)event {
   switch (event.type) {
     case NSEventTypeLeftMouseDown:
     case NSEventTypeRightMouseDown: {
-      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream fromView:nil];
+      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream
+                                fromView:nil];
       NSUInteger cursorIndex = NSNotFound;
       if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if ((cursorIndex >= 0 && cursorIndex < _candidates.count) ||
@@ -1264,21 +1301,23 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       }
     } break;
     case NSEventTypeLeftMouseUp: {
-      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream fromView:nil];
+      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream
+                                fromView:nil];
       NSUInteger cursorIndex = NSNotFound;
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index || cursorIndex == _turnPage) {
-          [self.inputController perform:kSELECT onIndex:cursorIndex];
+          [_inputController perform:kSELECT onIndex:cursorIndex];
         }
       }
       _mouseDown = NO;
     } break;
     case NSEventTypeRightMouseUp: {
-      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream fromView:nil];
+      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream
+                                fromView:nil];
       NSUInteger cursorIndex = NSNotFound;
       if (_mouseDown && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index && (cursorIndex >= 0 && cursorIndex < _candidates.count)) {
-          [self.inputController perform:kDELETE onIndex:cursorIndex];
+          [_inputController perform:kDELETE onIndex:cursorIndex];
         }
       }
       _mouseDown = NO;
@@ -1290,11 +1329,12 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       self.acceptsMouseMovedEvents = NO;
     } break;
     case NSEventTypeMouseMoved: {
-      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream fromView:nil];
+      NSPoint spot = [_view convertPoint:self.mouseLocationOutsideOfEventStream
+                                fromView:nil];
       NSUInteger cursorIndex = NSNotFound;
       if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex >= 0 && cursorIndex < _candidates.count && _index != cursorIndex) {
-          [self.inputController perform:kCHOOSE onIndex:cursorIndex];
+          [_inputController perform:kCHOOSE onIndex:cursorIndex];
           _index = cursorIndex;
           [self showPreedit:_preedit selRange:_selRange caretPos:_caretPos candidates:_candidates comments:_comments labels:_labels highlighted:cursorIndex pageNum:_pageNum lastPage:_lastPage turnPage:NSNotFound update:NO];
         } else if ((cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey) && _turnPage != cursorIndex) {
@@ -1321,16 +1361,16 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
         }
         // compare accumulated locus length against threshold and limit paging to max once
         if (_scrollLocus.x > scrollThreshold) {
-          [self.inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageDownFunctionKey : NSPageUpFunctionKey)];
+          [_inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageDownFunctionKey : NSPageUpFunctionKey)];
           _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
         } else if (_scrollLocus.y > scrollThreshold) {
-          [self.inputController perform:kSELECT onIndex:NSPageUpFunctionKey];
+          [_inputController perform:kSELECT onIndex:NSPageUpFunctionKey];
           _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
         } else if (_scrollLocus.x < -scrollThreshold) {
-          [self.inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageUpFunctionKey : NSPageDownFunctionKey)];
+          [_inputController perform:kSELECT onIndex:(_view.currentTheme.vertical ? NSPageUpFunctionKey : NSPageDownFunctionKey)];
           _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
         } else if (_scrollLocus.y < -scrollThreshold) {
-          [self.inputController perform:kSELECT onIndex:NSPageDownFunctionKey];
+          [_inputController perform:kSELECT onIndex:NSPageDownFunctionKey];
           _scrollLocus = NSMakePoint(NSNotFound, NSNotFound);
         }
       }
@@ -1358,9 +1398,9 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   [self getCurrentScreen];
   NSRect screenRect = [_screen visibleFrame];
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
-  _maxTextWidth = (theme.vertical ? NSHeight(screenRect) : NSWidth(screenRect)) * textWidthRatio - (theme.hilitedCornerRadius + theme.edgeInset.width) * 2;
+  _maxTextWidth = floor((theme.vertical ? NSHeight(screenRect) : NSWidth(screenRect)) * textWidthRatio - (theme.hilitedCornerRadius + theme.edgeInset.width) * 2);
   if (theme.lineLength > 0) {
-    _maxTextWidth = MIN(theme.lineLength, _maxTextWidth);
+    _maxTextWidth = MIN(floor(theme.lineLength), _maxTextWidth);
   }
 }
 
@@ -1376,57 +1416,53 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   }
 
   //Break line if the text is too long, based on screen size.
-  NSTextContainer *textContainer;
-  if (@available(macOS 12.0, *)) {
-    textContainer = _view.layoutManager.textContainer;
-  } else {
-    textContainer = _view.textView.textContainer;
-  }
-  [textContainer setLineFragmentPadding:theme.hilitedCornerRadius];
+  NSTextContainer *textContainer = _view.textView.textContainer;
+  CGFloat linePadding = textContainer.lineFragmentPadding;
+  NSEdgeInsets insets = _view.insets;
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   NSRect screenRect = [_screen visibleFrame];
-  CGFloat maxTextHeight = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - theme.edgeInset.height * 2;
-  [textContainer setSize:NSMakeSize(_maxTextWidth + theme.hilitedCornerRadius * 2, maxTextHeight)];
+  CGFloat maxTextHeight = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - insets.top - insets.bottom;
+  [textContainer setSize:NSMakeSize(_maxTextWidth + linePadding * 2, maxTextHeight)];
 
+  // the sweep direction of the client app changes the behavior of adjusting squirrel panel position
   BOOL sweepVertical = NSWidth(_position) > NSHeight(_position);
   NSRect contentRect = _view.contentRect;
-  NSRect maxContentRect = NSInsetRect(contentRect, theme.hilitedCornerRadius, 0);
+  NSRect maxContentRect = NSInsetRect(contentRect, linePadding, 0);
   if (theme.lineLength > 0) { // fixed line length / text width
-    if (_maxSize.width > 0) { // only applicable to non-status
+    if (_maxSize.width > 0) { // not applicable to status message where maxSize is set to 0
       maxContentRect.size.width = _maxTextWidth;
     }
   }
   if (theme.rememberSize) { // remember panel size (fix the top leading anchor of the panel in screen coordiantes)
-    if ((theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + kOffsetHeight) :
-         (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) >  NSWidth(screenRect) * textWidthRatio + kOffsetHeight) :
-          (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + theme.hilitedCornerRadius + theme.edgeInset.width > NSMaxX(screenRect)))) &&
+    if ((theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + kOffsetHeight)
+         : (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + kOffsetHeight)
+            : (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + linePadding + insets.right > NSMaxX(screenRect)))) &&
         theme.lineLength == 0) {
       if (NSWidth(maxContentRect) >= _maxSize.width) {
         _maxSize.width = NSWidth(maxContentRect);
       } else {
         maxContentRect.size.width = _maxSize.width;
-        [textContainer setSize:NSMakeSize(_maxSize.width + theme.hilitedCornerRadius * 2, maxTextHeight)];
+        [textContainer setSize:NSMakeSize(_maxSize.width + linePadding * 2, maxTextHeight)];
       }
     }
-    if (theme.vertical ? (NSMinX(_position) - NSMinX(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? kOffsetHeight : 0)) :
-        (NSMinY(_position) - NSMinY(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + theme.edgeInset.height * 2 + (sweepVertical ? 0 : kOffsetHeight))) {
+    if (theme.vertical ? (NSMinX(_position) - NSMinX(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? kOffsetHeight : 0))
+        : (NSMinY(_position) - NSMinY(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? 0 : kOffsetHeight))) {
       if (NSHeight(maxContentRect) >= _maxSize.height) {
         _maxSize.height = NSHeight(maxContentRect);
       } else {
         maxContentRect.size.height = _maxSize.height;
-        [textContainer setSize:NSMakeSize(_maxTextWidth + theme.hilitedCornerRadius * 2, _maxSize.height)];
+        [textContainer setSize:NSMakeSize(_maxTextWidth + linePadding * 2, _maxSize.height)];
       }
     }
   }
 
-  // the sweep direction of the client app changes the behavior of adjusting squirrel panel position
   NSRect windowRect;
   if (theme.vertical) {
-    windowRect.size = NSMakeSize(NSHeight(maxContentRect) + theme.edgeInset.height * 2,
-                                 NSWidth(maxContentRect) + (theme.edgeInset.width + theme.hilitedCornerRadius) * 2);
+    windowRect.size = NSMakeSize(NSHeight(maxContentRect) + insets.top + insets.bottom,
+                                 NSWidth(maxContentRect) + linePadding * 2 + insets.left + insets.right);
     // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
     if (NSMinY(_position) - NSMinY(screenRect) > NSHeight(screenRect) * textWidthRatio + kOffsetHeight) {
-      windowRect.origin.y = NSMinY(_position) + (sweepVertical ? theme.edgeInset.width+theme.hilitedCornerRadius : -kOffsetHeight) - NSHeight(windowRect);
+      windowRect.origin.y = NSMinY(_position) + (sweepVertical ? insets.left + linePadding : -kOffsetHeight) - NSHeight(windowRect);
     } else {
       windowRect.origin.y = NSMaxY(_position) + (sweepVertical ? 0 : kOffsetHeight);
     }
@@ -1434,11 +1470,11 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     windowRect.origin.x = NSMinX(_position) - (sweepVertical ? kOffsetHeight : 0) - NSWidth(windowRect);
     if (!sweepVertical && _view.preeditRange.length > 0) {
       NSRect preeditRect = [_view contentRectForRange:_view.preeditRange];
-      windowRect.origin.x += NSHeight(preeditRect) + theme.edgeInset.height;
+      windowRect.origin.x += NSHeight(preeditRect) + insets.top;
     }
   } else {
-    windowRect.size = NSMakeSize(NSWidth(maxContentRect) + (theme.edgeInset.width + theme.hilitedCornerRadius) * 2,
-                                 NSHeight(maxContentRect) + theme.edgeInset.height * 2);
+    windowRect.size = NSMakeSize(NSWidth(maxContentRect) + linePadding * 2 + insets.left + insets.right,
+                                 NSHeight(maxContentRect) + insets.top + insets.bottom);
     if (sweepVertical) {
       // To avoid jumping left and right while typing, use the lefter screen when typing on righter, and vice versa
       if (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + kOffsetHeight) {
@@ -1448,22 +1484,22 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
       }
       windowRect.origin.y = NSMinY(_position) - NSHeight(windowRect);
     } else {
-      windowRect.origin = NSMakePoint(NSMinX(_position) - theme.edgeInset.width - theme.hilitedCornerRadius,
+      windowRect.origin = NSMakePoint(NSMinX(_position) - insets.left - linePadding,
                                       NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
     }
   }
 
   if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
-    windowRect.origin.x = (sweepVertical ? NSMinX(_position)-kOffsetHeight : NSMaxX(screenRect)) - NSWidth(windowRect);
+    windowRect.origin.x = (sweepVertical ? NSMinX(_position) - kOffsetHeight : NSMaxX(screenRect)) - NSWidth(windowRect);
   }
   if (NSMinX(windowRect) < NSMinX(screenRect)) {
-    windowRect.origin.x = sweepVertical ? NSMaxX(_position)+kOffsetHeight : NSMinX(screenRect);
+    windowRect.origin.x = sweepVertical ? NSMaxX(_position) + kOffsetHeight : NSMinX(screenRect);
   }
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
-    windowRect.origin.y = sweepVertical ? NSMinY(screenRect) : NSMaxY(_position)+kOffsetHeight;
+    windowRect.origin.y = sweepVertical ? NSMinY(screenRect) : NSMaxY(_position) + kOffsetHeight;
   }
   if (NSMaxY(windowRect) > NSMaxY(screenRect)) {
-    windowRect.origin.y = (sweepVertical ? NSMaxY(screenRect) : NSMinY(_position)-kOffsetHeight) - NSHeight(windowRect);
+    windowRect.origin.y = (sweepVertical ? NSMaxY(screenRect) : NSMinY(_position) - kOffsetHeight) - NSHeight(windowRect);
   }
 
   if (theme.vertical) {
@@ -1473,35 +1509,35 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     windowRect.origin.y += NSHeight(maxContentRect) - NSHeight(contentRect);
     windowRect.size.height -= NSHeight(maxContentRect) - NSHeight(contentRect);
   }
-  [self setFrame:[_screen backingAlignedRect:windowRect
-                                     options:NSAlignAllEdgesOutward] display:YES];
+
   // rotate the view, the core in vertical mode!
   if (theme.vertical) {
+    [self setFrame:[_screen backingAlignedRect:windowRect options:NSAlignMaxXOutward|NSAlignMaxYInward|NSAlignWidthNearest|NSAlignHeightNearest] display:YES];
     [self.contentView setBoundsRotation:-90.0];
     [self.contentView setBoundsOrigin:NSMakePoint(0.0, NSWidth(windowRect))];
   } else {
+    [self setFrame:[_screen backingAlignedRect:windowRect options:NSAlignMinXInward|NSAlignMaxYInward|NSAlignWidthNearest|NSAlignHeightNearest] display:YES];
     [self.contentView setBoundsRotation:0.0];
-    [self.contentView setBoundsOrigin:NSMakePoint(0.0, 0.0)];
+    [self.contentView setBoundsOrigin:NSZeroPoint];
+  }
+  NSRect frameRect = [self.contentView backingAlignedRect:self.contentView.bounds
+                                                  options:NSAlignMinXInward|NSAlignMaxYOutward|NSAlignWidthNearest|NSAlignHeightNearest];
+  NSRect textFrameRect = NSMakeRect(NSMinX(frameRect) + insets.left, NSMinY(frameRect) + insets.bottom,
+                                    NSWidth(frameRect) - insets.left - insets.right,
+                                    NSHeight(frameRect) - insets.top - insets.bottom);
+  if (@available(macOS 12.0, *)) {
+    textFrameRect = NSInsetRect(textFrameRect, linePadding, 0);
   }
   [_view.textView setBoundsRotation:0.0];
-  if (@available(macOS 12.0, *)) {
-    NSPoint textViewOrigin = _view.layoutManager.usageBoundsForTextContainer.origin;
-    if (_view.candidateRanges.count > 0 && _view.preeditRange.length == 0) {
-      textViewOrigin.y += theme.linespace / 2;
-    }
-    [_view.textView setBoundsOrigin:textViewOrigin];
-  } else {
-    [_view.textView setBoundsOrigin:_view.textView.textContainerOrigin];
-  }
-  NSRect boundsRect = [self backingAlignedRect:self.contentView.bounds
-                                       options:NSAlignAllEdgesOutward|NSAlignRectFlipped];
-  [_view setFrame:boundsRect];
-  [_view.textView setFrame:boundsRect];
+  [_view setBoundsOrigin:NSZeroPoint];
+  [_view.textView setBoundsOrigin:NSZeroPoint];
+  [_view setFrame:frameRect];
+  [_view.textView setFrame:textFrameRect];
 
   CGFloat translucency = theme.translucency;
   if (@available(macOS 10.14, *)) {
     if (translucency > 0) {
-      [_back setFrame:boundsRect];
+      [_back setFrame:frameRect];
       [_back setAppearance:NSApp.effectiveAppearance];
       [_back setHidden:NO];
     } else {
@@ -1509,7 +1545,6 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
     }
   }
   [self setAlphaValue:theme.alpha];
-  [self invalidateShadow];
   [self orderFront:nil];
   // voila !
 }
@@ -1523,18 +1558,58 @@ NSColor *disabledColor(NSColor *color, BOOL darkTheme) {
   _maxSize = NSZeroSize;
 }
 
-static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
-  NSTextStorage *textStorage = [[NSTextStorage alloc] init];
-  NSTextContainer *textContainer = [[NSTextContainer alloc] initWithSize:NSMakeSize(FLT_MAX, FLT_MAX)];
-  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-  [layoutManager addTextContainer:textContainer];
-  [textStorage addLayoutManager:layoutManager];
-  [textContainer setLineFragmentPadding:0.0];
-  NSTextView *textView = textContainer.textView;
-  [textView setLayoutOrientation:vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
-  [textStorage setAttributedString:string];
-  [layoutManager ensureLayoutForTextContainer:textContainer];
-  return NSWidth([layoutManager usedRectForTextContainer:textContainer]);
+- (BOOL)shouldBreakLineWithRange:(NSRange)range {
+  if (@available(macOS 12.0, *)) {
+    NSTextRange *textRange = [_view getTextRangeFromRange:range];
+    NSUInteger __block lineCount = 0;
+    [_view.layoutManager enumerateTextSegmentsInRange:textRange
+                                                 type:NSTextLayoutManagerSegmentTypeStandard
+                                              options:NSTextLayoutManagerSegmentOptionsRangeNotRequired
+                                           usingBlock:
+     ^(NSTextRange *segmentRange, CGRect segmentFrame, CGFloat baselinePosition, NSTextContainer *textContainer) {
+      ++lineCount;
+      return YES;
+    }];
+    return lineCount > 1;
+  } else {
+    NSRange glyphRange = [_view.textView.layoutManager glyphRangeForCharacterRange:range
+                                                              actualCharacterRange:NULL];
+    NSUInteger loc = glyphRange.location;
+    NSRange lineRange = NSMakeRange(loc, 0);
+    NSUInteger lineCount = 0;
+    while (loc < NSMaxRange(glyphRange)) {
+      [_view.textView.layoutManager lineFragmentRectForGlyphAtIndex:loc
+                                                     effectiveRange:&lineRange];
+      ++lineCount;
+      loc = NSMaxRange(lineRange);
+    }
+    return lineCount > 1;
+  }
+}
+
+- (BOOL)shouldUseTabsInRange:(NSRange)range maxLineLength:(CGFloat *)maxLineLength{
+  if (@available(macOS 12.0, *)) {
+    NSTextRange *textRange = [_view getTextRangeFromRange:range];
+    CGFloat __block rangeEdge;
+    [_view.layoutManager enumerateTextSegmentsInRange:textRange
+                                                 type:NSTextLayoutManagerSegmentTypeStandard
+                                              options:NSTextLayoutManagerSegmentOptionsRangeNotRequired
+                                           usingBlock:
+     ^(NSTextRange *segmentRange, CGRect segmentFrame, CGFloat baselinePosition, NSTextContainer *textContainer) {
+      rangeEdge = NSMaxX(segmentFrame);
+      return YES;
+    }];
+    NSRect container = [_view.layoutManager usageBoundsForTextContainer];
+    *maxLineLength = MAX(MIN(_maxTextWidth, ceil(NSWidth(container))), _maxSize.width);
+    return NSMinX(container) + *maxLineLength > rangeEdge;
+  } else {
+    NSUInteger glyphIndex = [_view.textView.layoutManager glyphIndexForCharacterAtIndex:range.location];
+    CGFloat rangeEdge = NSMaxX([_view.textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:glyphIndex effectiveRange:NULL]);
+    NSRect container = NSInsetRect([_view.textView.layoutManager usedRectForTextContainer:_view.textView.textContainer],
+                                   _view.textView.textContainer.lineFragmentPadding, 0);
+    *maxLineLength = MAX(MIN(_maxTextWidth, ceil(NSWidth(container))), _maxSize.width);
+    return NSMinX(container) + *maxLineLength > rangeEdge;
+  }
 }
 
 // Main function to add attributes to text output from librime
@@ -1591,101 +1666,74 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
   SquirrelTheme *theme = _view.currentTheme;
   [self getMaxTextWidth];
   if (theme.lineLength > 0) {
-    _maxSize.width = MIN(theme.lineLength, _maxTextWidth);
+    _maxSize.width = MIN(floor(theme.lineLength), _maxTextWidth);
   }
+  NSEdgeInsets insets = NSEdgeInsetsMake(theme.edgeInset.height + theme.linespace / 2, theme.edgeInset.width,
+                                         theme.edgeInset.height + theme.linespace / 2, theme.edgeInset.width);
 
-  NSMutableAttributedString *text = [[NSMutableAttributedString alloc] init];
+  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
+  _view.textView.textContainer.lineFragmentPadding = theme.hilitedCornerRadius;
+  NSTextStorage *text = _view.textView.textStorage;
+  [text setAttributedString:[[NSMutableAttributedString alloc] init]];
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
   NSRange highlightedPreeditRange = NSMakeRange(NSNotFound, 0);
-  CGFloat preeditWidth = 0.0;
   // preedit
   if (preedit) {
     NSMutableAttributedString *preeditLine = [[NSMutableAttributedString alloc] init];
     if (selRange.location > 0) {
       [preeditLine appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:[preedit substringToIndex:selRange.location].precomposedStringWithCanonicalMapping
-                                           attributes:theme.preeditAttrs]];
+                                           initWithString:[preedit substringToIndex:selRange.location]
+                                               attributes:theme.preeditAttrs]];
     }
     if (selRange.length > 0) {
       NSUInteger highlightedPreeditStart = preeditLine.length;
       [preeditLine appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:[preedit substringWithRange:selRange].precomposedStringWithCanonicalMapping
-                                           attributes:theme.preeditHighlightedAttrs]];
-      highlightedPreeditRange = NSMakeRange(text.length + highlightedPreeditStart,
+                                           initWithString:[preedit substringWithRange:selRange]
+                                               attributes:theme.preeditHighlightedAttrs]];
+      highlightedPreeditRange = NSMakeRange(highlightedPreeditStart,
                                             preeditLine.length - highlightedPreeditStart);
     }
     if (NSMaxRange(selRange) < preedit.length) {
       [preeditLine appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:[preedit substringFromIndex:NSMaxRange(selRange)].precomposedStringWithCanonicalMapping
-                                           attributes:theme.preeditAttrs]];
+                                           initWithString:[preedit substringFromIndex:NSMaxRange(selRange)]
+                                               attributes:theme.preeditAttrs]];
     }
     // force caret to be rendered horizontally in vertical layout
     if (caretPos != NSNotFound) {
       [preeditLine addAttribute:NSVerticalGlyphFormAttributeName
                           value:@NO
-                          range:NSMakeRange(caretPos, 1)];
+                          range:NSMakeRange(caretPos - (caretPos < NSMaxRange(selRange)), 1)];
     }
     [preeditLine addAttribute:NSParagraphStyleAttributeName
                         value:theme.preeditParagraphStyle
                         range:NSMakeRange(0, preeditLine.length)];
 
-    preeditRange = NSMakeRange(text.length, preeditLine.length);
+    preeditRange = NSMakeRange(0, preeditLine.length);
     [text appendAttributedString:preeditLine];
-    preeditWidth = stringWidth(preeditLine, theme.vertical);
     if (numCandidates > 0) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.preeditAttrs]];
+    } else {
+      insets.bottom = theme.edgeInset.height;
     }
+    insets.top = theme.edgeInset.height;
   }
 
-  // prepare paging and separator for width calculation but no insertion yet
-  NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] init];
-  NSGlyphInfo *backFilled = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4966"
-                                                        forFont:theme.pagingAttrs[NSFontAttributeName]
-                                                     baseString:@"◀"];
-  NSGlyphInfo *backOutline = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4969"
-                                                         forFont:theme.pagingAttrs[NSFontAttributeName]
-                                                      baseString:@"◁"];
-  NSMutableAttributedString *pageUpString = [[NSMutableAttributedString alloc]
-                                             initWithString:(pageNum ? @"◀" : @"◁")
-                                             attributes:(_turnPage == NSPageUpFunctionKey ? theme.pagingHighlightedAttrs : theme.pagingAttrs)];
-  [pageUpString addAttribute:NSGlyphInfoAttributeName
-                       value:(pageNum ? backFilled : backOutline)
-                       range:NSMakeRange(0, pageUpString.length)];
-  [paging appendAttributedString:pageUpString];
-
-  [paging appendAttributedString:[[NSAttributedString alloc]
-                                  initWithString:[NSString stringWithFormat:@" %lu ", pageNum+1]
-                                  attributes:theme.pagingAttrs]];
-
-  NSGlyphInfo *forwardOutline = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4968"
-                                                            forFont:theme.pagingAttrs[NSFontAttributeName] baseString:@"▷"];
-  NSGlyphInfo *forwardFilled = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4967"
-                                                           forFont:theme.pagingAttrs[NSFontAttributeName] baseString:@"▶"];
-  NSMutableAttributedString *pageDownString = [[NSMutableAttributedString alloc]
-                                               initWithString:(lastPage ? @"▷" : @"▶")
-                                               attributes:(_turnPage == NSPageDownFunctionKey ? theme.pagingHighlightedAttrs : theme.pagingAttrs)];
-  [pageDownString addAttribute:NSGlyphInfoAttributeName
-                         value:(lastPage ? forwardOutline : forwardFilled)
-                         range:NSMakeRange(0, pageDownString.length)];
-  [paging appendAttributedString:pageDownString];
-  CGFloat pagingWidth = theme.showPaging ? stringWidth(paging, theme.vertical) : 0.0;
-
-  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@"  " attributes:theme.attrs];
+  // separator
+  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@"　" attributes:theme.attrs];
   [sep addAttribute:NSVerticalGlyphFormAttributeName
               value:@NO
               range:NSMakeRange(0, sep.length)];
-  CGFloat separatorWidth = theme.linear ? stringWidth(sep, theme.vertical) : 0.0;
-  _view.seperatorWidth = separatorWidth;
+  [sep fixAttributesInRange:NSMakeRange(0, sep.length)];
+  CGFloat separatorWidth = theme.linear ? NSWidth([sep boundingRectWithSize:NSZeroSize options:0]) : 0.0;
+  _view.separatorWidth = separatorWidth;
 
-  CGFloat lineWidth = 0.0 - separatorWidth;
-  CGFloat maxLineWidth = MIN(preeditWidth, _maxTextWidth);
-  BOOL useTab = NO;
-
-  // candidates
+  // candidate items
   NSUInteger candidateBlockStart = text.length;
   NSMutableArray<NSValue *> *candidateRanges = [[NSMutableArray alloc] init];
+  NSUInteger lineStart = text.length;
+  NSRange separatorRange = NSMakeRange(NSNotFound, 0);
   for (NSUInteger i = 0; i < candidates.count; ++i) {
-    NSMutableAttributedString *line = [[NSMutableAttributedString alloc] init];
+    NSMutableAttributedString *item = [[NSMutableAttributedString alloc] init];
 
     NSDictionary *attrs = (i == index) ? theme.highlightedAttrs : theme.attrs;
     NSDictionary *labelAttrs = (i == index) ? theme.labelHighlightedAttrs : theme.labelAttrs;
@@ -1696,150 +1744,188 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
       NSString *prefixLabelString;
       NSString *labelFormat = [theme.prefixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
       if (labels.count > 1 && i < labels.count) {
-        prefixLabelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+        prefixLabelString = [NSString stringWithFormat:labelFormat, labels[i]];
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         NSString *labelCharacter = [[labels[0] substringWithRange:NSMakeRange(i, 1)]
-                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
+                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth
+                                                      reverse:YES];
         prefixLabelString = [NSString stringWithFormat:labelFormat, labelCharacter];
       } else {
         // default: 1. 2. 3...
         NSString *labelCharacter = [[NSString stringWithFormat:@"%lu", (i + 1) % 10]
-                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
+                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth
+                                                      reverse:YES];
         prefixLabelString = [NSString stringWithFormat:labelFormat, labelCharacter];
       }
 
-      [line appendAttributedString:[[NSAttributedString alloc]
+      [item appendAttributedString:[[NSAttributedString alloc]
                                     initWithString:prefixLabelString
-                                    attributes:labelAttrs]];
+                                        attributes:labelAttrs]];
       if (!theme.linear) { // get the label size for indent
-        labelWidth = stringWidth(line, theme.vertical);
+        labelWidth = NSWidth([item boundingRectWithSize:NSZeroSize options:0]);
       }
     }
 
-    NSUInteger candidateStart = line.length;
+    NSUInteger candidateStart = item.length;
     NSString *candidate = candidates[i];
-    [line appendAttributedString:[[NSAttributedString alloc] initWithString:candidate.precomposedStringWithCanonicalMapping
-                                                                 attributes:attrs]];
+    [item appendAttributedString:[[NSAttributedString alloc]
+                                  initWithString:candidate
+                                      attributes:attrs]];
     // Use left-to-right embedding to prevent right-to-left text from changing the layout of the candidate.
-    [line addAttribute:NSWritingDirectionAttributeName
+    [item addAttribute:NSWritingDirectionAttributeName
                  value:@[@0]
-                 range:NSMakeRange(candidateStart, line.length-candidateStart)];
+                 range:NSMakeRange(candidateStart, item.length - candidateStart)];
 
     if (i < comments.count && [comments[i] length] != 0) {
-      [line appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
-                                                                   attributes:commentAttrs]];
+      [item appendAttributedString:[[NSAttributedString alloc]
+                                    initWithString:@" "
+                                        attributes:commentAttrs]];
       NSString *comment = comments[i];
-      [line appendAttributedString:[[NSAttributedString alloc] initWithString:comment.precomposedStringWithCanonicalMapping
-                                                                   attributes:commentAttrs]];
+      [item appendAttributedString:[[NSAttributedString alloc]
+                                    initWithString:comment
+                                        attributes:commentAttrs]];
     }
 
     if (theme.suffixLabelFormat != nil) {
       NSString *suffixLabelString;
       NSString *labelFormat = [theme.suffixLabelFormat stringByReplacingOccurrencesOfString:@"%c" withString:@"%@"];
       if (labels.count > 1 && i < labels.count) {
-        suffixLabelString = [NSString stringWithFormat:labelFormat, labels[i]].precomposedStringWithCanonicalMapping;
+        suffixLabelString = [NSString stringWithFormat:labelFormat, labels[i]];
       } else if (labels.count == 1 && i < [labels[0] length]) {
         // custom: A. B. C...
         NSString *labelCharacter = [[labels[0] substringWithRange:NSMakeRange(i, 1)]
-                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
+                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth
+                                                      reverse:YES];
         suffixLabelString = [NSString stringWithFormat:labelFormat, labelCharacter];
       } else {
         // default: 1. 2. 3...
         NSString *labelCharacter = [[NSString stringWithFormat:@"%lu", (i + 1) % 10]
-                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
+                                    stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth
+                                                      reverse:YES];
         suffixLabelString = [NSString stringWithFormat:labelFormat, labelCharacter];
       }
-      [line appendAttributedString:[[NSAttributedString alloc]
+      [item appendAttributedString:[[NSAttributedString alloc]
                                     initWithString:suffixLabelString
-                                    attributes:labelAttrs]];
+                                        attributes:labelAttrs]];
     }
 
     NSMutableParagraphStyle *paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
-    // determine if the line is too wide and line break is needed, based on screen size.
-    NSString *separtatorString = @"\n";
-    CGFloat candidateWidth = stringWidth(line, theme.vertical);
-
-    if (theme.linear) {
-      if (i == numCandidates-1) {
-        candidateWidth += separatorWidth + pagingWidth;
-      }
-      if (lineWidth + separatorWidth + candidateWidth > _maxTextWidth) {
-        separtatorString = @"\n";
-        maxLineWidth = MAX(maxLineWidth, MIN(lineWidth, _maxTextWidth));
-        lineWidth = candidateWidth;
-      } else {
-        separtatorString = @"  ";
-        lineWidth += separatorWidth + candidateWidth;
-      }
-    } else { // stacked candidates
-      maxLineWidth = MAX(maxLineWidth, MIN(candidateWidth, _maxTextWidth));
+    if (!theme.linear) {
       paragraphStyleCandidate.headIndent = labelWidth;
     }
-    if (i == numCandidates-1 && theme.showPaging) {
-      maxLineWidth = MAX(maxLineWidth, _maxSize.width);
-      useTab = !((theme.linear ? lineWidth : pagingWidth) >= maxLineWidth);
-    }
-    NSMutableAttributedString *separator = [[NSMutableAttributedString alloc]
-                                            initWithString:separtatorString
-                                            attributes:theme.attrs];
-    [separator addAttribute:NSVerticalGlyphFormAttributeName
-                      value:@NO
-                      range:NSMakeRange(0, separator.length)];
-
-    if (i > 0) {
-      [text appendAttributedString:separator];
-    }
-    [line addAttribute:NSParagraphStyleAttributeName
+    [item addAttribute:NSParagraphStyleAttributeName
                  value:paragraphStyleCandidate
-                 range:NSMakeRange(0, line.length)];
-    [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length, line.length)]];
-    [text appendAttributedString:line];
+                 range:NSMakeRange(0, item.length)];
+    // determine if the line is too wide and line break is needed, based on screen size.
+    NSString *separatorString = theme.linear ? @"　" : @"\n";
+    if (i > 0) {
+      NSUInteger separatorStart = text.length;
+      NSMutableAttributedString *separator = [[NSMutableAttributedString alloc]
+                                              initWithString:separatorString
+                                              attributes:theme.attrs];
+      [separator addAttribute:NSVerticalGlyphFormAttributeName
+                        value:@NO
+                        range:NSMakeRange(0, separator.length)];
+      separatorRange = NSMakeRange(separatorStart, separator.length);
+      [text appendAttributedString:separator];
+      [text appendAttributedString:item];
+      if (theme.linear && [self shouldBreakLineWithRange:NSMakeRange(lineStart, text.length - lineStart)]) {
+        [text replaceCharactersInRange:separatorRange withString:@"\n"];
+        lineStart = separatorStart + 1;
+        separatorRange = NSMakeRange(NSNotFound, 0);
+      }
+    } else {
+      [text appendAttributedString:item];
+    }
+    [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length - item.length, item.length)]];
   }
 
   // paging indication
   NSRange pagingRange = NSMakeRange(NSNotFound, 0);
   if (numCandidates > 0 && theme.showPaging) {
+    NSMutableAttributedString *paging = [[NSMutableAttributedString alloc] init];
+    NSGlyphInfo *backFill = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4966"
+                                                        forFont:theme.pagingAttrs[NSFontAttributeName]
+                                                     baseString:@"◀"];
+    NSGlyphInfo *backStroke = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4969"
+                                                          forFont:theme.pagingAttrs[NSFontAttributeName]
+                                                       baseString:@"◁"];
+    NSMutableAttributedString *pageUpString = [[NSMutableAttributedString alloc]
+                                               initWithString:(pageNum ? @"◀" : @"◁")
+                                               attributes:(_turnPage == NSPageUpFunctionKey ? theme.pagingHighlightedAttrs : theme.pagingAttrs)];
+    [pageUpString addAttribute:NSGlyphInfoAttributeName
+                         value:(pageNum ? backFill : backStroke)
+                         range:NSMakeRange(0, pageUpString.length)];
+    [paging appendAttributedString:pageUpString];
+
+    [paging appendAttributedString:[[NSAttributedString alloc]
+                                    initWithString:[NSString stringWithFormat:@" %lu ", pageNum + 1]
+                                    attributes:theme.pagingAttrs]];
+
+    NSGlyphInfo *forwardStroke = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4968"
+                                                             forFont:theme.pagingAttrs[NSFontAttributeName]
+                                                          baseString:@"▷"];
+    NSGlyphInfo *forwardFill = [NSGlyphInfo glyphInfoWithGlyphName:@"gid4967"
+                                                           forFont:theme.pagingAttrs[NSFontAttributeName]
+                                                        baseString:@"▶"];
+    NSMutableAttributedString *pageDownString = [[NSMutableAttributedString alloc]
+                                                 initWithString:(lastPage ? @"▷" : @"▶")
+                                                 attributes:(_turnPage == NSPageDownFunctionKey ? theme.pagingHighlightedAttrs : theme.pagingAttrs)];
+    [pageDownString addAttribute:NSGlyphInfoAttributeName
+                           value:(lastPage ? forwardStroke : forwardFill)
+                           range:NSMakeRange(0, pageDownString.length)];
+    [paging appendAttributedString:pageDownString];
+
     [text appendAttributedString:[[NSAttributedString alloc]
-                                  initWithString:theme.linear ? (useTab ? @"\t" : @"  ") : @"\n"
-                                  attributes:theme.attrs]];
+                                  initWithString:theme.linear ? @"　" : @"\n"
+                                      attributes:theme.attrs]];
     NSUInteger pagingStart = text.length;
+    CGFloat maxLineLength;
     if (theme.linear) {
       [text appendAttributedString:paging];
+      if ([self shouldBreakLineWithRange:NSMakeRange(lineStart, text.length - lineStart)]) {
+        if (separatorRange.length > 0) {
+          [text replaceCharactersInRange:separatorRange withString:@"\n"];
+        } else {
+          [text insertAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.attrs] atIndex:pagingStart-1];
+          pagingStart += 1;
+        }
+      }
       NSMutableParagraphStyle *paragraphStylePaging = [theme.paragraphStyle mutableCopy];
-      paragraphStylePaging.tabStops = @[[[NSTextTab alloc] initWithType:NSRightTabStopType
-                                                               location:maxLineWidth]];
+      if ([self shouldUseTabsInRange:NSMakeRange(pagingStart, text.length - pagingStart) maxLineLength:&maxLineLength]) {
+        [text replaceCharactersInRange:NSMakeRange(pagingStart-1, 1) withString:@"\t"];
+        paragraphStylePaging.tabStops = @[[[NSTextTab alloc] initWithType:NSRightTabStopType location:maxLineLength]];
+      }
       [text addAttribute:NSParagraphStyleAttributeName
                    value:paragraphStylePaging
-                   range:NSMakeRange(candidateBlockStart, text.length-candidateBlockStart)];
+                   range:NSMakeRange(candidateBlockStart, text.length - candidateBlockStart)];
     } else {
       NSMutableParagraphStyle *paragraphStylePaging = [theme.pagingParagraphStyle mutableCopy];
-      if (useTab) {
+      if ([self shouldUseTabsInRange:NSMakeRange(pagingStart, paging.length) maxLineLength:&maxLineLength]) {
         [paging replaceCharactersInRange:NSMakeRange(1, 1) withString:@"\t"];
-        [paging replaceCharactersInRange:NSMakeRange(paging.length-2, 1) withString:@"\t"];
-        paragraphStylePaging.tabStops = @[[[NSTextTab alloc] initWithType:NSCenterTabStopType
-                                                                 location:maxLineWidth/2],
-                                          [[NSTextTab alloc] initWithType:NSRightTabStopType
-                                                                 location:maxLineWidth]];
+        [paging replaceCharactersInRange:NSMakeRange(paging.length - 2, 1) withString:@"\t"];
+        paragraphStylePaging.tabStops = @[[[NSTextTab alloc] initWithType:NSCenterTabStopType location:maxLineLength/2],
+                                          [[NSTextTab alloc] initWithType:NSRightTabStopType location:maxLineLength]];
       }
+      NSFont *pagingFont = theme.pagingAttrs[NSFontAttributeName];
       [paging addAttribute:NSParagraphStyleAttributeName
                      value:paragraphStylePaging
                      range:NSMakeRange(0, paging.length)];
       [text appendAttributedString:paging];
+      insets.bottom = theme.edgeInset.height;
     }
-    pagingRange = NSMakeRange(pagingStart, paging.length);
+    pagingRange = NSMakeRange(text.length - paging.length, paging.length);
   }
 
-  [_view.textView.textStorage setAttributedString:text];
-  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
-
   // text done!
-  [_view     drawViewWith:candidateRanges
-         highlightedIndex:index
-             preeditRange:preeditRange
-  highlightedPreeditRange:highlightedPreeditRange
-              pagingRange:pagingRange
-             pagingButton:turnPage];
+  [_view drawViewWithInsets:insets
+            candidateRanges:candidateRanges
+           highlightedIndex:index
+               preeditRange:preeditRange
+    highlightedPreeditRange:highlightedPreeditRange
+                pagingRange:pagingRange
+               pagingButton:turnPage];
 
   [self show];
 }
@@ -1866,29 +1952,30 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
 - (void)showStatus:(NSString *)message {
   [self getMaxTextWidth];
   SquirrelTheme *theme = _view.currentTheme;
-  NSMutableAttributedString *text = [[NSMutableAttributedString alloc]
-                                     initWithString:message.precomposedStringWithCanonicalMapping
-                                     attributes:theme.commentAttrs];
+  _maxSize = NSZeroSize; // disable remember_size and fixed line_length for status messages
+  NSEdgeInsets insets = NSEdgeInsetsMake(theme.edgeInset.height, theme.edgeInset.width,
+                                         theme.edgeInset.height, theme.edgeInset.width);
+  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
+  _view.textView.textContainer.lineFragmentPadding = theme.hilitedCornerRadius;
+
+  NSTextStorage *text = _view.textView.textStorage;
+  [text setAttributedString:[[NSMutableAttributedString alloc] init]];
+  [text appendAttributedString:[[NSMutableAttributedString alloc] initWithString:message attributes:theme.commentAttrs]];
   [text addAttribute:NSParagraphStyleAttributeName
                value:theme.statusParagraphStyle
                range:NSMakeRange(0, text.length)];
 
-  [_view.textView.textStorage setAttributedString:text];
-  [_view.textView setLayoutOrientation:theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal];
-
-  _maxSize = NSZeroSize; // disable remember_size and fixed line_length for status messages
-  NSRange emptyRange = NSMakeRange(NSNotFound, 0);
-  [_view     drawViewWith:@[]
-         highlightedIndex:NSNotFound
-             preeditRange:emptyRange
-  highlightedPreeditRange:emptyRange
-              pagingRange:emptyRange
-             pagingButton:NSNotFound];
-  [self show];
-
   if (_statusTimer) {
     [_statusTimer invalidate];
   }
+  [_view drawViewWithInsets:insets
+            candidateRanges:@[]
+           highlightedIndex:NSNotFound
+               preeditRange:NSMakeRange(NSNotFound, 0)
+    highlightedPreeditRange:NSMakeRange(NSNotFound, 0)
+                pagingRange:NSMakeRange(NSNotFound, 0)
+               pagingButton:NSNotFound];
+  [self show];
   _statusTimer = [NSTimer scheduledTimerWithTimeInterval:kShowStatusDuration
                                                   target:self
                                                 selector:@selector(hideStatus:)
@@ -1900,8 +1987,8 @@ static CGFloat stringWidth(NSAttributedString *string, BOOL vertical){
   [self hide];
 }
 
-static inline NSColor *blendColors(NSColor *foregroundColor,
-                                   NSColor *backgroundColor) {
+static inline NSColor * blendColors(NSColor *foregroundColor,
+                                    NSColor *backgroundColor) {
   if (!backgroundColor) { // return foregroundColor;
     backgroundColor = [NSColor lightGrayColor];
   }
@@ -1910,19 +1997,19 @@ static inline NSColor *blendColors(NSColor *foregroundColor,
           colorWithAlphaComponent:foregroundColor.alphaComponent];
 }
 
-static inline NSColor *inverseColor(NSColor *color) {
+static inline NSColor * inverseColor(NSColor *color) {
   if (color == nil) {
     return nil;
   } else {
     return [NSColor colorWithColorSpace:color.colorSpace
                                     hue:color.hueComponent
                              saturation:color.saturationComponent
-                             brightness:1-color.brightnessComponent
+                             brightness:1 - color.brightnessComponent
                                   alpha:color.alphaComponent];
   }
 }
 
-static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
+static NSFontDescriptor * getFontDescriptor(NSString *fullname) {
   if (fullname == nil) {
     return nil;
   }
@@ -1944,12 +2031,13 @@ static NSFontDescriptor *getFontDescriptor(NSString *fullname) {
     return nil;
   }
   NSFontDescriptor *initialFontDescriptor = validFontDescriptors[0];
-  CTFontRef systemFontRef = CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, 0.0, (CFStringRef) @"zh");
+  CTFontRef systemFontRef = CTFontCreateUIFontForLanguage(kCTFontUIFontSystem, 0.0, (CFStringRef)@"zh");
   NSFontDescriptor *systemFontDescriptor = CFBridgingRelease(CTFontCopyFontDescriptor(systemFontRef));
   CFRelease(systemFontRef);
   NSFontDescriptor *emojiFontDescriptor = [NSFontDescriptor fontDescriptorWithName:@"AppleColorEmoji" size:0.0];
-  NSArray *fallbackDescriptors = [[validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count-1)] arrayByAddingObjectsFromArray:@[systemFontDescriptor, emojiFontDescriptor]];
-  NSDictionary *attributes = @{NSFontCascadeListAttribute:fallbackDescriptors};
+  NSArray *fallbackDescriptors = [[validFontDescriptors subarrayWithRange:NSMakeRange(1, validFontDescriptors.count - 1)]
+                                  arrayByAddingObjectsFromArray:@[systemFontDescriptor, emojiFontDescriptor]];
+  NSDictionary *attributes = @{NSFontCascadeListAttribute: fallbackDescriptors};
   return [initialFontDescriptor fontDescriptorByAddingAttributes:attributes];
 }
 
@@ -1957,24 +2045,20 @@ static CGFloat getLineHeight(NSFont *font, BOOL vertical) {
   if (vertical) {
     font = font.verticalFont;
   }
-  CGFloat lineHeight = font.ascender - font.descender;
-  if (@available(macOS 12.0, *)) {
-    return lineHeight;
-  } else {
-    NSArray *fallbackList = [font.fontDescriptor objectForKey:NSFontCascadeListAttribute];
-    for (NSFontDescriptor *fallback in fallbackList) {
-      NSFont *fallbackFont = [NSFont fontWithDescriptor:fallback size:font.pointSize];
-      if (vertical) {
-        fallbackFont = fallbackFont.verticalFont;
-      }
-      lineHeight = MAX(lineHeight, fallbackFont.ascender - fallbackFont.descender);
+  CGFloat lineHeight = ceil(font.ascender - font.descender);
+  NSArray *fallbackList = [font.fontDescriptor objectForKey:NSFontCascadeListAttribute];
+  for (NSFontDescriptor *fallback in fallbackList) {
+    NSFont *fallbackFont = [NSFont fontWithDescriptor:fallback size:font.pointSize];
+    if (vertical) {
+      fallbackFont = fallbackFont.verticalFont;
     }
-    return lineHeight;
+    lineHeight = MAX(lineHeight, ceil(MIN(fallbackFont.ascender - fallbackFont.descender, NSHeight([fallbackFont boundingRectForFont]))));
   }
+  return lineHeight;
 }
 
 static void updateCandidateListLayout(BOOL *isLinearCandidateList, SquirrelConfig *config, NSString *prefix) {
-  NSString* candidateListLayout = [config getString:[prefix stringByAppendingString:@"/candidate_list_layout"]];
+  NSString *candidateListLayout = [config getString:[prefix stringByAppendingString:@"/candidate_list_layout"]];
   if ([candidateListLayout isEqualToString:@"stacked"]) {
     *isLinearCandidateList = false;
   } else if ([candidateListLayout isEqualToString:@"linear"]) {
@@ -1989,7 +2073,7 @@ static void updateCandidateListLayout(BOOL *isLinearCandidateList, SquirrelConfi
 }
 
 static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, NSString *prefix) {
-  NSString* textOrientation = [config getString:[prefix stringByAppendingString:@"/text_orientation"]];
+  NSString *textOrientation = [config getString:[prefix stringByAppendingString:@"/text_orientation"]];
   if ([textOrientation isEqualToString:@"horizontal"]) {
     *isVerticalText = false;
   } else if ([textOrientation isEqualToString:@"vertical"]) {
@@ -2020,19 +2104,19 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSString *candidateFormat = [config getString:@"style/candidate_format"];
 
   NSString *fontName = [config getString:@"style/font_face"];
-  CGFloat fontSize = [config getDouble:@"style/font_point"];
+  CGFloat fontSize = MAX([config getDouble:@"style/font_point"], 0.0);
   NSString *labelFontName = [config getString:@"style/label_font_face"];
-  CGFloat labelFontSize = [config getDouble:@"style/label_font_point"];
+  CGFloat labelFontSize = MAX([config getDouble:@"style/label_font_point"], 0.0);
   NSString *commentFontName = [config getString:@"style/comment_font_face"];
-  CGFloat commentFontSize = [config getDouble:@"style/comment_font_point"];
+  CGFloat commentFontSize = MAX([config getDouble:@"style/comment_font_point"], 0.0);
   CGFloat alpha = MIN(MAX([config getDouble:@"style/alpha"], 0.0), 1.0);
   CGFloat translucency = MIN(MAX([config getDouble:@"style/translucency"], 0.0), 1.0);
-  CGFloat cornerRadius = [config getDouble:@"style/corner_radius"];
-  CGFloat hilitedCornerRadius = [config getDouble:@"style/hilited_corner_radius"];
-  CGFloat borderHeight = [config getDouble:@"style/border_height"];
-  CGFloat borderWidth = [config getDouble:@"style/border_width"];
-  CGFloat lineSpacing = [config getDouble:@"style/line_spacing"];
-  CGFloat spacing = [config getDouble:@"style/spacing"];
+  CGFloat cornerRadius = MAX([config getDouble:@"style/corner_radius"], 0.0);
+  CGFloat hilitedCornerRadius = MAX([config getDouble:@"style/hilited_corner_radius"], 0.0);
+  CGFloat borderHeight = MAX([config getDouble:@"style/border_height"], 0.0);
+  CGFloat borderWidth = MAX([config getDouble:@"style/border_width"], 0.0);
+  CGFloat lineSpacing = MAX([config getDouble:@"style/line_spacing"], 0.0);
+  CGFloat spacing = MAX([config getDouble:@"style/spacing"], 0.0);
   CGFloat baseOffset = [config getDouble:@"style/base_offset"];
   CGFloat lineLength = MAX([config getDouble:@"style/line_length"], 0.0);
 
@@ -2119,7 +2203,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
     NSNumber *fontSizeOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/font_point"]];
     if (fontSizeOverridden) {
-      fontSize = fontSizeOverridden.doubleValue;
+      fontSize = MAX(fontSizeOverridden.doubleValue, 0.0);
     }
     NSString *labelFontNameOverridden = [config getString:[prefix stringByAppendingString:@"/label_font_face"]];
     if (labelFontNameOverridden) {
@@ -2127,7 +2211,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
     NSNumber *labelFontSizeOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/label_font_point"]];
     if (labelFontSizeOverridden) {
-      labelFontSize = labelFontSizeOverridden.doubleValue;
+      labelFontSize = MAX(labelFontSizeOverridden.doubleValue, 0.0);
     }
     NSString *commentFontNameOverridden = [config getString:[prefix stringByAppendingString:@"/comment_font_face"]];
     if (commentFontNameOverridden) {
@@ -2135,7 +2219,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
     NSNumber *commentFontSizeOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/comment_font_point"]];
     if (commentFontSizeOverridden) {
-      commentFontSize = commentFontSizeOverridden.doubleValue;
+      commentFontSize = MAX(commentFontSizeOverridden.doubleValue, 0.0);
     }
     NSColor *candidateLabelColorOverridden = [config getColor:[prefix stringByAppendingString:@"/label_color"]];
     if (candidateLabelColorOverridden) {
@@ -2159,27 +2243,27 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
     }
     NSNumber *cornerRadiusOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/corner_radius"]];
     if (cornerRadiusOverridden) {
-      cornerRadius = cornerRadiusOverridden.doubleValue;
+      cornerRadius = MAX(cornerRadiusOverridden.doubleValue, 0.0);
     }
     NSNumber *hilitedCornerRadiusOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/hilited_corner_radius"]];
     if (hilitedCornerRadiusOverridden) {
-      hilitedCornerRadius = hilitedCornerRadiusOverridden.doubleValue;
+      hilitedCornerRadius = MAX(hilitedCornerRadiusOverridden.doubleValue, 0.0);
     }
     NSNumber *borderHeightOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/border_height"]];
     if (borderHeightOverridden) {
-      borderHeight = borderHeightOverridden.doubleValue;
+      borderHeight = MAX(borderHeightOverridden.doubleValue, 0.0);
     }
     NSNumber *borderWidthOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/border_width"]];
     if (borderWidthOverridden) {
-      borderWidth = borderWidthOverridden.doubleValue;
+      borderWidth = MAX(borderWidthOverridden.doubleValue, 0.0);
     }
     NSNumber *lineSpacingOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/line_spacing"]];
     if (lineSpacingOverridden) {
-      lineSpacing = lineSpacingOverridden.doubleValue;
+      lineSpacing = MAX(lineSpacingOverridden.doubleValue, 0.0);
     }
     NSNumber *spacingOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/spacing"]];
     if (spacingOverridden) {
-      spacing = spacingOverridden.doubleValue;
+      spacing = MAX(spacingOverridden.doubleValue, 0.0);
     }
     NSNumber *baseOffsetOverridden = [config getOptionalDouble:[prefix stringByAppendingString:@"/base_offset"]];
     if (baseOffsetOverridden) {
@@ -2196,15 +2280,21 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   commentFontSize = commentFontSize ? commentFontSize : fontSize;
 
   NSFontDescriptor *fontDescriptor = getFontDescriptor(fontName);
-  NSFont *font = [NSFont fontWithDescriptor:(fontDescriptor ? fontDescriptor : getFontDescriptor([NSFont userFontOfSize:0.0].fontName)) size:fontSize];
+  NSFont *font = [NSFont fontWithDescriptor:(fontDescriptor ? fontDescriptor : getFontDescriptor([NSFont userFontOfSize:0.0].fontName))
+                                       size:fontSize];
 
   NSFontDescriptor *labelFontDescriptor = getFontDescriptor(labelFontName);
-  NSFont *labelFont = labelFontDescriptor ? [NSFont fontWithDescriptor:labelFontDescriptor size:labelFontSize] : (fontDescriptor ? [NSFont fontWithDescriptor:fontDescriptor size:labelFontSize] : [NSFont monospacedDigitSystemFontOfSize:labelFontSize weight:NSFontWeightRegular]);
+  NSFont *labelFont = labelFontDescriptor ? [NSFont fontWithDescriptor:labelFontDescriptor size:labelFontSize]
+    : (fontDescriptor ? [NSFont fontWithDescriptor:fontDescriptor size:labelFontSize]
+       : [NSFont monospacedDigitSystemFontOfSize:labelFontSize weight:NSFontWeightRegular]);
 
   NSFontDescriptor *commentFontDescriptor = getFontDescriptor(commentFontName);
-  NSFont *commentFont = [NSFont fontWithDescriptor:(commentFontDescriptor ? commentFontDescriptor : fontDescriptor) size:commentFontSize];
+  NSFont *commentFont = [NSFont fontWithDescriptor:(commentFontDescriptor ? commentFontDescriptor : fontDescriptor)
+                                              size:commentFontSize];
 
-  NSFont *pagingFont = [NSFont fontWithDescriptor:[[NSFontDescriptor fontDescriptorWithName:@"AppleSymbols" size:0.0] fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitUIOptimized] size:labelFontSize];
+  NSFont *pagingFont = [NSFont fontWithDescriptor:[[NSFontDescriptor fontDescriptorWithName:@"AppleSymbols" size:0.0]
+                                                   fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitUIOptimized]
+                                             size:labelFontSize];
 
   CGFloat fontHeight = getLineHeight(font, vertical);
   CGFloat labelFontHeight = getLineHeight(labelFont, vertical);
@@ -2223,8 +2313,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   paragraphStyle.paragraphSpacingBefore = lineSpacing / 2;
 
   NSMutableParagraphStyle *pagingParagraphStyle = [theme.pagingParagraphStyle mutableCopy];
-  pagingParagraphStyle.minimumLineHeight = pagingFont.ascender - pagingFont.descender;
-  pagingParagraphStyle.maximumLineHeight = pagingFont.ascender - pagingFont.descender;
+  pagingParagraphStyle.minimumLineHeight = ceil(pagingFont.ascender - pagingFont.descender);
+  pagingParagraphStyle.maximumLineHeight = ceil(pagingFont.ascender - pagingFont.descender);
   pagingParagraphStyle.paragraphSpacingBefore = pagingFont.leading;
 
   NSMutableParagraphStyle *statusParagraphStyle = [theme.statusParagraphStyle mutableCopy];
@@ -2272,18 +2362,18 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
         ((backgroundColor.brightnessComponent >= 0.5 && isDark) ||
          (backgroundColor.brightnessComponent < 0.5 && !isDark))) {
       backgroundColor = inverseColor(backgroundColor);
-      borderColor = inverseColor(borderColor) ;
+      borderColor = inverseColor(borderColor);
       preeditBackgroundColor = inverseColor(preeditBackgroundColor);
       candidateTextColor = inverseColor(candidateTextColor);
       highlightedCandidateTextColor = [inverseColor(highlightedCandidateTextColor) highlightWithLevel:highlightedCandidateTextColor.brightnessComponent];
-      highlightedCandidateBackColor = [inverseColor(highlightedCandidateBackColor) shadowWithLevel:1-highlightedCandidateBackColor.brightnessComponent];
+      highlightedCandidateBackColor = [inverseColor(highlightedCandidateBackColor) shadowWithLevel:1 - highlightedCandidateBackColor.brightnessComponent];
       candidateLabelColor = inverseColor(candidateLabelColor);
       highlightedCandidateLabelColor = [inverseColor(highlightedCandidateLabelColor) highlightWithLevel:highlightedCandidateLabelColor.brightnessComponent];
       commentTextColor = inverseColor(commentTextColor);
       highlightedCommentTextColor = [inverseColor(highlightedCommentTextColor) highlightWithLevel:highlightedCommentTextColor.brightnessComponent];
       textColor = inverseColor(textColor);
       highlightedTextColor = [inverseColor(highlightedTextColor) highlightWithLevel:highlightedTextColor.brightnessComponent];
-      highlightedBackColor = [inverseColor(highlightedBackColor) shadowWithLevel:1-highlightedBackColor.brightnessComponent];
+      highlightedBackColor = [inverseColor(highlightedBackColor) shadowWithLevel:1 - highlightedBackColor.brightnessComponent];
     }
   }
 
@@ -2319,16 +2409,16 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   [theme setStatusMessageType:statusMessageType];
 
-  [theme          setAttrs:attrs
-          highlightedAttrs:highlightedAttrs
-                labelAttrs:labelAttrs
-     labelHighlightedAttrs:labelHighlightedAttrs
-              commentAttrs:commentAttrs
-   commentHighlightedAttrs:commentHighlightedAttrs
-              preeditAttrs:preeditAttrs
-   preeditHighlightedAttrs:preeditHighlightedAttrs
-               pagingAttrs:pagingAttrs
-    pagingHighlightedAttrs:pagingHighlightedAttrs];
+  [theme           setAttrs:attrs
+           highlightedAttrs:highlightedAttrs
+                 labelAttrs:labelAttrs
+      labelHighlightedAttrs:labelHighlightedAttrs
+               commentAttrs:commentAttrs
+    commentHighlightedAttrs:commentHighlightedAttrs
+               preeditAttrs:preeditAttrs
+    preeditHighlightedAttrs:preeditHighlightedAttrs
+                pagingAttrs:pagingAttrs
+     pagingHighlightedAttrs:pagingHighlightedAttrs];
 
   [theme setParagraphStyle:paragraphStyle
      preeditParagraphStyle:preeditParagraphStyle
@@ -2344,8 +2434,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSSize edgeInset = vertical ? NSMakeSize(borderHeight, borderWidth) : NSMakeSize(borderWidth, borderHeight);
 
-  [theme setCornerRadius:cornerRadius
-     hilitedCornerRadius:MIN(hilitedCornerRadius, lineHeight/2)
+  [theme setCornerRadius:MIN(cornerRadius, lineHeight/2)
+     hilitedCornerRadius:MIN(hilitedCornerRadius, lineHeight/3)
                edgeInset:edgeInset
                linespace:lineSpacing
         preeditLinespace:spacing
