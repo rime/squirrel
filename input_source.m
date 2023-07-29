@@ -98,6 +98,24 @@ int GetEnabledInputModes(void) {
     }
   }
   CFRelease(sourceList);
-  NSLog(@"EnabledInputModes: %d", input_modes);
+  if (input_modes != 0) {
+    NSLog(@"EnabledInputModes: %d", input_modes);
+  } else {
+    NSArray<NSString *> *languages = [NSBundle preferredLocalizationsFromArray:@[@"zh-Hans", @"zh-Hant", @"zh-HK", @"yue"]];
+    for (NSString *lang in languages) {
+      if ([lang isEqualToString:@"zh-Hans"])
+        input_modes |= HANS_INPUT_MODE;
+      else if ([lang isEqualToString:@"zh-Hant"])
+        input_modes |= HANT_INPUT_MODE;
+      else if ([lang isEqualToString:@"zh-HK"])
+        input_modes |= CANT_INPUT_MODE;
+    }
+    if (input_modes != 0) {
+      NSLog(@"PreferredInputModes: %d", input_modes);
+    } else {
+      input_modes = HANS_INPUT_MODE;
+      NSLog(@"DefaultInputMode: %d", input_modes);
+    }
+  }
   return input_modes;
 }
