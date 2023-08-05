@@ -539,6 +539,7 @@ const int N_KEY_ROLL_OVER = 50;
   RIME_STRUCT(RimeCommit, commit);
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
+    [self showPreeditString:@"　" selRange:NSMakeRange(0, 0) caretPos:0];
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
   }
