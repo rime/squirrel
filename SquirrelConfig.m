@@ -76,7 +76,7 @@
 }
 
 - (NSNumber *)getOptionalBool:(NSString *)option {
-  NSNumber* cachedValue = [self cachedValueOfClass:[NSNumber class] forKey:option];
+  NSNumber *cachedValue = [self cachedValueOfClass:[NSNumber class] forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
@@ -117,7 +117,7 @@
     return cachedValue;
   }
   const char *value =
-      _isOpen ? rime_get_api()->config_get_cstring(&_config, option.UTF8String) : NULL;
+    _isOpen ? rime_get_api()->config_get_cstring(&_config, option.UTF8String) : NULL;
   if (value) {
     return _cache[option] = @(value);
   }
@@ -151,8 +151,8 @@
 }
 
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName {
-  NSString * rootKey = [@"app_options/" stringByAppendingString:appName];
-  SquirrelMutableAppOptions* appOptions = [[SquirrelMutableAppOptions alloc] init];
+  NSString *rootKey = [@"app_options/" stringByAppendingString:appName];
+  SquirrelMutableAppOptions *appOptions = [[SquirrelMutableAppOptions alloc] init];
   RimeConfigIterator iterator;
   rime_get_api()->config_begin_map(&iterator, &_config, rootKey.UTF8String);
   while (rime_get_api()->config_next(&iterator)) {
@@ -204,7 +204,7 @@
   if (filePath == nil) {
     return nil;
   }
-  NSFileManager* fileManager = [NSFileManager defaultManager];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
   [fileManager changeCurrentDirectoryPath:[@"~/Library/Rime" stringByStandardizingPath]];
   NSString *patternFile = [filePath stringByStandardizingPath];
   if ([fileManager fileExistsAtPath:patternFile]) {
@@ -213,4 +213,5 @@
   }
   return nil;
 }
+
 @end

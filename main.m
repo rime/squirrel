@@ -20,7 +20,7 @@ int main(int argc, char *argv[]) {
   if (argc > 1 && !strcmp("--quit", argv[1])) {
     NSString *bundleId = [NSBundle mainBundle].bundleIdentifier;
     NSArray *runningSquirrels =
-        [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
+      [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
     for (NSRunningApplication *squirrelApp in runningSquirrels) {
       [squirrelApp terminate];
     }
@@ -29,8 +29,8 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1 && !strcmp("--reload", argv[1])) {
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"SquirrelReloadNotification"
-                      object:nil];
+     postNotificationName:@"SquirrelReloadNotification"
+                   object:nil];
     return 0;
   }
 
@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1 && !strcmp("--sync", argv[1])) {
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"SquirrelSyncNotification"
-                      object:nil];
+     postNotificationName:@"SquirrelSyncNotification"
+                   object:nil];
     return 0;
   }
 
@@ -65,8 +65,8 @@ int main(int argc, char *argv[]) {
     // find the bundle identifier and then initialize the input method server
     NSBundle *main = [NSBundle mainBundle];
     IMKServer *server __unused =
-        [[IMKServer alloc] initWithName:(NSString *)kConnectionName
-                       bundleIdentifier:main.bundleIdentifier];
+      [[IMKServer alloc] initWithName:(NSString *)kConnectionName
+                     bundleIdentifier:main.bundleIdentifier];
 
     // load the bundle explicitly because in this case the input method is a
     // background only application
@@ -74,7 +74,7 @@ int main(int argc, char *argv[]) {
 
     // opencc will be configured with relative dictionary paths
     [[NSFileManager defaultManager]
-        changeCurrentDirectoryPath:main.sharedSupportPath];
+     changeCurrentDirectoryPath:main.sharedSupportPath];
 
     if (NSApp.squirrelAppDelegate.problematicLaunchDetected) {
       NSLog(@"Problematic launch detected!");

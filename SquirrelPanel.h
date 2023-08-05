@@ -18,23 +18,23 @@
 
 @property(nonatomic, assign) SquirrelInputController *inputController;
 
--(void)showPreedit:(NSString*)preedit
-          selRange:(NSRange)selRange
-          caretPos:(NSUInteger)caretPos
-        candidates:(NSArray*)candidates
-          comments:(NSArray*)comments
-            labels:(NSArray*)labels
-       highlighted:(NSUInteger)index
-           pageNum:(NSUInteger)pageNum
-          lastPage:(BOOL)lastPage
-          turnPage:(NSUInteger)turnPage
-            update:(BOOL)update;
+- (void)showPreedit:(NSString *)preedit
+           selRange:(NSRange)selRange
+           caretPos:(NSUInteger)caretPos
+         candidates:(NSArray *)candidates
+           comments:(NSArray *)comments
+             labels:(NSArray *)labels
+        highlighted:(NSUInteger)index
+            pageNum:(NSUInteger)pageNum
+           lastPage:(BOOL)lastPage
+           turnPage:(NSUInteger)turnPage
+             update:(BOOL)update;
 
--(void)hide;
+- (void)hide;
 
--(void)updateStatusLong:(NSString*)messageLong statusShort:(NSString*)messageShort;
+- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort;
 
--(void)loadConfig:(SquirrelConfig*)config
-      forDarkMode:(BOOL)isDark;
+- (void)loadConfig:(SquirrelConfig *)config
+       forDarkMode:(BOOL)isDark;
 
 @end

@@ -13,17 +13,17 @@
 @property(nonatomic, readonly, strong) SquirrelConfig *config;
 @property(nonatomic, readonly) BOOL enableNotifications;
 
--(IBAction)deploy:(id)sender;
--(IBAction)syncUserData:(id)sender;
--(IBAction)configure:(id)sender;
--(IBAction)openWiki:(id)sender;
+- (IBAction)deploy:(id)sender;
+- (IBAction)syncUserData:(id)sender;
+- (IBAction)configure:(id)sender;
+- (IBAction)openWiki:(id)sender;
 
--(void)setupRime;
--(void)startRimeWithFullCheck:(BOOL)fullCheck;
--(void)loadSettings;
--(void)loadSchemaSpecificSettings:(NSString *)schemaId;
+- (void)setupRime;
+- (void)startRimeWithFullCheck:(BOOL)fullCheck;
+- (void)loadSettings;
+- (void)loadSchemaSpecificSettings:(NSString *)schemaId;
 
-@property (nonatomic, readonly) BOOL problematicLaunchDetected;
+@property(nonatomic, readonly) BOOL problematicLaunchDetected;
 
 @end
 
@@ -34,4 +34,4 @@
 @end
 
 // also used in main.m
-extern void show_message(const char* msg_text, const char* msg_id);
+extern void show_message(const char *msg_text, const char *msg_id);

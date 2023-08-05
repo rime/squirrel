@@ -41,9 +41,9 @@ const int N_KEY_ROLL_OVER = 50;
 }
 
 /*!
- @method
- @abstract   Receive incoming event
- @discussion This method receives key events from the client application.
+   @method
+   @abstract   Receive incoming event
+   @discussion This method receives key events from the client application.
  */
 - (BOOL)handleEvent:(NSEvent *)event client:(id)sender
 {
@@ -127,8 +127,9 @@ const int N_KEY_ROLL_OVER = 50;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
-        if (modifiers & OSX_COMMAND_MASK)
+        if (modifiers & OSX_COMMAND_MASK) {
           break;
+        }
 
         int keyCode = event.keyCode;
         NSString *keyChars = ((modifiers & OSX_SHIFT_MASK) && !(modifiers & OSX_CTRL_MASK) &&
@@ -194,10 +195,10 @@ const int N_KEY_ROLL_OVER = 50;
   // Simulate key-ups for every interesting key-down for chord-typing.
   if (handled) {
     BOOL is_chording_key =
-           (rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
-           rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
-           rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
-           rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
+      (rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
+      rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
+      rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
+      rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
     if (is_chording_key &&
         rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode modifiers:rime_modifiers];
@@ -254,8 +255,9 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"update chord: {%s} << %x", _chord, keycode);
   for (int i = 0; i < _chordKeyCount; ++i) {
-    if (_chordKeyCodes[i] == keycode)
+    if (_chordKeyCodes[i] == keycode) {
       return;
+    }
   }
   if (_chordKeyCount >= N_KEY_ROLL_OVER) {
     // you are cheating. only one human typist (fingers <= 10) is supported.
@@ -620,7 +622,7 @@ const int N_KEY_ROLL_OVER = 50;
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
         // note this is a full-shape space U+3000; using half shape characters like "..." will result in
         // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @"\0" : @"") selRange:NSMakeRange(0, 0) caretPos:0];
+        [self showPreeditString:(preedit ? @"　" : @"") selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }
     // update candidates
@@ -641,7 +643,7 @@ const int N_KEY_ROLL_OVER = 50;
     } else if (ctx.select_labels) {
       NSMutableArray *selectLabels = [NSMutableArray array];
       for (i = 0; i < ctx.menu.page_size; ++i) {
-        char* label_str = ctx.select_labels[i];
+        char *label_str = ctx.select_labels[i];
         [selectLabels addObject:@(label_str)];
       }
       labels = selectLabels;
@@ -650,7 +652,7 @@ const int N_KEY_ROLL_OVER = 50;
     }
     [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : preeditText)
                       selRange:NSMakeRange(start, end - start)
-                      caretPos:switcher ? NSNotFound : caretPos
+                      caretPos:(switcher ? NSNotFound : caretPos)
                     candidates:candidates
                       comments:comments
                         labels:labels
