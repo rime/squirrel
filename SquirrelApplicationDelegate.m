@@ -184,22 +184,14 @@ void notification_handler(void *context_object, RimeSessionId session_id,
                                              error:nil];
   if (archive) {
     NSDate *previousLaunch;
-    if (@available(macOS 10.13, *)) {
-      previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
-    } else {
-      previousLaunch = [NSKeyedUnarchiver unarchiveObjectWithData:archive];
-    }
+    previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
     if (previousLaunch && previousLaunch.timeIntervalSinceNow >= -2) {
       detected = YES;
     }
   }
   NSDate *now = [NSDate date];
   NSData *record;
-  if (@available(macOS 10.13, *)) {
-    record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
-  } else {
-    record = [NSKeyedArchiver archivedDataWithRootObject:now];
-  }
+  record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
   [record writeToFile:logfile atomically:NO];
   return detected;
 }

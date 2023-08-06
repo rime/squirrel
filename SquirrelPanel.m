@@ -32,6 +32,11 @@
                                   points[2].x, points[2].y);
             didClosePath = NO;
             break;
+          case NSBezierPathElementQuadraticCurveTo:
+            CGPathAddQuadCurveToPoint(path, NULL, points[0].x, points[0].y,
+                                      points[1].x, points[1].y);
+            didClosePath = NO;
+            break;
           case NSClosePathBezierPathElement:
             CGPathCloseSubpath(path);
             didClosePath = YES;
@@ -1017,7 +1022,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   if (theme.preeditBackgroundColor &&
       (preeditRange.length > 0 || !NSIsEmptyRect(pagingLineRect))) {
     panelLayer.fillColor = [theme.preeditBackgroundColor CGColor];
-    if (![candidateBlockPath isEmpty]) {
+    if (!candidateBlockPath.empty) {
       CAShapeLayer *candidateLayer = [[CAShapeLayer alloc] init];
       candidateLayer.path = [candidateBlockPath quartzPath];
       candidateLayer.fillColor = [theme.backgroundColor CGColor];
@@ -1062,7 +1067,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     [self.layer addSublayer:pagingLayer];
   }
   if (theme.highlightedPreeditColor) {
-    if (![highlightedPreeditPath isEmpty]) {
+    if (!highlightedPreeditPath.empty) {
       CAShapeLayer *highlightedPreeditLayer = [[CAShapeLayer alloc] init];
       highlightedPreeditLayer.path = [highlightedPreeditPath quartzPath];
       highlightedPreeditLayer.fillColor = [theme.highlightedPreeditColor CGColor];
@@ -1070,7 +1075,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
       [self.layer addSublayer:highlightedPreeditLayer];
     }
   }
-  if (theme.borderColor && ![borderPath isEmpty]) {
+  if (theme.borderColor && !borderPath.empty) {
     CAShapeLayer *borderLayer = [[CAShapeLayer alloc] init];
     borderLayer.path = [borderPath quartzPath];
     borderLayer.fillColor = [theme.borderColor CGColor];
@@ -1408,7 +1413,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
 - (void)getTextWidthLimit {
   SquirrelTheme *theme = _view.currentTheme;
   [self getCurrentScreen];
-  NSRect screenRect = [_screen visibleFrame];
+  NSRect screenRect = _screen.visibleFrame;
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   _textWidthLimit = floor((theme.vertical ? NSHeight(screenRect) : NSWidth(screenRect)) * textWidthRatio - (theme.hilitedCornerRadius + theme.edgeInset.width) * 2);
   if (theme.lineLength > 0) {
@@ -1432,7 +1437,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   CGFloat linePadding = textContainer.lineFragmentPadding;
   NSEdgeInsets insets = _view.insets;
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
-  NSRect screenRect = [_screen visibleFrame];
+  NSRect screenRect = _screen.visibleFrame;
   CGFloat textHeightLimit = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - insets.top - insets.bottom;
   [textContainer setSize:NSMakeSize(_textWidthLimit + linePadding * 2, textHeightLimit)];
 
@@ -1728,7 +1733,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   }
 
   // separator
-  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@"　" attributes:theme.attrs];
+  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@" " attributes:theme.attrs];
   [sep addAttribute:NSVerticalGlyphFormAttributeName
               value:@NO
               range:NSMakeRange(0, sep.length)];
@@ -1886,7 +1891,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     [paging appendAttributedString:pageDownString];
 
     [text appendAttributedString:[[NSAttributedString alloc]
-                                  initWithString:theme.linear ? @"　" : @"\n"
+                                  initWithString:theme.linear ? @" " : @"\n"
                                       attributes:theme.attrs]];
     NSUInteger pagingStart = text.length;
     CGFloat maxLineLength;
