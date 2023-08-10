@@ -1283,7 +1283,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     if (@available(macOS 10.14, *)) {
       _back = [[NSVisualEffectView alloc] init];
       _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      _back.material = NSVisualEffectMaterialHUDWindow;
+      _back.material = NSVisualEffectMaterialUnderWindowBackground;
       _back.state = NSVisualEffectStateActive;
       _back.wantsLayer = YES;
       _back.layer.mask = _view.shape;
