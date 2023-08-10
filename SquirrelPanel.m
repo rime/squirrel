@@ -1273,7 +1273,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     self.alphaValue = 1.0;
     // _window.level = NSScreenSaverWindowLevel + 1;
     // ^ May fix visibility issue in fullscreen games.
-    self.level = CGShieldingWindowLevel();
+    self.level = kCGCursorWindowLevel - 10;
     self.hasShadow = NO;
     self.opaque = NO;
     self.displaysWhenScreenProfileChanges = YES;

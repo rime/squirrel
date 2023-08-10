@@ -22,8 +22,6 @@ const int N_KEY_ROLL_OVER = 50;
   NSString *_preeditString;
   NSAttributedString *_originalString;
   NSString *_composedString;
-  NSRange _selRange;
-  NSUInteger _caretPos;
   NSArray *_candidates;
   NSUInteger _lastModifier;
   int _lastEventCount;
@@ -426,16 +424,7 @@ const int N_KEY_ROLL_OVER = 50;
                  caretPos:(NSUInteger)pos
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
-
-  if ([_preeditString isEqualToString:preedit] &&
-      NSEqualRanges(_selRange, range) && _caretPos == pos) {
-    return;
-  }
-
   _preeditString = preedit;
-  _selRange = range;
-  _caretPos = pos;
-
   //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld",
   //      range.location, range.length, pos);
   NSDictionary *attrs;
@@ -474,6 +463,17 @@ const int N_KEY_ROLL_OVER = 50;
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
+  if (@available(macOS 14.0, *)) {  // avoid overlapping with cursor effects view
+    if (_lastModifier & OSX_CAPITAL_MASK) {
+      if (NSHeight(inputPos) > NSWidth(inputPos)) {
+        inputPos.size.height += 26;
+        inputPos.origin.y -= 26;
+      } else {
+        inputPos.size.width += 33;
+        inputPos.origin.x -= 33;
+      }
+    }
+  }
   panel.position = inputPos;
   panel.inputController = self;
   [panel showPreedit:preedit
