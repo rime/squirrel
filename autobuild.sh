@@ -8,7 +8,7 @@ export BUILD_UNIVERSAL=1
 
 make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_78_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_82_0"
 
 export BUILD_UNIVERSAL=1
 
