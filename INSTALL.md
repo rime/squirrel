@@ -115,10 +115,10 @@ To build only for the native architecture, pass variable `ARCHS` to `make`:
 
 ``` sh
 # for Mac computers with Apple Silicon
-make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.13'
+make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.14'
 
 # for Intel-based Mac
-make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.13'
+make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.14'
 ```
 
 ## Install it on your Mac
