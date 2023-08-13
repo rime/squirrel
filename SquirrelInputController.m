@@ -629,8 +629,7 @@ const int N_KEY_ROLL_OVER = 50;
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
     NSMutableArray *comments = [NSMutableArray array];
-    NSUInteger i;
-    for (i = 0; i < ctx.menu.num_candidates; ++i) {
+    for (NSUInteger i = 0; i < ctx.menu.num_candidates; ++i) {
       [candidates addObject:@(ctx.menu.candidates[i].text)];
       if (ctx.menu.candidates[i].comment) {
         [comments addObject:@(ctx.menu.candidates[i].comment)];
@@ -638,18 +637,21 @@ const int N_KEY_ROLL_OVER = 50;
         [comments addObject:@""];
       }
     }
-    NSArray *labels;
+    NSMutableArray *labels = [NSMutableArray array];
     if (ctx.menu.select_keys) {
-      labels = @[@(ctx.menu.select_keys)];
-    } else if (ctx.select_labels) {
-      NSMutableArray *selectLabels = [NSMutableArray array];
-      for (i = 0; i < ctx.menu.page_size; ++i) {
-        char *label_str = ctx.select_labels[i];
-        [selectLabels addObject:@(label_str)];
+      NSString *selectKeys = [@(ctx.menu.select_keys) stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
+      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+        [labels addObject:[selectKeys substringWithRange:NSMakeRange(i, 1)]];
       }
-      labels = selectLabels;
+    } else if (ctx.select_labels) {
+      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+        [labels addObject:@(ctx.select_labels[i])];
+      }
     } else {
-      labels = @[];
+      NSString *labelString = @"１２３４５６７８９０";
+      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+        [labels addObject:[labelString substringWithRange:NSMakeRange(i, 1)]];
+      }
     }
     [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : preeditText)
                       selRange:NSMakeRange(start, end - start)
