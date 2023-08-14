@@ -10,7 +10,7 @@
 @interface SquirrelInputController (Private)
 - (void)createSession;
 - (void)destroySession;
-- (void)rimeConsumeCommittedText;
+- (BOOL)rimeConsumeCommittedText;
 - (void)rimeUpdate;
 - (void)updateAppOptions;
 @end
@@ -18,7 +18,6 @@
 const int N_KEY_ROLL_OVER = 50;
 
 @implementation SquirrelInputController {
-  id _currentClient;
   NSString *_preeditString;
   NSAttributedString *_originalString;
   NSString *_composedString;
@@ -50,7 +49,6 @@ const int N_KEY_ROLL_OVER = 50;
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
-  _currentClient = sender;
   NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
   BOOL handled = NO;
 
@@ -62,7 +60,7 @@ const int N_KEY_ROLL_OVER = 50;
       }
     }
 
-    NSString *app = [_currentClient bundleIdentifier];
+    NSString *app = [sender bundleIdentifier];
 
     if (![_currentApp isEqualToString:app]) {
       _currentApp = [app copy];
@@ -302,23 +300,24 @@ const int N_KEY_ROLL_OVER = 50;
   //NSLog(@"activateServer:");
   NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config getString:@"keyboard_layout"];
   if ([keyboardLayout isEqualToString:@"last"] || [keyboardLayout isEqualToString:@""]) {
-    keyboardLayout = NULL;
+    keyboardLayout = nil;
   } else if ([keyboardLayout isEqualToString:@"default"]) {
     keyboardLayout = @"com.apple.keylayout.ABC";
   } else if (![keyboardLayout hasPrefix:@"com.apple.keylayout."]) {
-    keyboardLayout = [NSString stringWithFormat:@"com.apple.keylayout.%@", keyboardLayout];
+    keyboardLayout = [@"com.apple.keylayout." stringByAppendingString:keyboardLayout];
   }
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
   _preeditString = @"";
+  _composedString = @"";
+  _originalString = [[NSAttributedString alloc] initWithString:@""];
 }
 
 - (instancetype)initWithServer:(IMKServer *)server delegate:(id)delegate client:(id)inputClient
 {
   //NSLog(@"initWithServer:delegate:client:");
   if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
-    _currentClient = inputClient;
     [self createSession];
   }
   return self;
@@ -327,7 +326,6 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)deactivateServer:(id)sender
 {
   //NSLog(@"deactivateServer:");
-  [NSApp.squirrelAppDelegate.panel hide];
   [self commitComposition:sender];
 }
 
@@ -409,8 +407,8 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)commitString:(NSString *)string
 {
   //NSLog(@"commitString:");
-  [_currentClient insertText:string
-            replacementRange:NSMakeRange(NSNotFound, 0)];
+  [self.client insertText:string
+         replacementRange:self.client.markedRange];
 
   _preeditString = @"";
   _composedString = @"";
@@ -443,9 +441,9 @@ const int N_KEY_ROLL_OVER = 50;
     attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:rawRange];
     [attrString setAttributes:attrs range:rawRange];
   }
-  [_currentClient setMarkedText:attrString
-                 selectionRange:NSMakeRange(pos, 0)
-               replacementRange:NSMakeRange(NSNotFound, 0)];
+  [self.client setMarkedText:attrString
+              selectionRange:NSMakeRange(pos, 0)
+            replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
 }
 
 - (void)showPanelWithPreedit:(NSString *)preedit
@@ -461,7 +459,7 @@ const int N_KEY_ROLL_OVER = 50;
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
   NSRect inputPos;
-  [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
+  [self.client attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
   if (@available(macOS 14.0, *)) {  // avoid overlapping with cursor effects view
     if (_lastModifier & OSX_CAPITAL_MASK) {
@@ -497,7 +495,7 @@ const int N_KEY_ROLL_OVER = 50;
 
 - (void)createSession
 {
-  NSString *app = [_currentClient bundleIdentifier];
+  NSString *app = [self.client bundleIdentifier];
   NSLog(@"createSession: %@", app);
   _currentApp = [app copy];
   _session = rime_get_api()->create_session();
@@ -534,21 +532,28 @@ const int N_KEY_ROLL_OVER = 50;
   [self clearChord];
 }
 
-- (void)rimeConsumeCommittedText
+- (BOOL)rimeConsumeCommittedText
 {
   RIME_STRUCT(RimeCommit, commit);
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
-    [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
+    if (_preeditString.length == 0) {
+      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
+    }
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
+    return YES;
   }
+  return NO;
 }
 
 - (void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
-  [self rimeConsumeCommittedText];
+  if ([self rimeConsumeCommittedText]) {
+    return;
+  }
+
   BOOL switcher = rime_get_api()->get_option(_session, "dumb");
 
   RIME_STRUCT(RimeStatus, status);

@@ -1323,7 +1323,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     if (@available(macOS 10.14, *)) {
       _back = [[NSVisualEffectView alloc] init];
       _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      _back.material = NSVisualEffectMaterialUnderWindowBackground;
+      _back.material = NSVisualEffectMaterialHUDWindow;
       _back.state = NSVisualEffectStateActive;
       _back.wantsLayer = YES;
       _back.layer.mask = _view.shape;
@@ -1460,6 +1460,8 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   if (theme.lineLength > 0) {
     _textWidthLimit = MIN(floor(theme.lineLength), _textWidthLimit);
   }
+  CGFloat textHeightLimit = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - theme.edgeInset.height * 2;
+  _view.textView.textContainer.size = NSMakeSize(_textWidthLimit + theme.hilitedCornerRadius * 2, textHeightLimit);
 }
 
 // Get the window size, it will be the dirtyRect in SquirrelView.drawRect
@@ -1480,7 +1482,6 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   NSRect screenRect = _screen.visibleFrame;
   CGFloat textHeightLimit = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - insets.top - insets.bottom;
-  [textContainer setSize:NSMakeSize(_textWidthLimit + linePadding * 2, textHeightLimit)];
 
   // the sweep direction of the client app changes the behavior of adjusting squirrel panel position
   BOOL sweepVertical = NSWidth(_position) > NSHeight(_position);
@@ -1583,6 +1584,9 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   NSRect textFrameRect = NSMakeRect(NSMinX(frameRect) + insets.left, NSMinY(frameRect) + insets.bottom,
                                     NSWidth(frameRect) - insets.left - insets.right,
                                     NSHeight(frameRect) - insets.top - insets.bottom);
+  if (@available(macOS 12.0, *)) {
+    textFrameRect = NSInsetRect(textFrameRect, linePadding, 0);
+  }
   [_view.textView setBoundsRotation:0.0];
   [_view setBoundsOrigin:NSZeroPoint];
   [_view.textView setBoundsOrigin:NSZeroPoint];
@@ -1719,6 +1723,8 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   }
 
   SquirrelTheme *theme = _view.currentTheme;
+  _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
+  _view.textView.textContainer.lineFragmentPadding = theme.hilitedCornerRadius;
   [self getTextWidthLimit];
   if (theme.lineLength > 0) {
     _maxSize.width = MIN(floor(theme.lineLength), _textWidthLimit);
@@ -1726,8 +1732,6 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   NSEdgeInsets insets = NSEdgeInsetsMake(theme.edgeInset.height + theme.linespace / 2, theme.edgeInset.width,
                                          theme.edgeInset.height + theme.linespace / 2 + theme.paragraphStyle.lineSpacing, theme.edgeInset.width);
 
-  _view.textView.layoutOrientation = theme.vertical ? NSTextLayoutOrientationVertical : NSTextLayoutOrientationHorizontal;
-  _view.textView.textContainer.lineFragmentPadding = theme.hilitedCornerRadius;
   NSTextStorage *text = _view.textStorage;
   [text setAttributedString:[[NSMutableAttributedString alloc] init]];
   NSRange preeditRange = NSMakeRange(NSNotFound, 0);
