@@ -1778,12 +1778,8 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   }
 
   // separator
-  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@" " attributes:theme.attrs];
-  [sep addAttribute:NSVerticalGlyphFormAttributeName
-              value:@NO
-              range:NSMakeRange(0, sep.length)];
-  CGFloat separatorWidth = theme.linear ? NSWidth([sep boundingRectWithSize:NSZeroSize options:0]) : 0.0;
-  _view.separatorWidth = separatorWidth;
+  NSMutableAttributedString *sep = [[NSMutableAttributedString alloc] initWithString:@"　" attributes:theme.attrs];
+  _view.separatorWidth = theme.linear ? sep.size.width : 0.0;
 
   // candidate items
   NSUInteger candidateBlockStart = text.length;
@@ -1804,7 +1800,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
                                     initWithString:prefixLabelString
                                         attributes:labelAttrs]];
       if (!theme.linear) { // get the label size for indent
-        labelWidth = NSWidth([item boundingRectWithSize:NSZeroSize options:0]);
+        labelWidth = item.size.width;
       }
     }
 
@@ -1884,7 +1880,7 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     [paging appendAttributedString:pageDownString];
 
     [text appendAttributedString:[[NSAttributedString alloc]
-                                  initWithString:theme.linear ? @" " : @"\n"
+                                  initWithString:theme.linear ? @"　" : @"\n"
                                       attributes:theme.attrs]];
     NSUInteger pagingStart = text.length;
     CGFloat maxLineLength;
@@ -2450,8 +2446,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 
   NSSize edgeInset = vertical ? NSMakeSize(borderHeight, borderWidth) : NSMakeSize(borderWidth, borderHeight);
 
-  [theme setCornerRadius:MIN(cornerRadius, lineHeight/2)
-     hilitedCornerRadius:MIN(hilitedCornerRadius, lineHeight/3)
+  [theme setCornerRadius:MIN(cornerRadius, lineHeightMax/2)
+     hilitedCornerRadius:MIN(hilitedCornerRadius, lineHeightMax/3)
                edgeInset:edgeInset
                linespace:lineSpacing
         preeditLinespace:spacing

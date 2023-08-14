@@ -538,7 +538,7 @@ const int N_KEY_ROLL_OVER = 50;
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
     if (_preeditString.length == 0) {
-      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
+      [self showPreeditString:@"　" selRange:NSMakeRange(0, 0) caretPos:0];
     }
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
@@ -628,7 +628,7 @@ const int N_KEY_ROLL_OVER = 50;
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
         // note this is a full-shape space U+3000; using half shape characters like "..." will result in
         // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @" " : @"") selRange:NSMakeRange(0, 0) caretPos:0];
+        [self showPreeditString:(preedit ? @"　" : @"") selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }
     // update candidates
