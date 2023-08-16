@@ -18,9 +18,11 @@
 const int N_KEY_ROLL_OVER = 50;
 
 @implementation SquirrelInputController {
-  NSString *_preeditString;
+  NSMutableAttributedString *_preeditString;
   NSAttributedString *_originalString;
   NSString *_composedString;
+  NSRange _selRange;
+  NSUInteger _caretPos;
   NSArray *_candidates;
   NSUInteger _lastModifier;
   int _lastEventCount;
@@ -28,6 +30,9 @@ const int N_KEY_ROLL_OVER = 50;
   NSString *_schemaId;
   BOOL _inlinePreedit;
   BOOL _inlineCandidate;
+  // app-specific bug fix
+  BOOL _inlinePlaceHolder;
+  BOOL _panellessCommitFix;
   // for chord-typing
   int _chordKeyCodes[N_KEY_ROLL_OVER];
   int _chordModifiers[N_KEY_ROLL_OVER];
@@ -309,9 +314,9 @@ const int N_KEY_ROLL_OVER = 50;
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
-  _preeditString = @"";
-  _composedString = @"";
-  _originalString = [[NSAttributedString alloc] initWithString:@""];
+  _preeditString = nil;
+  _originalString = nil;
+  _composedString = nil;
 }
 
 - (instancetype)initWithServer:(IMKServer *)server delegate:(id)delegate client:(id)inputClient
@@ -343,9 +348,8 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)commitComposition:(id)sender
 {
   //NSLog(@"commitComposition:");
-  if (_session && _preeditString.length > 0) {
-    NSString *composition = [self composedString:sender];
-    [self commitString:composition];
+  if (_session) {
+    [self commitString:[self composedString:sender]];
     rime_get_api()->clear_composition(_session);
   }
 }
@@ -399,22 +403,49 @@ const int N_KEY_ROLL_OVER = 50;
   return _candidates;
 }
 
+- (void)hidePalettes
+{
+  [NSApp.squirrelAppDelegate.panel hide];
+}
+
 - (void)dealloc
 {
   [self destroySession];
 }
 
-- (void)commitString:(NSString *)string
+- (NSRange)selectionRange
+{
+  return NSMakeRange(_caretPos, 0);
+}
+
+- (NSRange)replacementRange
+{
+  return NSMakeRange(NSNotFound, NSNotFound);
+}
+
+- (void)commitString:(id)string
 {
   //NSLog(@"commitString:");
   [self.client insertText:string
-         replacementRange:self.client.markedRange];
+         replacementRange:self.replacementRange];
+  [self hidePalettes];
 
-  _preeditString = @"";
-  _composedString = @"";
-  _originalString = [[NSAttributedString alloc] initWithString:@""];
+  _composedString = nil;
+  _originalString = nil;
+  _preeditString = nil;
+}
 
-  [NSApp.squirrelAppDelegate.panel hide];
+- (void)cancelComposition
+{
+  [self commitString:[self originalString:self.client]];
+  rime_get_api()->clear_composition(_session);
+}
+
+- (void)updateComposition
+{
+  [self.client setMarkedText:_preeditString
+              selectionRange:self.selectionRange
+            replacementRange:self.replacementRange];
 }
 
 - (void)showPreeditString:(NSString *)preedit
@@ -422,28 +453,34 @@ const int N_KEY_ROLL_OVER = 50;
                  caretPos:(NSUInteger)pos
 {
   //NSLog(@"showPreeditString: '%@'", preedit);
-  _preeditString = preedit;
+  if ([preedit isEqualToString:_preeditString.string] &&
+      NSEqualRanges(range, _selRange) && pos == _caretPos) {
+    if (_inlinePlaceHolder) {
+      [self updateComposition];
+    }
+    return;
+  }
+  _selRange = range;
+  _caretPos = pos;
   //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld",
   //      range.location, range.length, pos);
   NSDictionary *attrs;
-  NSMutableAttributedString *attrString = [[NSMutableAttributedString alloc] initWithString:preedit];
+  _preeditString = [[NSMutableAttributedString alloc] initWithString:preedit];
   if (range.location > 0) {
     NSRange convertedRange = NSMakeRange(0, range.location);
     attrs = [self markForStyle:kTSMHiliteConvertedText atRange:convertedRange];
-    [attrString setAttributes:attrs range:convertedRange];
+    [_preeditString addAttributes:attrs range:convertedRange];
   }
   if (range.location < pos) {
     attrs = [self markForStyle:kTSMHiliteSelectedConvertedText atRange:range];
-    [attrString setAttributes:attrs range:range];
+    [_preeditString addAttributes:attrs range:range];
   }
   if (MIN(NSMaxRange(range), pos) < preedit.length) {
     NSRange rawRange = NSMakeRange(MIN(NSMaxRange(range), pos), preedit.length - MIN(NSMaxRange(range), pos));
     attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:rawRange];
-    [attrString setAttributes:attrs range:rawRange];
+    [_preeditString addAttributes:attrs range:rawRange];
   }
-  [self.client setMarkedText:attrString
-              selectionRange:NSMakeRange(pos, 0)
-            replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+  [self updateComposition];
 }
 
 - (void)showPanelWithPreedit:(NSString *)preedit
@@ -519,6 +556,8 @@ const int N_KEY_ROLL_OVER = 50;
       NSLog(@"set app option: %@ = %d", key, value);
       rime_get_api()->set_option(_session, key.UTF8String, value);
     }
+    _panellessCommitFix = (appOptions[@"panelless_commit_fix"] ? : @(NO)).boolValue;
+    _inlinePlaceHolder = (appOptions[@"inline_placeholder"] ? : @(NO)).boolValue;
   }
 }
 
@@ -537,7 +576,7 @@ const int N_KEY_ROLL_OVER = 50;
   RIME_STRUCT(RimeCommit, commit);
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
-    if (_preeditString.length == 0) {
+    if (_preeditString.length == 0 && _panellessCommitFix) {
       [self showPreeditString:@"　" selRange:NSMakeRange(0, 0) caretPos:0];
     }
     [self commitString:commitText];
@@ -628,9 +667,11 @@ const int N_KEY_ROLL_OVER = 50;
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
         // note this is a full-shape space U+3000; using half shape characters like "..." will result in
         // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @"　" : @"") selRange:NSMakeRange(0, 0) caretPos:0];
+        [self showPreeditString:(preedit && _inlinePlaceHolder ? @"　" : @"")
+                       selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }
+
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
     NSMutableArray *comments = [NSMutableArray array];
