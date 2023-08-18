@@ -83,7 +83,8 @@
 		A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4FC48C90F6530EF0069BE81 /* Localizable.strings */; };
 		D26434552706A15100857391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26434542706A15100857391 /* QuartzCore.framework */; };
 		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
-		F4DEA7A62A8C1B8A002D4DAB /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4DEA7A52A8C1B8A002D4DAB /* rime.pdf */; };
+		F4E409FC2A96C25D00A4C391 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E409FB2A96C25D00A4C391 /* rime.pdf */; };
+		F4E7E0D12A9B19770040701F /* rime.svg in Resources */ = {isa = PBXBuildFile; fileRef = F4E7E0D02A9B19770040701F /* rime.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -280,7 +281,8 @@
 		F4A90994297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F4A90995297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F4A90996297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-HK"; path = "zh-HK.lproj/MainMenu.xib"; sourceTree = "<group>"; };
-		F4DEA7A52A8C1B8A002D4DAB /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
+		F4E409FB2A96C25D00A4C391 /* rime.pdf */ = {isa = PBXFileReference; explicitFileType = image.icns; path = rime.pdf; sourceTree = "<group>"; };
+		F4E7E0D02A9B19770040701F /* rime.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = rime.svg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -366,7 +368,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F4DEA7A52A8C1B8A002D4DAB /* rime.pdf */,
+				F4E7E0D02A9B19770040701F /* rime.svg */,
+				F4E409FB2A96C25D00A4C391 /* rime.pdf */,
 				44986A93184B421700B3278D /* LICENSE.txt */,
 				44986A94184B421700B3278D /* README.md */,
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
@@ -539,11 +542,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
+				F4E7E0D12A9B19770040701F /* rime.svg in Resources */,
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
-				F4DEA7A62A8C1B8A002D4DAB /* rime.pdf in Resources */,
+				F4E409FC2A96C25D00A4C391 /* rime.pdf in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 			);
@@ -718,6 +722,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
@@ -776,6 +781,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = RimeIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;

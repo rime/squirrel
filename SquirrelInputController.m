@@ -593,7 +593,7 @@ const int N_KEY_ROLL_OVER = 50;
     return;
   }
 
-  BOOL switcher = rime_get_api()->get_option(_session, "dumb");
+  BOOL switcherMenu = rime_get_api()->get_option(_session, "dumb");
 
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
@@ -608,7 +608,7 @@ const int N_KEY_ROLL_OVER = 50;
       _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
                           !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
-      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit && !switcher);
+      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit && !switcherMenu);
     }
     rime_get_api()->free_status(&status);
   }
@@ -620,7 +620,7 @@ const int N_KEY_ROLL_OVER = 50;
     NSString *preeditText = preedit ? @(preedit) : @"";
 
     // update composed string
-    if (!preedit || switcher) {
+    if (!preedit || switcherMenu) {
       _composedString = @"";
     } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
       int cursorPos = ctx.composition.cursor_pos;
@@ -640,7 +640,7 @@ const int N_KEY_ROLL_OVER = 50;
     NSUInteger start = [[NSString alloc] initWithBytes:preedit length:ctx.composition.sel_start encoding:NSUTF8StringEncoding].length;
     NSUInteger end = [[NSString alloc] initWithBytes:preedit length:ctx.composition.sel_end encoding:NSUTF8StringEncoding].length;
     NSUInteger caretPos = [[NSString alloc] initWithBytes:preedit length:ctx.composition.cursor_pos encoding:NSUTF8StringEncoding].length;
-    if (_inlineCandidate && !switcher) {
+    if (_inlineCandidate && !switcherMenu) {
       const char *candidatePreview = ctx.commit_text_preview;
       NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
       if (_inlinePreedit) {
@@ -661,7 +661,7 @@ const int N_KEY_ROLL_OVER = 50;
                        caretPos:caretPos < end ? caretPos - 1 : candidatePreviewText.length];
       }
     } else {
-      if (_inlinePreedit && !switcher) {
+      if (_inlinePreedit && !switcherMenu) {
         [self showPreeditString:preeditText selRange:NSMakeRange(start, end - start) caretPos:caretPos];
       } else {
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
@@ -671,7 +671,6 @@ const int N_KEY_ROLL_OVER = 50;
                        selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }
-
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
     NSMutableArray *comments = [NSMutableArray array];
@@ -699,9 +698,9 @@ const int N_KEY_ROLL_OVER = 50;
         [labels addObject:[labelString substringWithRange:NSMakeRange(i, 1)]];
       }
     }
-    [self showPanelWithPreedit:(_inlinePreedit && !switcher ? nil : preeditText)
+    [self showPanelWithPreedit:(_inlinePreedit && !switcherMenu ? nil : preeditText)
                       selRange:NSMakeRange(start, end - start)
-                      caretPos:(switcher ? NSNotFound : caretPos)
+                      caretPos:(switcherMenu ? NSNotFound : caretPos)
                     candidates:candidates
                       comments:comments
                         labels:labels

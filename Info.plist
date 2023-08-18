@@ -30,8 +30,10 @@
 				<string>im.rime.inputmethod.Squirrel.Hant</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hant</string>
+				<key>TISIconIsTemplate</key>
+				<true/>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hant</string>
@@ -44,9 +46,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -58,8 +60,10 @@
 				<string>im.rime.inputmethod.Squirrel.Hans</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
+				<key>TISIconIsTemplate</key>
+				<true/>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hans</string>
@@ -72,9 +76,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -86,8 +90,10 @@
 				<string>im.rime.inputmethod.Squirrel.Cant</string>
 				<key>TISIntendedLanguage</key>
 				<string>yue-Hant</string>
+				<key>TISIconIsTemplate</key>
+				<true/>
 				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hant</string>
@@ -100,9 +106,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.pdf</string>
+				<string>rime.svg</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -143,11 +149,13 @@
 		<string>Hant</string>
 		<string>Hans</string>
 	</array>
+	<key>TISIconIsTemplate</key>
+	<true/>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime.pdf</string>
+	<string>rime.svg</string>
 	<key>tsInputMethodAlternateIconFileKey</key>
-	<string>rime.pdf</string>
+	<string>rime.svg</string>
 	<key>tsInputMethodPaletteIconFileKey</key>
-	<string>rime.pdf</string>
+	<string>rime.svg</string>
 </dict>
 </plist>
