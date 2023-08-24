@@ -5,4 +5,4 @@ previous=$(git describe --always --abbrev=0 --tags ${current}^)
 
 echo "**Change log since ${previous}:**"
 
-git log --oneline --decorate ${previous}...${curent} --pretty="format:- %h %s" | grep -v Merge
+git log --oneline --decorate ${previous}...${current} --pretty="format:- %h %s" | grep -v Merge
