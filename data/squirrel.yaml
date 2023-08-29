@@ -25,7 +25,7 @@ style:
   #horizontal: false
   # NOTE: do not set a default value for `candidate_list_layout`, in order to
   # keep the deprecated `horizontal` option working for existing users.
-  #candidate_list_layout: stacked  # stacked | linear
+  #candidate_list_layout: stacked  # stacked | linear | tabled
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
   show_paging : true

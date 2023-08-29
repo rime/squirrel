@@ -23,7 +23,7 @@ const int N_KEY_ROLL_OVER = 50;
   NSString *_composedString;
   NSRange _selRange;
   NSUInteger _caretPos;
-  NSArray *_candidates;
+  NSArray<NSString *> *_candidates;
   NSUInteger _lastModifier;
   int _lastEventCount;
   RimeSessionId _session;
@@ -486,9 +486,9 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)showPanelWithPreedit:(NSString *)preedit
                     selRange:(NSRange)selRange
                     caretPos:(NSUInteger)caretPos
-                  candidates:(NSArray *)candidates
-                    comments:(NSArray *)comments
-                      labels:(NSArray *)labels
+                  candidates:(NSArray<NSString *> *)candidates
+                    comments:(NSArray<NSString *> *)comments
+                      labels:(NSArray<NSString *> *)labels
                  highlighted:(NSUInteger)index
                      pageNum:(NSUInteger)pageNum
                     lastPage:(BOOL)lastPage
@@ -577,7 +577,7 @@ const int N_KEY_ROLL_OVER = 50;
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
     if (_preeditString.length == 0 && _panellessCommitFix) {
-      [self showPreeditString:@"　" selRange:NSMakeRange(0, 0) caretPos:0];
+      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
     }
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
@@ -665,9 +665,9 @@ const int N_KEY_ROLL_OVER = 50;
         [self showPreeditString:preeditText selRange:NSMakeRange(start, end - start) caretPos:caretPos];
       } else {
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
-        // note this is a full-shape space U+3000; using half shape characters like "..." will result in
+        // note this is a full-width EM space U+2003; using narrow characters like "..." will result in
         // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit && _inlinePlaceHolder ? @"　" : @"")
+        [self showPreeditString:(preedit && _inlinePlaceHolder ? @" " : @"")
                        selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }

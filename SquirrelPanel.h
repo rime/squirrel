@@ -7,6 +7,8 @@
 
 // Linear candidate list, as opposed to stacked candidate list.
 @property(nonatomic, readonly) BOOL linear;
+// Tabled candidate list, a subtype of linear candidate list with tabled layout.
+@property(nonatomic, readonly) BOOL tabled;
 // Vertical text, as opposed to horizontal text.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
@@ -21,9 +23,9 @@
 - (void)showPreedit:(NSString *)preedit
            selRange:(NSRange)selRange
            caretPos:(NSUInteger)caretPos
-         candidates:(NSArray *)candidates
-           comments:(NSArray *)comments
-             labels:(NSArray *)labels
+         candidates:(NSArray<NSString *> *)candidates
+           comments:(NSArray<NSString *> *)comments
+             labels:(NSArray<NSString *> *)labels
         highlighted:(NSUInteger)index
             pageNum:(NSUInteger)pageNum
            lastPage:(BOOL)lastPage
@@ -32,7 +34,8 @@
 
 - (void)hide;
 
-- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort;
+- (void)updateStatusLong:(NSString *)messageLong
+             statusShort:(NSString *)messageShort;
 
 - (void)loadConfig:(SquirrelConfig *)config
        forDarkMode:(BOOL)isDark;
