@@ -83,8 +83,6 @@
 		A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4FC48C90F6530EF0069BE81 /* Localizable.strings */; };
 		D26434552706A15100857391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26434542706A15100857391 /* QuartzCore.framework */; };
 		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
-		F4E409FC2A96C25D00A4C391 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = F4E409FB2A96C25D00A4C391 /* rime.pdf */; };
-		F4E7E0D12A9B19770040701F /* rime.svg in Resources */ = {isa = PBXBuildFile; fileRef = F4E7E0D02A9B19770040701F /* rime.svg */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -281,8 +279,6 @@
 		F4A90994297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		F4A90995297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-HK"; path = "zh-HK.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		F4A90996297F63AE00D9F520 /* zh-HK */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-HK"; path = "zh-HK.lproj/MainMenu.xib"; sourceTree = "<group>"; };
-		F4E409FB2A96C25D00A4C391 /* rime.pdf */ = {isa = PBXFileReference; explicitFileType = image.icns; path = rime.pdf; sourceTree = "<group>"; };
-		F4E7E0D02A9B19770040701F /* rime.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = rime.svg; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,8 +305,8 @@
 				44AC95181430CF6000C888FB /* SquirrelInputController.h */,
 				44AC95191430CF6000C888FB /* SquirrelInputController.m */,
 				A44571AB0DBF42C200F793F9 /* macos_keycode.h */,
-				A47C48DE105E8CE8006D528B /* macos_keycode.m */,
 				32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */,
+				A47C48DE105E8CE8006D528B /* macos_keycode.m */,
 				4443A8391828CC5100731305 /* input_source.m */,
 				29B97316FDCFA39411CA2CEA /* main.m */,
 				44F84AD514E94C490005D70B /* SquirrelPanel.h */,
@@ -368,8 +364,6 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				F4E7E0D02A9B19770040701F /* rime.svg */,
-				F4E409FB2A96C25D00A4C391 /* rime.pdf */,
 				44986A93184B421700B3278D /* LICENSE.txt */,
 				44986A94184B421700B3278D /* README.md */,
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
@@ -542,12 +536,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
-				F4E7E0D12A9B19770040701F /* rime.svg in Resources */,
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
-				F4E409FC2A96C25D00A4C391 /* rime.pdf in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 			);
@@ -620,7 +612,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.17.2;
+				CURRENT_PROJECT_VERSION = 0.16.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -674,7 +666,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0.17.2;
+				CURRENT_PROJECT_VERSION = 0.16.3;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = "";
 				FRAMEWORK_SEARCH_PATHS = (
@@ -771,7 +763,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				ONLY_ACTIVE_ARCH = YES;
-				SDKROOT = macosx;
+				SDKROOT = macosx14.0;
 				SYSTEM_HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Tk.framework/Headers;
 			};
 			name = Debug;
@@ -827,7 +819,7 @@
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				ONLY_ACTIVE_ARCH = NO;
-				SDKROOT = macosx;
+				SDKROOT = macosx14.0;
 				SYSTEM_HEADER_SEARCH_PATHS = /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/Tk.framework/Headers;
 			};
 			name = Release;

@@ -43,7 +43,7 @@
             break;
         }
       }
-     // Be sure the path is closed or Quartz may not do valid hit detection.
+      // Be sure the path is closed or Quartz may not do valid hit detection.
       if (!didClosePath) {
         CGPathCloseSubpath(path);
       }
@@ -53,6 +53,7 @@
     return immutablePath;
   }
 }
+
 @end
 
 static const CGFloat kOffsetHeight = 5;
@@ -312,12 +313,12 @@ static NSString *const kFullWidthSpace = @"　";
     _symbolBackStroke = [[NSAttributedString alloc] initWithString:@"◁" attributes:symbolAttrsBackStroke];
 
     NSMutableDictionary *symbolAttrsForwardFill = [symbolAttrs mutableCopy];
-    symbolAttrsForwardFill[NSGlyphInfoAttributeName] = 
+    symbolAttrsForwardFill[NSGlyphInfoAttributeName] =
       [NSGlyphInfo glyphInfoWithGlyphName:@"gid4967" forFont:symbolFont baseString:@"▶\uFE0E"];
     _symbolForwardFill = [[NSAttributedString alloc] initWithString:@"▶\uFE0E" attributes:symbolAttrsForwardFill];
 
     NSMutableDictionary *symbolAttrsForwardStroke = [symbolAttrs mutableCopy];
-    symbolAttrsForwardStroke[NSGlyphInfoAttributeName] = 
+    symbolAttrsForwardStroke[NSGlyphInfoAttributeName] =
       [NSGlyphInfo glyphInfoWithGlyphName:@"gid4968" forFont:symbolFont baseString:@"▷\uFE0E"];
     _symbolForwardStroke = [[NSAttributedString alloc] initWithString:@"▷\uFE0E" attributes:symbolAttrsForwardStroke];
   }
@@ -486,7 +487,8 @@ SquirrelTheme *_darkTheme;
       return YES;
     }];
     CGFloat lineSpacing = [[_textStorage attribute:NSParagraphStyleAttributeName
-                                           atIndex:NSMaxRange(range) - 1 effectiveRange:NULL] lineSpacing];
+                                           atIndex:NSMaxRange(range) - 1
+                                    effectiveRange:NULL] lineSpacing];
     contentRect.size.height += lineSpacing;
     return contentRect;
   } else {
@@ -839,113 +841,113 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     candidateBlockPath = drawRoundedPolygon(rectVertex(candidateBlockRect), theme.hilitedCornerRadius);
 
     // Draw candidate highlight rect
-  if (theme.linear) {
-    CGFloat gridOriginY = NSMinY(candidateBlockRect);
-    CGFloat tabInterval = theme.separatorWidth * 2;
-    if (theme.tabled) {
-      candidateHorzGridPath = [NSBezierPath bezierPath];
-      candidateVertGridPath = [NSBezierPath bezierPath];
-    }
-    for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
-      NSRange candidateRange = NSIntersectionRange([_candidateRanges[i] rangeValue], visibleRange);
-      if (candidateRange.length == 0) {
-        break;
-      }
-      NSRect leadingRect = NSZeroRect;
-      NSRect bodyRect = NSZeroRect;
-      NSRect trailingRect = NSZeroRect;
-      [self multilineRectForRange:candidateRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
-      leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect
-        : NSInsetRect(NSOffsetRect(leadingRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
-      bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect
-        : NSInsetRect(NSOffsetRect(bodyRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
-      trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect
-        : NSInsetRect(NSOffsetRect(trailingRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
-      if (preeditRange.length == 0) {
-        leadingRect.origin.y += theme.linespace / 2;
-        bodyRect.origin.y += theme.linespace / 2;
-        trailingRect.origin.y += theme.linespace / 2;
-      }
-      if (!NSIsEmptyRect(leadingRect)) {
-        leadingRect.origin.y -= theme.linespace / 2;
-        leadingRect.size.height += theme.linespace / 2;
-        leadingRect = NSIntersectionRect(leadingRect, candidateBlockRect);
-      }
-      if (!NSIsEmptyRect(trailingRect)) {
-        trailingRect.size.height += theme.linespace / 2;
-        trailingRect = NSIntersectionRect(trailingRect, candidateBlockRect);
-      }
-      if (!NSIsEmptyRect(bodyRect)) {
-        if (NSIsEmptyRect(leadingRect)) {
-          bodyRect.origin.y -= theme.linespace / 2;
-          bodyRect.size.height += theme.linespace / 2;
-        }
-        if (NSIsEmptyRect(trailingRect)) {
-          bodyRect.size.height += theme.linespace / 2;
-        }
-        bodyRect = NSIntersectionRect(bodyRect, candidateBlockRect);
-      }
+    if (theme.linear) {
+      CGFloat gridOriginY = NSMinY(candidateBlockRect);
+      CGFloat tabInterval = theme.separatorWidth * 2;
       if (theme.tabled) {
-        CGFloat bottomEdge = NSMaxY(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
-        if (ABS(bottomEdge - gridOriginY) > 2 && ABS(bottomEdge - NSMaxY(candidateBlockRect)) > 2) { // horizontal border
-          [candidateHorzGridPath moveToPoint:NSMakePoint(NSMinX(candidateBlockRect) + theme.separatorWidth / 2, bottomEdge)];
-          [candidateHorzGridPath lineToPoint:NSMakePoint(NSMaxX(candidateBlockRect) - theme.separatorWidth / 2, bottomEdge)];
-          [candidateHorzGridPath closePath];
-          gridOriginY = bottomEdge;
+        candidateHorzGridPath = [NSBezierPath bezierPath];
+        candidateVertGridPath = [NSBezierPath bezierPath];
+      }
+      for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
+        NSRange candidateRange = NSIntersectionRange([_candidateRanges[i] rangeValue], visibleRange);
+        if (candidateRange.length == 0) {
+          break;
         }
-        CGPoint leadOrigin = (NSIsEmptyRect(leadingRect) ? bodyRect : leadingRect).origin;
-        if (leadOrigin.x > NSMinX(candidateBlockRect) + theme.separatorWidth / 2) { // vertical bar
-          [candidateVertGridPath moveToPoint:NSMakePoint(leadOrigin.x, leadOrigin.y + theme.linespace / 2 + theme.paragraphStyle.maximumLineHeight - theme.hilitedCornerRadius)];
-          [candidateVertGridPath lineToPoint:NSMakePoint(leadOrigin.x, leadOrigin.y + theme.linespace / 2 + theme.hilitedCornerRadius)];
-          [candidateVertGridPath closePath];
+        NSRect leadingRect = NSZeroRect;
+        NSRect bodyRect = NSZeroRect;
+        NSRect trailingRect = NSZeroRect;
+        [self multilineRectForRange:candidateRange leadingRect:&leadingRect bodyRect:&bodyRect trailingRect:&trailingRect];
+        leadingRect = nearEmptyRect(leadingRect) ? NSZeroRect
+          : NSInsetRect(NSOffsetRect(leadingRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
+        bodyRect = nearEmptyRect(bodyRect) ? NSZeroRect
+          : NSInsetRect(NSOffsetRect(bodyRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
+        trailingRect = nearEmptyRect(trailingRect) ? NSZeroRect
+          : NSInsetRect(NSOffsetRect(trailingRect, _insets.left, theme.edgeInset.height), -theme.separatorWidth / 2, 0);
+        if (preeditRange.length == 0) {
+          leadingRect.origin.y += theme.linespace / 2;
+          bodyRect.origin.y += theme.linespace / 2;
+          trailingRect.origin.y += theme.linespace / 2;
         }
-        CGFloat tailEdge = NSMaxX(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
-        CGFloat tabPosition = ceil((tailEdge + theme.separatorWidth / 2 - _insets.left) / tabInterval) * tabInterval + _insets.left;
-        if (NSIsEmptyRect(trailingRect)) {
-          bodyRect.size.width += tabPosition - theme.separatorWidth / 2 - tailEdge;
-        } else if (NSIsEmptyRect(bodyRect)) {
-          trailingRect.size.width += tabPosition - theme.separatorWidth / 2 - tailEdge;
+        if (!NSIsEmptyRect(leadingRect)) {
+          leadingRect.origin.y -= theme.linespace / 2;
+          leadingRect.size.height += theme.linespace / 2;
+          leadingRect = NSIntersectionRect(leadingRect, candidateBlockRect);
+        }
+        if (!NSIsEmptyRect(trailingRect)) {
+          trailingRect.size.height += theme.linespace / 2;
+          trailingRect = NSIntersectionRect(trailingRect, candidateBlockRect);
+        }
+        if (!NSIsEmptyRect(bodyRect)) {
+          if (NSIsEmptyRect(leadingRect)) {
+            bodyRect.origin.y -= theme.linespace / 2;
+            bodyRect.size.height += theme.linespace / 2;
+          }
+          if (NSIsEmptyRect(trailingRect)) {
+            bodyRect.size.height += theme.linespace / 2;
+          }
+          bodyRect = NSIntersectionRect(bodyRect, candidateBlockRect);
+        }
+        if (theme.tabled) {
+          CGFloat bottomEdge = NSMaxY(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
+          if (ABS(bottomEdge - gridOriginY) > 2 && ABS(bottomEdge - NSMaxY(candidateBlockRect)) > 2) { // horizontal border
+            [candidateHorzGridPath moveToPoint:NSMakePoint(NSMinX(candidateBlockRect) + theme.separatorWidth / 2, bottomEdge)];
+            [candidateHorzGridPath lineToPoint:NSMakePoint(NSMaxX(candidateBlockRect) - theme.separatorWidth / 2, bottomEdge)];
+            [candidateHorzGridPath closePath];
+            gridOriginY = bottomEdge;
+          }
+          CGPoint leadOrigin = (NSIsEmptyRect(leadingRect) ? bodyRect : leadingRect).origin;
+          if (leadOrigin.x > NSMinX(candidateBlockRect) + theme.separatorWidth / 2) { // vertical bar
+            [candidateVertGridPath moveToPoint:NSMakePoint(leadOrigin.x, leadOrigin.y + theme.linespace / 2 + theme.paragraphStyle.maximumLineHeight - theme.hilitedCornerRadius)];
+            [candidateVertGridPath lineToPoint:NSMakePoint(leadOrigin.x, leadOrigin.y + theme.linespace / 2 + theme.hilitedCornerRadius)];
+            [candidateVertGridPath closePath];
+          }
+          CGFloat tailEdge = NSMaxX(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
+          CGFloat tabPosition = ceil((tailEdge + theme.separatorWidth / 2 - _insets.left) / tabInterval) * tabInterval + _insets.left;
+          if (NSIsEmptyRect(trailingRect)) {
+            bodyRect.size.width += tabPosition - theme.separatorWidth / 2 - tailEdge;
+          } else if (NSIsEmptyRect(bodyRect)) {
+            trailingRect.size.width += tabPosition - theme.separatorWidth / 2 - tailEdge;
+          } else {
+            bodyRect = NSMakeRect(NSMinX(candidateBlockRect), NSMinY(bodyRect), NSWidth(candidateBlockRect), NSHeight(bodyRect) + NSHeight(trailingRect));
+            trailingRect = NSZeroRect;
+          }
+        }
+        NSArray<NSValue *> *candidatePoints;
+        NSArray<NSValue *> *candidatePoints2;
+        // Handles the special case where containing boxes are separated
+        if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) &&
+            !NSIsEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
+          candidatePoints = rectVertex(leadingRect);
+          candidatePoints2 = rectVertex(trailingRect);
         } else {
-          bodyRect = NSMakeRect(NSMinX(candidateBlockRect), NSMinY(bodyRect), NSWidth(candidateBlockRect), NSHeight(bodyRect) + NSHeight(trailingRect));
-          trailingRect = NSZeroRect;
+          candidatePoints = multilineRectVertex(leadingRect, bodyRect, trailingRect);
         }
+        NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
+        if (candidatePoints2.count > 0) {
+          [candidatePath appendBezierPath:drawRoundedPolygon(candidatePoints2, theme.hilitedCornerRadius)];
+        }
+        _candidatePaths[i] = candidatePath;
       }
-      NSArray<NSValue *> *candidatePoints;
-      NSArray<NSValue *> *candidatePoints2;
-      // Handles the special case where containing boxes are separated
-      if (NSIsEmptyRect(bodyRect) && !NSIsEmptyRect(leadingRect) &&
-          !NSIsEmptyRect(trailingRect) && NSMaxX(trailingRect) < NSMinX(leadingRect)) {
-        candidatePoints = rectVertex(leadingRect);
-        candidatePoints2 = rectVertex(trailingRect);
-      } else {
-        candidatePoints = multilineRectVertex(leadingRect, bodyRect, trailingRect);
+    } else { // stacked layout
+      for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
+        NSRange candidateRange = NSIntersectionRange([_candidateRanges[i] rangeValue], visibleRange);
+        if (candidateRange.length == 0) {
+          break;
+        }
+        NSRect candidateRect = NSInsetRect([self contentRectForRange:candidateRange], 0.0, -theme.linespace / 2);
+        candidateRect.size.width = textContainerRect.size.width;
+        candidateRect.origin.x = textContainerRect.origin.x;
+        candidateRect.origin.y += textContainerRect.origin.y;
+        if (preeditRange.length == 0) {
+          candidateRect.origin.y += theme.linespace / 2;
+        }
+        candidateRect = NSIntersectionRect(candidateRect, candidateBlockRect);
+        NSArray<NSValue *> *candidatePoints = rectVertex(candidateRect);
+        NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
+        _candidatePaths[i] = candidatePath;
       }
-      NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
-      if (candidatePoints2.count > 0) {
-        [candidatePath appendBezierPath:drawRoundedPolygon(candidatePoints2, theme.hilitedCornerRadius)];
-      }
-      _candidatePaths[i] = candidatePath;
-    }
-  } else { // stacked layout
-    for (NSUInteger i = 0; i < _candidateRanges.count; ++i) {
-      NSRange candidateRange = NSIntersectionRange([_candidateRanges[i] rangeValue], visibleRange);
-      if (candidateRange.length == 0) {
-        break;
-      }
-      NSRect candidateRect = NSInsetRect([self contentRectForRange:candidateRange], 0.0, -theme.linespace / 2);
-      candidateRect.size.width = textContainerRect.size.width;
-      candidateRect.origin.x = textContainerRect.origin.x;
-      candidateRect.origin.y += textContainerRect.origin.y;
-      if (preeditRange.length == 0) {
-        candidateRect.origin.y += theme.linespace / 2;
-      }
-      candidateRect = NSIntersectionRect(candidateRect, candidateBlockRect);
-      NSArray<NSValue *> *candidatePoints = rectVertex(candidateRect);
-      NSBezierPath *candidatePath = drawRoundedPolygon(candidatePoints, theme.hilitedCornerRadius);
-      _candidatePaths[i] = candidatePath;
     }
   }
-}
 
   // Draw paging Rect
   if (pagingRange.length > 0) {
@@ -2106,7 +2108,7 @@ typesetter:
 
   // text done!
   [self setAnimationBehavior:caretPos == NSNotFound ?
-    NSWindowAnimationBehaviorUtilityWindow : NSWindowAnimationBehaviorDefault];
+   NSWindowAnimationBehaviorUtilityWindow : NSWindowAnimationBehaviorDefault];
   [_view drawViewWithInsets:insets
             candidateRanges:candidateRanges
            highlightedIndex:index
@@ -2478,11 +2480,13 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   NSFont *font = [NSFont fontWithDescriptor:(fontDescriptor ? : getFontDescriptor([NSFont userFontOfSize:0.0].fontName))
                                        size:fontSize];
 
-  NSDictionary *monoDigitAttrs = @{NSFontFeatureSettingsAttribute:
-                                   @[@{NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
-                                       NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector)},
-                                     @{NSFontFeatureTypeIdentifierKey: @(kTextSpacingType),
-                                       NSFontFeatureSelectorIdentifierKey: @(kHalfWidthTextSelector)}]};
+  NSDictionary *monoDigitAttrs = @{
+                                   NSFontFeatureSettingsAttribute:
+                                   @[@{ NSFontFeatureTypeIdentifierKey: @(kNumberSpacingType),
+                                        NSFontFeatureSelectorIdentifierKey: @(kMonospacedNumbersSelector) },
+                                     @{ NSFontFeatureTypeIdentifierKey: @(kTextSpacingType),
+                                        NSFontFeatureSelectorIdentifierKey: @(kHalfWidthTextSelector) }]
+  };
   NSFontDescriptor *labelFontDescriptor = [(getFontDescriptor(labelFontName) ? : fontDescriptor)
                                            fontDescriptorByAddingAttributes:monoDigitAttrs];
   NSFont *labelFont = labelFontDescriptor ? [NSFont fontWithDescriptor:labelFontDescriptor size:labelFontSize]

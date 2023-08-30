@@ -124,7 +124,7 @@ const int N_KEY_ROLL_OVER = 50;
             break;
         }
         [self rimeUpdate];
-      saveStatus: _lastEventCount = eventCount;
+  saveStatus: _lastEventCount = eventCount;
       } break;
       case NSEventTypeKeyDown: {
         // ignore Command+X hotkeys.
@@ -183,8 +183,7 @@ const int N_KEY_ROLL_OVER = 50;
   if (!handled) {
     BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
       ((rime_modifiers & kControlMask) && (rime_keycode == XK_c ||
-                                           rime_keycode == XK_C ||
-                                           rime_keycode == XK_bracketleft));
+        rime_keycode == XK_C || rime_keycode == XK_bracketleft));
     if (isVimBackInCommandMode &&
         rime_get_api()->get_option(_session, "vim_mode") &&
         !rime_get_api()->get_option(_session, "ascii_mode")) {
@@ -335,14 +334,14 @@ const int N_KEY_ROLL_OVER = 50;
 }
 
 /*!
- @method
- @abstract   Called when a user action was taken that ends an input session.
- Typically triggered by the user selecting a new input method
- or keyboard layout.
- @discussion When this method is called your controller should send the
- current input buffer to the client via a call to
- insertText:replacementRange:.  Additionally, this is the time
- to clean up if that is necessary.
+   @method
+   @abstract   Called when a user action was taken that ends an input session.
+   Typically triggered by the user selecting a new input method
+   or keyboard layout.
+   @discussion When this method is called your controller should send the
+   current input buffer to the client via a call to
+   insertText:replacementRange:.  Additionally, this is the time
+   to clean up if that is necessary.
  */
 
 - (void)commitComposition:(id)sender
@@ -472,13 +471,8 @@ const int N_KEY_ROLL_OVER = 50;
     [_preeditString addAttributes:attrs range:convertedRange];
   }
   if (range.location < pos) {
-    attrs = [self markForStyle:kTSMHiliteSelectedConvertedText atRange:range];
+    attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:range];
     [_preeditString addAttributes:attrs range:range];
-  }
-  if (MIN(NSMaxRange(range), pos) < preedit.length) {
-    NSRange rawRange = NSMakeRange(MIN(NSMaxRange(range), pos), preedit.length - MIN(NSMaxRange(range), pos));
-    attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:rawRange];
-    [_preeditString addAttributes:attrs range:rawRange];
   }
   [self updateComposition];
 }

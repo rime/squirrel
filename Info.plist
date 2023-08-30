@@ -26,14 +26,17 @@
 		<dict>
 			<key>im.rime.inputmethod.Squirrel.Hant</key>
 			<dict>
+				<key>TISIconLabels</key>
+				<dict>
+					<key>Primary</key>
+					<string>ㄓ</string>
+				</dict>
 				<key>TISInputSourceID</key>
 				<string>im.rime.inputmethod.Squirrel.Hant</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hant</string>
@@ -46,9 +49,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.svg</string>
-				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.svg</string>
+				<string>rime.imageset</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime.imageset</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -56,14 +59,17 @@
 			</dict>
 			<key>im.rime.inputmethod.Squirrel.Hans</key>
 			<dict>
+				<key>TISIconLabels</key>
+				<dict>
+					<key>Primary</key>
+					<string>ㄓ</string>
+				</dict>
 				<key>TISInputSourceID</key>
 				<string>im.rime.inputmethod.Squirrel.Hans</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hans</string>
@@ -76,9 +82,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.svg</string>
-				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.svg</string>
+				<string>rime.imageset</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime.imageset</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -86,14 +92,17 @@
 			</dict>
 			<key>im.rime.inputmethod.Squirrel.Cant</key>
 			<dict>
+				<key>TISIconLabels</key>
+				<dict>
+					<key>Primary</key>
+					<string>ㄓ</string>
+				</dict>
 				<key>TISInputSourceID</key>
 				<string>im.rime.inputmethod.Squirrel.Cant</string>
 				<key>TISIntendedLanguage</key>
 				<string>yue-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime.svg</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hant</string>
@@ -106,9 +115,9 @@
 				<key>tsInputModeKeyEquivalentModifiersKey</key>
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>rime.svg</string>
-				<key>tsInputModePaletteIconFileKey</key>
-				<string>rime.svg</string>
+				<string>rime.imageset</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime.imageset</string>
 				<key>tsInputModePrimaryInScriptKey</key>
 				<true/>
 				<key>tsInputModeScriptKey</key>
@@ -142,20 +151,15 @@
 	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
+	<key>NSSupportsSuddenTermination</key>
+	<false/>
 	<key>TICapsLockLanguageSwitchCapable</key>
 	<true/>
-	<key>tsInputMethodCharacterRepertoireKey</key>
-	<array>
-		<string>Hant</string>
-		<string>Hans</string>
-	</array>
 	<key>TISIconIsTemplate</key>
 	<true/>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime.svg</string>
-	<key>tsInputMethodAlternateIconFileKey</key>
-	<string>rime.svg</string>
-	<key>tsInputMethodPaletteIconFileKey</key>
-	<string>rime.svg</string>
+	<string>rime.imageset</string>
+	<key>tsInputMethodAlternateMenuIconFileKey</key>
+	<string>rime.imageset</string>
 </dict>
 </plist>
