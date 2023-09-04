@@ -61,7 +61,7 @@ export BUILD_UNIVERSAL=1
 
 make -C librime xcode/deps/boost
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_82_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_83_0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as

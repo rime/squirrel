@@ -25,7 +25,7 @@ const int N_KEY_ROLL_OVER = 50;
   NSUInteger _caretPos;
   NSArray<NSString *> *_candidates;
   NSUInteger _lastModifier;
-  int _lastEventCount;
+  uint _lastEventCount;
   RimeSessionId _session;
   NSString *_schemaId;
   BOOL _inlinePreedit;
@@ -36,7 +36,7 @@ const int N_KEY_ROLL_OVER = 50;
   // for chord-typing
   int _chordKeyCodes[N_KEY_ROLL_OVER];
   int _chordModifiers[N_KEY_ROLL_OVER];
-  int _chordKeyCount;
+  uint _chordKeyCount;
   NSTimer *_chordTimer;
   NSTimeInterval _chordDuration;
   NSString *_currentApp;
@@ -54,7 +54,7 @@ const int N_KEY_ROLL_OVER = 50;
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
 
-  NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+  NSUInteger modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
   BOOL handled = NO;
 
   @autoreleasepool {
@@ -82,13 +82,13 @@ const int N_KEY_ROLL_OVER = 50;
         //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int release_mask = 0;
         int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-        CGKeyCode keyCode = CGEventGetIntegerValueField(event.CGEvent, kCGKeyboardEventKeycode);
+        ushort keyCode = CGEventGetIntegerValueField(event.CGEvent, kCGKeyboardEventKeycode);
         int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
-        int eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventFlagsChanged) +
-                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventKeyDown) +
-                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventLeftMouseDown) +
-                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventRightMouseDown) +
-                         CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventOtherMouseDown);
+        uint eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventFlagsChanged) +
+                          CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventKeyDown) +
+                          CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventLeftMouseDown) +
+                          CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventRightMouseDown) +
+                          CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventOtherMouseDown);
         _lastModifier = modifiers;
         switch (keyCode) {
           case kVK_CapsLock: {
@@ -132,7 +132,7 @@ const int N_KEY_ROLL_OVER = 50;
           break;
         }
 
-        int keyCode = event.keyCode;
+        ushort keyCode = event.keyCode;
         NSString *keyChars = ((modifiers & OSX_SHIFT_MASK) && !(modifiers & OSX_CTRL_MASK) &&
                               !(modifiers & OSX_ALT_MASK)) ? event.characters : event.charactersIgnoringModifiers;
         //NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars: [%@]",
@@ -239,7 +239,7 @@ const int N_KEY_ROLL_OVER = 50;
   int processed_keys = 0;
   if (_chordKeyCount && _session) {
     // simulate key-ups
-    for (int i = 0; i < _chordKeyCount; ++i) {
+    for (uint i = 0; i < _chordKeyCount; ++i) {
       if (rime_get_api()->process_key(_session, _chordKeyCodes[i],
                                       (_chordModifiers[i] | kReleaseMask))) {
         ++processed_keys;
@@ -255,7 +255,7 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)updateChord:(int)keycode modifiers:(int)modifiers
 {
   //NSLog(@"update chord: {%s} << %x", _chord, keycode);
-  for (int i = 0; i < _chordKeyCount; ++i) {
+  for (uint i = 0; i < _chordKeyCount; ++i) {
     if (_chordKeyCodes[i] == keycode) {
       return;
     }
@@ -625,7 +625,7 @@ const int N_KEY_ROLL_OVER = 50;
     } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
       int cursorPos = ctx.composition.cursor_pos;
       char composed[strlen(preedit) - 3];
-      for (int i = 0; i < strlen(preedit) - 3; ++i) {
+      for (size_t i = 0; i < strlen(preedit) - 3; ++i) {
         composed[i] = preedit[i < cursorPos ? i : i + 3];
       }
       _composedString = [@(composed) stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -672,7 +672,7 @@ const int N_KEY_ROLL_OVER = 50;
     // update candidates
     NSMutableArray *candidates = [NSMutableArray array];
     NSMutableArray *comments = [NSMutableArray array];
-    for (NSUInteger i = 0; i < ctx.menu.num_candidates; ++i) {
+    for (int i = 0; i < ctx.menu.num_candidates; ++i) {
       [candidates addObject:@(ctx.menu.candidates[i].text)];
       if (ctx.menu.candidates[i].comment) {
         [comments addObject:@(ctx.menu.candidates[i].comment)];
@@ -683,16 +683,16 @@ const int N_KEY_ROLL_OVER = 50;
     NSMutableArray<NSString *> *labels = [[NSMutableArray alloc] initWithCapacity:ctx.menu.page_size];
     if (ctx.menu.select_keys) {
       NSString *selectKeys = [@(ctx.menu.select_keys) stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
-      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+      for (int i = 0; i < ctx.menu.page_size; ++i) {
         [labels addObject:[selectKeys substringWithRange:NSMakeRange(i, 1)]];
       }
     } else if (ctx.select_labels) {
-      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+      for (int i = 0; i < ctx.menu.page_size; ++i) {
         [labels addObject:@(ctx.select_labels[i])];
       }
     } else {
       NSString *labelString = @"１２３４５６７８９０";
-      for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {
+      for (int i = 0; i < ctx.menu.page_size; ++i) {
         [labels addObject:[labelString substringWithRange:NSMakeRange(i, 1)]];
       }
     }

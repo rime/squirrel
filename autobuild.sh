@@ -6,11 +6,15 @@ git submodules update --init --recursive
 
 export BUILD_UNIVERSAL=1
 
-make -C librime xcode/deps/boost
+export BOOST_ROOT="$(pwd)/librime/deps/boost_1_83_0"
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_82_0"
+export CMAKE_GENERATOR=Ninja
 
-export BUILD_UNIVERSAL=1
+bash librime/install-boost.sh
+
+make librime deps
+
+make librime install
 
 make deps
 

@@ -3,8 +3,8 @@
 all: release
 install: install-release
 
-# Change to `xcode/dist-with-icu` if boost is linked to icu libraries.
-RIME_DIST_TARGET = xcode/dist
+# Change to `dist-with-icu` if boost is linked to icu libraries.
+RIME_DIST_TARGET = dist
 
 RIME_BIN_DIR = librime/dist/bin
 RIME_LIB_DIR = librime/dist/lib
@@ -39,7 +39,7 @@ $(RIME_LIBRARY):
 	$(MAKE) librime
 
 $(RIME_DEPS):
-	$(MAKE) -C librime xcode/deps
+	$(MAKE) -C librime deps
 
 librime: $(RIME_DEPS)
 	$(MAKE) -C librime $(RIME_DIST_TARGET)
@@ -67,7 +67,7 @@ plum-data:
 	$(MAKE) copy-plum-data
 
 opencc-data:
-	$(MAKE) -C librime xcode/deps/opencc
+	$(MAKE) -C librime deps/opencc
 	$(MAKE) copy-opencc-data
 
 copy-plum-data:
@@ -170,5 +170,5 @@ clean:
 
 clean-deps:
 	$(MAKE) -C plum clean
-	$(MAKE) -C librime xcode/clean
+	$(MAKE) -C librime clean
 	$(MAKE) clean-sparkle
