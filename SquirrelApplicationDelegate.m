@@ -1,4 +1,5 @@
 #import "SquirrelApplicationDelegate.h"
+#include <Foundation/Foundation.h>
 
 #import <rime_api.h>
 #import "SquirrelConfig.h"
@@ -20,6 +21,12 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 {
   NSLog(@"Sync user data");
   rime_get_api()->sync_user_data();
+}
+
+-(void)userChange:(NSDictionary *)args
+{
+  NSLog(@"Sync user data");
+  [_panel changeToAscii:args];
 }
 
 -(IBAction)configure:(id)sender
@@ -214,6 +221,17 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [self syncUserData:nil];
 }
 
+-(void)rimeNeedsChange:(NSNotification *)aNotification
+{
+  NSLog(@"Sync rime on demand.");
+  [self userChange:aNotification.userInfo];
+}
+
+-(void)rimeNeedsPrev:(NSNotification *)aNotification
+{
+   [_panel changeToPrev];
+}
+
 -(NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
 {
   NSLog(@"Squirrel is quitting.");
@@ -241,6 +259,14 @@ void notification_handler(void* context_object, RimeSessionId session_id,
   [notifCenter addObserver:self
                   selector:@selector(rimeNeedsSync:)
                       name:@"SquirrelSyncNotification"
+                    object:nil];
+  [notifCenter addObserver:self
+                  selector:@selector(rimeNeedsChange:)
+                      name:@"SquirrelChangeNotification"
+                    object:nil];
+  [notifCenter addObserver:self
+                  selector:@selector(rimeNeedsPrev:)
+                      name:@"SquirrelChangePrevNotification"
                     object:nil];
 
 }

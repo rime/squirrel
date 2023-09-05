@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
 #import "SquirrelInputController.h"
 
 @class SquirrelConfig;
@@ -34,5 +35,8 @@
 
 -(void)loadConfig:(SquirrelConfig*)config
       forDarkMode:(BOOL)isDark;
+
+-(void)changeToAscii:(NSDictionary *)args;
+-(void)changeToPrev;
 
 @end

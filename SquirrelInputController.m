@@ -1,4 +1,5 @@
 #import "SquirrelInputController.h"
+#include <Foundation/Foundation.h>
 
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelConfig.h"
@@ -36,6 +37,7 @@ const int N_KEY_ROLL_OVER = 50;
   NSTimer *_chordTimer;
   NSTimeInterval _chordDuration;
   NSString *_currentApp;
+  NSNumber *_prev;
 }
 
 /*!
@@ -163,6 +165,17 @@ const int N_KEY_ROLL_OVER = 50;
   _lastEventType = event.type;
 
   return handled;
+}
+-(void)changeToAscii:(NSDictionary *)args {
+    _prev =  [NSNumber numberWithBool:rime_get_api()->get_option(_session, "ascii_mode")];
+    rime_get_api()->set_option(_session, "ascii_mode", True);
+}
+
+-(void)changeToPrev {
+    if (_prev) {
+        rime_get_api()->set_option(_session, "ascii_mode", [_prev boolValue]);
+        _prev = nil;
+    }
 }
 
 -(BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers
