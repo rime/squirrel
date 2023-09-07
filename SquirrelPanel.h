@@ -1,5 +1,4 @@
 #import <Cocoa/Cocoa.h>
-#include <Foundation/Foundation.h>
 #import "SquirrelInputController.h"
 
 @class SquirrelConfig;

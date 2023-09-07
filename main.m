@@ -1,6 +1,5 @@
 
 #import "SquirrelApplicationDelegate.h"
-#include <Foundation/Foundation.h>
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <rime_api.h>
@@ -109,7 +108,6 @@ int main(int argc, char *argv[]) {
 
     // finally run everything
     [[NSApplication sharedApplication] run];
-
 
     NSLog(@"Squirrel is quitting...");
     rime_get_api()->finalize();

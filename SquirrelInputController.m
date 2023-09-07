@@ -1,5 +1,4 @@
 #import "SquirrelInputController.h"
-#include <Foundation/Foundation.h>
 
 #import "SquirrelApplicationDelegate.h"
 #import "SquirrelConfig.h"
