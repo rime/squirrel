@@ -4,7 +4,7 @@
 @interface SquirrelInputController : IMKInputController
 - (BOOL)selectCandidate:(NSInteger)index;
 - (BOOL)pageUp:(BOOL)up;
--(void)changeToAscii:(NSDictionary *)args;
--(void)changeToPrev;
+-(void)changeToAscii;
+-(void)changeToAsciiPrev;
 
 @end

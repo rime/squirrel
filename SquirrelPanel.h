@@ -36,7 +36,7 @@
 -(void)loadConfig:(SquirrelConfig*)config
       forDarkMode:(BOOL)isDark;
 
--(void)changeToAscii:(NSDictionary *)args;
--(void)changeToPrev;
+-(void)changeToAscii;
+-(void)changeToAsciiPrev;
 
 @end

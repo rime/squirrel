@@ -166,12 +166,12 @@ const int N_KEY_ROLL_OVER = 50;
 
   return handled;
 }
--(void)changeToAscii:(NSDictionary *)args {
+-(void)changeToAscii {
     _prev =  [NSNumber numberWithBool:rime_get_api()->get_option(_session, "ascii_mode")];
     rime_get_api()->set_option(_session, "ascii_mode", True);
 }
 
--(void)changeToPrev {
+-(void)changeToAsciiPrev {
     if (_prev) {
         rime_get_api()->set_option(_session, "ascii_mode", [_prev boolValue]);
         _prev = nil;

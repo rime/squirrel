@@ -62,17 +62,16 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-  if (argc > 2 && !strcmp("--ascii_mode", argv[1])) {
+  if (argc > 1 && !strcmp("--ascii_mode", argv[1])) {
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"SquirrelChangeNotification"
-                      object: nil
-                    userInfo:@{@"ascii_mode" : [NSString stringWithFormat:@"%s", argv[2]]}];
+        postNotificationName:@"SquirrelChangeToAsciiModeNotification"
+                      object: nil];
     return 0;
   }
 
   if (argc > 1 && !strcmp("--ascii_mode_prev", argv[1])) {
     [[NSDistributedNotificationCenter defaultCenter]
-        postNotificationName:@"SquirrelChangePrevNotification"
+        postNotificationName:@"SquirrelChangeToAsciiModePrevNotification"
                       object: nil];
     return 0;
   }
