@@ -577,7 +577,7 @@ const int N_KEY_ROLL_OVER = 50;
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
     if (_preeditString.length == 0 && _panellessCommitFix) {
-      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
+      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
     }
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
@@ -665,9 +665,7 @@ const int N_KEY_ROLL_OVER = 50;
         [self showPreeditString:preeditText selRange:NSMakeRange(start, end - start) caretPos:caretPos];
       } else {
         // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
-        // note this is a full-width EM space U+2003; using narrow characters like "..." will result in
-        // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit && _inlinePlaceHolder ? @" " : @"")
+        [self showPreeditString:(preedit && _inlinePlaceHolder ? @" " : @"")
                        selRange:NSMakeRange(0, 0) caretPos:0];
       }
     }
@@ -682,7 +680,7 @@ const int N_KEY_ROLL_OVER = 50;
         [comments addObject:@""];
       }
     }
-    NSMutableArray *labels = [NSMutableArray array];
+    NSMutableArray<NSString *> *labels = [[NSMutableArray alloc] initWithCapacity:ctx.menu.page_size];
     if (ctx.menu.select_keys) {
       NSString *selectKeys = [@(ctx.menu.select_keys) stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
       for (NSUInteger i = 0; i < ctx.menu.page_size; ++i) {

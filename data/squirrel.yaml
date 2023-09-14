@@ -42,7 +42,7 @@ style:
   # line length of preedit and candidates (fixed if value > 0, flexible/auto-adjust otherwise)
   line_length: 0
 
-  #candidate_format: '%c %@'
+  #candidate_format: '%c. %@'
 
   # adjust the base line of vertical text
   #base_offset: 6

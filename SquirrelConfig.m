@@ -208,7 +208,7 @@
   [fileManager changeCurrentDirectoryPath:[@"~/Library/Rime" stringByStandardizingPath]];
   NSString *patternFile = [filePath stringByStandardizingPath];
   if ([fileManager fileExistsAtPath:patternFile]) {
-    NSColor *pattern = [NSColor colorWithPatternImage:[[NSImage alloc] initWithContentsOfFile:patternFile]];
+    NSColor *pattern = [NSColor colorWithPatternImage:[[NSImage alloc] initByReferencingFile:patternFile]];
     return pattern;
   }
   return nil;
