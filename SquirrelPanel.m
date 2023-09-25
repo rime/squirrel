@@ -1204,7 +1204,8 @@ NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   NSFont *userMonoFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFixedPitchFontOfSize:0.0].fontName)
                                                size:kDefaultFontSize];
   NSMutableDictionary *defaultAttrs = [[NSMutableDictionary alloc] init];
-
+  defaultAttrs[IMKCandidatesSendServerKeyEventFirst] = @(YES); // solve terminal hijack when non-inline
+  
   NSMutableDictionary *attrs = [defaultAttrs mutableCopy];
   attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   attrs[NSFontAttributeName] = userFont;

@@ -345,7 +345,6 @@ app_options:
   com.apple.Terminal:
     ascii_mode: true
     no_inline: true
-    inline_placeholder: true
   com.googlecode.iterm2:
     ascii_mode: true
     no_inline: true
