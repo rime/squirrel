@@ -2,6 +2,81 @@
 
 #import <rime_api.h>
 
+@implementation SquirrelOptionSwitcher {
+  NSString *_schemaId;
+  NSDictionary<NSString *, NSString *> *_switcher;
+  NSDictionary<NSString *, NSArray<NSString *> *> *_optionGroups;
+  NSArray<NSString *> *_optionNames;
+}
+
+- (instancetype)initWithSchemaId:(NSString *)schemaId
+                        switcher:(NSDictionary<NSString *, NSString *> *)switcher
+                    optionGroups:(NSDictionary<NSString *, NSArray<NSString *> *> *)optionGroups{
+  self = [super init];
+  if (self) {
+    _schemaId = schemaId;
+    _switcher = switcher;
+    _optionGroups = optionGroups;
+    _optionNames = [switcher allKeys];
+  }
+  return self;
+}
+
+- (NSString *)schemaId {
+  return _schemaId;
+}
+
+- (NSArray<NSString *> *)optionNames {
+  return _optionNames;
+}
+
+- (NSArray<NSString *> *)optionStates {
+  return [_switcher allValues];
+}
+
+- (NSDictionary<NSString *, NSString *> *)switcher {
+  return _switcher;
+}
+
+- (BOOL)updateSwitcher:(NSDictionary<NSString *, NSString *> *)switcher {
+  if (switcher.count != _switcher.count) {
+    return NO;
+  }
+  NSMutableDictionary<NSString *, NSString *> *updatedSwitcher =
+    [[NSMutableDictionary alloc] initWithCapacity:switcher.count];
+  for (NSString *option in _optionNames) {
+    if (switcher[option] == nil) {
+      return NO;
+    }
+    updatedSwitcher[option] = switcher[option];
+  }
+  _switcher = [updatedSwitcher copy];
+  return YES;
+}
+
+- (BOOL)updateGroupState:(NSString *)optionState ofOption:(NSString *)optionName {
+  NSArray<NSString *> *optionGroup = _optionGroups[optionName];
+  if (!optionGroup || ![optionGroup containsObject:optionState]) {
+    return NO;
+  }
+  NSMutableDictionary<NSString *, NSString *> *updatedSwitcher = [_switcher mutableCopy];
+  for (NSString *option in optionGroup) {
+    updatedSwitcher[option] = optionState;
+  }
+  _switcher = [updatedSwitcher copy];
+  return YES;
+}
+
+- (BOOL)containsOption:(NSString *)optionName {
+  return [_optionNames containsObject:optionName];
+}
+
+- (NSMutableDictionary<NSString *, NSString *> *)mutableSwitcher {
+  return [_switcher mutableCopy];
+}
+
+@end
+
 @implementation SquirrelConfig {
   NSMutableDictionary *_cache;
   RimeConfig _config;
@@ -44,6 +119,18 @@
   return _isOpen;
 }
 
+- (BOOL)openUserConfig:(NSString *)configId {
+  [self close];
+  _isOpen = !!rime_get_api()->user_config_open(configId.UTF8String, &_config);
+  return _isOpen;
+}
+
+- (BOOL)openWithConfigId:(NSString *)configId {
+  [self close];
+  _isOpen = !!rime_get_api()->config_open(configId.UTF8String, &_config);
+  return _isOpen;
+}
+
 - (void)close {
   if (_isOpen) {
     rime_get_api()->config_close(&_config);
@@ -67,8 +154,8 @@
   return [self getOptionalBool:option].boolValue;
 }
 
-- (NSInteger)getInt:(NSString *)option {
-  return [self getOptionalInt:option].integerValue;
+- (int)getInt:(NSString *)option {
+  return [self getOptionalInt:option].intValue;
 }
 
 - (double)getDouble:(NSString *)option {
@@ -148,6 +235,56 @@
     return pattern;
   }
   return [_baseConfig getPattern:option];
+}
+
+- (NSArray<NSString *> *)getList:(NSString *)option {
+  NSMutableArray<NSString *> *strList = [[NSMutableArray alloc] init];
+  RimeConfigIterator iterator;
+  rime_get_api()->config_begin_list(&iterator, &_config, option.UTF8String);
+  while (rime_get_api()->config_next(&iterator)) {
+    [strList addObject:[self getString:@(iterator.path)]];
+  }
+  rime_get_api()->config_end(&iterator);
+  return strList;
+}
+
+- (SquirrelOptionSwitcher *)getOptionSwitcher {
+  NSMutableDictionary<NSString *, NSString*> *switcher = [[NSMutableDictionary alloc] init];
+  NSMutableDictionary<NSString *, NSArray<NSString *> *> *optionGroups = [[NSMutableDictionary alloc] init];
+  RimeConfigIterator switchIter;
+  rime_get_api()->config_begin_list(&switchIter, &_config, "switches");
+  while (rime_get_api()->config_next(&switchIter)) {
+    int reset = [self getInt:[@(switchIter.path) stringByAppendingString:@"/reset"]];
+    NSString *name = [self getString:[@(switchIter.path) stringByAppendingString:@"/name"]];
+    if (name) {
+      if ([self hasSection:[@"style/!" stringByAppendingString:name]] ||
+          [self hasSection:[@"style/" stringByAppendingString:name]]) {
+        switcher[name] = reset ? name : [@"!" stringByAppendingString:name];
+        optionGroups[name] = @[name];
+      }
+    } else {
+      NSMutableArray *optionGroup = [[NSMutableArray alloc] init];
+      BOOL hasStyleSection = NO;
+      RimeConfigIterator optionIter;
+      rime_get_api()->config_begin_list(&optionIter, &_config, [@(switchIter.path) stringByAppendingString:@"/options"].UTF8String);
+      while (rime_get_api()->config_next(&optionIter)) {
+        NSString *option = [self getString:@(optionIter.path)];
+        [optionGroup addObject:option];
+        hasStyleSection |= [self hasSection:[@"style/" stringByAppendingString:option]];
+      }
+      rime_get_api()->config_end(&optionIter);
+      if (hasStyleSection) {
+        for (NSUInteger i = 0; i < optionGroup.count; ++i) {
+          switcher[optionGroup[i]] = optionGroup[reset];
+          optionGroups[optionGroup[i]] = optionGroup;
+        }
+      }
+    }
+  }
+  rime_get_api()->config_end(&switchIter);
+  return [[SquirrelOptionSwitcher alloc] initWithSchemaId:_schemaId
+                                                 switcher:switcher
+                                             optionGroups:optionGroups];
 }
 
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName {

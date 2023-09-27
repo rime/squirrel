@@ -11,6 +11,7 @@
 - (void)createSession;
 - (void)destroySession;
 - (BOOL)rimeConsumeCommittedText;
+- (void)updateStyleOptions;
 - (void)rimeUpdate;
 - (void)updateAppOptions;
 @end
@@ -162,8 +163,6 @@ const int N_KEY_ROLL_OVER = 50;
 
 - (BOOL)processKey:(int)rime_keycode modifiers:(int)rime_modifiers
 {
-  // TODO add special key event preprocessing here
-
   // with linear candidate list, arrow keys may behave differently.
   Bool is_linear = NSApp.squirrelAppDelegate.panel.linear;
   if (is_linear != rime_get_api()->get_option(_session, "_linear")) {
@@ -482,7 +481,6 @@ const int N_KEY_ROLL_OVER = 50;
                     caretPos:(NSUInteger)caretPos
                   candidates:(NSArray<NSString *> *)candidates
                     comments:(NSArray<NSString *> *)comments
-                      labels:(NSArray<NSString *> *)labels
                  highlighted:(NSUInteger)index
                      pageNum:(NSUInteger)pageNum
                     lastPage:(BOOL)lastPage
@@ -510,7 +508,6 @@ const int N_KEY_ROLL_OVER = 50;
             caretPos:caretPos
           candidates:candidates
             comments:comments
-              labels:labels
          highlighted:index
              pageNum:pageNum
             lastPage:lastPage
@@ -550,8 +547,8 @@ const int N_KEY_ROLL_OVER = 50;
       NSLog(@"set app option: %@ = %d", key, value);
       rime_get_api()->set_option(_session, key.UTF8String, value);
     }
-    _panellessCommitFix = (appOptions[@"panelless_commit_fix"] ? : @(NO)).boolValue;
-    _inlinePlaceHolder = (appOptions[@"inline_placeholder"] ? : @(NO)).boolValue;
+    _panellessCommitFix = [appOptions[@"panelless_commit_fix"] boolValue];
+    _inlinePlaceHolder = [appOptions[@"inline_placeholder"] boolValue];
   }
 }
 
@@ -580,6 +577,40 @@ const int N_KEY_ROLL_OVER = 50;
   return NO;
 }
 
+- (void)updateStyleOptions
+{
+  // update the list of switchers that change styles and color-themes
+  SquirrelOptionSwitcher *optionSwitcher;
+  SquirrelConfig *schema = [[SquirrelConfig alloc] init];
+  if ([schema openWithSchemaId:_schemaId baseConfig:NSApp.squirrelAppDelegate.config] &&
+      [schema hasSection:@"style"]) {
+    optionSwitcher = [schema getOptionSwitcher];
+  } else {
+    optionSwitcher = [[SquirrelOptionSwitcher alloc] initWithSchemaId:_schemaId switcher:@{} optionGroups:@{}];
+  }
+  [schema close];
+  NSMutableDictionary *switcher = [optionSwitcher mutableSwitcher];
+  NSSet<NSString *> *prevStates = [NSSet setWithArray:optionSwitcher.optionStates];
+  for (NSString *state in prevStates) {
+    NSString *updatedState;
+    NSArray<NSString *> *optionGroup = [optionSwitcher.switcher allKeysForObject:state];
+    for (NSString *option in optionGroup) {
+      if (rime_get_api()->get_option(_session, option.UTF8String)) {
+        updatedState = option;
+        break;
+      }
+    }
+    updatedState = updatedState ? : [@"!" stringByAppendingString:optionGroup[0]];
+    if (![updatedState isEqualToString:state]) {
+      for (NSString *option in optionGroup) {
+        switcher[option] = updatedState;
+      }
+    }
+  }
+  [optionSwitcher updateSwitcher:switcher];
+  [NSApp.squirrelAppDelegate.panel setOptionSwitcher:optionSwitcher];
+}
+
 - (void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
@@ -592,17 +623,19 @@ const int N_KEY_ROLL_OVER = 50;
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
     // enable schema specific ui style
-    if (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id) != 0) {
+    if (!switcherMenu && (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id))) {
       _schemaId = @(status.schema_id);
+      [self updateStyleOptions];
+      [NSApp.squirrelAppDelegate loadSchemaSpecificLabels:_schemaId];
       [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
       // inline preedit
       _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
                         !rime_get_api()->get_option(_session, "no_inline")) ||
-                       rime_get_api()->get_option(_session, "inline");
+      rime_get_api()->get_option(_session, "inline");
       _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
                           !rime_get_api()->get_option(_session, "no_inline"));
       // if not inline, embed soft cursor in preedit string
-      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit && !switcherMenu);
+      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
     }
     rime_get_api()->free_status(&status);
   }
@@ -668,34 +701,13 @@ const int N_KEY_ROLL_OVER = 50;
     NSMutableArray *comments = [NSMutableArray array];
     for (int i = 0; i < ctx.menu.num_candidates; ++i) {
       [candidates addObject:@(ctx.menu.candidates[i].text)];
-      if (ctx.menu.candidates[i].comment) {
-        [comments addObject:@(ctx.menu.candidates[i].comment)];
-      } else {
-        [comments addObject:@""];
-      }
-    }
-    NSMutableArray<NSString *> *labels = [[NSMutableArray alloc] initWithCapacity:ctx.menu.page_size];
-    if (ctx.menu.select_keys) {
-      NSString *selectKeys = [@(ctx.menu.select_keys) stringByApplyingTransform:NSStringTransformFullwidthToHalfwidth reverse:YES];
-      for (int i = 0; i < ctx.menu.page_size; ++i) {
-        [labels addObject:[selectKeys substringWithRange:NSMakeRange(i, 1)]];
-      }
-    } else if (ctx.select_labels) {
-      for (int i = 0; i < ctx.menu.page_size; ++i) {
-        [labels addObject:@(ctx.select_labels[i])];
-      }
-    } else {
-      NSString *labelString = @"１２３４５６７８９０";
-      for (int i = 0; i < ctx.menu.page_size; ++i) {
-        [labels addObject:[labelString substringWithRange:NSMakeRange(i, 1)]];
-      }
+      [comments addObject:@(ctx.menu.candidates[i].comment ? : "")];
     }
     [self showPanelWithPreedit:(_inlinePreedit && !switcherMenu ? nil : preeditText)
                       selRange:NSMakeRange(start, end - start)
                       caretPos:(switcherMenu ? NSNotFound : caretPos)
                     candidates:candidates
                       comments:comments
-                        labels:labels
                    highlighted:ctx.menu.highlighted_candidate_index
                        pageNum:ctx.menu.page_no
                       lastPage:ctx.menu.is_last_page];

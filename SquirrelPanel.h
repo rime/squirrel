@@ -2,6 +2,7 @@
 #import "SquirrelInputController.h"
 
 @class SquirrelConfig;
+@class SquirrelOptionSwitcher;
 
 @interface SquirrelPanel : NSPanel
 
@@ -15,6 +16,8 @@
 @property(nonatomic, readonly) BOOL inlinePreedit;
 // Show first candidate inline
 @property(nonatomic, readonly) BOOL inlineCandidate;
+// Store switch options that change style (color theme) settings
+@property(nonatomic, strong) SquirrelOptionSwitcher *optionSwitcher;
 // position of input caret on screen.
 @property(nonatomic, assign) NSRect position;
 
@@ -25,7 +28,6 @@
            caretPos:(NSUInteger)caretPos
          candidates:(NSArray<NSString *> *)candidates
            comments:(NSArray<NSString *> *)comments
-             labels:(NSArray<NSString *> *)labels
         highlighted:(NSUInteger)index
             pageNum:(NSUInteger)pageNum
            lastPage:(BOOL)lastPage
@@ -39,5 +41,7 @@
 
 - (void)loadConfig:(SquirrelConfig *)config
        forDarkMode:(BOOL)isDark;
+
+- (void)loadLabelConfig:(SquirrelConfig *)config;
 
 @end

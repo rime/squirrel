@@ -80,8 +80,12 @@ int main(int argc, char *argv[]) {
       NSLog(@"Problematic launch detected!");
       NSArray *args = @[@"-v", NSLocalizedString(@"say_voice", nil),
                         NSLocalizedString(@"problematic_launch", nil)];
-      [NSTask launchedTaskWithExecutableURL:[[NSURL alloc] initFileURLWithPath:@"/usr/bin/say"]
-                                  arguments:args error:nil terminationHandler:nil];
+      if (@available(macOS 10.13, *)) {
+        [NSTask launchedTaskWithExecutableURL:[NSURL fileURLWithPath:@"/usr/bin/say"]
+                                    arguments:args error:nil terminationHandler:nil];
+      } else {
+        [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+      }
     } else {
       [NSApp.squirrelAppDelegate setupRime];
       [NSApp.squirrelAppDelegate startRimeWithFullCheck:NO];

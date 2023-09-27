@@ -24,7 +24,7 @@ static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 - (IBAction)configure:(id)sender
 {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:[@"file://" stringByAppendingString:(@"~/Library/Rime").stringByStandardizingPath]]];
+  [[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:[@"~/Library/Rime/" stringByExpandingTildeInPath]]];
 }
 
 - (IBAction)openWiki:(id)sender
@@ -69,13 +69,10 @@ void notification_handler(void *context_object, RimeSessionId session_id,
     }
     return;
   }
-  // off?
   id app_delegate = (__bridge id)context_object;
-  if (app_delegate && ![app_delegate enableNotifications]) {
-    return;
-  }
   // schema change
-  if (!strcmp(message_type, "schema")) {
+  if (!strcmp(message_type, "schema") &&
+      app_delegate && [app_delegate enableNotifications]) {
     const char *schema_name = strchr(message_value, '/');
     if (schema_name) {
       ++schema_name;
@@ -84,14 +81,21 @@ void notification_handler(void *context_object, RimeSessionId session_id,
     return;
   }
   // option change
-  if (!strcmp(message_type, "option")) {
+  if (!strcmp(message_type, "option") && app_delegate) {
     Bool state = message_value[0] != '!';
     const char *option_name = message_value + !state;
-    struct rime_string_slice_t state_label_long = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, NO);
-    struct rime_string_slice_t state_label_short = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, YES);
-    if (state_label_long.str || state_label_short.str) {
-      const char *short_message = state_label_short.length < strlen(state_label_short.str) ? NULL : state_label_short.str;
-      show_status_message(state_label_long.str, short_message, message_type);
+    if ([[app_delegate panel].optionSwitcher containsOption:@(option_name)]) {
+      if ([[app_delegate panel].optionSwitcher updateGroupState:@(message_value) ofOption:@(option_name)]) {
+        [app_delegate loadSchemaSpecificSettings:[app_delegate panel].optionSwitcher.schemaId];
+      }
+    }
+    if ([app_delegate enableNotifications]) {
+      RimeStringSlice state_label_long = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, NO);
+      RimeStringSlice state_label_short = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, YES);
+      if (state_label_long.str || state_label_short.str) {
+        const char *short_message = state_label_short.length < strlen(state_label_short.str) ? NULL : state_label_short.str;
+        show_status_message(state_label_long.str, short_message, message_type);
+      }
     }
   }
 }
@@ -172,26 +176,40 @@ void notification_handler(void *context_object, RimeSessionId session_id,
   [schema close];
 }
 
+- (void)loadSchemaSpecificLabels:(NSString *)schemaId {
+  if (schemaId.length == 0 || [schemaId characterAtIndex:0] == '.') {
+    return;
+  }
+  SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
+  [defaultConfig openWithConfigId:@"default"];
+  SquirrelConfig *schema = [[SquirrelConfig alloc] init];
+  if ([schema openWithSchemaId:schemaId baseConfig:defaultConfig] &&
+      [schema hasSection:@"menu"]) {
+    [self.panel loadLabelConfig:schema];
+  } else {
+    [self.panel loadLabelConfig:defaultConfig];
+  }
+  [schema close];
+  [defaultConfig close];
+}
+
 // prevent freezing the system
 - (BOOL)problematicLaunchDetected
 {
   BOOL detected = NO;
-  NSString *logfile =
-    [NSTemporaryDirectory() stringByAppendingPathComponent:@"squirrel_launch.dat"];
+  NSString *logfile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"squirrel_launch.dat"];
   //NSLog(@"[DEBUG] archive: %@", logfile);
   NSData *archive = [NSData dataWithContentsOfFile:logfile
                                            options:NSDataReadingUncached
                                              error:nil];
   if (archive) {
-    NSDate *previousLaunch;
-    previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
+    NSDate *previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
     if (previousLaunch && previousLaunch.timeIntervalSinceNow >= -2) {
       detected = YES;
     }
   }
   NSDate *now = [NSDate date];
-  NSData *record;
-  record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
+  NSData *record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
   [record writeToFile:logfile atomically:NO];
   return detected;
 }

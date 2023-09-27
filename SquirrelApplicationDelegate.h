@@ -2,6 +2,7 @@
 
 @class SquirrelConfig;
 @class SquirrelPanel;
+@class SquirrelOptionSwitcher;
 
 // Note: the SquirrelApplicationDelegate is instantiated automatically as an outlet of NSApp's instance
 @interface SquirrelApplicationDelegate : NSObject
@@ -22,6 +23,7 @@
 - (void)startRimeWithFullCheck:(BOOL)fullCheck;
 - (void)loadSettings;
 - (void)loadSchemaSpecificSettings:(NSString *)schemaId;
+- (void)loadSchemaSpecificLabels:(NSString *)schemaId;
 
 @property(nonatomic, readonly) BOOL problematicLaunchDetected;
 
