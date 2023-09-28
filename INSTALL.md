@@ -59,7 +59,7 @@ Choose one of the following options.
 ``` sh
 export BUILD_UNIVERSAL=1
 
-make -C librime xcode/deps/boost
+bash librime/install-boost.sh
 
 export BOOST_ROOT="$(pwd)/librime/deps/boost_1_83_0"
 ```
@@ -99,7 +99,9 @@ Build librime, dependent third-party libraries and data files:
 
 ``` sh
 export BUILD_UNIVERSAL=1
+export CMAKE_GENERATOR=Ninja
 
+make -C librime
 make deps
 ```
 
@@ -115,10 +117,10 @@ To build only for the native architecture, pass variable `ARCHS` to `make`:
 
 ``` sh
 # for Mac computers with Apple Silicon
-make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.14'
+make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.15'
 
 # for Intel-based Mac
-make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.14'
+make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.15'
 ```
 
 ## Install it on your Mac

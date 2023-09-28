@@ -4,7 +4,7 @@ all: release
 install: install-release
 
 # Change to `dist-with-icu` if boost is linked to icu libraries.
-RIME_DIST_TARGET = dist
+RIME_DIST_TARGET = install
 
 RIME_BIN_DIR = librime/dist/bin
 RIME_LIB_DIR = librime/dist/lib
@@ -85,12 +85,11 @@ ifdef ARCHS
 BUILD_SETTINGS += ARCHS="$(ARCHS)"
 BUILD_SETTINGS += ONLY_ACTIVE_ARCH=NO
 _=$() $()
-export CMAKE_OSX_ARCHITECTURES = $(subst $(_),;,$(ARCHS))
+export CMAKE_OSX_ARCHITECTURES = $(subst $(_),",",$(ARCHS))
 endif
 
-ifdef MACOSX_DEPLOYMENT_TARGET
+MACOSX_DEPLOYMENT_TARGET ?= 10.15
 BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)"
-endif
 
 release: $(DEPS_CHECK)
 	bash package/add_data_files

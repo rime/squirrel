@@ -2,7 +2,7 @@
   "images" : [
     {
       "filename" : "rime.svg",
-      "idiom" : "mac"
+      "idiom" : "universal"
     }
   ],
   "info" : {
