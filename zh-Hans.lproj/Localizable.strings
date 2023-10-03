@@ -11,3 +11,8 @@
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";
+
+"problematic_launch" = "检测到启动有问题！\
+                        “鼠须管”可能因错误设置而崩溃。\
+                        请尝试撤销之前的修改，然后查看问题是否仍旧存在。";
+"say_voice" = "TingTing";

@@ -4,3 +4,8 @@
 "deploy_start" = "Deploying Rime input method engine…";
 "deploy_success" = "Squirrel is ready.";
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
+
+"problematic_launch" = "Problematic launch detected! \
+                        Squirrel may be suffering a crash due to imporper configuration. \
+                        Revert previous modifications to see if the problem recurs.";
+"say_voice" = "Alex";
