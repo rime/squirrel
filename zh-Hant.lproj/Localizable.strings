@@ -4,3 +4,8 @@
 "deploy_start" = "部署輸入法引擎⋯";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有錯誤！請查看日誌 $TMPDIR/rime.squirrel.INFO";
+
+"problematic_launch" = "啟動時偵測到問題！\
+                        「鼠鬚管」可能因設定不當而崩潰。\
+                        請嘗試回退先前的修改，然後查看問題是否依然存在。";
+"say_voice" = "MeiJia";

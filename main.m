@@ -78,12 +78,10 @@ int main(int argc, char *argv[]) {
 
     if (NSApp.squirrelAppDelegate.problematicLaunchDetected) {
       NSLog(@"Problematic launch detected!");
-      NSArray *args = @[
-        @"Problematic launch detected! \
-                       Squirrel may be suffering a crash due to imporper configuration. \
-                       Revert previous modifications to see if the problem recurs."
-      ];
-      [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+      NSArray *args = @[@"-v", NSLocalizedString(@"say_voice", nil),
+                        NSLocalizedString(@"problematic_launch", nil)];
+      [NSTask launchedTaskWithExecutableURL:[[NSURL alloc] initFileURLWithPath:@"/usr/bin/say"]
+                                  arguments:args error:nil terminationHandler:nil];
     } else {
       [NSApp.squirrelAppDelegate setupRime];
       [NSApp.squirrelAppDelegate startRimeWithFullCheck:NO];
