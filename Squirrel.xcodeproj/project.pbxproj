@@ -96,8 +96,6 @@
 		F4E457C72AD97412003F6D79 /* EmojiCategoryT.ocd2 in Resources */ = {isa = PBXBuildFile; fileRef = F4E457B62AD97412003F6D79 /* EmojiCategoryT.ocd2 */; };
 		F4E457C82AD97412003F6D79 /* hk2emoji.json in Resources */ = {isa = PBXBuildFile; fileRef = F4E457B72AD97412003F6D79 /* hk2emoji.json */; };
 		F4E457C92AD97412003F6D79 /* tw2emoji.json in Resources */ = {isa = PBXBuildFile; fileRef = F4E457B82AD97412003F6D79 /* tw2emoji.json */; };
-		F4E457CC2AD97499003F6D79 /* TWPhrases.ocd2 in Resources */ = {isa = PBXBuildFile; fileRef = F4E457CA2AD97498003F6D79 /* TWPhrases.ocd2 */; };
-		F4E457CD2AD97499003F6D79 /* TWPhrasesRev.ocd2 in Resources */ = {isa = PBXBuildFile; fileRef = F4E457CB2AD97498003F6D79 /* TWPhrasesRev.ocd2 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -303,8 +301,6 @@
 		F4E457B62AD97412003F6D79 /* EmojiCategoryT.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = EmojiCategoryT.ocd2; sourceTree = "<group>"; };
 		F4E457B72AD97412003F6D79 /* hk2emoji.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hk2emoji.json; sourceTree = "<group>"; };
 		F4E457B82AD97412003F6D79 /* tw2emoji.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2emoji.json; sourceTree = "<group>"; };
-		F4E457CA2AD97498003F6D79 /* TWPhrases.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrases.ocd2; sourceTree = "<group>"; };
-		F4E457CB2AD97498003F6D79 /* TWPhrasesRev.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = TWPhrasesRev.ocd2; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -452,8 +448,6 @@
 				77AA67DE2588916300A592E2 /* t2tw.json */,
 				77AA67E32588916300A592E2 /* TSCharacters.ocd2 */,
 				77AA67F62588916400A592E2 /* TSPhrases.ocd2 */,
-				F4E457CA2AD97498003F6D79 /* TWPhrases.ocd2 */,
-				F4E457CB2AD97498003F6D79 /* TWPhrasesRev.ocd2 */,
 				77AA67DF2588916300A592E2 /* tw2s.json */,
 				77AA67F12588916300A592E2 /* TWVariants.ocd2 */,
 				77AA67F42588916400A592E2 /* TWVariantsRev.ocd2 */,
@@ -578,7 +572,6 @@
 			files = (
 				F4E457BB2AD97412003F6D79 /* hk2t.json in Resources */,
 				F4E457C42AD97412003F6D79 /* en2emoji.json in Resources */,
-				F4E457CC2AD97499003F6D79 /* TWPhrases.ocd2 in Resources */,
 				F4E457C12AD97412003F6D79 /* EmojiWordTW.ocd2 in Resources */,
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				F4E457BA2AD97412003F6D79 /* t2emoji.json in Resources */,
@@ -599,7 +592,6 @@
 				F4E457C02AD97412003F6D79 /* EmojiCategoryEN.ocd2 in Resources */,
 				F4E457BE2AD97412003F6D79 /* EmojiCategoryHK.ocd2 in Resources */,
 				F4E457BD2AD97412003F6D79 /* s2emoji.json in Resources */,
-				F4E457CD2AD97499003F6D79 /* TWPhrasesRev.ocd2 in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				F4E457B92AD97412003F6D79 /* EmojiCategoryTW.ocd2 in Resources */,
 			);

@@ -238,9 +238,11 @@
 }
 
 - (NSArray<NSString *> *)getList:(NSString *)option {
-  NSMutableArray<NSString *> *strList = [[NSMutableArray alloc] init];
   RimeConfigIterator iterator;
-  rime_get_api()->config_begin_list(&iterator, &_config, option.UTF8String);
+  if (!rime_get_api()->config_begin_list(&iterator, &_config, option.UTF8String)) {
+    return nil;
+  }
+  NSMutableArray<NSString *> *strList = [[NSMutableArray alloc] init];
   while (rime_get_api()->config_next(&iterator)) {
     [strList addObject:[self getString:@(iterator.path)]];
   }
@@ -249,10 +251,12 @@
 }
 
 - (SquirrelOptionSwitcher *)getOptionSwitcher {
+  RimeConfigIterator switchIter;
+  if (!rime_get_api()->config_begin_list(&switchIter, &_config, "switches")) {
+    return  nil;
+  }
   NSMutableDictionary<NSString *, NSString*> *switcher = [[NSMutableDictionary alloc] init];
   NSMutableDictionary<NSString *, NSArray<NSString *> *> *optionGroups = [[NSMutableDictionary alloc] init];
-  RimeConfigIterator switchIter;
-  rime_get_api()->config_begin_list(&switchIter, &_config, "switches");
   while (rime_get_api()->config_next(&switchIter)) {
     int reset = [self getInt:[@(switchIter.path) stringByAppendingString:@"/reset"]];
     NSString *name = [self getString:[@(switchIter.path) stringByAppendingString:@"/name"]];
@@ -291,7 +295,9 @@
   NSString *rootKey = [@"app_options/" stringByAppendingString:appName];
   SquirrelMutableAppOptions *appOptions = [[SquirrelMutableAppOptions alloc] init];
   RimeConfigIterator iterator;
-  rime_get_api()->config_begin_map(&iterator, &_config, rootKey.UTF8String);
+  if (!rime_get_api()->config_begin_map(&iterator, &_config, rootKey.UTF8String)) {
+    return nil;
+  }
   while (rime_get_api()->config_next(&iterator)) {
     //NSLog(@"DEBUG option[%d]: %s (%s)", iterator.index, iterator.key, iterator.path);
     BOOL value = [self getBool:@(iterator.path)];

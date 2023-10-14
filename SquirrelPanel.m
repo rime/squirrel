@@ -1540,14 +1540,14 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
         if (cursorIndex >= 0 && cursorIndex < _candidates.count && _index != cursorIndex) {
           [_inputController perform:kCHOOSE onIndex:cursorIndex];
           _index = cursorIndex;
-          [self showPreedit:_preedit    selRange:_selRange caretPos:_caretPos
-                 candidates:_candidates comments:_comments  highlighted:cursorIndex
-                    pageNum:_pageNum    lastPage:_lastPage turnPage:NSNotFound update:NO];
+          [self showPreedit:_preedit    selRange:_selRange    caretPos:_caretPos
+                 candidates:_candidates comments:_comments highlighted:cursorIndex
+                    pageNum:_pageNum    lastPage:_lastPage    turnPage:NSNotFound update:NO];
         } else if ((cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey) && _turnPage != cursorIndex) {
           _turnPage = cursorIndex;
-          [self showPreedit:_preedit    selRange:_selRange caretPos:_caretPos
-                 candidates:_candidates comments:_comments  highlighted:_index
-                    pageNum:_pageNum    lastPage:_lastPage turnPage:cursorIndex update:NO];
+          [self showPreedit:_preedit    selRange:_selRange    caretPos:_caretPos
+                 candidates:_candidates comments:_comments highlighted:_index
+                    pageNum:_pageNum    lastPage:_lastPage    turnPage:cursorIndex update:NO];
         }
       }
     } break;
@@ -1558,7 +1558,8 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     } break;
     case NSEventTypeScrollWheel: {
       SquirrelTheme *theme = _view.currentTheme;
-      CGFloat scrollThreshold = [theme.attrs[NSParagraphStyleAttributeName] maximumLineHeight] + [theme.attrs[NSParagraphStyleAttributeName] lineSpacing];
+      CGFloat scrollThreshold = [theme.attrs[NSParagraphStyleAttributeName] maximumLineHeight] +
+                                [theme.attrs[NSParagraphStyleAttributeName] lineSpacing];
       if (event.phase == NSEventPhaseBegan) {
         _scrollLocus = NSZeroPoint;
       } else if ((event.phase == NSEventPhaseNone || event.momentumPhase == NSEventPhaseNone) &&
@@ -2023,7 +2024,7 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     paragraphStyleCandidate = [theme.paragraphStyle copy];
   }
   CGFloat tabInterval = theme.separatorWidth * 2;
-  for (NSUInteger idx = 0; idx < candidates.count; ++idx) {
+  for (NSUInteger idx = 0; idx < numCandidates; ++idx) {
     // attributed labels are already included in candidateFormats
     NSMutableAttributedString *item = (idx == index) ? [theme.candidateHighlightedFormats[idx] mutableCopy] : [theme.candidateFormats[idx] mutableCopy];
     NSRange candidateRange = [item.string rangeOfString:@"%@"];

@@ -28,7 +28,9 @@ style:
   #candidate_list_layout: stacked  # stacked | linear | tabled
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
+  inline_candidate: false
   show_paging : true
+  # remember the panel size after it expands towards, rather than away from, the screen center
   remember_size: true
 
   corner_radius: 10

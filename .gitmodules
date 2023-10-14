@@ -2,6 +2,7 @@
 	path = librime
 	url = https://github.com/groverlynn/librime.git
 	branch = test
+	ignore = dirty
 [submodule "plum"]
 	path = plum
 	url = https://github.com/groverlynn/plum.git

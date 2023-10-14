@@ -90,8 +90,8 @@ void notification_handler(void *context_object, RimeSessionId session_id,
       }
     }
     if ([app_delegate enableNotifications]) {
-      RimeStringSlice state_label_long = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, NO);
-      RimeStringSlice state_label_short = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, YES);
+      RimeStringSlice state_label_long = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, False);
+      RimeStringSlice state_label_short = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, True);
       if (state_label_long.str || state_label_short.str) {
         const char *short_message = state_label_short.length < strlen(state_label_short.str) ? NULL : state_label_short.str;
         show_status_message(state_label_long.str, short_message, message_type);

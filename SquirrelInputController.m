@@ -92,8 +92,15 @@ const int N_KEY_ROLL_OVER = 50;
                           CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventOtherMouseDown);
         _lastModifier = modifiers;
         switch (keyCode) {
-          case kVK_CapsLock: {
-            rime_modifiers ^= kLockMask;
+          case kVK_CapsLock:
+            if (!_goodOldCapsLock) {
+              set_caps_lock_led(false);
+              Bool caps_lock_on = rime_get_api()->get_option(_session, "caps_lock_on");
+              rime_modifiers = caps_lock_on ? rime_modifiers | kLockMask : rime_modifiers & ~kLockMask;
+              rime_get_api()->set_option(_session, "caps_lock_on", !caps_lock_on);
+            } else {
+              rime_modifiers ^= kLockMask;
+            }
             [self processKey:rime_keycode modifiers:rime_modifiers];
           } break;
           case kVK_Shift:
@@ -140,7 +147,7 @@ const int N_KEY_ROLL_OVER = 50;
         //      sender, modifiers, keyCode, keyChars);
 
         // translate osx keyevents to rime keyevents
-        int rime_keycode = osx_keycode_to_rime_keycode(keyCode, keyChars.UTF8String[0],
+        int rime_keycode = osx_keycode_to_rime_keycode(keyCode, [keyChars characterAtIndex:0],
                                                        modifiers & OSX_SHIFT_MASK,
                                                        modifiers & OSX_CAPITAL_MASK);
         if (rime_keycode) {
@@ -183,8 +190,7 @@ const int N_KEY_ROLL_OVER = 50;
     BOOL isVimBackInCommandMode = rime_keycode == XK_Escape ||
       ((rime_modifiers & kControlMask) && (rime_keycode == XK_c ||
         rime_keycode == XK_C || rime_keycode == XK_bracketleft));
-    if (isVimBackInCommandMode &&
-        rime_get_api()->get_option(_session, "vim_mode") &&
+    if (isVimBackInCommandMode && rime_get_api()->get_option(_session, "vim_mode") &&
         !rime_get_api()->get_option(_session, "ascii_mode")) {
       rime_get_api()->set_option(_session, "ascii_mode", True);
       // NSLog(@"turned Chinese mode off in vim-like editor's command mode");
@@ -195,11 +201,10 @@ const int N_KEY_ROLL_OVER = 50;
   if (handled) {
     BOOL is_chording_key =
       (rime_keycode >= XK_space && rime_keycode <= XK_asciitilde) ||
-      rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
-      rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
-      rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
-    if (is_chording_key &&
-        rime_get_api()->get_option(_session, "_chord_typing")) {
+       rime_keycode == XK_Control_L || rime_keycode == XK_Control_R ||
+       rime_keycode == XK_Alt_L || rime_keycode == XK_Alt_R ||
+       rime_keycode == XK_Shift_L || rime_keycode == XK_Shift_R;
+    if (is_chording_key && rime_get_api()->get_option(_session, "_chord_typing")) {
       [self updateChord:rime_keycode modifiers:rime_modifiers];
     } else if ((rime_modifiers & kReleaseMask) == 0) {
       // non-chording key pressed
@@ -210,20 +215,17 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
-- (BOOL)perform:(NSUInteger)action onIndex:(NSUInteger)index {
-  BOOL handled = NO;
-  if (index == NSPageUpFunctionKey && action == kSELECT) {
-    handled = rime_get_api()->process_key(_session, XK_Page_Up, 0);
-  } else if (index == NSPageDownFunctionKey && action == kSELECT) {
-    handled = rime_get_api()->process_key(_session, XK_Page_Down, 0);
-  } else if (index >= 0 && index < 10) {
-    if (action == kSELECT) {
-      handled = rime_get_api()->select_candidate_on_current_page(_session, (int)index);
-    } else if (action == kCHOOSE) {
-      handled = rime_get_api()->choose_candidate_on_current_page(_session, (int)index);
-    } else if (action == kDELETE) {
-      handled = rime_get_api()->delete_candidate_on_current_page(_session, (int)index);
-    }
+- (void)perform:(rimeAction)action 
+        onIndex:(rimeIndex)index {
+  bool handled = false;
+  if (action == kSELECT && ((index >= '!' && index <= '~') ||
+      index == kPageUp || index == kPageDown || index == kEscape)) {
+    handled = rime_get_api()->process_key(_session, (int)index, 0);
+  } else if (action == kCHOOSE && index >= '!' && index <= '~') {
+    handled = rime_get_api()->process_key(_session, (int)index, kAltMask);
+  } else if (action == kDELETE && index >= 0 && index < 10) {
+    // kDELETE takes ordinal digits (instead of characters) as indexes
+    handled= rime_get_api()->delete_candidate_on_current_page(_session, (size_t)index);
   }
   if (handled && action != kCHOOSE) {
     [self rimeUpdate];
@@ -348,6 +350,7 @@ const int N_KEY_ROLL_OVER = 50;
   //NSLog(@"commitComposition:");
   if (_session) {
     [self commitString:[self composedString:sender]];
+    [self hidePalettes];
     rime_get_api()->clear_composition(_session);
   }
 }
@@ -524,28 +527,25 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)createSession
 {
   NSString *app = [self.client bundleIdentifier];
-  NSLog(@"createSession: %@", app);
-  _currentApp = [app copy];
+  //NSLog(@"createSession: %@", app);
   _session = rime_get_api()->create_session();
-
   _schemaId = nil;
 
   if (_session) {
-    [self updateAppOptions];
-  }
-}
-
-- (void)updateAppOptions
-{
-  if (!_currentApp) {
-    return;
-  }
-  SquirrelAppOptions *appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
-  if (appOptions) {
-    for (NSString *key in appOptions) {
-      BOOL value = appOptions[key].boolValue;
-      NSLog(@"set app option: %@ = %d", key, value);
-      rime_get_api()->set_option(_session, key.UTF8String, value);
+    char *rime_client = NULL;
+    if (!rime_get_api()->get_property(_session, "client", rime_client, 100) ||
+        ![app isEqualToString:@(rime_client)]) {
+      rime_get_api()->set_property(_session, "client", app.UTF8String);
+      SquirrelAppOptions *appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:app];
+      if (appOptions) {
+        for (NSString *key in appOptions) {
+          Bool value = [appOptions[key] intValue];
+          //NSLog(@"set app option: %@ = %d", key, value);
+          rime_get_api()->set_option(_session, key.UTF8String, value);
+        }
+        _panellessCommitFix = [appOptions[@"panelless_commit_fix"] boolValue];
+        _inlinePlaceHolder = [appOptions[@"inline_placeholder"] boolValue];
+      }
     }
     _panellessCommitFix = [appOptions[@"panelless_commit_fix"] boolValue];
     _inlinePlaceHolder = [appOptions[@"inline_placeholder"] boolValue];
@@ -618,30 +618,39 @@ const int N_KEY_ROLL_OVER = 50;
     return;
   }
 
-  BOOL switcherMenu = rime_get_api()->get_option(_session, "dumb");
+  BOOL switcherMenu = RimeGetOption(_session, "dumb");
 
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
     // enable schema specific ui style
     if (!switcherMenu && (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id))) {
       _schemaId = @(status.schema_id);
-      [self updateStyleOptions];
-      [NSApp.squirrelAppDelegate loadSchemaSpecificLabels:_schemaId];
-      [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
-      // inline preedit
-      _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
-                        !rime_get_api()->get_option(_session, "no_inline")) ||
-      rime_get_api()->get_option(_session, "inline");
-      _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
-                          !rime_get_api()->get_option(_session, "no_inline"));
-      // if not inline, embed soft cursor in preedit string
-      rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
+      _showingSwitcherMenu = rime_get_api()->get_option(_session, "dumb");
+      if (!_showingSwitcherMenu) {
+        [self updateStyleOptions];
+        [NSApp.squirrelAppDelegate loadSchemaSpecificLabels:_schemaId];
+        [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId];
+        // inline preedit
+        _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
+                          !rime_get_api()->get_option(_session, "no_inline")) ||
+                         rime_get_api()->get_option(_session, "inline");
+        _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
+                            !rime_get_api()->get_option(_session, "no_inline"));
+        // if not inline, embed soft cursor in preedit string
+        rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
+      } else {
+        [NSApp.squirrelAppDelegate loadSchemaSpecificLabels:@""];
+      }
     }
     rime_get_api()->free_status(&status);
   }
 
   RIME_STRUCT(RimeContext, ctx);
   if (rime_get_api()->get_context(_session, &ctx)) {
+    // update raw input
+    const char *raw_input = rime_get_api()->get_input(_session);
+    [_originalString setString:raw_input ? @(raw_input) : @""];
+
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
@@ -649,7 +658,7 @@ const int N_KEY_ROLL_OVER = 50;
     // update composed string
     if (!preedit || switcherMenu) {
       _composedString = @"";
-    } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
+    } else if (RimeGetOption(_session, "soft_cursor")) {
       int cursorPos = ctx.composition.cursor_pos;
       char composed[strlen(preedit) - 3];
       for (size_t i = 0; i < strlen(preedit) - 3; ++i) {
@@ -661,7 +670,7 @@ const int N_KEY_ROLL_OVER = 50;
     }
 
     // update raw input
-    const char *raw_input = rime_get_api()->get_input(_session);
+    const char *raw_input = RimeGetInput(_session);
     _originalString = [[NSAttributedString alloc] initWithString:@(raw_input)];
 
     NSUInteger start = [[NSString alloc] initWithBytes:preedit length:ctx.composition.sel_start encoding:NSUTF8StringEncoding].length;
@@ -708,9 +717,42 @@ const int N_KEY_ROLL_OVER = 50;
                       caretPos:(switcherMenu ? NSNotFound : caretPos)
                     candidates:candidates
                       comments:comments
-                   highlighted:ctx.menu.highlighted_candidate_index
-                       pageNum:ctx.menu.page_no
-                      lastPage:ctx.menu.is_last_page];
+                   highlighted:(NSUInteger)ctx.menu.highlighted_candidate_index
+                       pageNum:(NSUInteger)ctx.menu.page_no
+                      lastPage:(BOOL)ctx.menu.is_last_page];
+
+    if (!_showingSwitcherMenu) {
+      if (_inlineCandidate) {
+        const char *candidatePreview = ctx.commit_text_preview;
+        NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
+        if (_inlinePreedit) {
+          if ((caretPos >= end) && (caretPos < length)) {
+            candidatePreviewText = [candidatePreviewText stringByAppendingString:
+                                    [preeditText substringWithRange:NSMakeRange(caretPos, length - caretPos)]];
+          }
+          [self showPreeditString:candidatePreviewText
+                         selRange:NSMakeRange(start, candidatePreviewText.length - (length - end) - start)
+                         caretPos:caretPos <= start ? caretPos : candidatePreviewText.length - (length - caretPos)];
+        } else {
+          if ((end < caretPos) && (caretPos > start)) {
+            candidatePreviewText = [candidatePreviewText substringWithRange:
+                                    NSMakeRange(0, candidatePreviewText.length - (caretPos - end))];
+          } else if ((end < length) && (caretPos < end)) {
+            candidatePreviewText = [candidatePreviewText substringWithRange:
+                                    NSMakeRange(0, candidatePreviewText.length - (length - end))];
+          }
+          [self showPreeditString:candidatePreviewText
+                         selRange:NSMakeRange(start - (caretPos < end), candidatePreviewText.length - start + (caretPos < end))
+                         caretPos:(caretPos < end ? caretPos : candidatePreviewText.length)];
+        }
+      } else {
+        if (_inlinePreedit && !_showingSwitcherMenu) {
+          [self showPreeditString:preeditText selRange:NSMakeRange(start, end - start) caretPos:caretPos];
+        } else {
+          [self showPreeditString:@"" selRange:NSMakeRange(0, 0) caretPos:0];
+        }
+      }
+    }
     rime_get_api()->free_context(&ctx);
   } else {
     [NSApp.squirrelAppDelegate.panel hide];
