@@ -3,8 +3,16 @@
 #import "SquirrelConfig.h"
 #import <QuartzCore/QuartzCore.h>
 
+static const CGFloat kOffsetHeight = 5;
+static const CGFloat kDefaultFontSize = 24;
+static const CGFloat kBlendedBackgroundColorFraction = 1.0 / 5;
+static const NSTimeInterval kShowStatusDuration = 1.2;
+static NSString *kDefaultCandidateFormat = @"%c. %@";
+static NSString *kTipSpecifier = @"%s";
+static NSString *kFullWidthSpace = @"　";
+
 @implementation NSBezierPath (BezierPathQuartzUtilities)
-// This method works only in OS X v10.2 and later.
+
 - (CGPathRef)quartzPath {
   if (@available(macOS 14.0, *)) {
     return self.CGPath;
@@ -59,7 +67,9 @@
 @implementation NSMutableAttributedString (NSMutableAttributedStringMarkDownFormatting)
 
 - (void)formatMarkDown {
-  NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:@"((\\*{1,2}|\\^|~{1,2})|((?<=\\b)_{1,2})|<(b|strong|i|em|u|sup|sub|s)>)(.+?)(\\2|\\3(?=\\b)|<\\/\\4>)" options:NSRegularExpressionUseUnicodeWordBoundaries error:nil];
+  NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:
+    @"((\\*{1,2}|\\^|~{1,2})|((?<=\\b)_{1,2})|<(b|strong|i|em|u|sup|sub|s)>)(.+?)(\\2|\\3(?=\\b)|<\\/\\4>)"
+    options:NSRegularExpressionUseUnicodeWordBoundaries error:nil];
   NSInteger __block offset = 0;
   [regex enumerateMatchesInString:self.string options:0 range:NSMakeRange(0, self.length)
                        usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
@@ -80,15 +90,15 @@
     } else if ([tag isEqualToString:@"^"] || [tag isEqualToString:@"<sup>"]) {
       [self superscriptRange:[result rangeAtIndex:5]];
       [self enumerateAttribute:NSFontAttributeName inRange:[result rangeAtIndex:5] options:0
-                    usingBlock:^(id value, NSRange range, BOOL *stop) {
-        NSFont *font = [[NSFontManager sharedFontManager] convertFont:value toSize:[value pointSize] * 7 / 12];
+                    usingBlock:^(NSFont *value, NSRange range, BOOL *stop) {
+        NSFont *font = [NSFont fontWithDescriptor:[value fontDescriptor] size:[value pointSize] * 7 / 12];
         [self addAttribute:NSFontAttributeName value:font range:range];
       }];
     } else if ([tag isEqualToString:@"~"] || [tag isEqualToString:@"<sub>"]) {
       [self subscriptRange:[result rangeAtIndex:5]];
       [self enumerateAttribute:NSFontAttributeName inRange:[result rangeAtIndex:5] options:0
-                    usingBlock:^(id value, NSRange range, BOOL *stop) {
-        NSFont *font = [[NSFontManager sharedFontManager] convertFont:value toSize:[value pointSize] * 7 / 12];
+                    usingBlock:^(NSFont *value, NSRange range, BOOL *stop) {
+        NSFont *font = [NSFont fontWithDescriptor:[value fontDescriptor] size:[value pointSize] * 7 / 12];
         [self addAttribute:NSFontAttributeName value:font range:range];
       }];
     }
@@ -96,20 +106,81 @@
     [self deleteCharactersInRange:[result rangeAtIndex:1]];
     offset -= [result rangeAtIndex:6].length + [result rangeAtIndex:1].length;
   }];
-  if (offset != 0) { // no match. text remain unchanged.
+  if (offset != 0) { // repeat until no more nested markdown
     [self formatMarkDown];
   }
 }
 
-@end
+- (CGFloat)annotateRubyInRange:(NSRange)range
+                verticalLayout:(BOOL)isVertical
+                 maximumLength:(CGFloat)maxLength {
+  NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:
+                                @"(\uFFF9\\s*)(\\S+?)(\\s*\uFFFA(.+?)\uFFFB)" options:0 error:nil];
+  CGFloat __block rubyLineHeight = 0.0;
+  NSInteger __block offset = 0;
+  [regex enumerateMatchesInString:self.mutableString options:0 range:range
+                       usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+    result = [result resultByAdjustingRangesWithOffset:offset];
+    NSRange baseRange = [result rangeAtIndex:2];
+    // no ruby annotation if the base string includes line breaks
+    if ([self attributedSubstringFromRange:NSMakeRange(0, NSMaxRange(baseRange))].size.width > maxLength) {
+      [self deleteCharactersInRange:NSMakeRange(NSMaxRange([result range]) - 1, 1)];
+      [self deleteCharactersInRange:NSMakeRange([result rangeAtIndex:3].location, 1)];
+      [self deleteCharactersInRange:NSMakeRange([result rangeAtIndex:1].location, 1)];
+      offset -= 3;
+    } else {
+      // base string must use only one font so that all fall within one glyph run and the ruby annotation is aligned with no duplicates
+      NSFont *baseFont = [self attribute:NSFontAttributeName atIndex:baseRange.location effectiveRange:NULL];
+      baseFont = CFBridgingRelease(CTFontCreateForString((CTFontRef)baseFont, (CFStringRef)self.string,
+                                                         CFRangeMake(baseRange.location, baseRange.length)));
+      [self addAttribute:NSFontAttributeName value:baseFont range:baseRange];
 
-static const CGFloat kOffsetHeight = 5;
-static const CGFloat kDefaultFontSize = 24;
-static const CGFloat kBlendedBackgroundColorFraction = 1.0 / 5;
-static const NSTimeInterval kShowStatusDuration = 1.2;
-static NSString *const kDefaultCandidateFormat = @"%c. %@";
-static NSString *const kTipSpecifier = @"%s";
-static NSString *const kFullWidthSpace = @"　";
+      CGFloat rubyScale = 0.5;
+      CFStringRef rubyString = (__bridge CFStringRef)[self.string substringWithRange:[result rangeAtIndex:4]];
+      NSFont *rubyFont = [self attribute:NSFontAttributeName atIndex:[result rangeAtIndex:4].location effectiveRange:NULL];
+      rubyFont = [NSFont fontWithDescriptor:rubyFont.fontDescriptor size:rubyFont.pointSize * rubyScale];
+      rubyFont = CFBridgingRelease(CTFontCreateForString((CTFontRef)rubyFont, rubyString,
+                                                         CFRangeMake(0, CFStringGetLength(rubyString))));
+      rubyLineHeight = MAX(rubyLineHeight, isVertical ? rubyFont.verticalFont.ascender - rubyFont.verticalFont.descender : rubyFont.ascender - rubyFont.descender);
+      CGColorRef rubyColor = [[self attribute:NSForegroundColorAttributeName
+                                      atIndex:[result rangeAtIndex:4].location effectiveRange:NULL] CGColor];
+      CGFloat rubyBaselineOffset;
+      if (@available(macOS 12.0, *)) {
+        rubyBaselineOffset = isVertical ? rubyFont.verticalFont.ascender - rubyFont.verticalFont.descender : -rubyFont.descender;
+      } else {
+        rubyBaselineOffset = isVertical ? rubyFont.verticalFont.ascender : -rubyFont.descender;
+      }
+      CFTypeRef keys[] = {kCTFontAttributeName, kCTForegroundColorAttributeName,
+        kCTBaselineOffsetAttributeName, kCTRubyAnnotationSizeFactorAttributeName,
+        kCTRubyAnnotationScaleToFitAttributeName};
+      CFTypeRef values[] = {(__bridge CTFontRef)rubyFont, rubyColor,
+        CFNumberCreate(NULL, kCFNumberDoubleType, &rubyBaselineOffset),
+        CFNumberCreate(NULL, kCFNumberDoubleType, &rubyScale), kCFBooleanFalse};
+      CFDictionaryRef rubyAttrs = CFDictionaryCreate(NULL, keys, values, 5, &kCFTypeDictionaryKeyCallBacks,
+                                                     &kCFTypeDictionaryValueCallBacks);
+      CTRubyAnnotationRef rubyAnnotation = CTRubyAnnotationCreateWithAttributes(kCTRubyAlignmentDistributeSpace, kCTRubyOverhangAuto, kCTRubyPositionBefore, rubyString, rubyAttrs);
+
+      [self deleteCharactersInRange:[result rangeAtIndex:3]];
+      if (@available(macOS 12.0, *)) {
+        [self addAttributes:@{CFBridgingRelease(kCTRubyAnnotationAttributeName): CFBridgingRelease(rubyAnnotation),
+                              NSVerticalGlyphFormAttributeName: @(isVertical)} range:baseRange];
+        [self deleteCharactersInRange:[result rangeAtIndex:1]];
+        offset -= [result rangeAtIndex:3].length + [result rangeAtIndex:1].length;
+      } else {
+        // use U+008B as placeholder for line-forward spaces in case ruby is wider than base
+        [self replaceCharactersInRange:NSMakeRange(NSMaxRange(baseRange), 0) withString:[NSString stringWithFormat:@"%C", 0x8B]];
+        baseRange.length += 1;
+        [self addAttributes:@{CFBridgingRelease(kCTRubyAnnotationAttributeName): CFBridgingRelease(rubyAnnotation),
+                              NSVerticalGlyphFormAttributeName: @(isVertical)} range:baseRange];
+        [self deleteCharactersInRange:[result rangeAtIndex:1]];
+        offset -= [result rangeAtIndex:3].length - 1 + [result rangeAtIndex:1].length;
+      }
+    }
+  }];
+  return rubyLineHeight;
+}
+
+@end
 
 @interface SquirrelTheme : NSObject
 
@@ -153,6 +224,7 @@ static NSString *const kFullWidthSpace = @"　";
 @property(nonatomic, strong, readonly) NSParagraphStyle *pagingParagraphStyle;
 @property(nonatomic, strong, readonly) NSParagraphStyle *statusParagraphStyle;
 
+@property(nonatomic, strong, readonly) NSAttributedString *separator;
 @property(nonatomic, strong, readonly) NSAttributedString *symbolBackFill;
 @property(nonatomic, strong, readonly) NSAttributedString *symbolBackStroke;
 @property(nonatomic, strong, readonly) NSAttributedString *symbolForwardFill;
@@ -209,6 +281,8 @@ static NSString *const kFullWidthSpace = @"　";
 - (void)setCandidateFormat:(NSString *)candidateFormat;
 
 - (void)setStatusMessageType:(NSString *)statusMessageType;
+
+- (void)setAnnotationHeight:(CGFloat)height;
 
 @end
 
@@ -369,37 +443,54 @@ static NSArray<NSAttributedString *> * formatLabels(NSAttributedString *format, 
   _pagingAttrs = pagingAttrs;
   _pagingHighlightedAttrs = pagingHighlightedAttrs;
   _statusAttrs = statusAttrs;
+
+  NSMutableDictionary *sepAttrs = [commentAttrs mutableCopy];
+  sepAttrs[NSVerticalGlyphFormAttributeName] = @(NO);
+  _separator = [[NSAttributedString alloc] initWithString:_linear ? (_tabled ? [kFullWidthSpace stringByAppendingString:@"\t"] : kFullWidthSpace) : @"\n" attributes:sepAttrs];
+
   NSMutableDictionary *symbolAttrs = [pagingAttrs mutableCopy];
   if (@available(macOS 12.0, *)) {
-    NSTextAttachment *attmBackFill = [[NSTextAttachment alloc] init];
-    attmBackFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.backward.circle.fill" accessibilityDescription:nil];
+    NSTextAttachment *attmLeftFill = [[NSTextAttachment alloc] init];
+    attmLeftFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.left.circle.fill" accessibilityDescription:nil];
+    NSTextAttachment *attmLeftStroke = [[NSTextAttachment alloc] init];
+    attmLeftStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.left.circle" accessibilityDescription:nil];
+    NSTextAttachment *attmRightFill = [[NSTextAttachment alloc] init];
+    attmRightFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.right.circle.fill" accessibilityDescription:nil];
+    NSTextAttachment *attmRightStroke = [[NSTextAttachment alloc] init];
+    attmRightStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.right.circle" accessibilityDescription:nil];
+    NSTextAttachment *attmUpFill = [[NSTextAttachment alloc] init];
+    attmUpFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.up.circle.fill" accessibilityDescription:nil];
+    NSTextAttachment *attmUpStroke = [[NSTextAttachment alloc] init];
+    attmUpStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.up.circle" accessibilityDescription:nil];
+    NSTextAttachment *attmDownFill = [[NSTextAttachment alloc] init];
+    attmDownFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.down.circle.fill" accessibilityDescription:nil];
+    NSTextAttachment *attmDownStroke = [[NSTextAttachment alloc] init];
+    attmDownStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.down.circle" accessibilityDescription:nil];
+
     NSMutableDictionary *attrsBackFill = [symbolAttrs mutableCopy];
-    attrsBackFill[NSAttachmentAttributeName] = attmBackFill;
+    attrsBackFill[NSAttachmentAttributeName] = _linear ? attmUpFill : attmLeftFill;
     _symbolBackFill = [[NSAttributedString alloc] initWithString:@"\uFFFC" attributes:attrsBackFill];
-
-    NSTextAttachment *attmBackStroke = [[NSTextAttachment alloc] init];
-    attmBackStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.backward.circle" accessibilityDescription:nil];
     NSMutableDictionary *attrsBackStroke = [symbolAttrs mutableCopy];
-    attrsBackStroke[NSAttachmentAttributeName] = attmBackStroke;
+    attrsBackStroke[NSAttachmentAttributeName] = _linear ? attmUpStroke : attmLeftStroke;
     _symbolBackStroke = [[NSAttributedString alloc] initWithString:@"\uFFFC" attributes:attrsBackStroke];
-
-    NSTextAttachment *attmForwardFill = [[NSTextAttachment alloc] init];
-    attmForwardFill.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.forward.circle.fill" accessibilityDescription:nil];
     NSMutableDictionary *attrsForwardFill = [symbolAttrs mutableCopy];
-    attrsForwardFill[NSAttachmentAttributeName] = attmForwardFill;
+    attrsForwardFill[NSAttachmentAttributeName] = _linear ? attmDownFill : attmRightFill;
     _symbolForwardFill = [[NSAttributedString alloc] initWithString:@"\uFFFC" attributes:attrsForwardFill];
-
-    NSTextAttachment *attmForwardStroke = [[NSTextAttachment alloc] init];
-    attmForwardStroke.image = [NSImage imageWithSystemSymbolName:@"arrowtriangle.forward.circle" accessibilityDescription:nil];
     NSMutableDictionary *attrsForwardStroke = [symbolAttrs mutableCopy];
-    attrsForwardStroke[NSAttachmentAttributeName] = attmForwardStroke;
+    attrsForwardStroke[NSAttachmentAttributeName] = _linear ? attmDownStroke : attmRightStroke;
     _symbolForwardStroke = [[NSAttributedString alloc] initWithString:@"\uFFFC" attributes:attrsForwardStroke];
   } else {
     NSFont *symbolFont = [NSFont fontWithDescriptor:[[NSFontDescriptor fontDescriptorWithName:@"AppleSymbols" size:0.0]
                           fontDescriptorWithSymbolicTraits:NSFontDescriptorTraitUIOptimized]
                                                       size:[labelAttrs[NSFontAttributeName] pointSize]];
-    symbolAttrs[NSFontAttributeName] = symbolFont;
-    if (_vertical || !_linear) {
+    if (_linear) {
+      CGAffineTransform transform = CGAffineTransformMakeRotation(-M_PI_2);
+      CTFontRef rotatedSymbolFont = CTFontCreateCopyWithSymbolicTraits((CTFontRef)symbolFont, symbolFont.pointSize, &transform, kCTFontTraitVertical, kCTFontTraitClassMask);
+      symbolAttrs[NSFontAttributeName] = CFBridgingRelease(rotatedSymbolFont);
+      symbolAttrs[NSBaselineOffsetAttributeName] = @([pagingAttrs[NSBaselineOffsetAttributeName] doubleValue] + symbolFont.ascender);
+      symbolAttrs[CFBridgingRelease(kCTTrackingAttributeName)] = @(symbolFont.ascender);
+    } else {
+      symbolAttrs[NSFontAttributeName] = symbolFont;
       symbolAttrs[NSBaselineOffsetAttributeName] = @([pagingAttrs[NSBaselineOffsetAttributeName] doubleValue] - symbolFont.leading);
     }
     NSMutableDictionary *symbolAttrsBackFill = [symbolAttrs mutableCopy];
@@ -411,20 +502,8 @@ static NSArray<NSAttributedString *> * formatLabels(NSAttributedString *format, 
     symbolAttrsForwardFill[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE93 forFont:symbolFont baseString:@"▶"]; //gid4967
     symbolAttrsForwardStroke[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE94 forFont:symbolFont baseString:@"▷"]; //gid4968
     _symbolBackFill = [[NSAttributedString alloc] initWithString:@"◀" attributes:symbolAttrsBackFill];
-
-    NSMutableDictionary *symbolAttrsBackStroke = [symbolAttrs mutableCopy];
-    symbolAttrsBackStroke[NSGlyphInfoAttributeName] =
-      [NSGlyphInfo glyphInfoWithGlyphName:@"gid4969" forFont:symbolFont baseString:@"◁"];
     _symbolBackStroke = [[NSAttributedString alloc] initWithString:@"◁" attributes:symbolAttrsBackStroke];
-
-    NSMutableDictionary *symbolAttrsForwardFill = [symbolAttrs mutableCopy];
-    symbolAttrsForwardFill[NSGlyphInfoAttributeName] =
-      [NSGlyphInfo glyphInfoWithGlyphName:@"gid4967" forFont:symbolFont baseString:@"▶"];
     _symbolForwardFill = [[NSAttributedString alloc] initWithString:@"▶" attributes:symbolAttrsForwardFill];
-
-    NSMutableDictionary *symbolAttrsForwardStroke = [symbolAttrs mutableCopy];
-    symbolAttrsForwardStroke[NSGlyphInfoAttributeName] =
-      [NSGlyphInfo glyphInfoWithGlyphName:@"gid4968" forFont:symbolFont baseString:@"▷"];
     _symbolForwardStroke = [[NSAttributedString alloc] initWithString:@"▷" attributes:symbolAttrsForwardStroke];
   }
 }
@@ -492,6 +571,130 @@ static NSArray<NSAttributedString *> * formatLabels(NSAttributedString *format, 
   } else {
     _statusMessageType = @"mix";
   }
+}
+
+- (void)setAnnotationHeight:(CGFloat)height {
+  if (height > 0 && _linespace < height * 2) {
+    _linespace = height * 2;
+    NSMutableParagraphStyle *paragraphStyle = [_paragraphStyle mutableCopy];
+    paragraphStyle.paragraphSpacingBefore = height;
+    paragraphStyle.paragraphSpacing = height;
+    _paragraphStyle = paragraphStyle;
+  }
+}
+
+@end
+
+@interface SquirrelLayoutManager : NSLayoutManager <NSLayoutManagerDelegate>
+@end
+
+@implementation SquirrelLayoutManager
+
+- (void)drawGlyphsForGlyphRange:(NSRange)glyphRange
+                        atPoint:(NSPoint)origin {
+  NSRange charRange = [self characterRangeForGlyphRange:glyphRange actualGlyphRange:NULL];
+  NSTextContainer *textContainer = [self textContainerForGlyphAtIndex:glyphRange.location effectiveRange:NULL withoutAdditionalLayout:YES];
+  CGContextRef context = [[NSGraphicsContext currentContext] CGContext];
+  CGContextResetClip(context);
+  [self.textStorage enumerateAttributesInRange:charRange options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                                    usingBlock:^(NSDictionary<NSAttributedStringKey,id> *attrs, NSRange range, BOOL *stop) {
+    NSRange glyRange = [self glyphRangeForCharacterRange:range actualCharacterRange:NULL];
+    if (attrs[CFBridgingRelease(kCTRubyAnnotationAttributeName)]) {
+      CGContextSaveGState(context);
+      CGContextScaleCTM(context, 1.0, -1.0);
+      NSUInteger glyphIndex = glyRange.location;
+      NSRect lineRect = [self lineFragmentRectForGlyphAtIndex:glyphIndex effectiveRange:NULL withoutAdditionalLayout:YES];
+      CTLineRef line = CTLineCreateWithAttributedString((CFAttributedStringRef)
+                                                        [self.textStorage attributedSubstringFromRange:range]);
+      CFArrayRef runs = CTLineGetGlyphRuns(line);
+      for (CFIndex i = 0; i < CFArrayGetCount(runs); ++i) {
+        CGPoint position = [self locationForGlyphAtIndex:glyphIndex];
+        CTRunRef run = CFArrayGetValueAtIndex(runs, i);
+        CGAffineTransform matrix = CTRunGetTextMatrix(run);
+        matrix.tx = origin.x + NSMinX(lineRect) + position.x;
+        matrix.ty = - origin.y - NSMinY(lineRect) - position.y;
+        CGContextSetTextMatrix(context, matrix);
+        CTRunDraw(run, context, CFRangeMake(0, 0));
+        glyphIndex += CTRunGetGlyphCount(run);
+      }
+      CGContextRestoreGState(context);
+      CFRelease(line);
+    } else {
+      [super drawGlyphsForGlyphRange:glyRange atPoint:origin];
+    }
+  }];
+  CGContextClipToRect(context, textContainer.textView.superview.bounds);
+}
+
+- (NSControlCharacterAction)layoutManager:(NSLayoutManager *)layoutManager
+                          shouldUseAction:(NSControlCharacterAction)action
+               forControlCharacterAtIndex:(NSUInteger)charIndex {
+  if ([layoutManager.textStorage.string characterAtIndex:charIndex] == 0x8B &&
+      [layoutManager.textStorage attribute:CFBridgingRelease(kCTRubyAnnotationAttributeName) atIndex:charIndex effectiveRange:NULL]) {
+    return NSControlCharacterActionWhitespace;
+  } else {
+    return action;
+  }
+}
+
+- (NSRect)            layoutManager:(NSLayoutManager *)layoutManager
+  boundingBoxForControlGlyphAtIndex:(NSUInteger)glyphIndex
+                   forTextContainer:(NSTextContainer *)textContainer
+               proposedLineFragment:(NSRect)proposedRect
+                      glyphPosition:(NSPoint)glyphPosition
+                     characterIndex:(NSUInteger)charIndex {
+  CGFloat width = 0.0;
+  if ([layoutManager.textStorage.string characterAtIndex:charIndex] == 0x8B) {
+    NSRange rubyRange;
+    id rubyAnnotation = [layoutManager.textStorage attribute:CFBridgingRelease(kCTRubyAnnotationAttributeName) atIndex:charIndex effectiveRange:&rubyRange];
+    if (rubyAnnotation) {
+      NSAttributedString *rubyString = [layoutManager.textStorage attributedSubstringFromRange:rubyRange];
+      CTLineRef line = CTLineCreateWithAttributedString((CFAttributedStringRef)rubyString);
+      CGRect rubyRect = CTLineGetBoundsWithOptions(line, 0);
+      CFRelease(line);
+      NSSize baseSize = rubyString.size;
+      width = MAX(0.0, rubyRect.size.width - baseSize.width);
+    }
+  }
+  return NSMakeRect(glyphPosition.x, 0.0, width, glyphPosition.y);
+}
+
+@end
+
+API_AVAILABLE(macos(12.0))
+@interface SquirrelTextLayoutFragment : NSTextLayoutFragment
+@end
+
+@implementation SquirrelTextLayoutFragment
+
+- (void)drawAtPoint:(CGPoint)point
+          inContext:(CGContextRef)context {
+  BOOL isVertical = self.textLayoutManager.textContainer.layoutOrientation == NSTextLayoutOrientationVertical;
+  NSArray<NSTextLineFragment *> *lineFragments = self.textLineFragments;
+  for (NSTextLineFragment *lineFrag in lineFragments) {
+    CGRect lineRect = lineFrag.typographicBounds;
+    NSFont *refFont = [lineFrag.attributedString attribute:CFBridgingRelease(kCTBaselineReferenceInfoAttributeName) atIndex:0 effectiveRange:NULL][CFBridgingRelease(kCTBaselineReferenceFont)];
+    NSParagraphStyle *rulerStyle = [lineFrag.attributedString attribute:NSParagraphStyleAttributeName atIndex:0 effectiveRange:NULL];
+    CGFloat lineHeight = rulerStyle.minimumLineHeight;
+    CGFloat refFontHeight = refFont.ascender - refFont.descender;
+    CGPoint renderOrigin = CGPointMake(point.x + NSMinX(lineFrag.typographicBounds) + lineFrag.glyphOrigin.x,
+                                       point.y + NSMaxY(lineFrag.typographicBounds) - lineFrag.glyphOrigin.y - refFontHeight / 2 + (isVertical ? 0.0 : lineHeight / 2 + refFont.descender));
+    [lineFrag drawAtPoint:renderOrigin inContext:context];
+  }
+}
+
+@end
+
+API_AVAILABLE(macos(12.0))
+@interface SquirrelTextLayoutManager : NSTextLayoutManager <NSTextLayoutManagerDelegate>
+@end
+
+@implementation SquirrelTextLayoutManager
+
+- (NSTextLayoutFragment *)textLayoutManager:(NSTextLayoutManager *)textLayoutManager
+              textLayoutFragmentForLocation:(id<NSTextLocation>)location
+                              inTextElement:(NSTextElement *)textElement {
+  return [[SquirrelTextLayoutFragment alloc] initWithTextElement:textElement range:textElement.elementRange];
 }
 
 @end
@@ -569,8 +772,9 @@ SquirrelTheme *_darkTheme;
   }
 
   if (@available(macOS 12.0, *)) {
-    NSTextLayoutManager *textLayoutManager = [[NSTextLayoutManager alloc] init];
+    SquirrelTextLayoutManager *textLayoutManager = [[SquirrelTextLayoutManager alloc] init];
     textLayoutManager.usesFontLeading = NO;
+    textLayoutManager.delegate = textLayoutManager;
     NSTextContainer *textContainer = [[NSTextContainer alloc]
                                       initWithSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
     textContainer.lineFragmentPadding = 0;
@@ -581,10 +785,11 @@ SquirrelTheme *_darkTheme;
                                     textContainer:textLayoutManager.textContainer];
     _textStorage = _textView.textContentStorage.textStorage;
   } else {
-    NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+    SquirrelLayoutManager *layoutManager = [[SquirrelLayoutManager alloc] init];
     layoutManager.backgroundLayoutEnabled = YES;
     layoutManager.usesFontLeading = NO;
     layoutManager.typesetterBehavior = NSTypesetterLatestBehavior;
+    layoutManager.delegate = layoutManager;
     NSTextContainer *textContainer = [[NSTextContainer alloc]
                                       initWithContainerSize:NSMakeSize(NSViewWidthSizable, CGFLOAT_MAX)];
     textContainer.lineFragmentPadding = 0;
@@ -605,13 +810,13 @@ SquirrelTheme *_darkTheme;
   return self;
 }
 
-- (NSTextRange *)getTextRangeFromRange:(NSRange)range API_AVAILABLE(macos(12.0)) {
-  if (range.location == NSNotFound) {
+- (NSTextRange *)getTextRangeFromCharRange:(NSRange)charRange API_AVAILABLE(macos(12.0)) {
+  if (charRange.location == NSNotFound) {
     return nil;
   } else {
     NSTextContentStorage *contentStorage = _textView.textContentStorage;
-    id<NSTextLocation> startLocation = [contentStorage locationFromLocation:contentStorage.documentRange.location withOffset:range.location];
-    id<NSTextLocation> endLocation = [contentStorage locationFromLocation:startLocation withOffset:range.length];
+    id<NSTextLocation> startLocation = [contentStorage locationFromLocation:contentStorage.documentRange.location withOffset:charRange.location];
+    id<NSTextLocation> endLocation = [contentStorage locationFromLocation:startLocation withOffset:charRange.length];
     return [[NSTextRange alloc] initWithLocation:startLocation endLocation:endLocation];
   }
 }
@@ -630,7 +835,7 @@ SquirrelTheme *_darkTheme;
 // Get the rectangle containing the range of text, will first convert to glyph or text range, expensive to calculate
 - (NSRect)contentRectForRange:(NSRange)range {
   if (@available(macOS 12.0, *)) {
-    NSTextRange *textRange = [self getTextRangeFromRange:range];
+    NSTextRange *textRange = [self getTextRangeFromCharRange:range];
     __block NSRect contentRect = NSZeroRect;
     [_textView.textLayoutManager
      enumerateTextSegmentsInRange:textRange
@@ -748,7 +953,7 @@ static inline BOOL nearEmptyRect(NSRect rect) {
 // bodyRect is the complete line fragment in the middle if the range spans no less than one full line
 - (void)multilineRectForRange:(NSRange)charRange leadingRect:(NSRectPointer)leadingRect bodyRect:(NSRectPointer)bodyRect trailingRect:(NSRectPointer)trailingRect {
   if (@available(macOS 12.0, *)) {
-    NSTextRange *textRange = [self getTextRangeFromRange:charRange];
+    NSTextRange *textRange = [self getTextRangeFromCharRange:charRange];
     CGFloat lineSpacing = [[_textStorage attribute:NSParagraphStyleAttributeName atIndex:charRange.location effectiveRange:NULL] lineSpacing];
     NSMutableArray<NSValue *> *lineRects = [[NSMutableArray alloc] initWithCapacity:2];
     NSMutableArray<NSTextRange *> *lineRanges = [[NSMutableArray alloc] initWithCapacity:2];
@@ -919,10 +1124,14 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
       candidateBlockRect.origin.y += theme.linespace / 2;
     }
   }
-  if (!theme.linear && pagingRange.length > 0) {
+  if (pagingRange.length > 0) {
     pagingLineRect = [self contentRectForRange:pagingRange];
-    pagingLineRect.origin.y -= theme.pagingParagraphStyle.paragraphSpacingBefore;
-    pagingLineRect.size.height += theme.pagingParagraphStyle.paragraphSpacingBefore;
+    if (theme.linear) {
+      pagingLineRect = NSOffsetRect(pagingLineRect, _insets.left, theme.edgeInset.height);
+    } else {
+      pagingLineRect.origin.y -= theme.pagingParagraphStyle.paragraphSpacingBefore;
+      pagingLineRect.size.height += theme.pagingParagraphStyle.paragraphSpacingBefore;
+    }
   }
 
   [NSBezierPath setDefaultLineWidth:0];
@@ -1034,7 +1243,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
             [candidateVertGridPath closePath];
           }
           CGFloat tailEdge = NSMaxX(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
-          CGFloat tabPosition = pow(2, ceil(log2((tailEdge - leadOrigin.x) / tabInterval))) * tabInterval + leadOrigin.x;
+          CGFloat tabPosition = ceil((tailEdge - leadOrigin.x) / tabInterval / 2) * tabInterval * 2 + leadOrigin.x;
           if (i == _candidateRanges.count - 1 && pagingRange.length > 0 && tailEdge < pagingLineRect.origin.x) {
             tabPosition = MIN(tabPosition, floor((pagingLineRect.origin.x - leadOrigin.x) / tabInterval) * tabInterval + leadOrigin.x);
           }
@@ -1137,10 +1346,10 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   if (theme.backgroundImage) {
     CAShapeLayer *backgroundImageLayer = [[CAShapeLayer alloc] init];
     if (theme.vertical) {
-      const CGAffineTransform rotate = CGAffineTransformMakeRotation(-M_PI / 2);
+      const CGAffineTransform rotate = CGAffineTransformMakeRotation(-M_PI_2);
       backgroundImageLayer.path = CFAutorelease(CGPathCreateCopyByTransformingPath([textContainerPath quartzPath], &rotate));
       backgroundImageLayer.fillColor = [theme.backgroundImage CGColor];
-      [backgroundImageLayer setAffineTransform:CGAffineTransformMakeRotation(M_PI / 2)];
+      [backgroundImageLayer setAffineTransform:CGAffineTransformInvert(rotate)];
     } else {
       backgroundImageLayer.path = [textContainerPath quartzPath];
       backgroundImageLayer.fillColor = [theme.backgroundImage CGColor];
@@ -1322,7 +1531,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   NSMutableDictionary *defaultAttrs = [[NSMutableDictionary alloc] init];
   // prevent mac terminal from hijacking non-alphabetic keys on non-inline mode
   defaultAttrs[IMKCandidatesSendServerKeyEventFirst] = @(YES);
-  
+
   NSMutableDictionary *attrs = [defaultAttrs mutableCopy];
   attrs[NSForegroundColorAttributeName] = [NSColor controlTextColor];
   attrs[NSFontAttributeName] = userFont;
@@ -1571,7 +1780,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   }
   if (theme.tabled) {
     CGFloat tabInterval = theme.separatorWidth * 2;
-    _textWidthLimit = floor((_textWidthLimit + theme.separatorWidth) / tabInterval) * tabInterval - theme.separatorWidth;
+    _textWidthLimit = round((_textWidthLimit + theme.separatorWidth) / tabInterval / 2) * tabInterval * 2 - theme.separatorWidth;
   }
   _view.textView.textContainer.size = NSMakeSize(_textWidthLimit, CGFLOAT_MAX);
 }
@@ -1588,6 +1797,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   SquirrelTheme *theme = _view.currentTheme;
   NSTextContainer *textContainer = _view.textView.textContainer;
   NSEdgeInsets insets = _view.insets;
+  CGFloat offsetHeight = MAX(kOffsetHeight, round(MAX(NSWidth(_position), NSHeight(_position)) / 2));
   CGFloat textWidthRatio = MIN(1.0, 1.0 / (theme.vertical ? 4 : 3) + [theme.attrs[NSFontAttributeName] pointSize] / 144.0);
   NSRect screenRect = _screen.visibleFrame;
   CGFloat textHeightLimit = (theme.vertical ? NSWidth(screenRect) : NSHeight(screenRect)) * textWidthRatio - insets.top - insets.bottom;
@@ -1602,8 +1812,8 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
     }
   }
   if (theme.rememberSize) { // remember panel size (fix the top leading anchor of the panel in screen coordiantes)
-    if ((theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + kOffsetHeight)
-         : (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + kOffsetHeight)
+    if ((theme.vertical ? (NSMinY(_position) - NSMinY(screenRect) <= NSHeight(screenRect) * textWidthRatio + offsetHeight)
+         : (sweepVertical ? (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + offsetHeight)
             : (NSMinX(_position) + MAX(NSWidth(maxContentRect), _maxSize.width) + insets.right > NSMaxX(screenRect)))) &&
         theme.lineLength == 0) {
       if (NSWidth(maxContentRect) >= _maxSize.width) {
@@ -1613,8 +1823,8 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
         [textContainer setSize:NSMakeSize(_maxSize.width, textHeightLimit)];
       }
     }
-    if (theme.vertical ? (NSMinX(_position) - NSMinX(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? kOffsetHeight : 0))
-        : (NSMinY(_position) - NSMinY(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? 0 : kOffsetHeight))) {
+    if (theme.vertical ? (NSMinX(_position) - NSMinX(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? offsetHeight : 0))
+        : (NSMinY(_position) - NSMinY(screenRect) < MAX(NSHeight(maxContentRect), _maxSize.height) + insets.top + insets.bottom + (sweepVertical ? 0 : offsetHeight))) {
       if (NSHeight(maxContentRect) >= _maxSize.height) {
         _maxSize.height = NSHeight(maxContentRect);
       } else {
@@ -1626,57 +1836,58 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   _initPosition |= NSIntersectsRect(self.frame, _position);
   NSRect windowRect;
   if (theme.vertical) {
-    windowRect.size = NSMakeSize(NSHeight(maxContentRect) + insets.top + insets.bottom,
-                                 NSWidth(maxContentRect) + insets.left + insets.right);
-    if (_initPosition ) {
+    windowRect = NSMakeRect(NSMaxX(self.frame) - NSHeight(maxContentRect) - insets.top - insets.bottom,
+                            NSMaxY(self.frame) - NSWidth(maxContentRect) - insets.left - insets.right,
+                            NSHeight(maxContentRect) + insets.top + insets.bottom,
+                            NSWidth(maxContentRect) + insets.left + insets.right);
+    _initPosition |= NSIntersectsRect(windowRect, _position);
+    if (_initPosition) {
       // To avoid jumping up and down while typing, use the lower screen when typing on upper, and vice versa
-      if (NSMinY(_position) - NSMinY(screenRect) > NSHeight(screenRect) * textWidthRatio + kOffsetHeight) {
-        windowRect.origin.y = NSMinY(_position) + (sweepVertical ? insets.left : -kOffsetHeight) - NSHeight(windowRect);
+      if (NSMinY(_position) - NSMinY(screenRect) > NSHeight(screenRect) * textWidthRatio + offsetHeight) {
+        windowRect.origin.y = NSMinY(_position) + (sweepVertical ? insets.left : -offsetHeight) - NSHeight(windowRect);
       } else {
-        windowRect.origin.y = NSMaxY(_position) + (sweepVertical ? 0 : kOffsetHeight);
+        windowRect.origin.y = NSMaxY(_position) + (sweepVertical ? 0 : offsetHeight);
       }
       // Make the right edge of candidate block fixed at the left of cursor
-      windowRect.origin.x = NSMinX(_position) - (sweepVertical ? kOffsetHeight : 0) - NSWidth(windowRect);
+      windowRect.origin.x = NSMinX(_position) - (sweepVertical ? offsetHeight : 0) - NSWidth(windowRect);
       if (!sweepVertical && _view.preeditRange.length > 0) {
         NSRect preeditRect = [_view contentRectForRange:_view.preeditRange];
         windowRect.origin.x += round(NSHeight(preeditRect) + [theme.preeditAttrs[NSFontAttributeName] descender] + insets.top);
       }
-    } else {
-      windowRect.origin.x = NSMaxX(self.frame) - NSWidth(windowRect);
-      windowRect.origin.y = NSMaxY(self.frame) - NSHeight(windowRect);
     }
   } else {
-    windowRect.size = NSMakeSize(NSWidth(maxContentRect) + insets.left + insets.right,
-                                 NSHeight(maxContentRect) + insets.top + insets.bottom);
+    windowRect = NSMakeRect(NSMinX(self.frame),
+                            NSMaxY(self.frame) - NSHeight(maxContentRect) - insets.top - insets.bottom,
+                            NSWidth(maxContentRect) + insets.left + insets.right,
+                            NSHeight(maxContentRect) + insets.top + insets.bottom);
+    _initPosition |= NSIntersectsRect(windowRect, _position);
     if (_initPosition) {
       if (sweepVertical) {
         // To avoid jumping left and right while typing, use the lefter screen when typing on righter, and vice versa
-        if (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + kOffsetHeight) {
-          windowRect.origin.x = NSMinX(_position) - kOffsetHeight - NSWidth(windowRect);
+        if (NSMinX(_position) - NSMinX(screenRect) > NSWidth(screenRect) * textWidthRatio + offsetHeight) {
+          windowRect.origin.x = NSMinX(_position) - offsetHeight - NSWidth(windowRect);
         } else {
-          windowRect.origin.x = NSMaxX(_position) + kOffsetHeight;
+          windowRect.origin.x = NSMaxX(_position) + offsetHeight;
         }
         windowRect.origin.y = NSMinY(_position) - NSHeight(windowRect);
       } else {
         windowRect.origin = NSMakePoint(NSMinX(_position) - insets.left,
-                                        NSMinY(_position) - kOffsetHeight - NSHeight(windowRect));
+                                        NSMinY(_position) - offsetHeight - NSHeight(windowRect));
       }
-    } else {
-      windowRect.origin = NSMakePoint(NSMinX(self.frame), NSMaxY(self.frame) - NSHeight(windowRect));
     }
   }
 
   if (NSMaxX(windowRect) > NSMaxX(screenRect)) {
-    windowRect.origin.x = (_initPosition && sweepVertical ? NSMinX(_position) - kOffsetHeight : NSMaxX(screenRect)) - NSWidth(windowRect);
+    windowRect.origin.x = (_initPosition && sweepVertical ? NSMinX(_position) - offsetHeight : NSMaxX(screenRect)) - NSWidth(windowRect);
   }
   if (NSMinX(windowRect) < NSMinX(screenRect)) {
-    windowRect.origin.x = _initPosition && sweepVertical ? NSMaxX(_position) + kOffsetHeight : NSMinX(screenRect);
+    windowRect.origin.x = _initPosition && sweepVertical ? NSMaxX(_position) + offsetHeight : NSMinX(screenRect);
   }
   if (NSMinY(windowRect) < NSMinY(screenRect)) {
-    windowRect.origin.y = _initPosition && !sweepVertical ? NSMaxY(_position) + kOffsetHeight : NSMinY(screenRect);
+    windowRect.origin.y = _initPosition && !sweepVertical ? NSMaxY(_position) + offsetHeight : NSMinY(screenRect);
   }
   if (NSMaxY(windowRect) > NSMaxY(screenRect)) {
-    windowRect.origin.y = (_initPosition && !sweepVertical ? NSMinY(_position) - kOffsetHeight : NSMaxY(screenRect)) - NSHeight(windowRect);
+    windowRect.origin.y = (_initPosition && !sweepVertical ? NSMinY(_position) - offsetHeight : NSMaxY(screenRect)) - NSHeight(windowRect);
   }
 
   if (theme.vertical) {
@@ -1739,31 +1950,38 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
                            style.minimumLineHeight);
   lineHeight = style.maximumLineHeight > 0 ? MIN(lineHeight, style.maximumLineHeight) : lineHeight;
   if (@available(macOS 12.0, *)) {
-    NSUInteger i = charRange.location;
-    NSRange runRange = NSMakeRange(i, 0);
-    while (i < NSMaxRange(charRange)) {
-      NSDictionary *attrs = [_view.textStorage attributesAtIndex:i
-                                           longestEffectiveRange:&runRange inRange:charRange];
-      NSNumber *baselineOffset = attrs[NSBaselineOffsetAttributeName];
-      CGFloat offset = (baselineOffset ? baselineOffset.doubleValue : 0.0) + lineHeight / 2 - refFontHeight / 2;
+    [_view.textStorage
+     enumerateAttributesInRange:charRange
+                        options:NSAttributedStringEnumerationLongestEffectiveRangeNotRequired
+                     usingBlock:^(NSDictionary<NSAttributedStringKey,id> *attrs, NSRange range, BOOL *stop) {
+      NSFont *refFont = attrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)][CFBridgingRelease(kCTBaselineReferenceFont)];
+      CGFloat refFontHeight = refFont.ascender - refFont.descender;
+      CGFloat lineHeight = MAX(style.lineHeightMultiple > 0 ? refFontHeight * style.lineHeightMultiple : refFontHeight,
+                               style.minimumLineHeight);
+      lineHeight = style.maximumLineHeight > 0 ? MIN(lineHeight, style.maximumLineHeight) : lineHeight;
+      CGFloat baselineOffset = [attrs[NSBaselineOffsetAttributeName] doubleValue] + lineHeight / 2 - refFontHeight / 2;
       NSNumber *superscript = attrs[NSSuperscriptAttributeName];
       if (superscript) {
         NSFont *runFont = verticalLayout ? [attrs[NSFontAttributeName] verticalFont] : attrs[NSFontAttributeName];
-        offset += superscript.integerValue == 1 ? runFont.descender / 3 : runFont.ascender / 3;
+        baselineOffset += superscript.integerValue == 1 ? runFont.descender / 3 : runFont.ascender / 3;
       }
       [_view.textStorage addAttribute:NSBaselineOffsetAttributeName
-                                value:@(offset) range:runRange];
-      i = NSMaxRange(runRange);
-    }
+                                value:@(baselineOffset) range:range];
+    }];
   } else {
     NSLayoutManager *layoutManager = _view.textView.layoutManager;
     NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
     [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
-      usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer *textContainer, NSRange glyphRange, BOOL *stop) {
-      CGFloat alignment = usedRect.origin.y - rect.origin.y + (verticalLayout ? lineHeight / 2 : lineHeight / 2 + refFont.xHeight / 2);
+      usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer *textContainer, NSRange range, BOOL *stop) {
+      NSFont *refFont = [layoutManager.textStorage attribute:CFBridgingRelease(kCTBaselineReferenceInfoAttributeName) atIndex:range.location effectiveRange:NULL][CFBridgingRelease(kCTBaselineReferenceFont)];
+      CGFloat refFontHeight = refFont.ascender - refFont.descender;
+      CGFloat lineHeight = MAX(style.lineHeightMultiple > 0 ? refFontHeight * style.lineHeightMultiple : refFontHeight,
+                               style.minimumLineHeight);
+      lineHeight = style.maximumLineHeight > 0 ? MIN(lineHeight, style.maximumLineHeight) : lineHeight;
+      CGFloat alignment = usedRect.origin.y - rect.origin.y + (verticalLayout ? lineHeight / 2 : refFont.ascender + lineHeight / 2 - refFontHeight / 2);
       // typesetting glyphs
-      NSUInteger j = glyphRange.location;
-      while (j < NSMaxRange(glyphRange)) {
+      NSUInteger j = range.location;
+      while (j < NSMaxRange(range)) {
         NSPoint runGlyphPosition = [layoutManager locationForGlyphAtIndex:j];
         NSUInteger runCharLocation = [layoutManager characterIndexForGlyphAtIndex:j];
         NSRange runRange = [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j];
@@ -1803,11 +2021,11 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   }
 }
 
-- (BOOL)shouldBreakLineWithRange:(NSRange)range {
+- (BOOL)shouldBreakLineBeforeRange:(NSRange)range {
   [_view.textStorage fixFontAttributeInRange:range];
+  NSUInteger __block lineCount = 0;
   if (@available(macOS 12.0, *)) {
-    NSTextRange *textRange = [_view getTextRangeFromRange:range];
-    NSUInteger __block lineCount = 0;
+    NSTextRange *textRange = [_view getTextRangeFromCharRange:range];
     [_view.textView.textLayoutManager
      enumerateTextSegmentsInRange:textRange
                              type:NSTextLayoutManagerSegmentTypeStandard
@@ -1816,27 +2034,21 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
       ++lineCount;
       return YES;
     }];
-    return lineCount > 1;
   } else {
     NSRange glyphRange = [_view.textView.layoutManager glyphRangeForCharacterRange:range
                                                               actualCharacterRange:NULL];
-    NSUInteger loc = glyphRange.location;
-    NSRange lineRange = NSMakeRange(loc, 0);
-    NSUInteger lineCount = 0;
-    while (loc < NSMaxRange(glyphRange)) {
-      [_view.textView.layoutManager lineFragmentUsedRectForGlyphAtIndex:loc
-                                                         effectiveRange:&lineRange];
+    [_view.textView.layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
+      usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer *textContainer, NSRange lineRange, BOOL *stop) {
       ++lineCount;
-      loc = NSMaxRange(lineRange);
-    }
-    return lineCount > 1;
+    }];
   }
+  return lineCount > 1;
 }
 
 - (BOOL)shouldUseTabsInRange:(NSRange)range maxLineLength:(CGFloat *)maxLineLength {
   [_view.textStorage fixFontAttributeInRange:range];
   if (@available(macOS 12.0, *)) {
-    NSTextRange *textRange = [_view getTextRangeFromRange:range];
+    NSTextRange *textRange = [_view getTextRangeFromCharRange:range];
     CGFloat __block rangeEdge;
     [_view.textView.textLayoutManager
      enumerateTextSegmentsInRange:textRange
@@ -1915,10 +2127,6 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   if (theme.lineLength > 0) {
     _maxSize.width = MIN(theme.lineLength, _textWidthLimit);
   }
-  NSEdgeInsets insets = NSEdgeInsetsMake(theme.edgeInset.height + theme.linespace / 2,
-                                         theme.edgeInset.width + theme.separatorWidth / 2,
-                                         theme.edgeInset.height + theme.linespace / 2,
-                                         theme.edgeInset.width + theme.separatorWidth / 2);
 
   NSTextStorage *text = _view.textStorage;
   [text setAttributedString:[[NSMutableAttributedString alloc] init]];
@@ -1957,11 +2165,9 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
     preeditRange = NSMakeRange(0, preeditLine.length);
     [text appendAttributedString:preeditLine];
 
-    insets.top = theme.edgeInset.height;
     if (numCandidates > 0) {
       [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.preeditAttrs]];
     } else {
-      insets.bottom = theme.edgeInset.height;
       goto typesetter;
     }
   }
@@ -1983,13 +2189,28 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
     [item replaceCharactersInRange:candidateRange withString:candidates[idx]];
 
     NSRange commentRange = [item.string rangeOfString:kTipSpecifier];
-    if (idx < comments.count && [comments[idx] length] != 0) {
+    if ([comments[idx] length] != 0) {
       [item replaceCharactersInRange:commentRange withString:[@" " stringByAppendingString:comments[idx]]];
     } else {
       [item deleteCharactersInRange:commentRange];
     }
 
     [item formatMarkDown];
+    CGFloat annotationHeight = [item annotateRubyInRange:NSMakeRange(0, item.length) verticalLayout:theme.vertical maximumLength:_textWidthLimit];
+    if (annotationHeight * 2 > theme.linespace) {
+      [self setAnnotationHeight:annotationHeight];
+      paragraphStyleCandidate = [theme.paragraphStyle copy];
+      [text enumerateAttribute:NSParagraphStyleAttributeName inRange:NSMakeRange(candidateBlockStart, text.length - candidateBlockStart) options:0
+                    usingBlock:^(NSParagraphStyle *value, NSRange range, BOOL *stop) {
+        NSMutableParagraphStyle *style = [value mutableCopy];
+        style.paragraphSpacing = annotationHeight;
+        style.paragraphSpacingBefore = annotationHeight;
+        [text addAttribute:NSParagraphStyleAttributeName value:style range:range];
+      }];
+    }
+    if ([comments[idx] length] != 0 && [item.string hasSuffix:@" "]) {
+      [item deleteCharactersInRange:NSMakeRange(item.length - 1, 1)];
+    }
     if (!theme.linear) {
       paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
       paragraphStyleCandidate.headIndent = labelWidth;
@@ -2001,33 +2222,32 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
     // determine if the line is too wide and line break is needed, based on screen size.
     if (lineStart != text.length) {
       NSUInteger separatorStart = text.length;
-      NSMutableAttributedString *separator = [[NSMutableAttributedString alloc] initWithString:theme.linear ? (theme.tabled ? [kFullWidthSpace stringByAppendingString:@"\t"] : kFullWidthSpace) : @"\n" attributes:theme.commentAttrs];
-      if (theme.tabled) {
+      // separator: linear = "　"; tabled = "　\t"; stacked = "\n"
+      NSMutableAttributedString *separator = [theme.separator mutableCopy];
+      if (theme.tabled) { // fill gaps to make cells 2^n tabs wide
         CGFloat widthInTabs = (ceil([text attributedSubstringFromRange:candidateRanges.lastObject.rangeValue].size.width) + theme.separatorWidth) / tabInterval;
-        NSUInteger numPaddingTabs = pow(2, ceil(log2(widthInTabs))) - ceil(widthInTabs);
+        NSUInteger numPaddingTabs = ceil(widthInTabs / 2) * 2 - ceil(widthInTabs);
         [separator replaceCharactersInRange:NSMakeRange(2, 0) withString:[@"\t" stringByPaddingToLength:numPaddingTabs withString:@"\t" startingAtIndex:0]];
       }
-      [separator addAttribute:NSVerticalGlyphFormAttributeName value:@(NO)
-                        range:NSMakeRange(0, separator.length)];
-      NSRange separatorRange = NSMakeRange(separatorStart, separator.length);
       [text appendAttributedString:separator];
       [text appendAttributedString:item];
-      if (theme.linear && (ceil(item.size.width) > _textWidthLimit || [self shouldBreakLineWithRange:NSMakeRange(lineStart, text.length - lineStart)])) {
-        [text replaceCharactersInRange:separatorRange withString:theme.tabled ? [kFullWidthSpace stringByAppendingString:@"\n"] : @"\n"];
-        lineStart = separatorStart + (theme.tabled ? 2 : 1);
+      if (theme.linear && (ceil(item.size.width + theme.separatorWidth) > _textWidthLimit ||
+          [self shouldBreakLineBeforeRange:NSMakeRange(lineStart, text.length - lineStart)])) {
+        [text replaceCharactersInRange:NSMakeRange(separatorStart + 1, separator.length - 1) withString:@"\n"];
+        lineStart = separatorStart + 2;
       }
     } else { // at the start of a new line, no need to determine line break
       [text appendAttributedString:item];
     }
     // for linear layout, middle-truncate candidates that are longer than one line
-    if (theme.linear && ceil(item.size.width) > _textWidthLimit) {
+    if (theme.linear && ceil(item.size.width + theme.separatorWidth) > _textWidthLimit) {
       if (idx < numCandidates - 1 || theme.showPaging) {
         [text appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n" attributes:theme.commentAttrs]];
       }
       NSMutableParagraphStyle *paragraphStyleTruncating = [paragraphStyleCandidate mutableCopy];
       paragraphStyleTruncating.lineBreakMode = NSLineBreakByTruncatingMiddle;
       [text addAttribute:NSParagraphStyleAttributeName value:paragraphStyleTruncating range:NSMakeRange(lineStart, item.length)];
-      [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(lineStart, text.length - lineStart - 1)]];
+      [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(lineStart, item.length)]];
       lineStart = text.length;
     } else {
       [candidateRanges addObject:[NSValue valueWithRange:NSMakeRange(text.length - item.length, item.length)]];
@@ -2048,30 +2268,27 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
       [paging addAttributes:theme.pagingHighlightedAttrs range:NSMakeRange(paging.length - 1, 1)];
     }
 
-    [text appendAttributedString:[[NSAttributedString alloc] initWithString:theme.linear ? (theme.tabled ? [kFullWidthSpace stringByAppendingString:@"\t"] : kFullWidthSpace) : @"\n" attributes:theme.commentAttrs]];
+    [text appendAttributedString:theme.separator];
     NSUInteger pagingStart = text.length;
     CGFloat maxLineLength;
     [text appendAttributedString:paging];
     if (theme.linear) {
-      if ([self shouldBreakLineWithRange:NSMakeRange(lineStart, text.length - lineStart)]) {
-        [text replaceCharactersInRange:NSMakeRange(pagingStart - 1, 1) withString:theme.tabled ? @"\n\t" : [@"\n" stringByAppendingString:kFullWidthSpace]];
+      if ([self shouldBreakLineBeforeRange:NSMakeRange(lineStart, text.length - lineStart)]) {
+        [text replaceCharactersInRange:NSMakeRange(pagingStart - 1, 0) withString:@"\n"];
         lineStart = pagingStart;
         pagingStart += 1;
       }
       if ([self shouldUseTabsInRange:NSMakeRange(pagingStart, paging.length) maxLineLength:&maxLineLength]) {
+        [text replaceCharactersInRange:NSMakeRange(pagingStart - 1, 1) withString:@"\t"];
         paragraphStyleCandidate = [theme.paragraphStyle mutableCopy];
-        if (theme.tabled) {
-          maxLineLength = ceil(maxLineLength / tabInterval) * tabInterval - theme.separatorWidth;
-        } else {
-          [text replaceCharactersInRange:NSMakeRange(pagingStart - 1, 1) withString:@"\t"];
-        }
+        paragraphStyleCandidate.tabStops = @[];
         CGFloat candidateEndPosition = ceil([text attributedSubstringFromRange:NSMakeRange(lineStart, pagingStart - 1 - lineStart)].size.width);
-        NSMutableArray<NSTextTab *> *tabStops = [[NSMutableArray alloc] init];
-        for (NSUInteger i = 1; tabInterval * i < candidateEndPosition; ++i) {
-          [tabStops addObject:[[NSTextTab alloc] initWithType:NSLeftTabStopType location:tabInterval * i]];
+        CGFloat textPostion = tabInterval;
+        while (textPostion < candidateEndPosition) {
+          [paragraphStyleCandidate addTabStop:[[NSTextTab alloc] initWithType:NSLeftTabStopType location:textPostion]];
+          textPostion += tabInterval;
         }
-        [tabStops addObject:[[NSTextTab alloc] initWithType:NSRightTabStopType location:maxLineLength]];
-        paragraphStyleCandidate.tabStops = tabStops;
+        [paragraphStyleCandidate addTabStop:[[NSTextTab alloc] initWithType:NSRightTabStopType location:_textWidthLimit]];
       }
       [text addAttribute:NSParagraphStyleAttributeName
                    value:paragraphStyleCandidate
@@ -2087,28 +2304,37 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
       [text addAttribute:NSParagraphStyleAttributeName
                    value:paragraphStylePaging
                    range:NSMakeRange(pagingStart, paging.length)];
-      insets.bottom = theme.edgeInset.height;
     }
     pagingRange = NSMakeRange(text.length - paging.length, paging.length);
   }
 
 typesetter:
   [text ensureAttributesAreFixedInRange:NSMakeRange(0, text.length)];
+  NSEdgeInsets insets = NSEdgeInsetsMake(theme.edgeInset.height + theme.linespace / 2,
+                                         theme.edgeInset.width + theme.separatorWidth / 2,
+                                         theme.edgeInset.height + theme.linespace / 2,
+                                         theme.edgeInset.width + theme.separatorWidth / 2);
   if (preedit) {
     [self setLayoutForRange:preeditRange
           withReferenceFont:(theme.vertical ? [theme.preeditAttrs[NSFontAttributeName] verticalFont] : theme.preeditAttrs[NSFontAttributeName])
              paragraphStyle:theme.preeditParagraphStyle];
+    insets.top = theme.edgeInset.height;
   }
   if (numCandidates > 0) {
     NSRange candidateBlockRange = NSMakeRange(candidateBlockStart, (!theme.linear && pagingRange.length > 0 ? pagingRange.location : text.length) - candidateBlockStart);
+    NSFont *refFont = getTallestFont(@[theme.attrs[NSFontAttributeName], theme.labelAttrs[NSFontAttributeName],
+                                       theme.commentAttrs[NSFontAttributeName]], theme.vertical);
     [self setLayoutForRange:candidateBlockRange
-          withReferenceFont:(theme.vertical ? [theme.attrs[NSFontAttributeName] verticalFont] : theme.attrs[NSFontAttributeName])
+          withReferenceFont:(theme.vertical ? refFont.verticalFont : refFont)
              paragraphStyle:theme.paragraphStyle];
     if (!theme.linear && pagingRange.length > 0) {
       [self setLayoutForRange:pagingRange
             withReferenceFont:theme.pagingAttrs[NSFontAttributeName]
                paragraphStyle:theme.pagingParagraphStyle];
+      insets.bottom = theme.edgeInset.height;
     }
+  } else {
+    insets.bottom = theme.edgeInset.height;
   }
 
   // text done!
@@ -2124,7 +2350,8 @@ typesetter:
   [self show];
 }
 
-- (void)updateStatusLong:(NSString *)messageLong statusShort:(NSString *)messageShort {
+- (void)updateStatusLong:(NSString *)messageLong 
+             statusShort:(NSString *)messageShort {
   SquirrelTheme *theme = _view.currentTheme;
   if ([theme.statusMessageType isEqualToString:@"mix"]) {
     if (messageShort) {
@@ -2251,6 +2478,19 @@ static CGFloat getLineHeight(NSFont *font, BOOL vertical) {
   return lineHeight;
 }
 
+static NSFont * getTallestFont(NSArray<NSFont *>*fonts, BOOL vertical) {
+  NSFont *tallestFont;
+  CGFloat maxHeight = 0.0;
+  for (NSFont *font in fonts) {
+    CGFloat fontHeight = getLineHeight(font, vertical);
+    if (fontHeight > maxHeight) {
+      tallestFont = font;
+      maxHeight = fontHeight;
+    }
+  }
+  return tallestFont;
+}
+
 static void updateCandidateListLayout(BOOL *isLinearCandidateList, BOOL *isTabledCandidateList, SquirrelConfig *config, NSString *prefix) {
   NSString *candidateListLayout = [config getString:[prefix stringByAppendingString:@"/candidate_list_layout"]];
   if ([candidateListLayout isEqualToString:@"stacked"]) {
@@ -2287,6 +2527,11 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   }
 }
 
+- (void)setAnnotationHeight:(CGFloat)height {
+  [[_view selectTheme:NO] setAnnotationHeight:height];
+  [[_view selectTheme:YES] setAnnotationHeight:height];
+}
+
 - (void)loadLabelConfig:(SquirrelConfig *)config {
   SquirrelTheme *theme = [_view selectTheme:NO];
   [SquirrelPanel updateTheme:theme withLabelConfig:config];
@@ -2294,7 +2539,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   [SquirrelPanel updateTheme:darkTheme withLabelConfig:config];
 }
 
-+ (void)updateTheme:(SquirrelTheme *)theme withLabelConfig:(SquirrelConfig *)config {
++ (void)updateTheme:(SquirrelTheme *)theme
+    withLabelConfig:(SquirrelConfig *)config {
   int menuSize = [config getInt:@"menu/page_size"] ? : 5;
   NSMutableArray<NSString *> *labels = [[NSMutableArray alloc] initWithCapacity:menuSize];
   NSString *selectKeys = [config getString:@"menu/alternative_select_keys"];
@@ -2320,13 +2566,17 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   [theme setLabels:labels];
 }
 
-- (void)loadConfig:(SquirrelConfig *)config forDarkMode:(BOOL)isDark {
+- (void)loadConfig:(SquirrelConfig *)config
+       forDarkMode:(BOOL)isDark {
   SquirrelTheme *theme = [_view selectTheme:isDark];
   NSSet<NSString *> *styleOptions = [NSSet setWithArray:self.optionSwitcher.optionStates];
   [SquirrelPanel updateTheme:theme withConfig:config styleOptions:styleOptions forDarkMode:isDark];
 }
 
-+ (void)updateTheme:(SquirrelTheme *)theme withConfig:(SquirrelConfig *)config styleOptions:(NSSet<NSString *> *)styleOptions forDarkMode:(BOOL)isDark {
++ (void)updateTheme:(SquirrelTheme *)theme
+         withConfig:(SquirrelConfig *)config
+       styleOptions:(NSSet<NSString *> *)styleOptions
+        forDarkMode:(BOOL)isDark {
   // INTERFACE
   BOOL linear = NO;
   BOOL tabled = NO;
@@ -2524,11 +2774,20 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   pagingAttrs[NSFontAttributeName] = linear ? labelFont : pagingFont;
   statusAttrs[NSFontAttributeName] = commentFont;
 
-  NSFont *refFont = CFBridgingRelease(CTFontCreateForString((CTFontRef)font, (CFStringRef)kFullWidthSpace, CFRangeMake(0, 1)));
+  NSFont *refFont = getTallestFont(@[font, labelFont, commentFont], vertical);
+  refFont = CFBridgingRelease(CTFontCreateForString((CTFontRef)refFont, (CFStringRef)kFullWidthSpace, CFRangeMake(0, 1)));
   labelAttrs[CFBridgingRelease(kCTBaselineClassAttributeName)] = CFBridgingRelease(kCTBaselineClassIdeographicCentered);
   labelHighlightedAttrs[CFBridgingRelease(kCTBaselineClassAttributeName)] = CFBridgingRelease(kCTBaselineClassIdeographicCentered);
-  labelAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): refFont};
-  labelHighlightedAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): refFont};
+  labelAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  labelHighlightedAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  attrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  highlightedAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  commentAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  commentHighlightedAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  preeditAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  preeditHighlightedAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? refFont.verticalFont : refFont};
+  pagingAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): linear ? labelFont : pagingFont};
+  statusAttrs[CFBridgingRelease(kCTBaselineReferenceInfoAttributeName)] = @{CFBridgingRelease(kCTBaselineReferenceFont): vertical ? commentFont.verticalFont : commentFont};
 
   attrs[NSBaselineOffsetAttributeName] = baseOffset;
   highlightedAttrs[NSBaselineOffsetAttributeName] = baseOffset;
@@ -2550,9 +2809,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   pagingAttrs[NSVerticalGlyphFormAttributeName] = @(NO);
 
   // CHROMATICS refinement
-  if (theme.translucency > 0 &&
-      ((backgroundColor.brightnessComponent >= 0.5 && isDark) ||
-       (backgroundColor.brightnessComponent < 0.5 && !isDark))) {
+  if (theme.translucency > 0 && ABS(backgroundColor.brightnessComponent - isDark) <= 0.4) {
     backgroundColor = inverseColor(backgroundColor);
     borderColor = inverseColor(borderColor);
     preeditBackgroundColor = inverseColor(preeditBackgroundColor);
