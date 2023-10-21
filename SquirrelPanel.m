@@ -19,14 +19,14 @@
       BOOL didClosePath = YES;
       for (NSUInteger i = 0; i < numElements; i++) {
         switch ([self elementAtIndex:i associatedPoints:points]) {
-          case NSMoveToBezierPathElement:
+          case NSBezierPathElementMoveTo:
             CGPathMoveToPoint(path, NULL, points[0].x, points[0].y);
             break;
-          case NSLineToBezierPathElement:
+          case NSBezierPathElementLineTo:
             CGPathAddLineToPoint(path, NULL, points[0].x, points[0].y);
             didClosePath = NO;
             break;
-          case NSCurveToBezierPathElement:
+          case NSBezierPathElementCurveTo:
             CGPathAddCurveToPoint(path, NULL, points[0].x, points[0].y,
                                   points[1].x, points[1].y,
                                   points[2].x, points[2].y);
@@ -37,7 +37,7 @@
                                       points[1].x, points[1].y);
             didClosePath = NO;
             break;
-          case NSClosePathBezierPathElement:
+          case NSBezierPathElementClosePath:
             CGPathCloseSubpath(path);
             didClosePath = YES;
             break;
@@ -402,10 +402,14 @@ static NSArray<NSAttributedString *> * formatLabels(NSAttributedString *format, 
     if (_vertical || !_linear) {
       symbolAttrs[NSBaselineOffsetAttributeName] = @([pagingAttrs[NSBaselineOffsetAttributeName] doubleValue] - symbolFont.leading);
     }
-
     NSMutableDictionary *symbolAttrsBackFill = [symbolAttrs mutableCopy];
-    symbolAttrsBackFill[NSGlyphInfoAttributeName] =
-      [NSGlyphInfo glyphInfoWithGlyphName:@"gid4966" forFont:symbolFont baseString:@"◀"];
+    NSMutableDictionary *symbolAttrsBackStroke = [symbolAttrs mutableCopy];
+    NSMutableDictionary *symbolAttrsForwardFill = [symbolAttrs mutableCopy];
+    NSMutableDictionary *symbolAttrsForwardStroke = [symbolAttrs mutableCopy];
+    symbolAttrsBackFill[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE92 forFont:symbolFont baseString:@"◀"]; //gid4966
+    symbolAttrsBackStroke[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE95 forFont:symbolFont baseString:@"◁"]; //gid4969
+    symbolAttrsForwardFill[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE93 forFont:symbolFont baseString:@"▶"]; //gid4967
+    symbolAttrsForwardStroke[NSGlyphInfoAttributeName] = [NSGlyphInfo glyphInfoWithCGGlyph:0xE94 forFont:symbolFont baseString:@"▷"]; //gid4968
     _symbolBackFill = [[NSAttributedString alloc] initWithString:@"◀" attributes:symbolAttrsBackFill];
 
     NSMutableDictionary *symbolAttrsBackStroke = [symbolAttrs mutableCopy];
@@ -537,10 +541,8 @@ SquirrelTheme *_darkTheme;
 }
 
 - (BOOL)isDark {
-  if (@available(macOS 10.14, *)) {
-    if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
-      return YES;
-    }
+  if ([NSApp.effectiveAppearance bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]] == NSAppearanceNameDarkAqua) {
+    return YES;
   }
   return NO;
 }
@@ -599,9 +601,7 @@ SquirrelTheme *_darkTheme;
 
   _shape = [[CAShapeLayer alloc] init];
   _defaultTheme = [[SquirrelTheme alloc] init];
-  if (@available(macOS 10.14, *)) {
-    _darkTheme = [[SquirrelTheme alloc] init];
-  }
+  _darkTheme = [[SquirrelTheme alloc] init];
   return self;
 }
 
@@ -875,28 +875,6 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
   }
 }
 
-static inline NSColor * hooverColor(NSColor *color, BOOL darkTheme) {
-  if (@available(macOS 10.14, *)) {
-    return [color colorWithSystemEffect:NSColorSystemEffectRollover];
-  }
-  if (darkTheme) {
-    return [color highlightWithLevel:0.3];
-  } else {
-    return [color shadowWithLevel:0.3];
-  }
-}
-
-static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
-  if (@available(macOS 10.14, *)) {
-    return [color colorWithSystemEffect:NSColorSystemEffectDisabled];
-  }
-  if (darkTheme) {
-    return [color shadowWithLevel:0.3];
-  } else {
-    return [color highlightWithLevel:0.3];
-  }
-}
-
 // All draws happen here
 - (void)updateLayer {
   NSBezierPath *backgroundPath;
@@ -1057,6 +1035,9 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
           }
           CGFloat tailEdge = NSMaxX(NSIsEmptyRect(trailingRect) ? bodyRect : trailingRect);
           CGFloat tabPosition = pow(2, ceil(log2((tailEdge - leadOrigin.x) / tabInterval))) * tabInterval + leadOrigin.x;
+          if (i == _candidateRanges.count - 1 && pagingRange.length > 0 && tailEdge < pagingLineRect.origin.x) {
+            tabPosition = MIN(tabPosition, floor((pagingLineRect.origin.x - leadOrigin.x) / tabInterval) * tabInterval + leadOrigin.x);
+          }
           if (NSIsEmptyRect(trailingRect)) {
             bodyRect.size.width += tabPosition - tailEdge;
           } else if (NSIsEmptyRect(bodyRect)) {
@@ -1186,10 +1167,8 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
       [panelLayer addSublayer:candidateLayer];
     }
   }
-  if (@available(macOS 10.14, *)) {
-    if (theme.translucency > 0) {
-      panelLayer.opacity = 1.0 - theme.translucency;
-    }
+  if (theme.translucency > 0) {
+    panelLayer.opacity = 1.0 - theme.translucency;
   }
   if (_highlightedIndex < _candidatePaths.count && theme.highlightedStripColor) {
     CAShapeLayer *highlightedLayer = [[CAShapeLayer alloc] init];
@@ -1206,22 +1185,22 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   if (pagingRange.length > 0 && buttonColor) {
     CAShapeLayer *pagingLayer = [[CAShapeLayer alloc] init];
     switch (_pagingButton) {
-      case NSPageUpFunctionKey: {
+      case NSPageUpFunctionKey:
         pagingLayer.path = [pageUpPath quartzPath];
-        pagingLayer.fillColor = [hooverColor(buttonColor, self.isDark) CGColor];
-      } break;
-      case NSBeginFunctionKey: {
+        pagingLayer.fillColor = [[buttonColor colorWithSystemEffect:NSColorSystemEffectRollover] CGColor];
+        break;
+      case NSBeginFunctionKey:
         pagingLayer.path = [pageUpPath quartzPath];
-        pagingLayer.fillColor = [disabledColor(buttonColor, self.isDark) CGColor];
-      } break;
-      case NSPageDownFunctionKey: {
+        pagingLayer.fillColor = [[buttonColor colorWithSystemEffect:NSColorSystemEffectDisabled] CGColor];
+        break;
+      case NSPageDownFunctionKey:
         pagingLayer.path = [pageDownPath quartzPath];
-        pagingLayer.fillColor = [hooverColor(buttonColor, self.isDark) CGColor];
-      } break;
-      case NSEndFunctionKey: {
+        pagingLayer.fillColor = [[buttonColor colorWithSystemEffect:NSColorSystemEffectRollover] CGColor];
+        break;
+      case NSEndFunctionKey:
         pagingLayer.path = [pageDownPath quartzPath];
-        pagingLayer.fillColor = [disabledColor(buttonColor, self.isDark) CGColor];
-      } break;
+        pagingLayer.fillColor = [[buttonColor colorWithSystemEffect:NSColorSystemEffectDisabled] CGColor];
+        break;
     }
     pagingLayer.mask = textContainerLayer;
     [self.layer addSublayer:pagingLayer];
@@ -1333,27 +1312,9 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   return _view.currentTheme.inlineCandidate;
 }
 
-+ (NSColor *)secondaryTextColor {
-  if (@available(macOS 10.10, *)) {
-    return [NSColor secondaryLabelColor];
-  } else {
-    return [NSColor disabledControlTextColor];
-  }
-}
-
-+ (NSColor *)accentColor {
-  if (@available(macOS 10.14, *)) {
-    return [NSColor controlAccentColor];
-  } else {
-    return [NSColor colorForControlTint:[NSColor currentControlTint]];
-  }
-}
-
 - (void)initializeUIStyleForDarkMode:(BOOL)isDark {
   SquirrelTheme *theme = [_view selectTheme:isDark];
 
-  NSColor *secondaryTextColor = [SquirrelPanel secondaryTextColor];
-  NSColor *accentColor = [SquirrelPanel accentColor];
   NSFont *userFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFontOfSize:0.0].fontName)
                                            size:kDefaultFontSize];
   NSFont *userMonoFont = [NSFont fontWithDescriptor:getFontDescriptor([NSFont userFixedPitchFontOfSize:0.0].fontName)
@@ -1374,7 +1335,7 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   highlightedAttrs[NSWritingDirectionAttributeName] = @[@(0)];
 
   NSMutableDictionary *labelAttrs = [attrs mutableCopy];
-  labelAttrs[NSForegroundColorAttributeName] = accentColor;
+  labelAttrs[NSForegroundColorAttributeName] = [NSColor controlAccentColor];
   labelAttrs[NSFontAttributeName] = userMonoFont;
 
   NSMutableDictionary *labelHighlightedAttrs = [highlightedAttrs mutableCopy];
@@ -1382,7 +1343,7 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   labelHighlightedAttrs[NSFontAttributeName] = userMonoFont;
 
   NSMutableDictionary *commentAttrs = [defaultAttrs mutableCopy];
-  commentAttrs[NSForegroundColorAttributeName] = secondaryTextColor;
+  commentAttrs[NSForegroundColorAttributeName] = [NSColor secondaryLabelColor];
   commentAttrs[NSFontAttributeName] = userFont;
 
   NSMutableDictionary *commentHighlightedAttrs = [defaultAttrs mutableCopy];
@@ -1400,7 +1361,7 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   preeditHighlightedAttrs[NSLigatureAttributeName] = @(0);
 
   NSMutableDictionary *pagingAttrs = [defaultAttrs mutableCopy];
-  pagingAttrs[NSForegroundColorAttributeName] = theme.linear ? accentColor : [NSColor controlTextColor];
+  pagingAttrs[NSForegroundColorAttributeName] = theme.linear ? [NSColor controlAccentColor] : [NSColor controlTextColor];
 
   NSMutableDictionary *pagingHighlightedAttrs = [defaultAttrs mutableCopy];
   pagingHighlightedAttrs[NSForegroundColorAttributeName] = theme.linear
@@ -1466,23 +1427,19 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
     self.backgroundColor = [NSColor clearColor];
     NSView *contentView = [[NSView alloc] init];
     _view = [[SquirrelView alloc] initWithFrame:self.contentView.bounds];
-    if (@available(macOS 10.14, *)) {
-      _back = [[NSVisualEffectView alloc] init];
-      _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
-      _back.material = NSVisualEffectMaterialHUDWindow;
-      _back.state = NSVisualEffectStateActive;
-      _back.wantsLayer = YES;
-      _back.layer.mask = _view.shape;
-      [contentView addSubview:_back];
-    }
+    _back = [[NSVisualEffectView alloc] init];
+    _back.blendingMode = NSVisualEffectBlendingModeBehindWindow;
+    _back.material = NSVisualEffectMaterialHUDWindow;
+    _back.state = NSVisualEffectStateActive;
+    _back.wantsLayer = YES;
+    _back.layer.mask = _view.shape;
+    [contentView addSubview:_back];
     [contentView addSubview:_view];
     [contentView addSubview:_view.textView];
 
     self.contentView = contentView;
     [self initializeUIStyleForDarkMode:NO];
-    if (@available(macOS 10.14, *)) {
-      [self initializeUIStyleForDarkMode:YES];
-    }
+    [self initializeUIStyleForDarkMode:YES];
     _maxSize = NSZeroSize;
     _initPosition = YES;
   }
@@ -1621,12 +1578,10 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
 
 // Get the window size, it will be the dirtyRect in SquirrelView.drawRect
 - (void)show {
-  if (@available(macOS 10.14, *)) {
-    NSAppearance *requestedAppearance = [NSAppearance appearanceNamed:
-      (_view.isDark ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua)];
-    if (self.appearance != requestedAppearance) {
-      self.appearance = requestedAppearance;
-    }
+  NSAppearance *requestedAppearance = [NSAppearance appearanceNamed:
+                                       (_view.isDark ? NSAppearanceNameDarkAqua : NSAppearanceNameAqua)];
+  if (self.appearance != requestedAppearance) {
+    self.appearance = requestedAppearance;
   }
 
   //Break line if the text is too long, based on screen size.
@@ -1752,14 +1707,12 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   [_view setFrame:frameRect];
   [_view.textView setFrame:textFrameRect];
 
-  if (@available(macOS 10.14, *)) {
-    if (theme.translucency > 0) {
-      [_back setFrame:frameRect];
-      [_back setAppearance:NSApp.effectiveAppearance];
-      [_back setHidden:NO];
-    } else {
-      [_back setHidden:YES];
-    }
+  if (theme.translucency > 0) {
+    [_back setFrame:frameRect];
+    [_back setAppearance:NSApp.effectiveAppearance];
+    [_back setHidden:NO];
+  } else {
+    [_back setHidden:YES];
   }
   [self setAlphaValue:theme.alpha];
   [self orderFront:nil];
@@ -1805,19 +1758,16 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
   } else {
     NSLayoutManager *layoutManager = _view.textView.layoutManager;
     NSRange glyphRange = [layoutManager glyphRangeForCharacterRange:charRange actualCharacterRange:NULL];
-    NSUInteger i = glyphRange.location;
-    NSRange lineRange = NSMakeRange(i, 0);
-    while (i < NSMaxRange(glyphRange)) {
-      NSRect rect = [layoutManager lineFragmentRectForGlyphAtIndex:i effectiveRange:&lineRange];
-      NSRect usedRect = [layoutManager lineFragmentUsedRectForGlyphAtIndex:i effectiveRange:NULL];
+    [layoutManager enumerateLineFragmentsForGlyphRange:glyphRange
+      usingBlock:^(NSRect rect, NSRect usedRect, NSTextContainer *textContainer, NSRange glyphRange, BOOL *stop) {
       CGFloat alignment = usedRect.origin.y - rect.origin.y + (verticalLayout ? lineHeight / 2 : lineHeight / 2 + refFont.xHeight / 2);
       // typesetting glyphs
-      NSUInteger j = lineRange.location;
-      while (j < NSMaxRange(lineRange)) {
+      NSUInteger j = glyphRange.location;
+      while (j < NSMaxRange(glyphRange)) {
         NSPoint runGlyphPosition = [layoutManager locationForGlyphAtIndex:j];
         NSUInteger runCharLocation = [layoutManager characterIndexForGlyphAtIndex:j];
         NSRange runRange = [layoutManager rangeOfNominallySpacedGlyphsContainingIndex:j];
-        NSDictionary *attrs = [_view.textStorage attributesAtIndex:runCharLocation effectiveRange:NULL];
+        NSDictionary *attrs = [layoutManager.textStorage attributesAtIndex:runCharLocation effectiveRange:NULL];
         NSFont *runFont = attrs[NSFontAttributeName];
         NSFont *systemFont = [NSFont systemFontOfSize:runFont.pointSize];
         NSString *baselineClass = attrs[CFBridgingRelease(kCTBaselineClassAttributeName)];
@@ -1849,8 +1799,7 @@ static inline NSColor * disabledColor(NSColor *color, BOOL darkTheme) {
         [layoutManager setLocation:runGlyphPosition forStartOfGlyphRange:runRange];
         j = NSMaxRange(runRange);
       }
-      i = NSMaxRange(lineRange);
-    }
+    }];
   }
 }
 
@@ -2341,10 +2290,8 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
 - (void)loadLabelConfig:(SquirrelConfig *)config {
   SquirrelTheme *theme = [_view selectTheme:NO];
   [SquirrelPanel updateTheme:theme withLabelConfig:config];
-  if (@available(macOS 10.14, *)) {
-    SquirrelTheme *darkTheme = [_view selectTheme:YES];
-    [SquirrelPanel updateTheme:darkTheme withLabelConfig:config];
-  }
+  SquirrelTheme *darkTheme = [_view selectTheme:YES];
+  [SquirrelPanel updateTheme:darkTheme withLabelConfig:config];
 }
 
 + (void)updateTheme:(SquirrelTheme *)theme withLabelConfig:(SquirrelConfig *)config {
@@ -2446,9 +2393,7 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   // get color scheme and then check possible overrides from styleSwitcher
   for (NSString *prefix in configPrefixes) {
     // CHROMATICS override
-    if (@available(macOS 10.12, *)) {
-      config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]] ? : config.colorSpace;
-    }
+    config.colorSpace = [config getString:[prefix stringByAppendingString:@"/color_space"]] ? : config.colorSpace;
     backgroundColor = [config getColor:[prefix stringByAppendingString:@"/back_color"]] ? : backgroundColor;
     backgroundImage = [config getPattern:[prefix stringByAppendingString:@"/back_image"]] ? : backgroundImage;
     borderColor = [config getColor:[prefix stringByAppendingString:@"/border_color"]] ? : borderColor;
@@ -2605,27 +2550,22 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   pagingAttrs[NSVerticalGlyphFormAttributeName] = @(NO);
 
   // CHROMATICS refinement
-  NSColor *secondaryTextColor = [SquirrelPanel secondaryTextColor];
-  NSColor *accentColor = [SquirrelPanel accentColor];
-
-  if (@available(macOS 10.14, *)) {
-    if (theme.translucency > 0 &&
-        ((backgroundColor.brightnessComponent >= 0.5 && isDark) ||
-         (backgroundColor.brightnessComponent < 0.5 && !isDark))) {
-      backgroundColor = inverseColor(backgroundColor);
-      borderColor = inverseColor(borderColor);
-      preeditBackgroundColor = inverseColor(preeditBackgroundColor);
-      candidateTextColor = inverseColor(candidateTextColor);
-      highlightedCandidateTextColor = [inverseColor(highlightedCandidateTextColor) highlightWithLevel:highlightedCandidateTextColor.brightnessComponent];
-      highlightedCandidateBackColor = [inverseColor(highlightedCandidateBackColor) shadowWithLevel:1 - highlightedCandidateBackColor.brightnessComponent];
-      candidateLabelColor = inverseColor(candidateLabelColor);
-      highlightedCandidateLabelColor = [inverseColor(highlightedCandidateLabelColor) highlightWithLevel:highlightedCandidateLabelColor.brightnessComponent];
-      commentTextColor = inverseColor(commentTextColor);
-      highlightedCommentTextColor = [inverseColor(highlightedCommentTextColor) highlightWithLevel:highlightedCommentTextColor.brightnessComponent];
-      textColor = inverseColor(textColor);
-      highlightedTextColor = [inverseColor(highlightedTextColor) highlightWithLevel:highlightedTextColor.brightnessComponent];
-      highlightedBackColor = [inverseColor(highlightedBackColor) shadowWithLevel:1 - highlightedBackColor.brightnessComponent];
-    }
+  if (theme.translucency > 0 &&
+      ((backgroundColor.brightnessComponent >= 0.5 && isDark) ||
+       (backgroundColor.brightnessComponent < 0.5 && !isDark))) {
+    backgroundColor = inverseColor(backgroundColor);
+    borderColor = inverseColor(borderColor);
+    preeditBackgroundColor = inverseColor(preeditBackgroundColor);
+    candidateTextColor = inverseColor(candidateTextColor);
+    highlightedCandidateTextColor = [inverseColor(highlightedCandidateTextColor) highlightWithLevel:highlightedCandidateTextColor.brightnessComponent];
+    highlightedCandidateBackColor = [inverseColor(highlightedCandidateBackColor) shadowWithLevel:1 - highlightedCandidateBackColor.brightnessComponent];
+    candidateLabelColor = inverseColor(candidateLabelColor);
+    highlightedCandidateLabelColor = [inverseColor(highlightedCandidateLabelColor) highlightWithLevel:highlightedCandidateLabelColor.brightnessComponent];
+    commentTextColor = inverseColor(commentTextColor);
+    highlightedCommentTextColor = [inverseColor(highlightedCommentTextColor) highlightWithLevel:highlightedCommentTextColor.brightnessComponent];
+    textColor = inverseColor(textColor);
+    highlightedTextColor = [inverseColor(highlightedTextColor) highlightWithLevel:highlightedTextColor.brightnessComponent];
+    highlightedBackColor = [inverseColor(highlightedBackColor) shadowWithLevel:1 - highlightedBackColor.brightnessComponent];
   }
 
   backgroundColor = backgroundColor ? : [NSColor controlBackgroundColor];
@@ -2634,9 +2574,9 @@ static void updateTextOrientation(BOOL *isVerticalText, SquirrelConfig *config, 
   candidateTextColor = candidateTextColor ? : [NSColor controlTextColor];
   highlightedCandidateTextColor = highlightedCandidateTextColor ? : [NSColor selectedMenuItemTextColor];
   highlightedCandidateBackColor = highlightedCandidateBackColor ? : isNative ? [NSColor alternateSelectedControlColor] : nil;
-  candidateLabelColor = candidateLabelColor ? : isNative ? accentColor : blendColors(highlightedCandidateBackColor, highlightedCandidateTextColor);
+  candidateLabelColor = candidateLabelColor ? : isNative ? [NSColor controlAccentColor] : blendColors(highlightedCandidateBackColor, highlightedCandidateTextColor);
   highlightedCandidateLabelColor = highlightedCandidateLabelColor ? : isNative ? [NSColor alternateSelectedControlTextColor] : blendColors(highlightedCandidateTextColor, highlightedCandidateBackColor);
-  commentTextColor = commentTextColor ? : secondaryTextColor;
+  commentTextColor = commentTextColor ? : [NSColor secondaryLabelColor];
   highlightedCommentTextColor = highlightedCommentTextColor ? : [NSColor alternateSelectedControlTextColor];
   textColor = textColor ? textColor : [NSColor textColor];
   highlightedTextColor = highlightedTextColor ? : [NSColor selectedTextColor];

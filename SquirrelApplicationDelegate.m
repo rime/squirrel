@@ -149,9 +149,7 @@ void notification_handler(void *context_object, RimeSessionId session_id,
   _enableNotifications =
     ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
   [self.panel loadConfig:_config forDarkMode:NO];
-  if (@available(macOS 10.14, *)) {
-    [self.panel loadConfig:_config forDarkMode:YES];
-  }
+  [self.panel loadConfig:_config forDarkMode:YES];
 }
 
 - (void)loadSchemaSpecificSettings:(NSString *)schemaId {
@@ -162,16 +160,10 @@ void notification_handler(void *context_object, RimeSessionId session_id,
   if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
       [schema hasSection:@"style"]) {
     [self.panel loadConfig:schema forDarkMode:NO];
+    [self.panel loadConfig:schema forDarkMode:YES];
   } else {
     [self.panel loadConfig:self.config forDarkMode:NO];
-  }
-  if (@available(macOS 10.14, *)) {
-    if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
-        [schema hasSection:@"style"]) {
-      [self.panel loadConfig:schema forDarkMode:YES];
-    } else {
-      [self.panel loadConfig:self.config forDarkMode:YES];
-    }
+    [self.panel loadConfig:self.config forDarkMode:YES];
   }
   [schema close];
 }
