@@ -1,8 +1,23 @@
 {
   "images" : [
     {
+      "compression-type" : "lossless",
       "filename" : "rime.svg",
-      "idiom" : "universal"
+      "idiom" : "mac",
+      "resizing" : {
+        "cap-insets" : {
+          "bottom" : 2,
+          "left" : 5,
+          "right" : 5,
+          "top" : 2
+        },
+        "center" : {
+          "height" : 12,
+          "mode" : "tile",
+          "width" : 12
+        },
+        "mode" : "9-part"
+      }
     }
   ],
   "info" : {
@@ -10,6 +25,8 @@
     "version" : 1
   },
   "properties" : {
+    "compression-type" : "lossless",
+    "preserves-vector-representation" : true,
     "template-rendering-intent" : "template"
   }
 }
