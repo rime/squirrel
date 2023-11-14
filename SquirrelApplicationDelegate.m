@@ -4,7 +4,7 @@
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
 
-static NSString *const kRimeWikiURL = @"https://github.com/rime/home/wiki";
+static NSString *kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 @implementation SquirrelApplicationDelegate
 
@@ -148,8 +148,8 @@ void notification_handler(void *context_object, RimeSessionId session_id,
 
   _enableNotifications =
     ![[_config getString:@"show_notifications_when"] isEqualToString:@"never"];
-  [self.panel loadConfig:_config forDarkMode:NO];
-  [self.panel loadConfig:_config forDarkMode:YES];
+  [self.panel loadConfig:_config forAppearance:defaultAppear];
+  [self.panel loadConfig:_config forAppearance:darkAppear];
 }
 
 - (void)loadSchemaSpecificSettings:(NSString *)schemaId {
@@ -159,11 +159,11 @@ void notification_handler(void *context_object, RimeSessionId session_id,
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
   if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
       [schema hasSection:@"style"]) {
-    [self.panel loadConfig:schema forDarkMode:NO];
-    [self.panel loadConfig:schema forDarkMode:YES];
+    [self.panel loadConfig:schema forAppearance:defaultAppear];
+    [self.panel loadConfig:schema forAppearance:darkAppear];
   } else {
-    [self.panel loadConfig:self.config forDarkMode:NO];
-    [self.panel loadConfig:self.config forDarkMode:YES];
+    [self.panel loadConfig:self.config forAppearance:defaultAppear];
+    [self.panel loadConfig:self.config forAppearance:darkAppear];
   }
   [schema close];
 }

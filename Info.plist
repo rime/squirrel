@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleExecutable</key>
-	<string>Squirrel</string>
+	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
 	<string>RimeIcon.icns</string>
 	<key>CFBundleIdentifier</key>
@@ -13,13 +13,15 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Squirrel</string>
+	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${MARKETING_VERSION}</string>
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
@@ -27,15 +29,14 @@
 			<key>im.rime.inputmethod.Squirrel.Hant</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>im.rime.inputmethod.Squirrel.Hant</string>
+				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Hant</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
-					<string>Hant</string>
-					<string>Hans</string>
+					<string>Hani</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
 				<true/>
@@ -48,22 +49,21 @@
 				<key>tsInputModeAlternateMenuIconFileKey</key>
 				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<true/>
+				<false/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
 			<key>im.rime.inputmethod.Squirrel.Hans</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>im.rime.inputmethod.Squirrel.Hans</string>
+				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Hans</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
-					<string>Hans</string>
-					<string>Hant</string>
+					<string>Hani</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
 				<true/>
@@ -76,22 +76,21 @@
 				<key>tsInputModeAlternateMenuIconFileKey</key>
 				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<true/>
+				<false/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
 			<key>im.rime.inputmethod.Squirrel.Cant</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>im.rime.inputmethod.Squirrel.Cant</string>
+				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Cant</string>
 				<key>TISIntendedLanguage</key>
 				<string>yue-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
-					<string>Hant</string>
-					<string>Hans</string>
+					<string>Hani</string>
 				</array>
 				<key>tsInputModeDefaultStateKey</key>
 				<true/>
@@ -104,7 +103,7 @@
 				<key>tsInputModeAlternateMenuIconFileKey</key>
 				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<true/>
+				<false/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
@@ -142,9 +141,11 @@
 	<true/>
 	<key>TISIconIsTemplate</key>
 	<true/>
+	<key>tsInputMethodCharacterRepertoireKey</key>
+	<array>
+		<string>Hani</string>
+	</array>
 	<key>tsInputMethodIconFileKey</key>
-	<string>rime</string>
-	<key>tsInputMethodAlternateMenuIconFileKey</key>
 	<string>rime</string>
 </dict>
 </plist>

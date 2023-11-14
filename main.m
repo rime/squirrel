@@ -1,4 +1,3 @@
-
 #import "SquirrelApplicationDelegate.h"
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
@@ -14,7 +13,7 @@ void ActivateInputSource(int input_modes);
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
-const NSString *kConnectionName = @"Squirrel_1_Connection";
+static NSString *kConnectionName = @"Squirrel_1_Connection";
 
 int main(int argc, char *argv[]) {
   if (argc > 1 && !strcmp("--quit", argv[1])) {
@@ -65,12 +64,12 @@ int main(int argc, char *argv[]) {
     // find the bundle identifier and then initialize the input method server
     NSBundle *main = [NSBundle mainBundle];
     IMKServer *server __unused =
-      [[IMKServer alloc] initWithName:(NSString *)kConnectionName
+      [[IMKServer alloc] initWithName:kConnectionName
                      bundleIdentifier:main.bundleIdentifier];
 
     // load the bundle explicitly because in this case the input method is a
     // background only application
-    [main loadNibNamed:@"MainMenu" owner:[NSApplication sharedApplication] topLevelObjects:NULL];
+    [main loadNibNamed:@"MainMenu" owner:[NSApplication sharedApplication] topLevelObjects:nil];
 
     // opencc will be configured with relative dictionary paths
     [[NSFileManager defaultManager]

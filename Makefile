@@ -170,4 +170,5 @@ clean:
 clean-deps:
 	$(MAKE) -C plum clean
 	$(MAKE) -C librime clean
+	$(MAKE) -C librime deps/clean-src
 	$(MAKE) clean-sparkle

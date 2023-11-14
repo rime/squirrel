@@ -278,8 +278,8 @@
       }
       rime_get_api()->config_end(&optionIter);
       if (hasStyleSection) {
-        for (NSUInteger i = 0; i < optionGroup.count; ++i) {
-          switcher[optionGroup[i]] = optionGroup[reset];
+        for (size_t i = 0; i < optionGroup.count; ++i) {
+          switcher[optionGroup[i]] = optionGroup[(size_t)reset];
           optionGroups[optionGroup[i]] = optionGroup;
         }
       }

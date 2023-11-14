@@ -1,4 +1,3 @@
-
 #import "macos_keycode.h"
 #import <rime/key_table.h>
 
@@ -43,7 +42,7 @@ static struct keycode_mapping_t {
   //OSX_VK_ENTER_POWERBOOK -> ?
   { OSX_VK_ESCAPE,            XK_Escape       },
   { OSX_VK_FORWARD_DELETE,    XK_Delete       },
-  //{OSX_VK_HELP, XK_Help}, // the same keycode with OSX_VK_PC_INSERT
+  //{OSX_VK_HELP, XK_Help}, // the same keycode as OSX_VK_PC_INSERT
   { OSX_VK_RETURN,            XK_Return       },
   { OSX_VK_SPACE,             XK_space        },
   { OSX_VK_TAB,               XK_Tab          },
@@ -102,11 +101,15 @@ static struct keycode_mapping_t {
   // pc keyboard
   { OSX_VK_PC_APPLICATION,    XK_Menu         },
   { OSX_VK_PC_INSERT,         XK_Insert       },
-  { OSX_VK_PC_KEYPAD_NUMLOCK, XK_Num_Lock     },
+  //{OSX_VK_PC_KEYPAD_NUMLOCK, XK_Num_Lock}, // the same keycode as OSX_VK_KEYPAD_CLEAR
   { OSX_VK_PC_PAUSE,          XK_Pause        },
   //OSX_VK_PC_POWER -> ?
   { OSX_VK_PC_PRINTSCREEN,    XK_Print        },
   { OSX_VK_PC_SCROLLLOCK,     XK_Scroll_Lock  },
+
+  // JIS keyboard
+  { OSX_VK_JIS_EISUU,         XK_Eisu_toggle  },
+  { OSX_VK_JIS_KANA,          XK_Kana_Lock    },
 
   { -1,                       -1              }
 };
