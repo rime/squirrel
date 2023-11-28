@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="21507" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="22155" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="21507"/>
+        <deployment identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22155"/>
+        <capability name="Image references" minToolsVersion="12.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -22,38 +24,95 @@
         <menu id="773" userLabel="Menu">
             <items>
                 <menuItem title="Deploy" keyEquivalent="`" id="774">
+                    <attributedString key="attributedTitle"/>
+                    <imageReference key="image" image="arrow.clockwise.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
                     <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
                     <connections>
                         <action selector="deploy:" target="252" id="795"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Sync user data" id="804">
+                    <imageReference key="image" image="arrow.triangle.2.circlepath.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="syncUserData:" target="252" id="806"/>
                     </connections>
                 </menuItem>
                 <menuItem title="Settings…" id="802">
+                    <imageReference key="image" image="gearshape.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="configure:" target="252" id="803"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Rime Wiki…" tag="2" id="797">
+                <menuItem title="Rime Wiki…" id="797">
+                    <imageReference key="image" image="books.vertical.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Check for updates…" tag="1" id="776">
+                <menuItem title="Error and warning logs" id="809">
+                    <imageReference key="image" image="exclamationmark.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="openLogFolder:" target="252" id="811"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Check for updates…" id="776">
+                    <imageReference key="image" image="ellipsis.circle.fill" catalog="system" symbolScale="default" renderingMode="hierarchical-single" variableValue="1">
+                        <hierarchicalColors>
+                            <color name="labelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="secondaryLabelColor" catalog="System" colorSpace="catalog"/>
+                            <color name="tertiaryLabelColor" catalog="System" colorSpace="catalog"/>
+                        </hierarchicalColors>
+                    </imageReference>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>
                     </connections>
                 </menuItem>
             </items>
-            <point key="canvasLocation" x="103" y="-74"/>
+            <point key="canvasLocation" x="102.5" y="-74.5"/>
         </menu>
         <customObject id="772" userLabel="Updater" customClass="SUUpdater"/>
     </objects>
+    <resources>
+        <image name="arrow.clockwise.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="arrow.triangle.2.circlepath.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="books.vertical.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="ellipsis.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="exclamationmark.circle.fill" catalog="system" width="15" height="15"/>
+        <image name="gearshape.circle.fill" catalog="system" width="15" height="15"/>
+    </resources>
 </document>

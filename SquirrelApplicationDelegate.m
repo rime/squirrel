@@ -32,6 +32,12 @@ static NSString *kRimeWikiURL = @"https://github.com/rime/home/wiki";
   [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:kRimeWikiURL]];
 }
 
+- (IBAction)openLogFolder:(id)sender
+{
+  NSString *tmpFolder = [[[NSProcessInfo processInfo] environment] objectForKey:@"TMPDIR"];
+  [[NSWorkspace sharedWorkspace] selectFile:[tmpFolder stringByAppendingString:@"rime.squirrel.INFO"] inFileViewerRootedAtPath:tmpFolder];
+}
+
 void show_message(const char *msg_text, const char *msg_id) {
   @autoreleasepool {
     id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];

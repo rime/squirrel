@@ -1,0 +1,18 @@
+
+/* Class = "NSMenuItem"; title = "Deploy"; ObjectID = "774"; */
+"774.title" = "重新部署";
+
+/* Class = "NSMenuItem"; title = "Check for updates…"; ObjectID = "776"; */
+"776.title" = "检查更新…";
+
+/* Class = "NSMenuItem"; title = "Rime Wiki…"; ObjectID = "797"; */
+"797.title" = "在线帮助…";
+
+/* Class = "NSMenuItem"; title = "Settings…"; ObjectID = "802"; */
+"802.title" = "用户设置…";
+
+/* Class = "NSMenuItem"; title = "Sync user data"; ObjectID = "804"; */
+"804.title" = "同步用户数据";
+
+/* Class = "NSMenuItem"; title = "Error and warning logs"; ObjectID = "809"; */
+"809.title" = "错误和警告日志";

@@ -346,7 +346,9 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session) {
-    [self commitString:[self composedString:sender]];
+    NSString *composition = [self composedString:sender];
+    [[NSPasteboard generalPasteboard] setString:composition forType:NSPasteboardTypeString];
+    [self commitString:composition];
     [self hidePalettes];
     rime_get_api()->clear_composition(_session);
   }
@@ -381,6 +383,11 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)openWiki:(id)sender
 {
   [NSApp.squirrelAppDelegate openWiki:sender];
+}
+
+- (void)openLogFolder:(id)sender
+{
+  [NSApp.squirrelAppDelegate openLogFolder:sender];
 }
 
 - (NSMenu *)menu
