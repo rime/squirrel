@@ -4,12 +4,17 @@
 #import <rime_api.h>
 #import <string.h>
 
+typedef enum {
+  DEFAULT_INPUT_MODE  = 1 << 0,
+  HANS_INPUT_MODE     = 1 << 0,
+  HANT_INPUT_MODE     = 1 << 1,
+  CANT_INPUT_MODE     = 1 << 2
+} RimeInputMode;
+
 void RegisterInputSource(void);
 int GetEnabledInputModes(void);
 void DeactivateInputSource(void);
-void ActivateInputSource(int input_modes);
-
-#define DEFAULT_INPUT_MODE 1
+void ActivateInputSource(RimeInputMode);
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.

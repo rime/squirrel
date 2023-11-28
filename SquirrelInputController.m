@@ -19,6 +19,8 @@ const int N_KEY_ROLL_OVER = 50;
 
 @implementation SquirrelInputController {
   NSMutableAttributedString *_preeditString;
+  NSMutableString *_originalString;
+  NSMutableString *_composedString;
   NSRange _selRange;
   NSUInteger _caretPos;
   NSArray<NSString *> *_candidates;
@@ -52,7 +54,6 @@ const int N_KEY_ROLL_OVER = 50;
   // Key processing will not continue in that case.  In other words the
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
-
   NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
   BOOL handled = NO;
 
@@ -62,13 +63,6 @@ const int N_KEY_ROLL_OVER = 50;
       if (!_session) {
         return NO;
       }
-    }
-
-    NSString *app = [sender bundleIdentifier];
-
-    if (![_currentApp isEqualToString:app]) {
-      _currentApp = [app copy];
-      [self updateAppOptions];
     }
 
     switch (event.type) {
@@ -305,10 +299,6 @@ const int N_KEY_ROLL_OVER = 50;
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
-  
-  if (!_session || !RimeFindSession(_session)) {
-    _session = RimeCreateSession();
-  }
   [super activateServer:sender];
 }
 
@@ -320,6 +310,8 @@ const int N_KEY_ROLL_OVER = 50;
   if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
     [self createSession];
     _preeditString = [[NSMutableAttributedString alloc] init];
+    _originalString = [[NSMutableString alloc] init];
+    _composedString = [[NSMutableString alloc] init];
   }
   return self;
 }
@@ -346,9 +338,7 @@ const int N_KEY_ROLL_OVER = 50;
 {
   //NSLog(@"commitComposition:");
   if (_session) {
-    NSString *composition = [self composedString:sender];
-    [[NSPasteboard generalPasteboard] setString:composition forType:NSPasteboardTypeString];
-    [self commitString:composition];
+    [self commitString:[self composedString:sender]];
     [self hidePalettes];
     rime_get_api()->clear_composition(_session);
   }
@@ -361,7 +351,6 @@ const int N_KEY_ROLL_OVER = 50;
 - (void)deploy:(id)sender
 {
   [NSApp.squirrelAppDelegate deploy:sender];
-  [self createSession];
 }
 
 - (void)syncUserData:(id)sender
@@ -397,18 +386,12 @@ const int N_KEY_ROLL_OVER = 50;
 
 - (NSAttributedString *)originalString:(id)sender
 {
-  const char *raw_input = RimeGetInput(_session);
-  return [[NSAttributedString alloc] initWithString:raw_input ? @(raw_input) : @""];
+  return [[NSAttributedString alloc] initWithString:_originalString];
 }
 
 - (id)composedString:(id)sender
 {
-  RimeCommitComposition(_session);
-  RIME_STRUCT(RimeCommit, commit);
-  RimeGetCommit(_session, &commit);
-  const char *composedString = commit.text;
-  RimeFreeCommit(&commit);
-  return composedString ? @(composedString) : @"";
+  return _composedString;
 }
 
 - (NSArray *)candidates:(id)sender
@@ -425,6 +408,8 @@ const int N_KEY_ROLL_OVER = 50;
 {
   [self destroySession];
   _preeditString = nil;
+  _originalString = nil;
+  _composedString = nil;
 }
 
 - (NSRange)selectionRange
@@ -444,6 +429,8 @@ const int N_KEY_ROLL_OVER = 50;
          replacementRange:self.replacementRange];
 
   [_preeditString deleteCharactersInRange:NSMakeRange(0, _preeditString.length)];
+  [_originalString deleteCharactersInRange:NSMakeRange(0, _originalString.length)];
+  [_composedString deleteCharactersInRange:NSMakeRange(0, _composedString.length)];
 }
 
 - (void)cancelComposition
@@ -463,16 +450,9 @@ const int N_KEY_ROLL_OVER = 50;
                  selRange:(NSRange)range
                  caretPos:(NSUInteger)pos
 {
+  //NSLog(@"showPreeditString: '%@'", preedit);
   if (_inlinePlaceHolder && _candidates.count > 0 && preedit.length == 0) {
     preedit = @" ";
-  }
-  //NSLog(@"showPreeditString: '%@'", preedit);
-  if ([preedit isEqualToString:_preeditString.string] &&
-      NSEqualRanges(range, _selRange) && pos == _caretPos) {
-    if (_inlinePlaceHolder) {
-      [self updateComposition];
-    }
-    return;
   }
   _selRange = range;
   _caretPos = pos;
@@ -486,8 +466,13 @@ const int N_KEY_ROLL_OVER = 50;
     [_preeditString addAttributes:attrs range:convertedRange];
   }
   if (range.location < pos) {
-    attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:range];
+    attrs = [self markForStyle:kTSMHiliteSelectedConvertedText atRange:range];
     [_preeditString addAttributes:attrs range:range];
+  }
+  if (NSMaxRange(range) < preedit.length) {
+    NSRange rawRange = NSMakeRange(NSMaxRange(range), preedit.length - NSMaxRange(range));
+    attrs = [self markForStyle:kTSMHiliteSelectedRawText atRange:rawRange];
+    [_preeditString addAttributes:attrs range:rawRange];
   }
   [self updateComposition];
 }
@@ -570,6 +555,9 @@ const int N_KEY_ROLL_OVER = 50;
         _inlinePlaceHolder = [appOptions[@"inline_placeholder"] boolValue];
       }
     }
+    _lastModifier = 0;
+    _lastEventCount = 0;
+    [self rimeUpdate];
   }
 }
 
@@ -638,7 +626,7 @@ const int N_KEY_ROLL_OVER = 50;
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
     // enable schema specific ui style
-    if ((!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id))) {
+    if (!_schemaId || strcmp(_schemaId.UTF8String, status.schema_id)) {
       _schemaId = @(status.schema_id);
       _showingSwitcherMenu = rime_get_api()->get_option(_session, "dumb");
       if (!_showingSwitcherMenu) {
@@ -669,6 +657,21 @@ const int N_KEY_ROLL_OVER = 50;
     // update preedit text
     const char *preedit = ctx.composition.preedit;
     NSString *preeditText = preedit ? @(preedit) : @"";
+
+    // update composed string
+    if (!preedit || _showingSwitcherMenu) {
+      [_composedString deleteCharactersInRange:NSMakeRange(0, _composedString.length)];
+    } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
+      size_t cursorPos = (size_t)ctx.composition.cursor_pos - (ctx.composition.cursor_pos < ctx.composition.sel_end ? 3 : 0);
+      char composed[strlen(preedit) - 2];
+      for (size_t i = 0; i < strlen(preedit) - 3; ++i) {
+        composed[i] = preedit[i < cursorPos ? i : i + 3];
+      }
+      composed[strlen(preedit) - 3] = '\0';
+      [_composedString setString:[@(composed) stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    } else {
+      [_composedString setString:[@(preedit) stringByReplacingOccurrencesOfString:@" " withString:@""]];
+    }
 
     NSUInteger start = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.sel_start encoding:NSUTF8StringEncoding].length;
     NSUInteger end = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.sel_end encoding:NSUTF8StringEncoding].length;

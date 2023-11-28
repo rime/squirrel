@@ -6,6 +6,6 @@
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
 
 "problematic_launch" = "Problematic launch detected! \
-                        Squirrel may be suffering a crash due to imporper configuration. \
+                        Squirrel may be suffering a crash due to improper configurations. \
                         Revert previous modifications to see if the problem recurs.";
 "say_voice" = "Alex";

@@ -93,6 +93,7 @@ void notification_handler(void *context_object, RimeSessionId session_id,
     if ([[app_delegate panel].optionSwitcher containsOption:@(option_name)]) {
       if ([[app_delegate panel].optionSwitcher updateGroupState:@(message_value) ofOption:@(option_name)]) {
         [app_delegate loadSchemaSpecificSettings:[app_delegate panel].optionSwitcher.schemaId];
+        [app_delegate loadSchemaSpecificLabels:[app_delegate panel].optionSwitcher.schemaId];
       }
     }
     if ([app_delegate enableNotifications]) {
@@ -175,17 +176,19 @@ void notification_handler(void *context_object, RimeSessionId session_id,
 }
 
 - (void)loadSchemaSpecificLabels:(NSString *)schemaId {
-  if (schemaId.length == 0 || [schemaId characterAtIndex:0] == '.') {
-    return;
-  }
   SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
   [defaultConfig openWithConfigId:@"default"];
+  if (schemaId.length == 0 || [schemaId characterAtIndex:0] == '.') {
+    [self.panel loadLabelConfig:defaultConfig directUpdate:YES];
+    [defaultConfig close];
+    return;
+  }
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
   if ([schema openWithSchemaId:schemaId baseConfig:defaultConfig] &&
       [schema hasSection:@"menu"]) {
-    [self.panel loadLabelConfig:schema];
+    [self.panel loadLabelConfig:schema directUpdate:NO];
   } else {
-    [self.panel loadLabelConfig:defaultConfig];
+    [self.panel loadLabelConfig:defaultConfig directUpdate:NO];
   }
   [schema close];
   [defaultConfig close];
