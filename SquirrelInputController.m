@@ -6,6 +6,9 @@
 #import "macos_keycode.h"
 #import <rime_api.h>
 #import <rime/key_table.h>
+#import <IOKit/IOKitLib.h>
+#import <IOKit/hidsystem/IOHIDLib.h>
+#import <IOKIt/hidsystem/IOHIDParameter.h>
 
 @interface SquirrelInputController (Private)
 - (void)createSession;
@@ -31,6 +34,7 @@ const int N_KEY_ROLL_OVER = 50;
   BOOL _inlinePreedit;
   BOOL _inlineCandidate;
   BOOL _showingSwitcherMenu;
+  BOOL _goodOldCapsLock;
   // app-specific bug fix
   BOOL _inlinePlaceHolder;
   BOOL _panellessCommitFix;
@@ -152,7 +156,19 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
-- (BOOL)processKey:(int)rime_keycode 
+void set_caps_lock_led(bool target_state) {
+  io_service_t ioService = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching(kIOHIDSystemClass));
+  io_connect_t ioConnect = 0;
+  IOServiceOpen(ioService, mach_task_self_, kIOHIDParamConnectType, &ioConnect);
+  bool current_state = false;
+  IOHIDGetModifierLockState(ioConnect, kIOHIDCapsLockState, &current_state);
+  if (current_state != target_state) {
+    IOHIDSetModifierLockState(ioConnect, kIOHIDCapsLockState, target_state);
+  }
+  IOServiceClose(ioConnect);
+}
+
+- (BOOL)processKey:(int)rime_keycode
          modifiers:(int)rime_modifiers
 {
   // with linear candidate list, arrow keys may behave differently.
@@ -299,6 +315,13 @@ const int N_KEY_ROLL_OVER = 50;
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
+
+  SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
+  if ([defaultConfig openWithConfigId:@"default"] && [defaultConfig hasSection:@"ascii_composer"]) {
+    _goodOldCapsLock = [defaultConfig getBool:@"ascii_composer/good_old_caps_lock"];
+  }
+  [defaultConfig close];
+
   [super activateServer:sender];
 }
 
@@ -492,7 +515,7 @@ const int N_KEY_ROLL_OVER = 50;
   [self.client attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
   if (@available(macOS 14.0, *)) {  // avoid overlapping with cursor effects view
-    if (_lastModifier & NSEventModifierFlagCapsLock) {
+    if (_goodOldCapsLock && _lastModifier & NSEventModifierFlagCapsLock) {
       NSRect screenRect = [[NSScreen mainScreen] frame];
       if (NSIntersectsRect(inputPos, screenRect)) {
         screenRect = [[NSScreen mainScreen] visibleFrame];

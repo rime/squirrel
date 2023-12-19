@@ -21,7 +21,6 @@
 		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		4443A83A1828CC5100731305 /* input_source.m in Sources */ = {isa = PBXBuildFile; fileRef = 4443A8391828CC5100731305 /* input_source.m */; };
 		446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 446C01D61F767BD400A6C23E /* Assets.xcassets */; };
-		447765C925C30E97002415AF /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 447765C725C30E6B002415AF /* Sparkle.framework */; };
 		447765CA25C30E97002415AF /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 447765C725C30E6B002415AF /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		448363DD25BDBBED0022C7BA /* pinyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363D925BDBBBF0022C7BA /* pinyin.yaml */; };
 		448363DE25BDBBED0022C7BA /* zhuyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363DA25BDBBBF0022C7BA /* zhuyin.yaml */; };
@@ -81,6 +80,7 @@
 		F478A35A2B1078F900D7794A /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F478A3572B1078D200D7794A /* QuartzCore.framework */; };
 		F478A35B2B10795800D7794A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97324FDCFA39411CA2CEA /* AppKit.framework */; };
 		F478A35C2B10795B00D7794A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 29B97325FDCFA39411CA2CEA /* Foundation.framework */; };
+		F48CFB692B326F4900DB9CF9 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 447765C725C30E6B002415AF /* Sparkle.framework */; };
 		F4E457B92AD97412003F6D79 /* EmojiCategoryTW.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457A82AD97411003F6D79 /* EmojiCategoryTW.ocd2 */; };
 		F4E457BA2AD97412003F6D79 /* t2emoji.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457A92AD97411003F6D79 /* t2emoji.json */; };
 		F4E457BB2AD97412003F6D79 /* hk2t.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457AA2AD97411003F6D79 /* hk2t.json */; };
@@ -98,6 +98,7 @@
 		F4E457C72AD97412003F6D79 /* EmojiCategoryT.ocd2 in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457B62AD97412003F6D79 /* EmojiCategoryT.ocd2 */; };
 		F4E457C82AD97412003F6D79 /* hk2emoji.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457B72AD97412003F6D79 /* hk2emoji.json */; };
 		F4E457C92AD97412003F6D79 /* tw2emoji.json in Copy opencc Files */ = {isa = PBXBuildFile; fileRef = F4E457B82AD97412003F6D79 /* tw2emoji.json */; };
+		F4EC47AA2B3239A2004862A4 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4EC47A92B323999004862A4 /* IOKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -320,6 +321,7 @@
 		F4E457B62AD97412003F6D79 /* EmojiCategoryT.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = EmojiCategoryT.ocd2; sourceTree = "<group>"; };
 		F4E457B72AD97412003F6D79 /* hk2emoji.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = hk2emoji.json; sourceTree = "<group>"; };
 		F4E457B82AD97412003F6D79 /* tw2emoji.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = tw2emoji.json; sourceTree = "<group>"; };
+		F4EC47A92B323999004862A4 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -327,13 +329,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F478A35A2B1078F900D7794A /* QuartzCore.framework in Frameworks */,
-				F478A3592B1078F500D7794A /* Cocoa.framework in Frameworks */,
-				E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */,
 				F478A35B2B10795800D7794A /* AppKit.framework in Frameworks */,
 				A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */,
+				F478A3592B1078F500D7794A /* Cocoa.framework in Frameworks */,
 				F478A35C2B10795B00D7794A /* Foundation.framework in Frameworks */,
-				447765C925C30E97002415AF /* Sparkle.framework in Frameworks */,
+				E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */,
+				F4EC47AA2B3239A2004862A4 /* IOKit.framework in Frameworks */,
+				F478A35A2B1078F900D7794A /* QuartzCore.framework in Frameworks */,
+				F48CFB692B326F4900DB9CF9 /* Sparkle.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -377,6 +380,7 @@
 				F478A3582B1078D600D7794A /* Cocoa.framework */,
 				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
 				E93074B60A5C264700470842 /* InputMethodKit.framework */,
+				F4EC47A92B323999004862A4 /* IOKit.framework */,
 				F478A3572B1078D200D7794A /* QuartzCore.framework */,
 			);
 			name = "Other Frameworks";
