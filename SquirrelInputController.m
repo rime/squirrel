@@ -219,14 +219,22 @@ void set_caps_lock_led(bool target_state) {
 - (void)perform:(rimeAction)action 
         onIndex:(rimeIndex)index {
   bool handled = false;
-  if (action == kSELECT && ((index >= '!' && index <= '~') ||
-      index == kPageUp || index == kPageDown || index == kEscape)) {
+  if (index >= '!' && index <= '~' && (action == kSELECT || action == kHILITE)) {
+    handled = rime_get_api()->process_key(_session, (int)index, action == kHILITE ? kAltMask : 0);
+  } else if ((index == kPageUp || index == kPageDown || index == kEscape) && action == kSELECT) {
     handled = rime_get_api()->process_key(_session, (int)index, 0);
-  } else if (action == kCHOOSE && index >= '!' && index <= '~') {
-    handled = rime_get_api()->process_key(_session, (int)index, kAltMask);
-  } else if (action == kDELETE && index >= 0 && index < 10) {
-    // kDELETE takes ordinal digits (instead of characters) as indexes
-    handled= rime_get_api()->delete_candidate_on_current_page(_session, (size_t)index);
+  } else if (index >= 0 && index < 10) {
+    switch (action) {
+      case kDELETE:
+        handled = rime_get_api()->delete_candidate_on_current_page(_session, (size_t)index);
+        break;
+      case kSELECT:
+        handled = rime_get_api()->select_candidate_on_current_page(_session, (size_t)index);
+        break;
+      case kHILITE:
+        handled = rime_get_api()->hilite_candidate_on_current_page(_session, (size_t)index);
+        break;
+    }
   }
   if (handled) {
     [self rimeUpdate];

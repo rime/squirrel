@@ -4,9 +4,9 @@
 @interface SquirrelInputController : IMKInputController
 
 typedef enum {
-  kSELECT = 1, // accepts indices in both digits and selection keys
-  kDELETE = 2, // only accepts indices in digits, e.g. (int) 1
-  kCHOOSE = 3 // only accepts indices in selection keys, e.g. (char) '1' / 'A'
+  kSELECT = 1, // accepts indices in digits, selection keys, and keycodes (XK_Escape)
+  kHILITE = 2, // accepts indices in digits and selection keys (char '1' / 'A')
+  kDELETE = 3  // only accepts indices in digits (int 1)
 } rimeAction;
 
 typedef enum {

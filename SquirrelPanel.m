@@ -1713,8 +1713,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
     case NSEventTypeLeftMouseUp:
       if (event.clickCount == 1 && [_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex == _index) {
-          rimeIndex indexChar = [_view.currentTheme.selectKeys characterAtIndex:cursorIndex];
-          [_inputController perform:kSELECT onIndex:indexChar];
+          [_inputController perform:kSELECT onIndex:(rimeIndex)cursorIndex];
         } else if (cursorIndex == _turnPage) {
           rimeIndex indexChar = cursorIndex == NSPageUpFunctionKey ? kPageUp :
                                 (cursorIndex == NSPageDownFunctionKey ? kPageDown : kVoidSymbol);
@@ -1735,8 +1734,7 @@ static NSArray<NSValue *> * multilineRectVertex(NSRect leadingRect, NSRect bodyR
       if ([_view convertClickSpot:spot toIndex:&cursorIndex]) {
         if (cursorIndex >= 0 && cursorIndex < _numCandidates && _index != cursorIndex) {
           _index = cursorIndex;
-          rimeIndex indexChar = [_view.currentTheme.selectKeys characterAtIndex:cursorIndex];
-          [_inputController perform:kCHOOSE onIndex:indexChar];
+          [_inputController perform:kHILITE onIndex:(rimeIndex)cursorIndex];
         } else if ((cursorIndex == NSPageUpFunctionKey || cursorIndex == NSPageDownFunctionKey) && _turnPage != cursorIndex) {
           _turnPage = cursorIndex;
           if (_turnPage == NSPageUpFunctionKey) {
