@@ -8,48 +8,44 @@ static NSString *kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 @implementation SquirrelApplicationDelegate
 
-- (IBAction)deploy:(id)sender
-{
+- (IBAction)deploy:(id)sender {
   NSLog(@"Start maintenance...");
   [self shutdownRime];
-  [self startRimeWithFullCheck:YES];
+  [self startRimeWithFullCheck:true];
   [self loadSettings];
 }
 
-- (IBAction)syncUserData:(id)sender
-{
+- (IBAction)syncUserData:(id)sender {
   NSLog(@"Sync user data");
   rime_get_api()->sync_user_data();
 }
 
-- (IBAction)configure:(id)sender
-{
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL fileURLWithPath:[@"~/Library/Rime/" stringByExpandingTildeInPath]]];
+- (IBAction)configure:(id)sender {
+  [NSWorkspace.sharedWorkspace openURL:
+    [NSURL fileURLWithPath:@"~/Library/Rime/".stringByExpandingTildeInPath isDirectory:YES]];
 }
 
-- (IBAction)openWiki:(id)sender
-{
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:kRimeWikiURL]];
+- (IBAction)openWiki:(id)sender {
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:kRimeWikiURL]];
 }
 
-- (IBAction)openLogFolder:(id)sender
-{
-  NSString *tmpFolder = [[[NSProcessInfo processInfo] environment] objectForKey:@"TMPDIR"];
-  [[NSWorkspace sharedWorkspace] selectFile:[tmpFolder stringByAppendingString:@"rime.squirrel.INFO"] inFileViewerRootedAtPath:tmpFolder];
+- (IBAction)openLogFolder:(id)sender {
+  NSString *tmpDir = NSTemporaryDirectory();
+  NSString *logFile = [tmpDir stringByAppendingPathComponent:@"rime.squirrel.INFO"];
+  [NSWorkspace.sharedWorkspace selectFile:logFile
+                 inFileViewerRootedAtPath:tmpDir];
 }
 
 void show_message(const char *msg_text, const char *msg_id) {
   @autoreleasepool {
-    id notification = [[NSClassFromString(@"NSUserNotification") alloc] init];
-    [notification performSelector:@selector(setTitle:)
-                       withObject:NSLocalizedString(@"Squirrel", nil)];
-    [notification performSelector:@selector(setSubtitle:)
-                       withObject:NSLocalizedString(@(msg_text), nil)];
-    id notificationCenter = [(id)NSClassFromString(@"NSUserNotificationCenter")
-                             performSelector:@selector(defaultUserNotificationCenter)];
-    [notificationCenter performSelector:@selector(removeAllDeliveredNotifications)];
-    [notificationCenter performSelector:@selector(deliverNotification:)
-                             withObject:notification];
+    NSUserNotification *notification = [[NSUserNotification alloc] init];
+    [notification setTitle:NSLocalizedString(@"Squirrel", nil)];
+    [notification setTitle:NSLocalizedString(@(msg_text), nil)];
+
+    NSUserNotificationCenter *notificationCenter =
+      NSUserNotificationCenter.defaultUserNotificationCenter;
+    [notificationCenter removeAllDeliveredNotifications];
+    [notificationCenter deliverNotification:notification];
   }
 }
 
@@ -63,8 +59,8 @@ static void show_status_message(const char *msg_text_long, const char *msg_text_
   }
 }
 
-void notification_handler(void *context_object, RimeSessionId session_id,
-                          const char *message_type, const char *message_value) {
+static void notification_handler(void *context_object, RimeSessionId session_id,
+                                 const char *message_type, const char *message_value) {
   if (!strcmp(message_type, "deploy")) {
     if (!strcmp(message_value, "start")) {
       show_message("deploy_start", message_type);
@@ -91,14 +87,18 @@ void notification_handler(void *context_object, RimeSessionId session_id,
     Bool state = message_value[0] != '!';
     const char *option_name = message_value + !state;
     if ([[app_delegate panel].optionSwitcher containsOption:@(option_name)]) {
-      if ([[app_delegate panel].optionSwitcher updateGroupState:@(message_value) ofOption:@(option_name)]) {
-        [app_delegate loadSchemaSpecificSettings:[app_delegate panel].optionSwitcher.schemaId];
-        [app_delegate loadSchemaSpecificLabels:[app_delegate panel].optionSwitcher.schemaId];
+      if ([[app_delegate panel].optionSwitcher updateGroupState:@(message_value) 
+                                                       ofOption:@(option_name)]) {
+        NSString *schemaId = [app_delegate panel].optionSwitcher.schemaId;
+        [app_delegate loadSchemaSpecificLabels:schemaId];
+        [app_delegate loadSchemaSpecificSettings:schemaId];
       }
     }
     if ([app_delegate enableNotifications]) {
-      RimeStringSlice state_label_long = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, False);
-      RimeStringSlice state_label_short = rime_get_api()->get_state_label_abbreviated(session_id, option_name, state, True);
+      RimeStringSlice state_label_long = rime_get_api()->
+        get_state_label_abbreviated(session_id, option_name, state, False);
+      RimeStringSlice state_label_short = rime_get_api()->
+        get_state_label_abbreviated(session_id, option_name, state, True);
       if (state_label_long.str || state_label_short.str) {
         const char *short_message = state_label_short.length < strlen(state_label_short.str) ? NULL : state_label_short.str;
         show_status_message(state_label_long.str, short_message, message_type);
@@ -107,36 +107,35 @@ void notification_handler(void *context_object, RimeSessionId session_id,
   }
 }
 
-- (void)setupRime
-{
-  NSString *userDataDir = (@"~/Library/Rime").stringByStandardizingPath;
-  NSFileManager *fileManager = [NSFileManager defaultManager];
+- (void)setupRime {
+  NSString *userDataDir = @"~/Library/Rime".stringByExpandingTildeInPath;
+  NSFileManager *fileManager = [[NSFileManager alloc] init];
   if (![fileManager fileExistsAtPath:userDataDir]) {
     if (![fileManager createDirectoryAtPath:userDataDir
                 withIntermediateDirectories:YES
                                  attributes:nil
-                                      error:NULL]) {
+                                      error:nil]) {
       NSLog(@"Error creating user data directory: %@", userDataDir);
     }
   }
   rime_get_api()->set_notification_handler(notification_handler, (__bridge void *)(self));
   RIME_STRUCT(RimeTraits, squirrel_traits);
-  squirrel_traits.shared_data_dir = [NSBundle mainBundle].sharedSupportPath.UTF8String;
+  squirrel_traits.shared_data_dir = NSBundle.mainBundle.sharedSupportPath.UTF8String;
   squirrel_traits.user_data_dir = userDataDir.UTF8String;
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
   squirrel_traits.distribution_version =
-    [[NSBundle mainBundle].infoDictionary[@"CFBundleVersion"] UTF8String];
+    [NSBundle.mainBundle.infoDictionary[@"CFBundleVersion"] UTF8String];
   squirrel_traits.app_name = "rime.squirrel";
   rime_get_api()->setup(&squirrel_traits);
 }
 
-- (void)startRimeWithFullCheck:(BOOL)fullCheck
+- (void)startRimeWithFullCheck:(bool)fullCheck
 {
   NSLog(@"Initializing la rime...");
   rime_get_api()->initialize(NULL);
   // check for configuration updates
-  if (rime_get_api()->start_maintenance((Bool)fullCheck)) {
+  if (rime_get_api()->start_maintenance(fullCheck)) {
     // update squirrel config
     rime_get_api()->deploy_config_file("squirrel.yaml", "config_version");
   }
@@ -195,46 +194,45 @@ void notification_handler(void *context_object, RimeSessionId session_id,
 }
 
 // prevent freezing the system
-- (BOOL)problematicLaunchDetected
-{
+- (BOOL)problematicLaunchDetected {
   BOOL detected = NO;
-  NSString *logfile = [NSTemporaryDirectory() stringByAppendingPathComponent:@"squirrel_launch.dat"];
-  //NSLog(@"[DEBUG] archive: %@", logfile);
-  NSData *archive = [NSData dataWithContentsOfFile:logfile
-                                           options:NSDataReadingUncached
-                                             error:nil];
+  NSURL *logfile = [[NSURL fileURLWithPath:NSTemporaryDirectory() 
+                               isDirectory:YES] URLByAppendingPathComponent:@"squirrel_launch.dat"];
+  NSLog(@"[DEBUG] archive: %@", logfile);
+  NSData *archive = [NSData dataWithContentsOfURL:logfile
+                                          options:NSDataReadingUncached
+                                            error:nil];
   if (archive) {
-    NSDate *previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class fromData:archive error:NULL];
+    NSDate *previousLaunch = [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class
+                                                               fromData:archive error:nil];
     if (previousLaunch && previousLaunch.timeIntervalSinceNow >= -2) {
       detected = YES;
     }
   }
   NSDate *now = [NSDate date];
-  NSData *record = [NSKeyedArchiver archivedDataWithRootObject:now requiringSecureCoding:NO error:NULL];
-  [record writeToFile:logfile atomically:NO];
+  NSData *record = [NSKeyedArchiver archivedDataWithRootObject:now 
+                                         requiringSecureCoding:NO error:nil];
+  NSFileHandle *fileHandle = [NSFileHandle fileHandleForWritingToURL:logfile error:nil];
+  [fileHandle writeData:record];
   return detected;
 }
 
-- (void)workspaceWillPowerOff:(NSNotification *)aNotification
-{
+- (void)workspaceWillPowerOff:(NSNotification *)aNotification {
   NSLog(@"Finalizing before logging out.");
   [self shutdownRime];
 }
 
-- (void)rimeNeedsReload:(NSNotification *)aNotification
-{
+- (void)rimeNeedsReload:(NSNotification *)aNotification {
   NSLog(@"Reloading rime on demand.");
   [self deploy:nil];
 }
 
-- (void)rimeNeedsSync:(NSNotification *)aNotification
-{
+- (void)rimeNeedsSync:(NSNotification *)aNotification {
   NSLog(@"Sync rime on demand.");
   [self syncUserData:nil];
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender
-{
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)sender {
   NSLog(@"Squirrel is quitting.");
   rime_get_api()->cleanup_all_sessions();
   return NSTerminateNow;
@@ -243,15 +241,14 @@ void notification_handler(void *context_object, RimeSessionId session_id,
 //add an awakeFromNib item so that we can set the action method.  Note that
 //any menuItems without an action will be disabled when displayed in the Text
 //Input Menu.
-- (void)awakeFromNib
-{
-  NSNotificationCenter *center = [NSWorkspace sharedWorkspace].notificationCenter;
+- (void)awakeFromNib {
+  NSNotificationCenter *center = NSWorkspace.sharedWorkspace.notificationCenter;
   [center addObserver:self
              selector:@selector(workspaceWillPowerOff:)
                  name:NSWorkspaceWillPowerOffNotification
                object:nil];
 
-  NSDistributedNotificationCenter *notifCenter = [NSDistributedNotificationCenter defaultCenter];
+  NSDistributedNotificationCenter *notifCenter = NSDistributedNotificationCenter.defaultCenter;
   [notifCenter addObserver:self
                   selector:@selector(rimeNeedsReload:)
                       name:@"SquirrelReloadNotification"
@@ -263,10 +260,9 @@ void notification_handler(void *context_object, RimeSessionId session_id,
                     object:nil];
 }
 
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+- (void)dealloc {
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+  [NSDistributedNotificationCenter.defaultCenter removeObserver:self];
   if (_panel) {
     [_panel hide];
   }

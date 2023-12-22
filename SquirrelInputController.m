@@ -6,7 +6,6 @@
 #import "macos_keycode.h"
 #import <rime_api.h>
 #import <rime/key_table.h>
-#import <IOKit/IOKitLib.h>
 #import <IOKit/hidsystem/IOHIDLib.h>
 #import <IOKIt/hidsystem/IOHIDParameter.h>
 
@@ -52,13 +51,11 @@ const int N_KEY_ROLL_OVER = 50;
    @discussion This method receives key events from the client application.
  */
 - (BOOL)handleEvent:(NSEvent *)event
-             client:(id)sender
-{
+             client:(id)sender {
   // Return YES to indicate the the key input was received and dealt with.
   // Key processing will not continue in that case.  In other words the
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
-  NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
   BOOL handled = NO;
 
   @autoreleasepool {
@@ -68,6 +65,8 @@ const int N_KEY_ROLL_OVER = 50;
         return NO;
       }
     }
+    NSEventModifierFlags modifiers = event.modifierFlags & NSEventModifierFlagDeviceIndependentFlagsMask;
+    int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
 
     switch (event.type) {
       case NSEventTypeFlagsChanged: {
@@ -78,7 +77,6 @@ const int N_KEY_ROLL_OVER = 50;
 
         //NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender, modifiers);
         int release_mask = 0;
-        int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
         ushort keyCode = (ushort)CGEventGetIntegerValueField(event.CGEvent, kCGKeyboardEventKeycode);
         int rime_keycode = osx_keycode_to_rime_keycode(keyCode, 0, 0, 0);
         uint eventCount = CGEventSourceCounterForEventType(kCGEventSourceStateCombinedSessionState, kCGEventFlagsChanged) +
@@ -90,7 +88,7 @@ const int N_KEY_ROLL_OVER = 50;
         switch (keyCode) {
           case kVK_CapsLock:
             if (!_goodOldCapsLock) {
-              set_caps_lock_led(false);
+              set_CapsLock_LED_state(false);
               Bool caps_lock_on = rime_get_api()->get_option(_session, "caps_lock_on");
               rime_modifiers = caps_lock_on ? rime_modifiers | kLockMask : rime_modifiers & ~kLockMask;
               rime_get_api()->set_option(_session, "caps_lock_on", !caps_lock_on);
@@ -101,26 +99,31 @@ const int N_KEY_ROLL_OVER = 50;
             break;
           case kVK_Shift:
           case kVK_RightShift:
-            release_mask = modifiers & NSEventModifierFlagShift ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & NSEventModifierFlagShift ? 0 :
+              kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             break;
           case kVK_Control:
           case kVK_RightControl:
-            release_mask = modifiers & NSEventModifierFlagControl ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & NSEventModifierFlagControl ? 0 :
+              kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             break;
           case kVK_Option:
           case kVK_RightOption:
-            release_mask = modifiers & NSEventModifierFlagOption ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & NSEventModifierFlagOption ? 0 :
+              kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             break;
           case kVK_Function:
-            release_mask = modifiers & NSEventModifierFlagFunction ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & NSEventModifierFlagFunction ? 0 : 
+              kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             break;
           case kVK_Command:
           case kVK_RightCommand:
-            release_mask = modifiers & NSEventModifierFlagCommand ? 0 : kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
+            release_mask = modifiers & NSEventModifierFlagCommand ? 0 :
+              kReleaseMask | (eventCount - _lastEventCount == 1 ? 0 : kIgnoredMask);
             [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
             break;
         }
@@ -139,7 +142,6 @@ const int N_KEY_ROLL_OVER = 50;
                                                        modifiers & NSEventModifierFlagShift,
                                                        modifiers & NSEventModifierFlagCapsLock);
         if (rime_keycode) {
-          int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
           // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
           if ((keyCode <= 0xff && keyCode >= 0x60) || keyCode == 0x50 || keyCode == 0x4f ||
               keyCode == 0x47 || keyCode == 0x40) {
@@ -156,7 +158,7 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
-void set_caps_lock_led(bool target_state) {
+void set_CapsLock_LED_state(bool target_state) {
   io_service_t ioService = IOServiceGetMatchingService(kIOMasterPortDefault, IOServiceMatching(kIOHIDSystemClass));
   io_connect_t ioConnect = 0;
   IOServiceOpen(ioService, mach_task_self_, kIOHIDParamConnectType, &ioConnect);
@@ -169,8 +171,7 @@ void set_caps_lock_led(bool target_state) {
 }
 
 - (BOOL)processKey:(int)rime_keycode
-         modifiers:(int)rime_modifiers
-{
+         modifiers:(int)rime_modifiers {
   // with linear candidate list, arrow keys may behave differently.
   Bool is_linear = NSApp.squirrelAppDelegate.panel.linear;
   if (is_linear != rime_get_api()->get_option(_session, "_linear")) {
@@ -216,12 +217,13 @@ void set_caps_lock_led(bool target_state) {
   return handled;
 }
 
-- (void)perform:(rimeAction)action 
+- (void)perform:(rimeAction)action
         onIndex:(rimeIndex)index {
+  //NSLog(@"perform action: %u on index: %lu", action, (unsigned long)index);
   bool handled = false;
   if (index >= '!' && index <= '~' && (action == kSELECT || action == kHILITE)) {
     handled = rime_get_api()->process_key(_session, (int)index, action == kHILITE ? kAltMask : 0);
-  } else if ((index == kPageUp || index == kPageDown || index == kEscape) && action == kSELECT) {
+  } else if (index >= 0xff08 && index <= 0xffff && action == kSELECT) {
     handled = rime_get_api()->process_key(_session, (int)index, 0);
   } else if (index >= 0 && index < 10) {
     switch (action) {
@@ -241,10 +243,9 @@ void set_caps_lock_led(bool target_state) {
   }
 }
 
-- (void)onChordTimer:(NSTimer *)timer
-{
+- (void)onChordTimer:(NSTimer *)timer {
   // chord release triggered by timer
-  int processed_keys = 0;
+  uint processed_keys = 0;
   if (_chordKeyCount && _session) {
     // simulate key-ups
     for (uint i = 0; i < _chordKeyCount; ++i) {
@@ -255,14 +256,13 @@ void set_caps_lock_led(bool target_state) {
     }
   }
   [self clearChord];
-  if (processed_keys) {
+  if (processed_keys > 0) {
     [self rimeUpdate];
   }
 }
 
 - (void)updateChord:(int)keycode
-          modifiers:(int)modifiers
-{
+          modifiers:(int)modifiers {
   //NSLog(@"update chord: {%s} << %x", _chord, keycode);
   for (uint i = 0; i < _chordKeyCount; ++i) {
     if (_chordKeyCodes[i] == keycode) {
@@ -281,7 +281,8 @@ void set_caps_lock_led(bool target_state) {
     [_chordTimer invalidate];
   }
   _chordDuration = 0.1;
-  NSNumber *duration = [NSApp.squirrelAppDelegate.config getOptionalDouble:@"chord_duration"];
+  NSNumber *duration = [NSApp.squirrelAppDelegate.config 
+                        getOptionalDouble:@"chord_duration"];
   if (duration && duration.doubleValue > 0) {
     _chordDuration = duration.doubleValue;
   }
@@ -292,8 +293,7 @@ void set_caps_lock_led(bool target_state) {
                                                 repeats:NO];
 }
 
-- (void)clearChord
-{
+- (void)clearChord {
   _chordKeyCount = 0;
   if (_chordTimer) {
     if (_chordTimer.valid) {
@@ -303,42 +303,45 @@ void set_caps_lock_led(bool target_state) {
   }
 }
 
-- (NSUInteger)recognizedEvents:(id)sender
-{
+- (NSUInteger)recognizedEvents:(id)sender {
   //NSLog(@"recognizedEvents:");
   return NSEventMaskKeyDown | NSEventMaskFlagsChanged;
 }
 
-- (void)activateServer:(id)sender
-{
+- (void)activateServer:(id)sender {
   //NSLog(@"activateServer:");
-  NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config getString:@"keyboard_layout"];
-  if ([keyboardLayout isEqualToString:@"last"] || [keyboardLayout isEqualToString:@""]) {
+  NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config 
+                              getString:@"keyboard_layout"];
+  if ([keyboardLayout isEqualToString:@"last"] ||
+      [keyboardLayout isEqualToString:@""]) {
     keyboardLayout = nil;
   } else if ([keyboardLayout isEqualToString:@"default"]) {
     keyboardLayout = @"com.apple.keylayout.ABC";
   } else if (![keyboardLayout hasPrefix:@"com.apple.keylayout."]) {
-    keyboardLayout = [@"com.apple.keylayout." stringByAppendingString:keyboardLayout];
+    keyboardLayout = [@"com.apple.keylayout."
+                      stringByAppendingString:keyboardLayout];
   }
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
 
   SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
-  if ([defaultConfig openWithConfigId:@"default"] && [defaultConfig hasSection:@"ascii_composer"]) {
-    _goodOldCapsLock = [defaultConfig getBool:@"ascii_composer/good_old_caps_lock"];
+  if ([defaultConfig openWithConfigId:@"default"] &&
+      [defaultConfig hasSection:@"ascii_composer"]) {
+    _goodOldCapsLock = [defaultConfig getBool:
+                        @"ascii_composer/good_old_caps_lock"];
   }
   [defaultConfig close];
 
   [super activateServer:sender];
 }
 
-- (instancetype)initWithServer:(IMKServer *)server 
+- (instancetype)initWithServer:(IMKServer *)server
                       delegate:(id)delegate
-                        client:(id)inputClient
-{
+                        client:(id)inputClient {
   //NSLog(@"initWithServer:delegate:client:");
-  if (self = [super initWithServer:server delegate:delegate client:inputClient]) {
+  if (self = [super initWithServer:server delegate:delegate
+                            client:inputClient]) {
     [self createSession];
     _preeditString = [[NSMutableAttributedString alloc] init];
     _originalString = [[NSMutableString alloc] init];
@@ -347,8 +350,7 @@ void set_caps_lock_led(bool target_state) {
   return self;
 }
 
-- (void)deactivateServer:(id)sender
-{
+- (void)deactivateServer:(id)sender {
   //NSLog(@"deactivateServer:");
   [self commitComposition:sender];
   [super deactivateServer:sender];
@@ -365,8 +367,7 @@ void set_caps_lock_led(bool target_state) {
    to clean up if that is necessary.
  */
 
-- (void)commitComposition:(id)sender
-{
+- (void)commitComposition:(id)sender {
   //NSLog(@"commitComposition:");
   if (_session) {
     [self commitString:[self composedString:sender]];
@@ -375,86 +376,80 @@ void set_caps_lock_led(bool target_state) {
   }
 }
 
+- (void)inputControllerWillClose {
+  if (_session) {
+    [self destroySession];
+  }
+  _preeditString = nil;
+  _originalString = nil;
+  _composedString = nil;
+}
+
 // a piece of comment from SunPinyin's macos wrapper says:
 // > though we specified the showPrefPanel: in SunPinyinApplicationDelegate as the
 // > action receiver, the IMKInputController will actually receive the event.
 // so here we deliver messages to our responsible SquirrelApplicationDelegate
-- (void)deploy:(id)sender
-{
+- (void)deploy:(id)sender {
   [NSApp.squirrelAppDelegate deploy:sender];
 }
 
-- (void)syncUserData:(id)sender
-{
+- (void)syncUserData:(id)sender {
   [NSApp.squirrelAppDelegate syncUserData:sender];
 }
 
-- (void)configure:(id)sender
-{
+- (void)configure:(id)sender {
   [NSApp.squirrelAppDelegate configure:sender];
 }
 
-- (void)checkForUpdates:(id)sender
-{
-  [NSApp.squirrelAppDelegate.updater performSelector:@selector(checkForUpdates:) 
+- (void)checkForUpdates:(id)sender {
+  [NSApp.squirrelAppDelegate.updater performSelector:@selector(checkForUpdates:)
                                           withObject:sender];
 }
 
-- (void)openWiki:(id)sender
-{
+- (void)openWiki:(id)sender {
   [NSApp.squirrelAppDelegate openWiki:sender];
 }
 
-- (void)openLogFolder:(id)sender
-{
+- (void)openLogFolder:(id)sender {
   [NSApp.squirrelAppDelegate openLogFolder:sender];
 }
 
-- (NSMenu *)menu
-{
+- (NSMenu *)menu {
   return NSApp.squirrelAppDelegate.menu;
 }
 
-- (NSAttributedString *)originalString:(id)sender
-{
+- (NSAttributedString *)originalString:(id)sender {
   return [[NSAttributedString alloc] initWithString:_originalString];
 }
 
-- (id)composedString:(id)sender
-{
+- (id)composedString:(id)sender {
   return _composedString;
 }
 
-- (NSArray *)candidates:(id)sender
-{
+- (NSArray *)candidates:(id)sender {
   return _candidates;
 }
 
-- (void)hidePalettes
-{
+- (void)hidePalettes {
   [NSApp.squirrelAppDelegate.panel hide];
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   [self destroySession];
   _preeditString = nil;
   _originalString = nil;
   _composedString = nil;
 }
 
-- (NSRange)selectionRange
-{
+- (NSRange)selectionRange {
   return NSMakeRange(_caretPos, 0);
 }
 
-- (NSRange)replacementRange
-{
+- (NSRange)replacementRange {
   return NSMakeRange(NSNotFound, NSNotFound);
 }
 
-- (void)commitString:(id)string
-{
+- (void)commitString:(id)string {
   //NSLog(@"commitString:");
   [self.client insertText:string
          replacementRange:self.replacementRange];
@@ -464,14 +459,12 @@ void set_caps_lock_led(bool target_state) {
   [_composedString deleteCharactersInRange:NSMakeRange(0, _composedString.length)];
 }
 
-- (void)cancelComposition
-{
+- (void)cancelComposition {
   [self commitString:[self originalString:self.client]];
   rime_get_api()->clear_composition(_session);
 }
 
-- (void)updateComposition
-{
+- (void)updateComposition {
   [self.client setMarkedText:_preeditString
               selectionRange:self.selectionRange
             replacementRange:self.replacementRange];
@@ -479,8 +472,7 @@ void set_caps_lock_led(bool target_state) {
 
 - (void)showPreeditString:(NSString *)preedit
                  selRange:(NSRange)range
-                 caretPos:(NSUInteger)pos
-{
+                 caretPos:(NSUInteger)pos {
   //NSLog(@"showPreeditString: '%@'", preedit);
   if (_inlinePlaceHolder && _candidates.count > 0 && preedit.length == 0) {
     preedit = @" ";
@@ -515,18 +507,29 @@ void set_caps_lock_led(bool target_state) {
                     comments:(NSArray<NSString *> *)comments
                  highlighted:(NSUInteger)index
                      pageNum:(NSUInteger)pageNum
-                    lastPage:(BOOL)lastPage
-{
+                    lastPage:(BOOL)lastPage {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
-  NSRect inputPos;
-  [self.client attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
   SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
+  NSRect inputPos;
+  [self.client attributesForCharacterIndex:0 
+                       lineHeightRectangle:&inputPos];
+  if (NSEqualRects(inputPos, NSZeroRect) && _preeditString.length == 0) {
+    // activate inline session, in e.g. table cells, by fake inputs
+    [self.client setMarkedText:@" "
+                selectionRange:NSMakeRange(0, 0)
+              replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+    [self.client attributesForCharacterIndex:0
+                         lineHeightRectangle:&inputPos];
+    [self.client setMarkedText:_preeditString
+                selectionRange:NSMakeRange(0, 0)
+              replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+  }
   if (@available(macOS 14.0, *)) {  // avoid overlapping with cursor effects view
     if (_goodOldCapsLock && _lastModifier & NSEventModifierFlagCapsLock) {
-      NSRect screenRect = [[NSScreen mainScreen] frame];
+      NSRect screenRect = NSScreen.mainScreen.frame;
       if (NSIntersectsRect(inputPos, screenRect)) {
-        screenRect = [[NSScreen mainScreen] visibleFrame];
+        screenRect = NSScreen.mainScreen.visibleFrame;
         if (NSWidth(inputPos) > NSHeight(inputPos)) {
           NSRect capslockAccessory = NSMakeRect(NSMinX(inputPos) - 30, NSMinY(inputPos), 27, NSHeight(inputPos));
           if (NSMinX(capslockAccessory) < NSMinX(screenRect))
@@ -546,7 +549,6 @@ void set_caps_lock_led(bool target_state) {
     }
   }
   panel.inputController = self;
-  panel.level = self.client.windowLevel + 1;
   panel.position = inputPos;
   [panel showPreedit:preedit
             selRange:selRange
@@ -564,9 +566,8 @@ void set_caps_lock_led(bool target_state) {
 // implementation of private interface
 @implementation SquirrelInputController (Private)
 
-- (void)createSession
-{
-  NSString *app = [self.client bundleIdentifier];
+- (void)createSession {
+  NSString *app = self.client.bundleIdentifier;
   //NSLog(@"createSession: %@", app);
   _session = rime_get_api()->create_session();
   _schemaId = nil;
@@ -578,12 +579,12 @@ void set_caps_lock_led(bool target_state) {
       SquirrelAppOptions *appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:app];
       if (appOptions) {
         for (NSString *key in appOptions) {
-          Bool value = [appOptions[key] intValue];
+          Bool value = appOptions[key].intValue;
           //NSLog(@"set app option: %@ = %d", key, value);
           rime_get_api()->set_option(_session, key.UTF8String, value);
         }
-        _panellessCommitFix = [appOptions[@"panelless_commit_fix"] boolValue];
-        _inlinePlaceHolder = [appOptions[@"inline_placeholder"] boolValue];
+        _panellessCommitFix = appOptions[@"panelless_commit_fix"].boolValue;
+        _inlinePlaceHolder = appOptions[@"inline_placeholder"].boolValue;
       }
     }
     _lastModifier = 0;
@@ -592,8 +593,7 @@ void set_caps_lock_led(bool target_state) {
   }
 }
 
-- (void)destroySession
-{
+- (void)destroySession {
   //NSLog(@"destroySession:");
   if (_session) {
     rime_get_api()->destroy_session(_session);
@@ -602,32 +602,35 @@ void set_caps_lock_led(bool target_state) {
   [self clearChord];
 }
 
-- (void)rimeConsumeCommittedText
-{
+- (void)rimeConsumeCommittedText {
   RIME_STRUCT(RimeCommit, commit);
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
     if (_preeditString.length == 0 && _panellessCommitFix) {
-      [self showPreeditString:@" " selRange:NSMakeRange(0, 0) caretPos:0];
+      [self showPreeditString:@" "
+                     selRange:NSMakeRange(0, 0)
+                     caretPos:0];
     }
     [self commitString:commitText];
     rime_get_api()->free_commit(&commit);
   }
 }
 
-- (void)updateStyleOptions
-{
+- (void)updateStyleOptions {
   // update the list of switchers that change styles and color-themes
   SquirrelOptionSwitcher *optionSwitcher;
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
-  if ([schema openWithSchemaId:_schemaId baseConfig:NSApp.squirrelAppDelegate.config] &&
+  if ([schema openWithSchemaId:_schemaId 
+                    baseConfig:NSApp.squirrelAppDelegate.config] &&
       [schema hasSection:@"style"]) {
     optionSwitcher = [schema getOptionSwitcher];
   } else {
-    optionSwitcher = [[SquirrelOptionSwitcher alloc] initWithSchemaId:_schemaId switcher:@{} optionGroups:@{}];
+    optionSwitcher = [[SquirrelOptionSwitcher alloc] initWithSchemaId:_schemaId 
+                                                             switcher:@{}
+                                                         optionGroups:@{}];
   }
   [schema close];
-  NSMutableDictionary *switcher = [optionSwitcher mutableSwitcher];
+  NSMutableDictionary *switcher = optionSwitcher.mutableSwitcher;
   NSSet<NSString *> *prevStates = [NSSet setWithArray:optionSwitcher.optionStates];
   for (NSString *state in prevStates) {
     NSString *updatedState;
@@ -646,11 +649,10 @@ void set_caps_lock_led(bool target_state) {
     }
   }
   [optionSwitcher updateSwitcher:switcher];
-  [NSApp.squirrelAppDelegate.panel setOptionSwitcher:optionSwitcher];
+  NSApp.squirrelAppDelegate.panel.optionSwitcher = optionSwitcher;
 }
 
-- (void)rimeUpdate
-{
+- (void)rimeUpdate {
   //NSLog(@"rimeUpdate");
   [self rimeConsumeCommittedText];
 
@@ -704,10 +706,18 @@ void set_caps_lock_led(bool target_state) {
       [_composedString setString:[@(preedit) stringByReplacingOccurrencesOfString:@" " withString:@""]];
     }
 
-    NSUInteger start = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.sel_start encoding:NSUTF8StringEncoding].length;
-    NSUInteger end = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.sel_end encoding:NSUTF8StringEncoding].length;
-    NSUInteger caretPos = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.cursor_pos encoding:NSUTF8StringEncoding].length;
-    NSUInteger length = [[NSString alloc] initWithBytes:preedit length:(NSUInteger)ctx.composition.length encoding:NSUTF8StringEncoding].length;
+    NSUInteger start = [[NSString alloc] initWithBytes:preedit 
+                                                length:(NSUInteger)ctx.composition.sel_start
+                                              encoding:NSUTF8StringEncoding].length;
+    NSUInteger end = [[NSString alloc] initWithBytes:preedit 
+                                              length:(NSUInteger)ctx.composition.sel_end
+                                            encoding:NSUTF8StringEncoding].length;
+    NSUInteger caretPos = [[NSString alloc] initWithBytes:preedit
+                                                   length:(NSUInteger)ctx.composition.cursor_pos
+                                                 encoding:NSUTF8StringEncoding].length;
+    NSUInteger length = [[NSString alloc] initWithBytes:preedit 
+                                                 length:(NSUInteger)ctx.composition.length
+                                               encoding:NSUTF8StringEncoding].length;
     NSUInteger numCandidate = (NSUInteger)ctx.menu.num_candidates;
 
     // update candidates
@@ -717,9 +727,9 @@ void set_caps_lock_led(bool target_state) {
       [candidates addObject:@(ctx.menu.candidates[i].text)];
       [comments addObject:@(ctx.menu.candidates[i].comment ? : "")];
     }
-    [self showPanelWithPreedit:(_inlinePreedit && !_showingSwitcherMenu ? nil : preeditText)
+    [self showPanelWithPreedit:_inlinePreedit && !_showingSwitcherMenu ? nil : preeditText
                       selRange:NSMakeRange(start, end - start)
-                      caretPos:(_showingSwitcherMenu ? NSNotFound : caretPos)
+                      caretPos:_showingSwitcherMenu ? NSNotFound : caretPos
                     candidates:candidates
                       comments:comments
                    highlighted:(NSUInteger)ctx.menu.highlighted_candidate_index
@@ -752,9 +762,13 @@ void set_caps_lock_led(bool target_state) {
         }
       } else {
         if (_inlinePreedit && !_showingSwitcherMenu) {
-          [self showPreeditString:preeditText selRange:NSMakeRange(start, end - start) caretPos:caretPos];
+          [self showPreeditString:preeditText 
+                         selRange:NSMakeRange(start, end - start)
+                         caretPos:caretPos];
         } else {
-          [self showPreeditString:@"" selRange:NSMakeRange(0, 0) caretPos:0];
+          [self showPreeditString:@""
+                         selRange:NSMakeRange(0, 0)
+                         caretPos:0];
         }
       }
     }

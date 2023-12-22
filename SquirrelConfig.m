@@ -11,13 +11,13 @@
 
 - (instancetype)initWithSchemaId:(NSString *)schemaId
                         switcher:(NSDictionary<NSString *, NSString *> *)switcher
-                    optionGroups:(NSDictionary<NSString *, NSArray<NSString *> *> *)optionGroups{
+                    optionGroups:(NSDictionary<NSString *, NSArray<NSString *> *> *)optionGroups {
   self = [super init];
   if (self) {
     _schemaId = schemaId;
     _switcher = switcher;
     _optionGroups = optionGroups;
-    _optionNames = [switcher allKeys];
+    _optionNames = switcher.allKeys;
   }
   return self;
 }
@@ -31,7 +31,7 @@
 }
 
 - (NSArray<NSString *> *)optionStates {
-  return [_switcher allValues];
+  return _switcher.allValues;
 }
 
 - (NSDictionary<NSString *, NSString *> *)switcher {
@@ -54,7 +54,8 @@
   return YES;
 }
 
-- (BOOL)updateGroupState:(NSString *)optionState ofOption:(NSString *)optionName {
+- (BOOL)updateGroupState:(NSString *)optionState
+                ofOption:(NSString *)optionName {
   NSArray<NSString *> *optionGroup = _optionGroups[optionName];
   if (!optionGroup || ![optionGroup containsObject:optionState]) {
     return NO;
@@ -78,7 +79,7 @@
 @end
 
 @implementation SquirrelConfig {
-  NSMutableDictionary *_cache;
+  NSCache *_cache;
   RimeConfig _config;
   NSString *_schemaId;
   SquirrelConfig *_baseConfig;
@@ -88,7 +89,7 @@
 - (instancetype)init {
   self = [super init];
   if (self) {
-    _cache = [[NSMutableDictionary alloc] init];
+    _cache = [[NSCache alloc] init];
   }
   self.colorSpace = @"srgb";
   return self;
@@ -162,79 +163,96 @@
   return [self getOptionalDouble:option].doubleValue;
 }
 
+- (double)getDouble:(NSString *)option
+    applyConstraint:(double(*)(double param))func {
+  NSNumber *value = [self getOptionalDouble:option];
+  return func(value.doubleValue);
+}
+
 - (NSNumber *)getOptionalBool:(NSString *)option {
-  NSNumber *cachedValue = [self cachedValueOfClass:[NSNumber class] forKey:option];
+  NSNumber *cachedValue = [self cachedValueOfClass:NSNumber.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
   Bool value;
   if (_isOpen && rime_get_api()->config_get_bool(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(!!value);
+    [_cache setObject:@(!!value) forKey:option];
+    return @(!!value);
   }
   return [_baseConfig getOptionalBool:option];
 }
 
 - (NSNumber *)getOptionalInt:(NSString *)option {
-  NSNumber *cachedValue = [self cachedValueOfClass:[NSNumber class] forKey:option];
+  NSNumber *cachedValue = [self cachedValueOfClass:NSNumber.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
   int value;
   if (_isOpen && rime_get_api()->config_get_int(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(value);
+    [_cache setObject:@(value) forKey:option];
+    return @(value);
   }
   return [_baseConfig getOptionalInt:option];
 }
 
 - (NSNumber *)getOptionalDouble:(NSString *)option {
-  NSNumber *cachedValue = [self cachedValueOfClass:[NSNumber class] forKey:option];
+  NSNumber *cachedValue = [self cachedValueOfClass:NSNumber.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
   double value;
   if (_isOpen && rime_get_api()->config_get_double(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(value);
+    [_cache setObject:@(value) forKey:option];
+    return @(value);
   }
   return [_baseConfig getOptionalDouble:option];
 }
 
+- (NSNumber *)getOptionalDouble:(NSString *)option
+                applyConstraint:(double(*)(double param))func {
+  NSNumber *value = [self getOptionalDouble:option];
+  return value ? @(func(value.doubleValue)) : nil;
+}
+
 - (NSString *)getString:(NSString *)option {
-  NSString *cachedValue = [self cachedValueOfClass:[NSString class] forKey:option];
+  NSString *cachedValue = [self cachedValueOfClass:NSString.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
   const char *value =
     _isOpen ? rime_get_api()->config_get_cstring(&_config, option.UTF8String) : NULL;
   if (value) {
-    return _cache[option] = @(value);
+    NSString *string = [@(value) stringByTrimmingCharactersInSet:NSCharacterSet.whitespaceCharacterSet];
+    [_cache setObject:string forKey:option];
+    return string;
   }
   return [_baseConfig getString:option];
 }
 
 - (NSColor *)getColor:(NSString *)option {
-  NSColor *cachedValue = [self cachedValueOfClass:[NSColor class] forKey:option];
+  NSColor *cachedValue = [self cachedValueOfClass:NSColor.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
   NSColor *color = [self colorFromString:[self getString:option]];
   if (color) {
-    _cache[option] = color;
+    [_cache setObject:color forKey:option];
     return color;
   }
   return [_baseConfig getColor:option];
 }
 
-- (NSColor *)getPattern:(NSString *)option {
-  NSColor *cachedValue = [self cachedValueOfClass:[NSColor class] forKey:option];
+- (NSImage *)getImage:(NSString *)option {
+  NSImage *cachedValue = [self cachedValueOfClass:NSImage.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
-  NSColor *pattern = [self patternFromFile:[self getString:option]];
-  if (pattern) {
-    _cache[option] = pattern;
-    return pattern;
+  NSImage *image = [self imageFromFile:[self getString:option]];
+  if (image) {
+    [_cache setObject:image forKey:option];
+    return image;
   }
-  return [_baseConfig getPattern:option];
+  return [_baseConfig getImage:option];
 }
 
 - (NSArray<NSString *> *)getList:(NSString *)option {
@@ -253,7 +271,7 @@
 - (SquirrelOptionSwitcher *)getOptionSwitcher {
   RimeConfigIterator switchIter;
   if (!rime_get_api()->config_begin_list(&switchIter, &_config, "switches")) {
-    return  nil;
+    return nil;
   }
   NSMutableDictionary<NSString *, NSString*> *switcher = [[NSMutableDictionary alloc] init];
   NSMutableDictionary<NSString *, NSArray<NSString *> *> *optionGroups = [[NSMutableDictionary alloc] init];
@@ -304,14 +322,15 @@
     appOptions[@(iterator.key)] = @(value);
   }
   rime_get_api()->config_end(&iterator);
-  return [appOptions copy];
+  return appOptions;
 }
 
 #pragma mark - Private methods
 
-- (id)cachedValueOfClass:(Class)aClass forKey:(NSString *)key {
+- (id)cachedValueOfClass:(Class)aClass
+                  forKey:(NSString *)key {
   id value = [_cache objectForKey:key];
-  if (value && [value isKindOfClass:aClass]) {
+  if (value && [value isMemberOfClass:aClass]) {
     return value;
   }
   return nil;
@@ -324,35 +343,36 @@
 
   int r = 0, g = 0, b = 0, a = 0xff;
   if (string.length == 10) {
-    // 0xffccbbaa
+    // 0xaaBBGGRR
     sscanf(string.UTF8String, "0x%02x%02x%02x%02x", &a, &b, &g, &r);
   } else if (string.length == 8) {
-    // 0xccbbaa
+    // 0xBBGGRR
     sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
   if ([self.colorSpace isEqualToString:@"display_p3"]) {
-    return [NSColor colorWithDisplayP3Red:(CGFloat)r / 255.
-                                    green:(CGFloat)g / 255.
-                                     blue:(CGFloat)b / 255.
-                                    alpha:(CGFloat)a / 255.];
+    return [NSColor colorWithDisplayP3Red:r / 255.0
+                                    green:g / 255.0
+                                     blue:b / 255.0
+                                    alpha:a / 255.0];
   } else {  // sRGB by default
-    return [NSColor colorWithSRGBRed:(CGFloat)r / 255.
-                               green:(CGFloat)g / 255.
-                                blue:(CGFloat)b / 255.
-                               alpha:(CGFloat)a / 255.];
+    return [NSColor colorWithSRGBRed:r / 255.0
+                               green:g / 255.0
+                                blue:b / 255.0
+                               alpha:a / 255.0];
   }
 }
 
-- (NSColor *)patternFromFile:(NSString *)filePath {
+- (NSImage *)imageFromFile:(NSString *)filePath {
   if (filePath == nil) {
     return nil;
   }
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  [fileManager changeCurrentDirectoryPath:[@"~/Library/Rime" stringByStandardizingPath]];
-  NSString *patternFile = [filePath stringByStandardizingPath];
-  if ([fileManager fileExistsAtPath:patternFile]) {
-    NSColor *pattern = [NSColor colorWithPatternImage:[[NSImage alloc] initByReferencingFile:patternFile]];
-    return pattern;
+  NSURL *userDataDir = [NSURL fileURLWithPath:@"~/Library/Rime".stringByExpandingTildeInPath 
+                                  isDirectory:YES];
+  NSURL *imageFile = [NSURL fileURLWithPath:filePath
+                                isDirectory:NO relativeToURL:userDataDir];
+  if ([imageFile checkResourceIsReachableAndReturnError:nil]) {
+    NSImage *image = [[NSImage alloc] initByReferencingURL:imageFile];
+    return image;
   }
   return nil;
 }

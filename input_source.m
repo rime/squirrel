@@ -3,22 +3,23 @@
 static const char kInstallLocation[] =
   "/Library/Input Methods/Squirrel.app";
 
-static CFStringRef kHansInputModeID =
+static const CFStringRef kHansInputModeID =
   CFSTR("im.rime.inputmethod.Squirrel.Hans");
-static CFStringRef kHantInputModeID =
+static const CFStringRef kHantInputModeID =
   CFSTR("im.rime.inputmethod.Squirrel.Hant");
-static CFStringRef kCantInputModeID =
+static const CFStringRef kCantInputModeID =
   CFSTR("im.rime.inputmethod.Squirrel.Cant");
 
-typedef enum {
-  HANS_INPUT_MODE = 1 << 0,
-  HANT_INPUT_MODE = 1 << 1,
-  CANT_INPUT_MODE = 1 << 2
+typedef enum RimeInputMode : int {
+  DEFAULT_INPUT_MODE  = 1 << 0,
+  HANS_INPUT_MODE     = 1 << 0,
+  HANT_INPUT_MODE     = 1 << 1,
+  CANT_INPUT_MODE     = 1 << 2
 } RimeInputMode;
 
 void RegisterInputSource(void) {
-  CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
-    NULL, (UInt8 *)kInstallLocation, (CFIndex)strlen(kInstallLocation), false);
+  CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation
+    (NULL, (UInt8 *)kInstallLocation, (CFIndex)strlen(kInstallLocation), false);
   if (installedLocationURL) {
     TISRegisterInputSource(installedLocationURL);
     CFRelease(installedLocationURL);
@@ -26,18 +27,15 @@ void RegisterInputSource(void) {
   }
 }
 
-void ActivateInputSource(int enabled_modes) {
+void ActivateInputSource(RimeInputMode modes) {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)CFArrayGetValueAtIndex(sourceList, i);
     CFStringRef sourceID = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID);
     //NSLog(@"Examining input source: %@", sourceID);
-    if ((CFStringCompare(sourceID, kHansInputModeID, 0) == kCFCompareEqualTo &&
-         (enabled_modes & HANS_INPUT_MODE) != 0) ||
-        (CFStringCompare(sourceID, kHantInputModeID, 0) == kCFCompareEqualTo &&
-         (enabled_modes & HANT_INPUT_MODE) != 0) ||
-        (CFStringCompare(sourceID, kCantInputModeID, 0) == kCFCompareEqualTo &&
-         (enabled_modes & CANT_INPUT_MODE) != 0)) {
+    if ((!CFStringCompare(sourceID, kHansInputModeID, 0) && (modes & HANS_INPUT_MODE)) ||
+        (!CFStringCompare(sourceID, kHantInputModeID, 0) && (modes & HANT_INPUT_MODE)) ||
+        (!CFStringCompare(sourceID, kCantInputModeID, 0) && (modes & CANT_INPUT_MODE))) {
       OSStatus enableError = TISEnableInputSource(inputSource);
       if (enableError) {
         NSLog(@"Error %d. Failed to enable input mode: %@", enableError, sourceID);
@@ -65,9 +63,9 @@ void DeactivateInputSource(void) {
     TISInputSourceRef inputSource = (TISInputSourceRef)CFArrayGetValueAtIndex(sourceList, i - 1);
     CFStringRef sourceID = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID);
     //NSLog(@"Examining input source: %@", sourceID);
-    if (CFStringCompare(sourceID, kHansInputModeID, 0) == kCFCompareEqualTo ||
-        CFStringCompare(sourceID, kHantInputModeID, 0) == kCFCompareEqualTo ||
-        CFStringCompare(sourceID, kCantInputModeID, 0) == kCFCompareEqualTo) {
+    if (!CFStringCompare(sourceID, kHansInputModeID, 0) ||
+        !CFStringCompare(sourceID, kHantInputModeID, 0) ||
+        !CFStringCompare(sourceID, kCantInputModeID, 0)) {
       CFBooleanRef isEnabled = (CFBooleanRef)
         TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled);
       if (CFBooleanGetValue(isEnabled)) {
@@ -83,24 +81,24 @@ void DeactivateInputSource(void) {
   CFRelease(sourceList);
 }
 
-int GetEnabledInputModes(void) {
-  int input_modes = 0;
+RimeInputMode GetEnabledInputModes(void) {
+  RimeInputMode input_modes = 0;
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)CFArrayGetValueAtIndex(sourceList, i);
     CFStringRef sourceID = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID);
     //NSLog(@"Examining input source: %@", sourceID);
-    if (CFStringCompare(sourceID, kHansInputModeID, 0) == 0 ||
-        CFStringCompare(sourceID, kHantInputModeID, 0) == 0 ||
-        CFStringCompare(sourceID, kCantInputModeID, 0) == 0) {
+    if (!CFStringCompare(sourceID, kHansInputModeID, 0) ||
+        !CFStringCompare(sourceID, kHantInputModeID, 0) ||
+        !CFStringCompare(sourceID, kCantInputModeID, 0)) {
       CFBooleanRef isEnabled = (CFBooleanRef)
         TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled);
       if (CFBooleanGetValue(isEnabled)) {
-        if (CFStringCompare(sourceID, kHansInputModeID, 0) == kCFCompareEqualTo) {
+        if (!CFStringCompare(sourceID, kHansInputModeID, 0)) {
           input_modes |= HANS_INPUT_MODE;
-        } else if (CFStringCompare(sourceID, kHantInputModeID, 0) == kCFCompareEqualTo) {
+        } else if (!CFStringCompare(sourceID, kHantInputModeID, 0)) {
           input_modes |= HANT_INPUT_MODE;
-        } else if (CFStringCompare(sourceID, kCantInputModeID, 0) == kCFCompareEqualTo) {
+        } else if (!CFStringCompare(sourceID, kCantInputModeID, 0)) {
           input_modes |= CANT_INPUT_MODE;
         }
       }

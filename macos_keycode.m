@@ -133,5 +133,211 @@ int osx_keycode_to_rime_keycode(int keycode, int keychar, int shift, int caps) {
     return keychar;
   }
 
-  return XK_VoidSymbol;
+  switch (keychar) {
+    case 0x0003:
+      return XK_KP_Enter;
+      break;
+    case 0x0008:
+      return XK_BackSpace;
+      break;
+    case 0x0009:
+    case 0x0019:
+      return XK_Tab;
+      break;
+    case 0x000a:
+      return XK_Return;
+      break;
+    case 0xF728:
+      return XK_Delete;
+      break;
+    case 0xF700:
+      return XK_Up;
+      break;
+    case 0xF701:
+      return XK_Down;
+      break;
+    case 0xF702:
+      return XK_Left;
+      break;
+    case 0xF703:
+      return XK_Right;
+      break;
+    case 0xF704:
+      return XK_F1;
+      break;
+    case 0xF705:
+      return XK_F2;
+      break;
+    case 0xF706:
+      return XK_F3;
+      break;
+    case 0xF707:
+      return XK_F4;
+      break;
+    case 0xF708:
+      return XK_F5;
+      break;
+    case 0xF709:
+      return XK_F6;
+      break;
+    case 0xF70A:
+      return XK_F7;
+      break;
+    case 0xF70B:
+      return XK_F8;
+      break;
+    case 0xF70C:
+      return XK_F9;
+      break;
+    case 0xF70D:
+      return XK_F10;
+      break;
+    case 0xF70E:
+      return XK_F11;
+      break;
+    case 0xF70F:
+      return XK_F12;
+      break;
+    case 0xF710:
+      return XK_F13;
+      break;
+    case 0xF711:
+      return XK_F14;
+      break;
+    case 0xF712:
+      return XK_F15;
+      break;
+    case 0xF713:
+      return XK_F16;
+      break;
+    case 0xF714:
+      return XK_F17;
+      break;
+    case 0xF715:
+      return XK_F18;
+      break;
+    case 0xF716:
+      return XK_F19;
+      break;
+    case 0xF717:
+      return XK_F20;
+      break;
+    case 0xF718:
+      return XK_F21;
+      break;
+    case 0xF719:
+      return XK_F22;
+      break;
+    case 0xF71A:
+      return XK_F23;
+      break;
+    case 0xF71B:
+      return XK_F24;
+      break;
+    case 0xF71C:
+      return XK_F25;
+      break;
+    case 0xF71D:
+      return XK_F26;
+      break;
+    case 0xF71E:
+      return XK_F27;
+      break;
+    case 0xF71F:
+      return XK_F28;
+      break;
+    case 0xF720:
+      return XK_F29;
+      break;
+    case 0xF721:
+      return XK_F30;
+      break;
+    case 0xF722:
+      return XK_F31;
+      break;
+    case 0xF723:
+      return XK_F32;
+      break;
+    case 0xF724:
+      return XK_F33;
+      break;
+    case 0xF725:
+      return XK_F34;
+      break;
+    case 0xF726:
+      return XK_F35;
+      break;
+    case 0xF72A:
+      return XK_Begin;
+      break;
+    case 0xF72C:
+      return XK_Page_Up;
+      break;
+    case 0xF72D:
+      return XK_Page_Down;
+      break;
+    case 0xF729:
+      return XK_Home;
+      break;
+    case 0xF72B:
+      return XK_End;
+      break;
+    case 0xF732:
+      return XK_Break;
+      break;
+    case 0xF73A:
+      return XK_Clear;
+      break;
+    case 0xF739:
+      return XK_Num_Lock;
+      break;
+    case 0xF73E:
+      return XK_Delete;
+      break;
+    case 0xF742:
+      return XK_Execute;
+      break;
+    case 0xF745:
+      return XK_Find;
+      break;
+    case 0xF746:
+      return XK_Help;
+      break;
+    case 0xF727:
+      return XK_Insert;
+      break;
+    case 0xF735:
+      return XK_Menu;
+      break;
+    case 0xF747:
+      return XK_Mode_switch;
+      break;
+    case 0xF730:
+      return XK_Pause;
+      break;
+    case 0xF738:
+      return XK_Print;
+      break;
+    case 0xF744:
+      return XK_Redo;
+      break;
+    case 0xF72F:
+      return XK_Scroll_Lock;
+      break;
+    case 0xF741:
+      return XK_Select;
+      break;
+    case 0xF734:
+      return XK_Cancel;
+      break;
+    case 0xF731:
+      return XK_Sys_Req;
+      break;
+    case 0xF743:
+      return XK_Undo;
+      break;
+    default:
+      return XK_VoidSymbol;
+      break;
+  }
 }

@@ -6,11 +6,11 @@
 
 typedef enum {
   defaultAppear = 0,
-  lightAppear = 0,
-  darkAppear = 1
+  lightAppear   = 0,
+  darkAppear    = 1
 } SquirrelAppear;
 
-@interface SquirrelPanel : NSPanel
+@interface SquirrelPanel : NSPanel <NSWindowDelegate>
 
 // Linear candidate list, as opposed to stacked candidate list.
 @property(nonatomic, readonly) BOOL linear;
@@ -34,7 +34,7 @@ typedef enum {
            caretPos:(NSUInteger)caretPos
          candidates:(NSArray<NSString *> *)candidates
            comments:(NSArray<NSString *> *)comments
-        highlighted:(NSUInteger)index
+        highlighted:(NSUInteger)highlighted
             pageNum:(NSUInteger)pageNum
            lastPage:(BOOL)lastPage;
 
