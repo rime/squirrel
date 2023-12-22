@@ -110,8 +110,8 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>im.rime.inputmethod.Squirrel.Hant</string>
 			<string>im.rime.inputmethod.Squirrel.Hans</string>
+			<string>im.rime.inputmethod.Squirrel.Hant</string>
 			<string>im.rime.inputmethod.Squirrel.Cant</string>
 		</array>
 	</dict>
@@ -123,6 +123,8 @@
 	<string>SquirrelInputController</string>
 	<key>LSBackgroundOnly</key>
 	<false/>
+	<key>LSHasLocalizedDisplayName</key>
+	<true/>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSMainNibFile</key>
