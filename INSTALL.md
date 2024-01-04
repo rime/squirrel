@@ -61,7 +61,7 @@ export BUILD_UNIVERSAL=1
 
 bash librime/install-boost.sh
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_83_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost-1.84.0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as

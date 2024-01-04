@@ -16,24 +16,26 @@
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>${MARKETING_VERSION}</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>CFBundleShortVersionString</key>
-	<string>${MARKETING_VERSION}</string>
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>im.rime.inputmethod.Squirrel.Hant</key>
+			<key>im.rime.inputmethod.Squirrel.Hans</key>
 			<dict>
-				<key>TISInputSourceID</key>
-				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Hant</string>
-				<key>TISIntendedLanguage</key>
-				<string>zh-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
+				<key>TISInputSourceID</key>
+				<string>im.rime.inputmethod.Squirrel.Hans</string>
+				<key>TISIntendedLanguage</key>
+				<string>zh-Hans</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hani</string>
@@ -46,21 +48,21 @@
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
 				<string>rime</string>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<false/>
+				<true/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
-			<key>im.rime.inputmethod.Squirrel.Hans</key>
+			<key>im.rime.inputmethod.Squirrel.Hant</key>
 			<dict>
-				<key>TISInputSourceID</key>
-				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Hans</string>
-				<key>TISIntendedLanguage</key>
-				<string>zh-Hans</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
+				<key>TISInputSourceID</key>
+				<string>im.rime.inputmethod.Squirrel.Hant</string>
+				<key>TISIntendedLanguage</key>
+				<string>zh-Hant</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hani</string>
@@ -73,21 +75,21 @@
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
 				<string>rime</string>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<false/>
+				<true/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
 			<key>im.rime.inputmethod.Squirrel.Cant</key>
 			<dict>
-				<key>TISInputSourceID</key>
-				<string>${PRODUCT_BUNDLE_IDENTIFIER}.Cant</string>
-				<key>TISIntendedLanguage</key>
-				<string>yue-Hant</string>
 				<key>TISIconIsTemplate</key>
 				<true/>
+				<key>TISInputSourceID</key>
+				<string>im.rime.inputmethod.Squirrel.Cant</string>
+				<key>TISIntendedLanguage</key>
+				<string>yue-Hant</string>
+				<key>tsInputModeAlternateMenuIconFileKey</key>
+				<string>rime</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
 					<string>Hani</string>
@@ -100,10 +102,8 @@
 				<integer>4608</integer>
 				<key>tsInputModeMenuIconFileKey</key>
 				<string>rime</string>
-				<key>tsInputModeAlternateMenuIconFileKey</key>
-				<string>rime</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<false/>
+				<true/>
 				<key>tsInputModeScriptKey</key>
 				<string>smUnicodeScript</string>
 			</dict>
@@ -131,14 +131,14 @@
 	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSupportsSuddenTermination</key>
+	<false/>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
 	<key>SUPublicDSAKeyFile</key>
 	<string>dsa_pub.pem</string>
-	<key>NSSupportsSuddenTermination</key>
-	<false/>
 	<key>TICapsLockLanguageSwitchCapable</key>
 	<true/>
 	<key>TISIconIsTemplate</key>
