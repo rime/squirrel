@@ -30,8 +30,8 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 @interface SquirrelConfig : NSObject
 
 @property(nonatomic, readonly) BOOL isOpen;
-@property(nonatomic, copy) NSString *colorSpace;
-@property(nonatomic, readonly) NSString *schemaId;
+@property(nonatomic, strong) NSString *colorSpace;
+@property(nonatomic, strong, readonly) NSString *schemaId;
 
 - (BOOL)openBaseConfig;
 - (BOOL)openWithSchemaId:(NSString *)schemaId
@@ -59,6 +59,7 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 // file path (absolute or relative to ~/Library/Rime)
 - (NSImage *)getImage:(NSString *)option;
 
+- (NSUInteger)getListSize:(NSString *)option;
 - (NSArray<NSString *> *)getList:(NSString *)option;
 
 - (SquirrelOptionSwitcher *)getOptionSwitcher;

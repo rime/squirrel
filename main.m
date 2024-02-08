@@ -2,14 +2,13 @@
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <rime_api.h>
-#import <string.h>
 
-typedef enum RimeInputMode : int {
+typedef NS_OPTIONS(int, RimeInputMode) {
   DEFAULT_INPUT_MODE  = 1 << 0,
   HANS_INPUT_MODE     = 1 << 0,
   HANT_INPUT_MODE     = 1 << 1,
   CANT_INPUT_MODE     = 1 << 2
-} RimeInputMode;
+};
 
 void RegisterInputSource(void);
 RimeInputMode GetEnabledInputModes(void);
@@ -18,7 +17,7 @@ void ActivateInputSource(RimeInputMode modes);
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
-static NSString *kConnectionName = @"Squirrel_1_Connection";
+static NSString *const kConnectionName = @"Squirrel_1_Connection";
 
 int main(int argc, char *argv[]) {
   if (argc > 1 && !strcmp("--quit", argv[1])) {
@@ -49,7 +48,7 @@ int main(int argc, char *argv[]) {
 
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
-    show_message("deploy_update", "deploy");
+    show_notification("deploy_update");
     // build all schemas in current directory
     RIME_STRUCT(RimeTraits, builder_traits);
     builder_traits.app_name = "rime.squirrel-builder";

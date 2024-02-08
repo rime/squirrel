@@ -12,20 +12,24 @@ typedef enum {
 
 @interface SquirrelPanel : NSPanel <NSWindowDelegate>
 
-// Linear candidate list, as opposed to stacked candidate list.
+// Linear candidate list layout, as opposed to stacked candidate list layout.
 @property(nonatomic, readonly) BOOL linear;
-// Tabled candidate list, a subtype of linear candidate list with tabled layout.
+// Tabled candidate list layout, a subtype of linear candidate list with tabled layout.
 @property(nonatomic, readonly) BOOL tabled;
-// Vertical text, as opposed to horizontal text.
+// Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
 @property(nonatomic, readonly) BOOL inlinePreedit;
-// Show first candidate inline
+// Show primary candidate inline
 @property(nonatomic, readonly) BOOL inlineCandidate;
 // Store switch options that change style (color theme) settings
 @property(nonatomic, strong) SquirrelOptionSwitcher *optionSwitcher;
-// position of input caret on screen.
-@property(nonatomic, assign) NSRect position;
+// option(s) on Chinese script (simplification/traditional, or radio group thereof)
+@property(nonatomic, strong) NSArray<NSString *> *scriptOptions;
+// position of the text input I-beam cursor on screen.
+@property(nonatomic, assign) NSRect IbeamRect;
+
+@property(nonatomic, strong) NSString *statusMessage;
 
 @property(nonatomic, assign) SquirrelInputController *inputController;
 
@@ -34,7 +38,7 @@ typedef enum {
            caretPos:(NSUInteger)caretPos
          candidates:(NSArray<NSString *> *)candidates
            comments:(NSArray<NSString *> *)comments
-        highlighted:(NSUInteger)highlighted
+   highlightedIndex:(NSUInteger)highlightedIndex
             pageNum:(NSUInteger)pageNum
            lastPage:(BOOL)lastPage;
 
