@@ -47,7 +47,7 @@ You have the option to skip the following two sections - building Boost and
 librime, by downloading the latest librime binary from GitHub releases.
 
 ``` sh
-bash ./travis-install.sh
+bash ./action-install.sh
 ```
 
 When this is done, you may move on to [Build Squirrel](#build-squirrel).
