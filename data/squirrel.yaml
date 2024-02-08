@@ -341,6 +341,7 @@ app_options:
   com.apple.Terminal:
     ascii_mode: true
     no_inline: true
+    inline_placeholder: true
   com.googlecode.iterm2:
     ascii_mode: true
     no_inline: true
@@ -350,6 +351,7 @@ app_options:
     vim_mode: true    # 退出VIM插入模式自動切換輸入法狀態
   com.apple.dt.Xcode:
     ascii_mode: true
+    no_inline: true
   com.barebones.textwrangler:
     ascii_mode: true
   com.macromates.TextMate.preview:
@@ -367,9 +369,15 @@ app_options:
     no_inline: true
   co.zeit.hyper:
     ascii_mode: true
+  org.alacritty:
+    ascii_mode: true
+    vim_mode: true
+    panelless_commit_fix: true
+    inline_offset: -10
   com.google.Chrome:
     # 規避 https://github.com/rime/squirrel/issues/435
     inline: true
+    inline_placeholder: true
   ru.keepcoder.Telegram:
     # 規避 https://github.com/rime/squirrel/issues/475
     inline: true

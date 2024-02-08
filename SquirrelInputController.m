@@ -10,7 +10,7 @@
 @interface SquirrelInputController(Private)
 -(void)createSession;
 -(void)destroySession;
--(void)rimeConsumeCommittedText;
+-(BOOL)rimeConsumeCommittedText;
 -(void)rimeUpdate;
 -(void)updateAppOptions;
 @end
@@ -29,6 +29,10 @@ const int N_KEY_ROLL_OVER = 50;
   NSString *_schemaId;
   BOOL _inlinePreedit;
   BOOL _inlineCandidate;
+  // app-specific bug fix
+  BOOL _inlinePlaceholder;
+  BOOL _panellessCommitFix;
+  int _inlineOffset;
   // for chord-typing
   int _chordKeyCodes[N_KEY_ROLL_OVER];
   int _chordModifiers[N_KEY_ROLL_OVER];
@@ -150,8 +154,20 @@ const int N_KEY_ROLL_OVER = 50;
           modifiers & OSX_CAPITAL_MASK);
         if (rime_keycode) {
           int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-          handled = [self processKey:rime_keycode modifiers:rime_modifiers];
-          [self rimeUpdate];
+          if ((handled = [self processKey:rime_keycode modifiers:rime_modifiers])) {
+            [self rimeUpdate];
+          } else if (_panellessCommitFix && [_currentClient markedRange].length > 0) {
+            if (rime_keycode == XK_Delete || (rime_keycode >= XK_Home && rime_keycode <= XK_KP_Delete) ||
+                (rime_keycode >= XK_BackSpace && rime_keycode <= XK_Escape)) {
+              [self showPlaceholder:@""];
+            } else if (!(modifiers & (NSEventModifierFlagControl | NSEventModifierFlagCommand)) &&
+                       event.characters.length > 0) {
+              [self showPlaceholder:nil];
+              [_currentClient insertText:event.characters
+                        replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+              return YES;
+            }
+          }
         }
       } break;
       default:
@@ -418,6 +434,17 @@ const int N_KEY_ROLL_OVER = 50;
   [NSApp.squirrelAppDelegate.panel hide];
 }
 
+-(void)showPlaceholder:(NSString*)placeholder
+{
+  NSDictionary* attrs = [self markForStyle:kTSMHiliteSelectedRawText
+                                   atRange:NSMakeRange(0, placeholder ? placeholder.length : 1)];
+  NSAttributedString* attrString = [[NSAttributedString alloc] initWithString:placeholder ? : @"█"
+                                                                   attributes:attrs];
+  [_currentClient setMarkedText:attrString
+                 selectionRange:NSMakeRange(0, 0)
+               replacementRange:NSMakeRange(NSNotFound, NSNotFound)];
+}
+
 -(void)showPreeditString:(NSString*)preedit
                 selRange:(NSRange)range
                 caretPos:(NSUInteger)pos
@@ -464,6 +491,8 @@ const int N_KEY_ROLL_OVER = 50;
   _candidates = candidates;
   NSRect inputPos;
   [_currentClient attributesForCharacterIndex:0 lineHeightRectangle:&inputPos];
+  NSWidth(inputPos) > NSHeight(inputPos) ? (inputPos.origin.x += _inlineOffset)
+                                         : (inputPos.origin.y += _inlineOffset);
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   panel.position = inputPos;
   panel.inputController = self;
@@ -504,10 +533,16 @@ const int N_KEY_ROLL_OVER = 50;
   SquirrelAppOptions* appOptions = [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
   if (appOptions) {
     for (NSString* key in appOptions) {
-      BOOL value = appOptions[key].boolValue;
-      NSLog(@"set app option: %@ = %d", key, value);
-      rime_get_api()->set_option(_session, key.UTF8String, value);
+      NSNumber *number = appOptions[key];
+      if (!strcmp(number.objCType, @encode(BOOL))) {
+        Bool value = number.intValue;
+        //NSLog(@"set app option: %@ = %d", key, value);
+        rime_get_api()->set_option(_session, key.UTF8String, value);
+      }
     }
+    _panellessCommitFix = appOptions[@"panelless_commit_fix"].boolValue;
+    _inlinePlaceholder = appOptions[@"inline_placeholder"].boolValue;
+    _inlineOffset = appOptions[@"inline_offset"].intValue;
   }
 }
 
@@ -521,14 +556,22 @@ const int N_KEY_ROLL_OVER = 50;
   [self clearChord];
 }
 
--(void)rimeConsumeCommittedText
+-(BOOL)rimeConsumeCommittedText
 {
   RIME_STRUCT(RimeCommit, commit);
   if (rime_get_api()->get_commit(_session, &commit)) {
     NSString *commitText = @(commit.text);
-    [self commitString: commitText];
+    if (_panellessCommitFix) {
+      [self showPlaceholder:commitText];
+      [self commitString:commitText];
+      [self showPlaceholder:sizeof(commit.text) == 1 ? @"" : nil];
+    } else {
+      [self commitString:commitText];
+    }
     rime_get_api()->free_commit(&commit);
+    return YES;
   }
+  return NO;
 }
 
 NSString *substr(const char *str, int length) {
@@ -541,7 +584,7 @@ NSString *substr(const char *str, int length) {
 -(void)rimeUpdate
 {
   //NSLog(@"rimeUpdate");
-  [self rimeConsumeCommittedText];
+  BOOL committedText = [self rimeConsumeCommittedText];
 
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
@@ -570,32 +613,38 @@ NSString *substr(const char *str, int length) {
     NSUInteger start = substr(preedit, ctx.composition.sel_start).length;
     NSUInteger end = substr(preedit, ctx.composition.sel_end).length;
     NSUInteger caretPos = substr(preedit, ctx.composition.cursor_pos).length;
+    NSUInteger numCandidate = ctx.menu.num_candidates;
     NSRange selRange = NSMakeRange(start, end - start);
-    if (_inlineCandidate) {
-      const char *candidatePreview = ctx.commit_text_preview;
-      NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
-      if (_inlinePreedit) {
-        if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
-          candidatePreviewText = [candidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
+    if (!(_panellessCommitFix && committedText)) {
+      if (_inlineCandidate) {
+        const char *candidatePreview = ctx.commit_text_preview;
+        NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
+        if (_inlinePreedit) {
+          if ((caretPos >= NSMaxRange(selRange)) && (caretPos < preeditText.length)) {
+            candidatePreviewText = [candidatePreviewText stringByAppendingString:[preeditText substringWithRange:NSMakeRange(caretPos, preeditText.length-caretPos)]];
+          }
+          [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(preeditText.length-caretPos)];
+        } else {
+          if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
+            candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
+          } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
+            candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
+          }
+          [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
         }
-        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length-(preeditText.length-caretPos)];
       } else {
-        if ((NSMaxRange(selRange) < caretPos) && (caretPos > selRange.location)) {
-          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(caretPos-NSMaxRange(selRange)))];
-        } else if ((NSMaxRange(selRange) < preeditText.length) && (caretPos <= selRange.location)) {
-          candidatePreviewText = [candidatePreviewText substringWithRange:NSMakeRange(0, candidatePreviewText.length-(preeditText.length-NSMaxRange(selRange)))];
+        if (_inlinePreedit) {
+          _inlinePlaceholder && preeditText.length == 0 && numCandidate > 0
+          ? [self showPlaceholder:@"　"]
+          : [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
+        } else {
+          NSRange empty = {0, 0};
+          // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
+          // note this is a full-shape space U+3000; using half shape characters like "..." will result in
+          // an unstable baseline when composing Chinese characters.
+          _inlinePlaceholder && preedit ? [self showPlaceholder:@"　"]
+          : [self showPreeditString:@"" selRange:empty caretPos:0];
         }
-        [self showPreeditString:candidatePreviewText selRange:NSMakeRange(selRange.location, candidatePreviewText.length-selRange.location) caretPos:candidatePreviewText.length];
-      }
-    } else {
-      if (_inlinePreedit) {
-        [self showPreeditString:preeditText selRange:selRange caretPos:caretPos];
-      } else {
-        NSRange empty = {0, 0};
-        // TRICKY: display a non-empty string to prevent iTerm2 from echoing each character in preedit.
-        // note this is a full-shape space U+3000; using half shape characters like "..." will result in
-        // an unstable baseline when composing Chinese characters.
-        [self showPreeditString:(preedit ? @"　" : @"") selRange:empty caretPos:0];
       }
     }
     // update candidates
