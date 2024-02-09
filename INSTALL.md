@@ -61,9 +61,9 @@ Choose one of the following options.
 ``` sh
 export BUILD_UNIVERSAL=1
 
-make -C librime xcode/deps/boost
+bash librime/install-boost.sh
 
-export BOOST_ROOT="$(pwd)/librime/deps/boost_1_78_0"
+export BOOST_ROOT="$(pwd)/librime/deps/boost-1.84.0"
 ```
 
 Let's set `BUILD_UNIVERSAL` to tell `make` that we are building Boost as
@@ -106,14 +106,14 @@ git submodule update --init --recursive
 make
 ```
 
-To build only for the native architecture, and/or specify the lowest supported macOS version, pass variable `ARCHS`/`MACOSX_DEPLOYMENT_TARGET` to `make`:
+To build only for the native architecture, and/or specify the lowest supported macOS version, pass variable `ARCHS` and/or `MACOSX_DEPLOYMENT_TARGET` to `make`:
 
 ``` sh
-# for Universal macOS App, targetting Ventura
-make ARCHS='arm64 x86_64' MACOSX_DEPLOYMENT_TARGET='13.0'
+# for Universal macOS App
+make ARCHS='arm64 x86_64'
 
-# for ARM macOS App, targetting Ventura
-make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='13.0'
+# for ARM macOS App
+make ARCHS='arm64'
 ```
 
 ## Install it on your Mac
@@ -123,7 +123,7 @@ make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='13.0'
 Just add `package` after `make`
 
 ```
-make package ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='13.0'
+make package ARCHS='arm64'
 ```
 
 Define or echo `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
