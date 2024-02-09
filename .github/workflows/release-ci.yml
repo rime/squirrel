@@ -5,7 +5,7 @@ on:
       - '*'
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-14
     env:
       SQUIRREL_BUNDLED_RECIPES: 'lotem/rime-octagram-data lotem/rime-octagram-data@hant'
     steps:
