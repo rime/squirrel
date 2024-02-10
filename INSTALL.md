@@ -45,7 +45,7 @@ You have the option to skip the following two sections - building Boost and
 librime, by downloading the latest librime binary from GitHub releases.
 
 ``` sh
-bash ./travis-install.sh
+bash ./action-install.sh
 ```
 
 When this is done, you may move on to [Build Squirrel](#build-squirrel).
@@ -113,17 +113,41 @@ With all dependencies ready, build `Squirrel.app`:
 make
 ```
 
-To build only for the native architecture, pass variable `ARCHS` to `make`:
+To build only for the native architecture, and/or specify the lowest supported macOS version, pass variable `ARCHS` and/or `MACOSX_DEPLOYMENT_TARGET` to `make`:
 
 ``` sh
-# for Mac computers with Apple Silicon
-make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.15'
+# for Universal macOS App
+make ARCHS='arm64 x86_64' MACOSX_DEPLOYMENT_TARGET='10.15'
 
-# for Intel-based Mac
-make ARCHS='x86_64' MACOSX_DEPLOYMENT_TARGET='10.15'
+# for ARM macOS App
+make ARCHS='arm64' MACOSX_DEPLOYMENT_TARGET='10.15'
 ```
 
 ## Install it on your Mac
+
+## Make Package
+
+Just add `package` after `make`
+
+```
+make package ARCHS='arm64'
+```
+
+Define or echo `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
+
+To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable. 
+
+To make notarization work, you also need to save your credential under the same name as above.
+
+```
+xcrun notarytool store-credentials 'your name/org'
+```
+
+You **don't** need to define `DEV_ID` if you don't intend to distribute the package.
+
+## Directly Install
+
+**You might need to precede with sudo, and without a logout, the App might not work properly. Direct install is not very recommended.**
 
 Once built, you can install and try it live on your Mac computer:
 

@@ -3,9 +3,6 @@
 all: release
 install: install-release
 
-# Change to `dist-with-icu` if boost is linked to icu libraries.
-RIME_DIST_TARGET = install
-
 RIME_BIN_DIR = librime/dist/bin
 RIME_LIB_DIR = librime/dist/lib
 
@@ -42,7 +39,7 @@ $(RIME_DEPS):
 	$(MAKE) -C librime deps
 
 librime: $(RIME_DEPS)
-	$(MAKE) -C librime $(RIME_DIST_TARGET)
+	$(MAKE) -C librime install
 	$(MAKE) copy-rime-binaries
 
 copy-rime-binaries:
