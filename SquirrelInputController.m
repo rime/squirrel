@@ -244,7 +244,7 @@ void set_CapsLock_LED_state(bool target_state) {
         handled = rime_get_api()->select_candidate_on_current_page(_session, (size_t)index);
         break;
       case kHILITE:
-        handled = rime_get_api()->hilite_candidate_on_current_page(_session, (size_t)index);
+        handled = rime_get_api()->highlight_candidate_on_current_page(_session, (size_t)index);
         break;
     }
   }
