@@ -17,22 +17,22 @@
 // position of input caret on screen.
 @property(nonatomic, assign) NSRect position;
 // position of input caret on screen.
-@property(nonatomic, assign) SquirrelInputController *inputController;
+@property(nonatomic, assign) SquirrelInputController* inputController;
 
--(void)showPreedit:(NSString*)preedit
-          selRange:(NSRange)selRange
-          caretPos:(NSUInteger)caretPos
-        candidates:(NSArray*)candidates
-          comments:(NSArray*)comments
-            labels:(NSArray*)labels
-       highlighted:(NSUInteger)index
-            update:(BOOL)update;
+- (void)showPreedit:(NSString*)preedit
+           selRange:(NSRange)selRange
+           caretPos:(NSUInteger)caretPos
+         candidates:(NSArray*)candidates
+           comments:(NSArray*)comments
+             labels:(NSArray*)labels
+        highlighted:(NSUInteger)index
+             update:(BOOL)update;
 
--(void)hide;
+- (void)hide;
 
--(void)updateStatusLong:(NSString*)messageLong statusShort:(NSString*)messageShort;
+- (void)updateStatusLong:(NSString*)messageLong
+             statusShort:(NSString*)messageShort;
 
--(void)loadConfig:(SquirrelConfig*)config
-      forDarkMode:(BOOL)isDark;
+- (void)loadConfig:(SquirrelConfig*)config forDarkMode:(BOOL)isDark;
 
 @end
