@@ -9,6 +9,12 @@ jobs:
         with:
           submodules: true
 
+      - name: Install clang-format
+        run: brew install clang-format
+
+      - name: Lint
+        run: make clang-format-lint
+
       - name: Configure build environment
         run: |
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
