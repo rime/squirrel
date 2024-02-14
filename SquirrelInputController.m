@@ -39,6 +39,29 @@ static NSString *const kFullWidthSpace = @"　";
   NSTimeInterval _chordDuration;
 }
 
+static SquirrelInputController *_currentController = nil;
+static NSMapTable<SquirrelInputController *, NSDate *> *_controllerDeactivationTime = NSMapTable.weakToWeakObjectsMapTable;
+
++ (void)setCurrentController:(SquirrelInputController *)controller {
+  _currentController = controller;
+}
+
++ (SquirrelInputController *)currentController {
+  return _currentController;
+}
+
++ (void)setDeactivationTimeForController:(SquirrelInputController *)controller {
+  [_controllerDeactivationTime setObject:NSDate.now forKey:controller];
+}
+
++ (NSDate *)lastControllerDeactivationTime {
+  return [_controllerDeactivationTime objectForKey:_currentController];
+}
+
++ (void)removeDeactivationTimeForController:(SquirrelInputController *)controller {
+  [_controllerDeactivationTime removeObjectForKey:controller];
+}
+
 /*!
    @method
    @abstract   Receive incoming event
@@ -166,6 +189,39 @@ static NSString *const kFullWidthSpace = @"　";
   return handled;
 }
 
+- (BOOL)mouseDownOnCharacterIndex:(NSUInteger)index
+                       coordinate:(NSPoint)point
+                     withModifier:(NSUInteger)flags
+                 continueTracking:(BOOL *)keepTracking
+                           client:(id)sender {
+  *keepTracking = NO;
+  @autoreleasepool {
+    if ((!_inlinePreedit && !_inlineCandidate) || _caretPos == index ||
+        (flags & NSEventModifierFlagDeviceIndependentFlagsMask)) {
+      return NO;
+    }
+    NSRange markedRange = [sender markedRange];
+    NSPoint head = [[sender attributesForCharacterIndex:0
+                                    lineHeightRectangle:NULL][@"IMKBaseline"] pointValue];
+    NSPoint tail = [[sender attributesForCharacterIndex:markedRange.length - 1
+                                    lineHeightRectangle:NULL][@"IMKBaseline"] pointValue];
+    if (point.x > tail.x || index >= markedRange.length -1) {
+      if (_inlineCandidate && !_inlinePreedit) {
+        return NO;
+      }
+      [self perform:kSELECT onIndex:kEnd];
+    } else if (point.x < head.x || index <= 0) {
+      [self perform:kSELECT onIndex:kHome];
+    } else {
+      [self moveCursor:_caretPos
+            toPosition:index
+         inlinePreedit:_inlinePreedit
+       inlineCandidate:_inlineCandidate];
+    }
+    return YES;
+  }
+}
+
 void set_CapsLock_LED_state(bool target_state) {
   io_service_t ioService = IOServiceGetMatchingService(kIOMasterPortDefault,
                             IOServiceMatching(kIOHIDSystemClass));
@@ -226,9 +282,48 @@ void set_CapsLock_LED_state(bool target_state) {
 
   return handled;
 }
+- (void)moveCursor:(NSUInteger)cursorPosition
+        toPosition:(NSUInteger)targetPosition
+     inlinePreedit:(BOOL)inlinePreedit
+   inlineCandidate:(BOOL)inlineCandidate {
+  BOOL vertical = NSApp.squirrelAppDelegate.panel.vertical;
+  NSString *composition = !inlinePreedit && !inlineCandidate ? _composedString : _preeditString.string;
+  RIME_STRUCT(RimeContext, ctx);
+  if (cursorPosition > targetPosition) {
+    NSString *targetPrefix = [composition substringToIndex:targetPosition];
+    NSString *prefix = [composition substringToIndex:cursorPosition];
+    while (targetPrefix.length < prefix.length) {
+      rime_get_api()->process_key(_session, vertical ? XK_Up : XK_Left, kControlMask);
+      rime_get_api()->get_context(_session, &ctx);
+      if (inlineCandidate) {
+        size_t length = ctx.composition.cursor_pos < ctx.composition.sel_end ?
+          (size_t)ctx.composition.cursor_pos : strlen(ctx.commit_text_preview) -
+          (inlinePreedit ? 0 : (size_t)(ctx.composition.cursor_pos - ctx.composition.sel_end));
+        prefix = [[NSString alloc] initWithBytes:ctx.commit_text_preview
+                                          length:(NSUInteger)length
+                                        encoding:NSUTF8StringEncoding];
+      } else {
+        prefix = [[NSString alloc] initWithBytes:ctx.composition.preedit
+                                          length:(NSUInteger)ctx.composition.cursor_pos
+                                        encoding:NSUTF8StringEncoding];
+      }
+      rime_get_api()->free_context(&ctx);
+    }
+  } else if (cursorPosition < targetPosition) {
+    NSString *targetSuffix = [composition substringFromIndex:targetPosition];
+    NSString *suffix = [composition substringFromIndex:cursorPosition];
+    while (targetSuffix.length < suffix.length) {
+      rime_get_api()->process_key(_session, vertical ? XK_Down : XK_Right, kControlMask);
+      rime_get_api()->get_context(_session, &ctx);
+      suffix = @(ctx.composition.preedit + ctx.composition.cursor_pos + (!inlinePreedit && !inlineCandidate ? 3 : 0));
+      rime_get_api()->free_context(&ctx);
+    }
+  }
+  [self rimeUpdate];
+}
 
-- (void)perform:(rimeAction)action
-        onIndex:(rimeIndex)index {
+- (void)perform:(SquirrelAction)action
+        onIndex:(SquirrelIndex)index {
   //NSLog(@"perform action: %u on index: %lu", action, (unsigned long)index);
   bool handled = false;
   if (index >= '!' && index <= '~' && (action == kSELECT || action == kHILITE)) {
@@ -313,7 +408,20 @@ void set_CapsLock_LED_state(bool target_state) {
 
 - (NSUInteger)recognizedEvents:(id)sender {
   //NSLog(@"recognizedEvents:");
-  return NSEventMaskKeyDown | NSEventMaskFlagsChanged;
+  return NSEventMaskKeyDown | NSEventMaskFlagsChanged | NSEventMaskLeftMouseDown;
+}
+
+NSString *getOptionLabel(RimeSessionId session, const char *option, Bool state) {
+  RimeStringSlice short_label = rime_get_api()->
+    get_state_label_abbreviated(session, option, state, True);
+  if (short_label.str && short_label.length >= strlen(short_label.str)) {
+    return @(short_label.str);
+  } else {
+    RimeStringSlice long_label = rime_get_api()->
+      get_state_label_abbreviated(session, option, state, False);
+    NSString *label = long_label.str ? @(long_label.str) : nil;
+    return [label substringWithRange:[label rangeOfComposedCharacterSequenceAtIndex:0]];
+  }
 }
 
 - (void)showInitialStatus {
@@ -321,15 +429,30 @@ void set_CapsLock_LED_state(bool target_state) {
   if (_session && rime_get_api()->get_status(_session, &status)) {
     _schemaId = @(status.schema_id);
     NSString *schemaName = status.schema_name ? @(status.schema_name) : @(status.schema_id);
+    NSMutableArray<NSString *> *options = [[NSMutableArray alloc] initWithCapacity:3];
+    NSString *asciiMode = getOptionLabel(_session, "ascii_mode", status.is_ascii_mode);
+    if (asciiMode) {
+      [options addObject:asciiMode];
+    }
+    NSString *fullShape = getOptionLabel(_session, "full_shape", status.is_full_shape);
+    if (fullShape) {
+      [options addObject:fullShape];
+    }
+    NSString *asciiPunct = getOptionLabel(_session, "ascii_punct", status.is_ascii_punct);
+    if (asciiPunct) {
+      [options addObject:asciiPunct];
+    }
     rime_get_api()->free_status(&status);
-    [NSApp.squirrelAppDelegate.panel updateStatusLong:schemaName statusShort:@""];
+    NSString *foldedOptions = options.count == 0 ? schemaName :
+      [NSString stringWithFormat:@"%@｜%@", schemaName, [options componentsJoinedByString:@" "]];
+    [NSApp.squirrelAppDelegate.panel updateStatusLong:foldedOptions statusShort:schemaName];
     [self rimeUpdate];
   }
 }
 
 - (void)activateServer:(id)sender {
   //NSLog(@"activateServer:");
-  NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config 
+  NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config
                               getString:@"keyboard_layout"];
   if ([keyboardLayout isEqualToString:@"last"] ||
       [keyboardLayout isEqualToString:@""]) {
@@ -343,6 +466,15 @@ void set_CapsLock_LED_state(bool target_state) {
   if (keyboardLayout) {
     [sender overrideKeyboardWithKeyboardNamed:keyboardLayout];
   }
+
+  if (NSApp.squirrelAppDelegate.showNotifications == kShowNotificationsAlways) {
+    if (!SquirrelInputController.currentController ||
+        (![SquirrelInputController.currentController isEqualTo:self] &&
+         [SquirrelInputController.lastControllerDeactivationTime timeIntervalSinceNow] < -0.5)) {
+      [self showInitialStatus];
+    }
+  }
+  [SquirrelInputController setCurrentController:self];
 
   SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
   if ([defaultConfig openWithConfigId:@"default"] &&
@@ -365,15 +497,13 @@ void set_CapsLock_LED_state(bool target_state) {
     _originalString = [[NSMutableString alloc] init];
     _composedString = [[NSMutableString alloc] init];
   }
-  if (NSApp.squirrelAppDelegate.showNotifications == kShowNotificationsAlways) {
-    [self showInitialStatus];
-  }
   return self;
 }
 
 - (void)deactivateServer:(id)sender {
   //NSLog(@"deactivateServer:");
   [self commitComposition:sender];
+  [SquirrelInputController setDeactivationTimeForController:self];
   [super deactivateServer:sender];
 }
 
@@ -401,9 +531,14 @@ void set_CapsLock_LED_state(bool target_state) {
   if (_session) {
     [self destroySession];
   }
+  if ([SquirrelInputController.currentController isEqualTo:self]) {
+    [SquirrelInputController setCurrentController:nil];
+  }
+  [SquirrelInputController removeDeactivationTimeForController:self];
   _preeditString = nil;
   _originalString = nil;
   _composedString = nil;
+  [super inputControllerWillClose];
 }
 
 // a piece of comment from SunPinyin's macos wrapper says:
@@ -444,7 +579,8 @@ void set_CapsLock_LED_state(bool target_state) {
 }
 
 - (id)composedString:(id)sender {
-  return _composedString;
+  return [_composedString stringByReplacingOccurrencesOfString:@" "
+                                                    withString:@""];
 }
 
 - (NSArray *)candidates:(id)sender {
@@ -512,7 +648,7 @@ void set_CapsLock_LED_state(bool target_state) {
   _caretPos = pos;
   //NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld",
   //      range.location, range.length, pos);
-  NSDictionary* attrs = [self markForStyle:kTSMHiliteSelectedRawText
+  NSDictionary* attrs = [self markForStyle:kTSMHiliteRawText
                                    atRange:NSMakeRange(0, preedit.length)];
   _preeditString = [[NSMutableAttributedString alloc] initWithString:preedit
                                                           attributes:attrs];
@@ -522,7 +658,7 @@ void set_CapsLock_LED_state(bool target_state) {
                             range:NSMakeRange(0, range.location)];
   }
   if (range.location < pos) {
-    [_preeditString addAttributes:[self markForStyle:kTSMHiliteSelectedConvertedText
+    [_preeditString addAttributes:[self markForStyle:kTSMHiliteSelectedRawText
                                              atRange:range]
                             range:range];
   }
@@ -586,7 +722,6 @@ void set_CapsLock_LED_state(bool target_state) {
       }
     }
   }
-  panel.inputController = self;
   panel.IbeamRect = IbeamRect;
   [panel showPreedit:preedit
             selRange:selRange
@@ -655,6 +790,12 @@ void set_CapsLock_LED_state(bool target_state) {
   return NO;
 }
 
+NSUInteger UTF8LengthToUTF16Length(const char* cstring, int length) {
+  return [[NSString alloc] initWithBytes:cstring
+                                  length:(NSUInteger)length
+                                encoding:NSUTF8StringEncoding].length;
+}
+
 - (void)rimeUpdate {
   //NSLog(@"rimeUpdate");
   BOOL didCommit = [self rimeConsumeCommittedText];
@@ -699,28 +840,20 @@ void set_CapsLock_LED_state(bool target_state) {
     if (!preedit || _showingSwitcherMenu) {
       _composedString = @"";
     } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
-      size_t cursorPos = (size_t)ctx.composition.cursor_pos - 
-                          (ctx.composition.cursor_pos < ctx.composition.sel_end ? 3 : 0);
+      size_t cursorPos = (size_t)ctx.composition.cursor_pos -
+        (ctx.composition.cursor_pos < ctx.composition.sel_end ? 3 : 0);
       char composed[strlen(preedit) - 2];
       strlcpy(composed, preedit, cursorPos + 1);
       strlcat(composed, preedit + cursorPos + 3, strlen(preedit) - 2);
-      _composedString = [@(composed) stringByReplacingOccurrencesOfString:@" " withString:@""];
+      _composedString = @(composed);
     } else {
-      _composedString = [@(preedit) stringByReplacingOccurrencesOfString:@" " withString:@""];
+      _composedString = @(preedit);
     }
 
-    NSUInteger start = [[NSString alloc] initWithBytes:preedit
-                                                length:(NSUInteger)ctx.composition.sel_start
-                                              encoding:NSUTF8StringEncoding].length;
-    NSUInteger end = [[NSString alloc] initWithBytes:preedit 
-                                              length:(NSUInteger)ctx.composition.sel_end
-                                            encoding:NSUTF8StringEncoding].length;
-    NSUInteger caretPos = [[NSString alloc] initWithBytes:preedit
-                                                   length:(NSUInteger)ctx.composition.cursor_pos
-                                                 encoding:NSUTF8StringEncoding].length;
-    NSUInteger length = [[NSString alloc] initWithBytes:preedit 
-                                                 length:(NSUInteger)ctx.composition.length
-                                               encoding:NSUTF8StringEncoding].length;
+    NSUInteger start = UTF8LengthToUTF16Length(preedit, ctx.composition.sel_start);
+    NSUInteger end = UTF8LengthToUTF16Length(preedit, ctx.composition.sel_end);
+    NSUInteger caretPos = UTF8LengthToUTF16Length(preedit, ctx.composition.cursor_pos);
+    NSUInteger length = UTF8LengthToUTF16Length(preedit, ctx.composition.length);
     NSUInteger numCandidate = (NSUInteger)ctx.menu.num_candidates;
 
     if (!showingStatus) {
@@ -732,28 +865,26 @@ void set_CapsLock_LED_state(bool target_state) {
         const char *candidatePreview = ctx.commit_text_preview;
         NSString *candidatePreviewText = candidatePreview ? @(candidatePreview) : @"";
         if (_inlinePreedit) {
-          if ((caretPos >= end) && (caretPos < length)) {
+          if (end <= caretPos && caretPos < length) {
             candidatePreviewText = [candidatePreviewText stringByAppendingString:
                                     [preeditText substringWithRange:NSMakeRange(caretPos, length - caretPos)]];
           }
           if (!didCommit || candidatePreviewText.length > 0) {
             [self showPreeditString:candidatePreviewText
                            selRange:NSMakeRange(start, candidatePreviewText.length - (length - end) - start)
-                           caretPos:caretPos <= start ? caretPos : candidatePreviewText.length - (length - caretPos)];
+                           caretPos:caretPos < end ? caretPos : candidatePreviewText.length - (length - caretPos)];
           }
-        } else {
-          if ((end < caretPos) && (caretPos > start)) {
-            candidatePreviewText = [candidatePreviewText substringWithRange:
-                                    NSMakeRange(0, candidatePreviewText.length - (caretPos - end))];
-          } else if ((end < length) && (caretPos < end)) {
-            candidatePreviewText = [candidatePreviewText substringWithRange:
-                                    NSMakeRange(0, candidatePreviewText.length - (length - end))];
+        } else { // preedit includes the soft cursor
+          if (end < caretPos && caretPos <= length) {
+            candidatePreviewText = [candidatePreviewText substringToIndex:candidatePreviewText.length - (caretPos - end)];
+          } else if (caretPos < end && end < length) {
+            candidatePreviewText = [candidatePreviewText substringToIndex:candidatePreviewText.length - (length - end)];
           }
           if (!didCommit || candidatePreviewText.length > 0) {
             [self showPreeditString:candidatePreviewText
                            selRange:NSMakeRange(start - (caretPos < end),
                                                 candidatePreviewText.length - start + (caretPos < end))
-                           caretPos:caretPos < end ? caretPos : candidatePreviewText.length];
+                           caretPos:caretPos < end ? caretPos - 1 : candidatePreviewText.length];
           }
         }
       } else {
@@ -798,4 +929,4 @@ void set_CapsLock_LED_state(bool target_state) {
   }
 }
 
-@end // SquirrelController(Private)
+@end // SquirrelInputController

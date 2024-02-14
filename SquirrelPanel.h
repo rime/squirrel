@@ -24,14 +24,10 @@ typedef enum {
 @property(nonatomic, readonly) BOOL inlineCandidate;
 // Store switch options that change style (color theme) settings
 @property(nonatomic, strong) SquirrelOptionSwitcher *optionSwitcher;
-// option(s) on Chinese script (simplification/traditional, or radio group thereof)
-@property(nonatomic, strong) NSArray<NSString *> *scriptOptions;
+// Status message before pop-up is displayed; nil before normal panel is displayed
+@property(nonatomic, readonly, strong) NSString *statusMessage;
 // position of the text input I-beam cursor on screen.
 @property(nonatomic, assign) NSRect IbeamRect;
-
-@property(nonatomic, strong) NSString *statusMessage;
-
-@property(nonatomic, assign) SquirrelInputController *inputController;
 
 - (void)showPreedit:(NSString *)preedit
            selRange:(NSRange)selRange

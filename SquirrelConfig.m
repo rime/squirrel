@@ -16,6 +16,16 @@
   return self;
 }
 
+- (instancetype)initWithSchemaId:(NSString *)schemaId {
+  if (self = [super init]) {
+    _schemaId = schemaId;
+    _switcher = nil;
+    _optionGroups = nil;
+    _optionNames = nil;
+  }
+  return self;
+}
+
 - (NSArray<NSString *> *)optionStates {
   return _switcher.allValues;
 }
@@ -39,7 +49,7 @@
 - (BOOL)updateGroupState:(NSString *)optionState
                 ofOption:(NSString *)optionName {
   NSArray *optionGroup = _optionGroups[optionName];
-  if (!optionGroup || ![optionGroup containsObject:optionState]) {
+  if (![optionGroup containsObject:optionState]) {
     return NO;
   }
   NSMutableDictionary *updatedSwitcher = [_switcher mutableCopy];

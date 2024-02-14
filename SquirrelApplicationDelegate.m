@@ -69,8 +69,8 @@ void show_notification(const char *msg_text) {
     }];
   } else {
     NSUserNotification *notification = [[NSUserNotification alloc] init];
-    [notification setTitle:NSLocalizedString(@"Squirrel", nil)];
-    [notification setSubtitle:NSLocalizedString(@(msg_text), nil)];
+    notification.title = NSLocalizedString(@"Squirrel", nil);
+    notification.subtitle = NSLocalizedString(@(msg_text), nil);
 
     NSUserNotificationCenter *notificationCenter =
       NSUserNotificationCenter.defaultUserNotificationCenter;
@@ -82,8 +82,7 @@ void show_notification(const char *msg_text) {
 static void show_status(const char *msg_text_long, const char *msg_text_short) {
   NSString *msgLong = msg_text_long ? @(msg_text_long) : nil;
   NSString *msgShort = msg_text_short ? @(msg_text_short) :
-    (msgLong ? [msgLong substringWithRange:
-                [msgLong rangeOfComposedCharacterSequenceAtIndex:0]] : nil);
+    [msgLong substringWithRange:[msgLong rangeOfComposedCharacterSequenceAtIndex:0]];
   [NSApp.squirrelAppDelegate.panel updateStatusLong:msgLong statusShort:msgShort];
 }
 
@@ -174,7 +173,7 @@ static void notification_handler(void *context_object, RimeSessionId session_id,
   rime_get_api()->finalize();
 }
 
-NSArray<NSString *> * getScriptOptionsForSchema(SquirrelConfig *schema) {
+NSArray<NSString *> *getScriptOptionsForSchema(SquirrelConfig *schema) {
   NSUInteger numSwitches = [schema getListSize:@"switches"];
   if (numSwitches == 0) {
     return nil;
@@ -199,8 +198,8 @@ NSArray<NSString *> * getScriptOptionsForSchema(SquirrelConfig *schema) {
   return nil;
 }
 
-SquirrelOptionSwitcher * updateOptionSwitcher(SquirrelOptionSwitcher *optionSwitcher,
-                                              RimeSessionId sessionId) {
+SquirrelOptionSwitcher *updateOptionSwitcher(SquirrelOptionSwitcher *optionSwitcher,
+                                             RimeSessionId sessionId) {
   NSMutableDictionary *switcher = optionSwitcher.mutableSwitcher;
   NSSet *prevStates = [NSSet setWithArray:optionSwitcher.optionStates];
   for (NSString *state in prevStates) {
@@ -247,22 +246,17 @@ SquirrelOptionSwitcher * updateOptionSwitcher(SquirrelOptionSwitcher *optionSwit
     return;
   }
   // update the list of switchers that change styles and color-themes
-  SquirrelOptionSwitcher *optionSwitcher;
   SquirrelConfig *schema = [[SquirrelConfig alloc] init];
-  if ([schema openWithSchemaId:schemaId baseConfig:self.config]) {
-    self.panel.scriptOptions = getScriptOptionsForSchema(schema);
-    if ([schema hasSection:@"style"]) {
-      optionSwitcher = [schema getOptionSwitcher];
-      self.panel.optionSwitcher = updateOptionSwitcher(optionSwitcher, sessionId);
-      [self.panel loadConfig:schema forAppearance:defaultAppear];
-      [self.panel loadConfig:schema forAppearance:darkAppear];
-    } else {
-      self.panel.optionSwitcher = [[SquirrelOptionSwitcher alloc] initWithSchemaId:schemaId
-                                                                          switcher:@{}
-                                                                      optionGroups:@{}];
-      [self.panel loadConfig:self.config forAppearance:defaultAppear];
-      [self.panel loadConfig:self.config forAppearance:darkAppear];
-    }
+  if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
+      [schema hasSection:@"style"]) {
+    SquirrelOptionSwitcher *optionSwitcher = [schema getOptionSwitcher];
+    self.panel.optionSwitcher = updateOptionSwitcher(optionSwitcher, sessionId);
+    [self.panel loadConfig:schema forAppearance:defaultAppear];
+    [self.panel loadConfig:schema forAppearance:darkAppear];
+  } else {
+    self.panel.optionSwitcher = [[SquirrelOptionSwitcher alloc] initWithSchemaId:schemaId];
+    [self.panel loadConfig:self.config forAppearance:defaultAppear];
+    [self.panel loadConfig:self.config forAppearance:darkAppear];
   }
   [schema close];
 }

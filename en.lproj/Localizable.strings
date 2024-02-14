@@ -9,3 +9,11 @@
                         Squirrel may be suffering a crash due to improper configurations. \
                         Revert previous modifications to see if the problem recurs.";
 "say_voice" = "Alex";
+
+"candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.";
+"delete" = "Click to ⌫Delete the input.\nSecondary click to ⎋Escape the composing.";
+"escape" = "Cannot delete any further.\nSecondary click to ⎋Escape the composing.";
+"page_up" = "Click to ⇞Page Up.\nSecondary click to jump to ↖Home.";
+"home" = "Cannot page up any further.\nSecondary click to jump to ↖Home.";
+"page_down" = "Click to ⇞Page Down.\nSecondary click to jump to ↘End.";
+"end" = "Cannot page down any further.\nSecondary click to jump to ↘End.";

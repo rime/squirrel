@@ -15,10 +15,13 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
                         switcher:(NSDictionary<NSString *, NSString *> *)switcher
                     optionGroups:(NSDictionary<NSString *, NSArray<NSString *> *> *)optionGroups;
 
+- (instancetype)initWithSchemaId:(NSString *)schemaId;
+
 // return whether switcher options has been successfully updated
 - (BOOL)updateSwitcher:(NSDictionary<NSString *, NSString *> *)switcher;
 
-- (BOOL)updateGroupState:(NSString *)optionState ofOption:(NSString *)optionName;
+- (BOOL)updateGroupState:(NSString *)optionState
+                ofOption:(NSString *)optionName;
 
 - (BOOL)containsOption:(NSString *)optionName;
 
