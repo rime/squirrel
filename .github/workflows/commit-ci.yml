@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-14
     steps:
       - name: Checkout last commit
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -20,7 +20,7 @@ jobs:
         run: ./action-build.sh package
 
       - name: Upload Squirrel artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Squirrel-${{ env.git_ref_name }}.zip
           path: package/*.pkg
