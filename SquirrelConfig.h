@@ -1,8 +1,5 @@
 #import <Cocoa/Cocoa.h>
 
-typedef NSDictionary<NSString *, NSNumber *> SquirrelAppOptions;
-typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
-
 @interface SquirrelOptionSwitcher : NSObject
 
 @property(nonatomic, strong, readonly) NSString *schemaId;
@@ -31,6 +28,9 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 
 
 @interface SquirrelConfig : NSObject
+
+typedef NSDictionary<NSString *, NSNumber *> SquirrelAppOptions;
+typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 
 @property(nonatomic, readonly) BOOL isOpen;
 @property(nonatomic, strong) NSString *colorSpace;

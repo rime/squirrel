@@ -11,7 +11,7 @@
 "say_voice" = "Alex";
 
 "candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.";
-"delete" = "Click to ⌫Delete the input.\nSecondary click to ⎋Escape the composing.";
+"delete" = "Click to ⌫Delete the input by character.\nSecondary click to ⎋Escape the composing.";
 "escape" = "Cannot delete any further.\nSecondary click to ⎋Escape the composing.";
 "page_up" = "Click to ⇞Page Up.\nSecondary click to jump to ↖Home.";
 "home" = "Cannot page up any further.\nSecondary click to jump to ↖Home.";

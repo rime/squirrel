@@ -4,13 +4,13 @@
 @class SquirrelConfig;
 @class SquirrelOptionSwitcher;
 
-typedef enum {
+@interface SquirrelPanel : NSPanel <NSWindowDelegate>
+
+typedef NS_ENUM(NSUInteger, SquirrelAppear) {
   defaultAppear = 0,
   lightAppear   = 0,
   darkAppear    = 1
-} SquirrelAppear;
-
-@interface SquirrelPanel : NSPanel <NSWindowDelegate>
+};
 
 // Linear candidate list layout, as opposed to stacked candidate list layout.
 @property(nonatomic, readonly) BOOL linear;
@@ -25,7 +25,7 @@ typedef enum {
 // Store switch options that change style (color theme) settings
 @property(nonatomic, strong) SquirrelOptionSwitcher *optionSwitcher;
 // Status message before pop-up is displayed; nil before normal panel is displayed
-@property(nonatomic, readonly, strong) NSString *statusMessage;
+@property(nonatomic, strong, readonly) NSString *statusMessage;
 // position of the text input I-beam cursor on screen.
 @property(nonatomic, assign) NSRect IbeamRect;
 
@@ -49,4 +49,4 @@ typedef enum {
 - (void)loadLabelConfig:(SquirrelConfig *)config
            directUpdate:(BOOL)update;
 
-@end
+@end // SquirrelPanel

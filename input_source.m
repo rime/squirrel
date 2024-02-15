@@ -26,7 +26,7 @@ void RegisterInputSource(void) {
   }
 }
 
-void ActivateInputSource(int modes) {
+void ActivateInputSource(RimeInputMode modes) {
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource = (TISInputSourceRef)CFArrayGetValueAtIndex(sourceList, i);
