@@ -61,6 +61,21 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
+  if (argc > 1 && !strcmp("--ascii_mode", argv[1])) {
+    [[NSDistributedNotificationCenter defaultCenter]
+        postNotificationName:@"SquirrelChangeToAsciiModeNotification"
+                      object: nil];
+    return 0;
+  }
+
+  if (argc > 1 && !strcmp("--ascii_mode_prev", argv[1])) {
+    [[NSDistributedNotificationCenter defaultCenter]
+        postNotificationName:@"SquirrelChangeToAsciiModePrevNotification"
+                      object: nil];
+    return 0;
+  }
+
+
   @autoreleasepool {
     // find the bundle identifier and then initialize the input method server
     NSBundle *main = [NSBundle mainBundle];
@@ -70,7 +85,9 @@ int main(int argc, char *argv[]) {
 
     // load the bundle explicitly because in this case the input method is a
     // background only application
-    [main loadNibNamed:@"MainMenu" owner:[NSApplication sharedApplication] topLevelObjects:NULL];
+    [main loadNibNamed:@"MainMenu"
+                  owner:[NSApplication sharedApplication]
+        topLevelObjects:NULL];
 
     // opencc will be configured with relative dictionary paths
     [[NSFileManager defaultManager]
@@ -78,11 +95,9 @@ int main(int argc, char *argv[]) {
 
     if (NSApp.squirrelAppDelegate.problematicLaunchDetected) {
       NSLog(@"Problematic launch detected!");
-      NSArray *args = @[
-        @"Problematic launch detected! \
+      NSArray *args = @[ @"Problematic launch detected! \
                        Squirrel may be suffering a crash due to imporper configuration. \
-                       Revert previous modifications to see if the problem recurs."
-      ];
+                       Revert previous modifications to see if the problem recurs." ];
       [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
     } else {
       [NSApp.squirrelAppDelegate setupRime];

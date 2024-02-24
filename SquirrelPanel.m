@@ -1030,6 +1030,13 @@ NSAttributedString *insert(NSString *separator, NSAttributedString *betweenText)
   }
   return self;
 }
+-(void)changeToAscii {
+    [self.inputController changeToAscii];
+}
+
+-(void)changeToAsciiPrev {
+    [self.inputController changeToAsciiPrev];
+}
 
 - (NSPoint)mousePosition {
   NSPoint point = NSEvent.mouseLocation;
