@@ -34,19 +34,19 @@
                         <action selector="syncUserData:" target="252" id="806"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Settings..." id="802">
+                <menuItem title="Settings…" id="802">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="configure:" target="252" id="803"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Rime Wiki..." tag="2" id="797">
+                <menuItem title="Rime Wiki…" tag="2" id="797">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Check for updates..." tag="1" id="776">
+                <menuItem title="Check for updates…" tag="1" id="776">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>

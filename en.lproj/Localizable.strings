@@ -1,16 +1,11 @@
 "Squirrel" = "Squirrel";
 
-"deploy_update" = "Deploying Rime for updates.";
-"deploy_start" = "Deploying Rime input method engine.";
+"deploy_update" = "Deploying Rime for updates…";
+"deploy_start" = "Deploying Rime input method engine…";
 "deploy_success" = "Squirrel is ready.";
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
-"ascii_mode" = "Ａ";
-"!ascii_mode" = "中";
-"full_shape" = "Full shape";
-"!full_shape" = "Half shape";
-"ascii_punct" = "．，";
-"!ascii_punct" = "。，";
-"simplification" = "Simplified";
-"!simplification" = "Traditional";
-"extended_charset" = "CJK extended";
-"!extended_charset" = "CJK baseset";
+
+"problematic_launch" = "Problematic launch detected! \
+                        Squirrel may be suffering a crash due to imporper configuration. \
+                        Revert previous modifications to see if the problem recurs.";
+"say_voice" = "Alex";

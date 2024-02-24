@@ -34,19 +34,19 @@
                         <action selector="syncUserData:" target="252" id="804"/>
                     </connections>
                 </menuItem>
-                <menuItem title="用户设定..." id="799">
+                <menuItem title="用户设置…" id="799">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="configure:" target="252" id="800"/>
                     </connections>
                 </menuItem>
-                <menuItem title="在线文档..." tag="2" id="797">
+                <menuItem title="在线帮助…" tag="2" id="797">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="检查新版本..." tag="1" id="776">
+                <menuItem title="检查更新…" tag="1" id="776">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>

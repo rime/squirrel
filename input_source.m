@@ -6,9 +6,12 @@ static NSString *const kHansInputModeID =
     @"im.rime.inputmethod.Squirrel.Hans";
 static NSString *const kHantInputModeID =
     @"im.rime.inputmethod.Squirrel.Hant";
+static NSString *const kCantInputModeID =
+    @"im.rime.inputmethod.Squirrel.Cant";
 
 #define HANS_INPUT_MODE (1 << 0)
 #define HANT_INPUT_MODE (1 << 1)
+#define CANT_INPUT_MODE (1 << 2)
 
 void RegisterInputSource(void) {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
@@ -31,7 +34,9 @@ void ActivateInputSource(int enabled_modes) {
     if (([sourceID isEqualToString:kHansInputModeID] &&
         ((enabled_modes & HANS_INPUT_MODE) != 0)) ||
         ([sourceID isEqualToString:kHantInputModeID] &&
-        ((enabled_modes & HANT_INPUT_MODE) != 0))) {
+        ((enabled_modes & HANT_INPUT_MODE) != 0)) ||
+        ([sourceID isEqualToString:kCantInputModeID] &&
+        ((enabled_modes & CANT_INPUT_MODE) != 0))) {
       TISEnableInputSource(inputSource);
       NSLog(@"Enabled input source: %@", sourceID);
       CFBooleanRef isSelectable = (CFBooleanRef)TISGetInputSourceProperty(
@@ -54,7 +59,8 @@ void DeactivateInputSource(void) {
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
     if ([sourceID isEqualToString:kHansInputModeID] ||
-        [sourceID isEqualToString:kHantInputModeID]) {
+        [sourceID isEqualToString:kHantInputModeID] ||
+        [sourceID isEqualToString:kCantInputModeID]) {
       CFBooleanRef isEnabled = (CFBooleanRef)(TISGetInputSourceProperty(
           inputSource, kTISPropertyInputSourceIsEnabled));
       if (CFBooleanGetValue(isEnabled)) {
@@ -76,7 +82,8 @@ int GetEnabledInputModes(void) {
         inputSource, kTISPropertyInputSourceID));
     //NSLog(@"Examining input source: %@", sourceID);
     if ([sourceID isEqualToString:kHansInputModeID] ||
-        [sourceID isEqualToString:kHantInputModeID]) {
+        [sourceID isEqualToString:kHantInputModeID] ||
+        [sourceID isEqualToString:kCantInputModeID]) {
       CFBooleanRef isEnabled = (CFBooleanRef)(TISGetInputSourceProperty(
           inputSource, kTISPropertyInputSourceIsEnabled));
       if (CFBooleanGetValue(isEnabled)) {

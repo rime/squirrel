@@ -28,19 +28,19 @@
                         <action selector="deploy:" target="252" id="795"/>
                     </connections>
                 </menuItem>
-                <menuItem title="同步使用者資料" id="803">
+                <menuItem title="同步用户資料" id="803">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="syncUserData:" target="252" id="805"/>
                     </connections>
                 </menuItem>
-                <menuItem title="使用者設定⋯" id="799">
+                <menuItem title="用户設定⋯" id="799">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="configure:" target="252" id="800"/>
                     </connections>
                 </menuItem>
-                <menuItem title="線上輔助說明⋯" tag="2" id="797">
+                <menuItem title="線上輔助説明⋯" tag="2" id="797">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>

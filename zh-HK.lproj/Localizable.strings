@@ -5,14 +5,14 @@
   Created by 弓辰 on 12/12/22.
 
 */
-"Squirrel" = "鼠鬚管";
+"Squirrel" = "鼠鬚筆";
 
 "deploy_update" = "更新輸入法引擎⋯";
 "deploy_start" = "部署輸入法引擎⋯";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有錯誤！請查看日誌 $TMPDIR/rime.squirrel.INFO";
 
-"problematic_launch" = "啟動時偵測到問題！\
-                        「鼠鬚管」可能因設定不當而崩潰。\
-                        請嘗試回退先前的修改，然後查看問題是否依然存在。";
-"say_voice" = "MeiJia";
+"problematic_launch" = "啟動時偵測到錯誤！\
+                        「鼠鬚筆」可能由於設定不當而崩潰。\
+                        請嘗試回退先前的改動，然後查看問題是否仍然存在。";
+"say_voice" = "Sinji";

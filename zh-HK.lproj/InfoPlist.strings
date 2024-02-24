@@ -1,11 +1,11 @@
 /* Localized versions of Info.plist keys */
 
-NSHumanReadableCopyright = "式恕堂🄯版权所无";
+NSHumanReadableCopyright = "式恕堂🄯版權所無";
 
-im.rime.inputmethod.Squirrel = "鼠须管";
+im.rime.inputmethod.Squirrel = "鼠鬚筆";
 im.rime.inputmethod.Squirrel.Hans = "鼠须管";
 im.rime.inputmethod.Squirrel.Hant = "鼠鬚管";
 im.rime.inputmethod.Squirrel.Cant = "鼠鬚筆";
 
-CFBundleName = "鼠须管";
-CFBundleDisplayName = "鼠须管";
+CFBundleName = "鼠鬚筆";
+CFBundleDisplayName = "鼠鬚筆";

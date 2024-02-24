@@ -11,13 +11,8 @@
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";
-"ascii_mode" = "Ａ";
-"!ascii_mode" = "中";
-"full_shape" = "全角";
-"!full_shape" = "半角";
-"ascii_punct" = "．，";
-"!ascii_punct" = "。，";
-"simplification" = "汉字";
-"!simplification" = "漢字";
-"extended_charset" = "增广";
-"!extended_charset" = "通用";
+
+"problematic_launch" = "检测到启动有问题！\
+                        “鼠须管”可能因错误设置而崩溃。\
+                        请尝试撤销之前的修改，然后查看问题是否仍旧存在。";
+"say_voice" = "TingTing";
