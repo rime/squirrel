@@ -17,6 +17,8 @@ int osx_modifiers_to_rime_modifiers(unsigned long modifiers)
     ret |= kAltMask;
   if (modifiers & OSX_COMMAND_MASK)
     ret |= kSuperMask;
+  if (modifiers & OSX_FN_MASK)
+    ret |= kHyperMask;
   
   return ret;
 }

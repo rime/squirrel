@@ -9,6 +9,7 @@
 #define OSX_CTRL_MASK         1 << 18
 #define OSX_ALT_MASK          1 << 19
 #define OSX_COMMAND_MASK      1 << 20
+#define OSX_FN_MASK           1 << 23
 
 // key codes
 //

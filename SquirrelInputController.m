@@ -120,6 +120,13 @@ const int N_KEY_ROLL_OVER = 50;
           release_mask = modifiers & OSX_ALT_MASK ? 0 : kReleaseMask;
           [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
         }
+        if (changes & OSX_FN_MASK) {
+          if (!keyCodeAvailable) {
+            rime_keycode = XK_Hyper_L;
+          }
+          release_mask = modifiers & OSX_FN_MASK ? 0 : kReleaseMask;
+          [self processKey:rime_keycode modifiers:(rime_modifiers | release_mask)];
+        }
         if (changes & OSX_COMMAND_MASK) {
           if (!keyCodeAvailable) {
             rime_keycode = XK_Super_L;
@@ -150,6 +157,11 @@ const int N_KEY_ROLL_OVER = 50;
           modifiers & OSX_CAPITAL_MASK);
         if (rime_keycode) {
           int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
+          // revert non-modifier function keys' FunctionKeyMask (FwdDel, Navigations, F1..F19)
+          if ((keyCode <= 0xff && keyCode >= 0x60) || keyCode == 0x50 || keyCode == 0x4f ||
+              keyCode == 0x47 || keyCode == 0x40) {
+            rime_modifiers ^= kHyperMask;
+          }
           handled = [self processKey:rime_keycode modifiers:rime_modifiers];
           [self rimeUpdate];
         }
