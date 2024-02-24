@@ -67,8 +67,8 @@
   return [self getOptionalBool:option].boolValue;
 }
 
-- (NSInteger)getInt:(NSString *)option {
-  return [self getOptionalInt:option].integerValue;
+- (int)getInt:(NSString *)option {
+  return [self getOptionalInt:option].intValue;
 }
 
 - (double)getDouble:(NSString *)option {
@@ -82,7 +82,7 @@
   }
   Bool value;
   if (_isOpen && rime_get_api()->config_get_bool(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(!!value);
+    return _cache[option] = [NSNumber numberWithBool:(BOOL)value];
   }
   return [_baseConfig getOptionalBool:option];
 }
@@ -94,7 +94,7 @@
   }
   int value;
   if (_isOpen && rime_get_api()->config_get_int(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(value);
+    return _cache[option] = [NSNumber numberWithInt:value];
   }
   return [_baseConfig getOptionalInt:option];
 
@@ -107,7 +107,7 @@
   }
   double value;
   if (_isOpen && rime_get_api()->config_get_double(&_config, option.UTF8String, &value)) {
-    return _cache[option] = @(value);
+    return _cache[option] = [NSNumber numberWithDouble:value];
   }
   return [_baseConfig getOptionalDouble:option];
 }
@@ -145,8 +145,12 @@
   rime_get_api()->config_begin_map(&iterator, &_config, rootKey.UTF8String);
   while (rime_get_api()->config_next(&iterator)) {
     //NSLog(@"DEBUG option[%d]: %s (%s)", iterator.index, iterator.key, iterator.path);
-    BOOL value = [self getBool:@(iterator.path)];
-    appOptions[@(iterator.key)] = @(value);
+    NSNumber *value = [self getOptionalBool:@(iterator.path)] ? :
+                      [self getOptionalInt:@(iterator.path)] ? :
+                      [self getOptionalDouble:@(iterator.path)];
+    if (value) {
+      appOptions[@(iterator.key)] = value;
+    }
   }
   rime_get_api()->config_end(&iterator);
   return [appOptions copy];

@@ -17,7 +17,7 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 - (BOOL)hasSection:(NSString *)section;
 
 - (BOOL)getBool:(NSString *)option;
-- (NSInteger)getInt:(NSString *)option;
+- (int)getInt:(NSString *)option;
 - (double)getDouble:(NSString *)option;
 - (NSNumber *)getOptionalBool:(NSString *)option;
 - (NSNumber *)getOptionalInt:(NSString *)option;
