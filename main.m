@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
 
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
-    show_message("deploy_update", "deploy");
+    show_notification("deploy_update");
     // build all schemas in current directory
     RIME_STRUCT(RimeTraits, builder_traits);
     builder_traits.app_name = "rime.squirrel-builder";
