@@ -22,9 +22,9 @@
 - (void)showPreedit:(NSString*)preedit
            selRange:(NSRange)selRange
            caretPos:(NSUInteger)caretPos
-         candidates:(NSArray*)candidates
-           comments:(NSArray*)comments
-             labels:(NSArray*)labels
+         candidates:(NSArray<NSString*>*)candidates
+           comments:(NSArray<NSString*>*)comments
+             labels:(NSArray<NSString*>*)labels
         highlighted:(NSUInteger)index
              update:(BOOL)update;
 

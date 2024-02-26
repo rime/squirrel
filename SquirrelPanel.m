@@ -78,14 +78,14 @@ static NSString* const kDefaultCandidateFormat = @"%c.\u00A0%@";
           inlinePreedit:(BOOL)inlinePreedit
         inlineCandidate:(BOOL)inlineCandidate;
 
-- (void)setAttrs:(NSMutableDictionary*)attrs
-           highlightedAttrs:(NSMutableDictionary*)highlightedAttrs
-                 labelAttrs:(NSMutableDictionary*)labelAttrs
-      labelHighlightedAttrs:(NSMutableDictionary*)labelHighlightedAttrs
-               commentAttrs:(NSMutableDictionary*)commentAttrs
-    commentHighlightedAttrs:(NSMutableDictionary*)commentHighlightedAttrs
-               preeditAttrs:(NSMutableDictionary*)preeditAttrs
-    preeditHighlightedAttrs:(NSMutableDictionary*)preeditHighlightedAttrs;
+- (void)setAttrs:(NSDictionary*)attrs
+           highlightedAttrs:(NSDictionary*)highlightedAttrs
+                 labelAttrs:(NSDictionary*)labelAttrs
+      labelHighlightedAttrs:(NSDictionary*)labelHighlightedAttrs
+               commentAttrs:(NSDictionary*)commentAttrs
+    commentHighlightedAttrs:(NSDictionary*)commentHighlightedAttrs
+               preeditAttrs:(NSDictionary*)preeditAttrs
+    preeditHighlightedAttrs:(NSDictionary*)preeditHighlightedAttrs;
 
 - (void)setParagraphStyle:(NSParagraphStyle*)paragraphStyle
     preeditParagraphStyle:(NSParagraphStyle*)preeditParagraphStyle;
@@ -145,15 +145,15 @@ static NSString* const kDefaultCandidateFormat = @"%c.\u00A0%@";
   _borderColor = borderColor;
 }
 
-- (void)setCornerRadius:(double)cornerRadius
-    hilitedCornerRadius:(double)hilitedCornerRadius
-      srdExtraExpansion:(double)surroundingExtraExpansion
-             shadowSize:(double)shadowSize
+- (void)setCornerRadius:(CGFloat)cornerRadius
+    hilitedCornerRadius:(CGFloat)hilitedCornerRadius
+      srdExtraExpansion:(CGFloat)surroundingExtraExpansion
+             shadowSize:(CGFloat)shadowSize
               edgeInset:(NSSize)edgeInset
-            borderWidth:(double)borderWidth
-              linespace:(double)linespace
-       preeditLinespace:(double)preeditLinespace
-                  alpha:(double)alpha
+            borderWidth:(CGFloat)borderWidth
+              linespace:(CGFloat)linespace
+       preeditLinespace:(CGFloat)preeditLinespace
+                  alpha:(CGFloat)alpha
            translucency:(BOOL)translucency
         mutualExclusive:(BOOL)mutualExclusive
                  linear:(BOOL)linear
@@ -177,14 +177,14 @@ static NSString* const kDefaultCandidateFormat = @"%c.\u00A0%@";
   _inlineCandidate = inlineCandidate;
 }
 
-- (void)setAttrs:(NSMutableDictionary*)attrs
-           highlightedAttrs:(NSMutableDictionary*)highlightedAttrs
-                 labelAttrs:(NSMutableDictionary*)labelAttrs
-      labelHighlightedAttrs:(NSMutableDictionary*)labelHighlightedAttrs
-               commentAttrs:(NSMutableDictionary*)commentAttrs
-    commentHighlightedAttrs:(NSMutableDictionary*)commentHighlightedAttrs
-               preeditAttrs:(NSMutableDictionary*)preeditAttrs
-    preeditHighlightedAttrs:(NSMutableDictionary*)preeditHighlightedAttrs {
+- (void)setAttrs:(NSDictionary*)attrs
+           highlightedAttrs:(NSDictionary*)highlightedAttrs
+                 labelAttrs:(NSDictionary*)labelAttrs
+      labelHighlightedAttrs:(NSDictionary*)labelHighlightedAttrs
+               commentAttrs:(NSDictionary*)commentAttrs
+    commentHighlightedAttrs:(NSDictionary*)commentHighlightedAttrs
+               preeditAttrs:(NSDictionary*)preeditAttrs
+    preeditHighlightedAttrs:(NSDictionary*)preeditHighlightedAttrs {
   _attrs = attrs;
   _highlightedAttrs = highlightedAttrs;
   _labelAttrs = labelAttrs;
@@ -587,17 +587,17 @@ void expand(NSMutableArray<NSValue*>* vertex,
   }
 }
 
-CGPoint direction(CGPoint diff) {
-  if (diff.y == 0 && diff.x > 0) {
-    return NSMakePoint(0, 1);
-  } else if (diff.y == 0 && diff.x < 0) {
-    return NSMakePoint(0, -1);
-  } else if (diff.x == 0 && diff.y > 0) {
-    return NSMakePoint(-1, 0);
-  } else if (diff.x == 0 && diff.y < 0) {
-    return NSMakePoint(1, 0);
+CGVector direction(CGVector diff) {
+  if (diff.dy == 0 && diff.dx > 0) {
+    return CGVectorMake(0, 1);
+  } else if (diff.dy == 0 && diff.dx < 0) {
+    return CGVectorMake(0, -1);
+  } else if (diff.dx == 0 && diff.dy > 0) {
+    return CGVectorMake(-1, 0);
+  } else if (diff.dx == 0 && diff.dy < 0) {
+    return CGVectorMake(1, 0);
   } else {
-    return NSMakePoint(0, 0);
+    return CGVectorMake(0, 0);
   }
 }
 
@@ -616,7 +616,7 @@ void enlarge(NSMutableArray<NSValue*>* vertex, CGFloat by) {
     NSPoint nextPoint;
     NSArray<NSValue*>* original = [[NSArray alloc] initWithArray:vertex];
     NSPoint newPoint;
-    NSPoint displacement;
+    CGVector displacement;
     for (NSUInteger i = 0; i < original.count; i += 1) {
       previousPoint =
           [original[(original.count + i - 1) % original.count] pointValue];
@@ -624,13 +624,13 @@ void enlarge(NSMutableArray<NSValue*>* vertex, CGFloat by) {
       nextPoint = [original[(i + 1) % original.count] pointValue];
       newPoint = point;
       displacement = direction(
-          NSMakePoint(point.x - previousPoint.x, point.y - previousPoint.y));
-      newPoint.x += by * displacement.x;
-      newPoint.y += by * displacement.y;
+          CGVectorMake(point.x - previousPoint.x, point.y - previousPoint.y));
+      newPoint.x += by * displacement.dx;
+      newPoint.y += by * displacement.dy;
       displacement =
-          direction(NSMakePoint(nextPoint.x - point.x, nextPoint.y - point.y));
-      newPoint.x += by * displacement.x;
-      newPoint.y += by * displacement.y;
+          direction(CGVectorMake(nextPoint.x - point.x, nextPoint.y - point.y));
+      newPoint.x += by * displacement.dx;
+      newPoint.y += by * displacement.dy;
       [vertex replaceObjectAtIndex:i withObject:@(newPoint)];
     }
   }
