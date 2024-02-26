@@ -5,26 +5,15 @@
 @implementation SquirrelConfig {
   NSMutableDictionary* _cache;
   RimeConfig _config;
-  NSString* _schemaId;
   SquirrelConfig* _baseConfig;
-  BOOL _isOpen;
 }
 
 - (instancetype)init {
-  self = [super init];
-  if (self) {
+  if (self = [super init]) {
     _cache = [[NSMutableDictionary alloc] init];
+    _colorSpace = @"srgb";
   }
-  self.colorSpace = @"srgb";
   return self;
-}
-
-- (BOOL)isOpen {
-  return _isOpen;
-}
-
-- (NSString*)schemaId {
-  return _schemaId;
 }
 
 - (BOOL)openBaseConfig {
@@ -52,6 +41,10 @@
   }
 }
 
+- (void)dealloc {
+  [self close];
+}
+
 - (BOOL)hasSection:(NSString*)section {
   if (_isOpen) {
     RimeConfigIterator iterator = {0};
@@ -68,8 +61,8 @@
   return [self getOptionalBool:option].boolValue;
 }
 
-- (NSInteger)getInt:(NSString*)option {
-  return [self getOptionalInt:option].integerValue;
+- (int)getInt:(NSString*)option {
+  return [self getOptionalInt:option].intValue;
 }
 
 - (double)getDouble:(NSString*)option {
@@ -77,8 +70,8 @@
 }
 
 - (NSNumber*)getOptionalBool:(NSString*)option {
-  NSNumber* cachedValue = [self cachedValueOfClass:[NSNumber class]
-                                            forKey:option];
+  NSNumber* cachedValue = [self cachedValueOfObjCType:@encode(BOOL)
+                                               forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
@@ -91,8 +84,8 @@
 }
 
 - (NSNumber*)getOptionalInt:(NSString*)option {
-  NSNumber* cachedValue = [self cachedValueOfClass:[NSNumber class]
-                                            forKey:option];
+  NSNumber* cachedValue = [self cachedValueOfObjCType:@encode(int)
+                                               forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
@@ -105,8 +98,8 @@
 }
 
 - (NSNumber*)getOptionalDouble:(NSString*)option {
-  NSNumber* cachedValue = [self cachedValueOfClass:[NSNumber class]
-                                            forKey:option];
+  NSNumber* cachedValue = [self cachedValueOfObjCType:@encode(double)
+                                               forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
@@ -167,7 +160,16 @@
 
 - (id)cachedValueOfClass:(Class)aClass forKey:(NSString*)key {
   id value = [_cache objectForKey:key];
-  if (value && [value isKindOfClass:aClass]) {
+  if ([value isMemberOfClass:aClass]) {
+    return value;
+  }
+  return nil;
+}
+
+- (NSNumber*)cachedValueOfObjCType:(const char*)type forKey:(NSString*)key {
+  id value = [_cache objectForKey:key];
+  if ([value isMemberOfClass:NSNumber.class] &&
+      !strcmp([value objCType], type)) {
     return value;
   }
   return nil;
@@ -187,15 +189,15 @@
     sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
   if ([self.colorSpace isEqualToString:@"display_p3"]) {
-    return [NSColor colorWithDisplayP3Red:(CGFloat)r / 255.
-                                    green:(CGFloat)g / 255.
-                                     blue:(CGFloat)b / 255.
-                                    alpha:(CGFloat)a / 255.];
+    return [NSColor colorWithDisplayP3Red:r / 255.0
+                                    green:g / 255.0
+                                     blue:b / 255.0
+                                    alpha:a / 255.0];
   } else {  // sRGB by default
-    return [NSColor colorWithSRGBRed:(CGFloat)r / 255.
-                               green:(CGFloat)g / 255.
-                                blue:(CGFloat)b / 255.
-                               alpha:(CGFloat)a / 255.];
+    return [NSColor colorWithSRGBRed:r / 255.0
+                               green:g / 255.0
+                                blue:b / 255.0
+                               alpha:a / 255.0];
   }
 }
 

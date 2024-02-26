@@ -7,9 +7,9 @@
 // outlet of NSApp's instance
 @interface SquirrelApplicationDelegate : NSObject
 
-@property(nonatomic, copy) IBOutlet NSMenu* menu;
-@property(nonatomic, strong) IBOutlet SquirrelPanel* panel;
-@property(nonatomic, strong) IBOutlet id updater;
+@property(nonatomic, weak) IBOutlet NSMenu* menu;
+@property(nonatomic, weak) IBOutlet SquirrelPanel* panel;
+@property(nonatomic, weak) IBOutlet id updater;
 
 @property(nonatomic, readonly, strong) SquirrelConfig* config;
 @property(nonatomic, readonly) BOOL enableNotifications;

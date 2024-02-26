@@ -6,8 +6,8 @@ typedef NSMutableDictionary<NSString*, NSNumber*> SquirrelMutableAppOptions;
 @interface SquirrelConfig : NSObject
 
 @property(nonatomic, readonly) BOOL isOpen;
-@property(nonatomic, copy) NSString* colorSpace;
-@property(nonatomic, readonly) NSString* schemaId;
+@property(nonatomic, strong) NSString* colorSpace;
+@property(nonatomic, strong, readonly) NSString* schemaId;
 
 - (BOOL)openBaseConfig;
 - (BOOL)openWithSchemaId:(NSString*)schemaId baseConfig:(SquirrelConfig*)config;
@@ -16,7 +16,7 @@ typedef NSMutableDictionary<NSString*, NSNumber*> SquirrelMutableAppOptions;
 - (BOOL)hasSection:(NSString*)section;
 
 - (BOOL)getBool:(NSString*)option;
-- (NSInteger)getInt:(NSString*)option;
+- (int)getInt:(NSString*)option;
 - (double)getDouble:(NSString*)option;
 - (NSNumber*)getOptionalBool:(NSString*)option;
 - (NSNumber*)getOptionalInt:(NSString*)option;
