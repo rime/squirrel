@@ -137,25 +137,41 @@
   return NO;
 }
 
-- (BOOL)getBool:(NSString *)option {
-  return [self getOptionalBool:option].boolValue;
+- (BOOL)setBool:(bool)value forOption:(NSString *)option {
+  return (BOOL)(rime_get_api()->config_set_bool(&_config, option.UTF8String, value));
 }
 
-- (int)getInt:(NSString *)option {
-  return [self getOptionalInt:option].intValue;
+- (BOOL)setInt:(int)value forOption:(NSString *)option {
+  return (BOOL)(rime_get_api()->config_set_int(&_config, option.UTF8String, value));
 }
 
-- (double)getDouble:(NSString *)option {
-  return [self getOptionalDouble:option].doubleValue;
+- (BOOL)setDouble:(double)value forOption:(NSString *)option {
+  return (BOOL)(rime_get_api()->config_set_double(&_config, option.UTF8String, value));
 }
 
-- (double)getDouble:(NSString *)option
-    applyConstraint:(double(*)(double param))func {
-  NSNumber *value = [self getOptionalDouble:option];
+- (BOOL)setString:(NSString *)value forOption:(NSString *)option {
+  return (BOOL)(rime_get_api()->config_set_string(&_config, option.UTF8String, value.UTF8String));
+}
+
+- (BOOL)getBoolForOption:(NSString *)option {
+  return [self getOptionalBoolForOption:option].boolValue;
+}
+
+- (int)getIntForOption:(NSString *)option {
+  return [self getOptionalIntForOption:option].intValue;
+}
+
+- (double)getDoubleForOption:(NSString *)option {
+  return [self getOptionalDoubleForOption:option].doubleValue;
+}
+
+- (double)getDoubleForOption:(NSString *)option
+             applyConstraint:(double(*)(double param))func {
+  NSNumber *value = [self getOptionalDoubleForOption:option];
   return func(value.doubleValue);
 }
 
-- (NSNumber *)getOptionalBool:(NSString *)option {
+- (NSNumber *)getOptionalBoolForOption:(NSString *)option {
   NSNumber *cachedValue = [self cachedValueOfObjCType:@encode(BOOL) forKey:option];
   if (cachedValue) {
      return cachedValue;
@@ -166,10 +182,10 @@
     [_cache setObject:number forKey:option];
     return number;
   }
-  return [_baseConfig getOptionalBool:option];
+  return [_baseConfig getOptionalBoolForOption:option];
 }
 
-- (NSNumber *)getOptionalInt:(NSString *)option {
+- (NSNumber *)getOptionalIntForOption:(NSString *)option {
   NSNumber *cachedValue = [self cachedValueOfObjCType:@encode(int) forKey:option];
   if (cachedValue) {
     return cachedValue;
@@ -180,10 +196,10 @@
     [_cache setObject:number forKey:option];
     return number;
   }
-  return [_baseConfig getOptionalInt:option];
+  return [_baseConfig getOptionalIntForOption:option];
 }
 
-- (NSNumber *)getOptionalDouble:(NSString *)option {
+- (NSNumber *)getOptionalDoubleForOption:(NSString *)option {
   NSNumber *cachedValue = [self cachedValueOfObjCType:@encode(double) forKey:option];
   if (cachedValue) {
     return cachedValue;
@@ -194,16 +210,16 @@
     [_cache setObject:number forKey:option];
     return number;
   }
-  return [_baseConfig getOptionalDouble:option];
+  return [_baseConfig getOptionalDoubleForOption:option];
 }
 
-- (NSNumber *)getOptionalDouble:(NSString *)option
-                applyConstraint:(double(*)(double param))func {
-  NSNumber *value = [self getOptionalDouble:option];
+- (NSNumber *)getOptionalDoubleForOption:(NSString *)option
+                         applyConstraint:(double(*)(double param))func {
+  NSNumber *value = [self getOptionalDoubleForOption:option];
   return value ? [NSNumber numberWithDouble:func(value.doubleValue)] : nil;
 }
 
-- (NSString *)getString:(NSString *)option {
+- (NSString *)getStringForOption:(NSString *)option {
   NSString *cachedValue = [self cachedValueOfClass:NSString.class forKey:option];
   if (cachedValue) {
     return cachedValue;
@@ -216,47 +232,47 @@
     [_cache setObject:string forKey:option];
     return string;
   }
-  return [_baseConfig getString:option];
+  return [_baseConfig getStringForOption:option];
 }
 
-- (NSColor *)getColor:(NSString *)option {
+- (NSColor *)getColorForOption:(NSString *)option {
   NSColor *cachedValue = [self cachedValueOfClass:NSColor.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
-  NSColor *color = [self colorFromString:[self getString:option]];
+  NSColor *color = [self colorFromString:[self getStringForOption:option]];
   if (color) {
     [_cache setObject:color forKey:option];
     return color;
   }
-  return [_baseConfig getColor:option];
+  return [_baseConfig getColorForOption:option];
 }
 
-- (NSImage *)getImage:(NSString *)option {
+- (NSImage *)getImageForOption:(NSString *)option {
   NSImage *cachedValue = [self cachedValueOfClass:NSImage.class forKey:option];
   if (cachedValue) {
     return cachedValue;
   }
-  NSImage *image = [self imageFromFile:[self getString:option]];
+  NSImage *image = [self imageFromFile:[self getStringForOption:option]];
   if (image) {
     [_cache setObject:image forKey:option];
     return image;
   }
-  return [_baseConfig getImage:option];
+  return [_baseConfig getImageForOption:option];
 }
 
-- (NSUInteger)getListSize:(NSString *)option {
+- (NSUInteger)getListSizeForOption:(NSString *)option {
   return rime_get_api()->config_list_size(&_config, option.UTF8String);
 }
 
-- (NSArray<NSString *> *)getList:(NSString *)option {
+- (NSArray<NSString *> *)getListForOption:(NSString *)option {
   RimeConfigIterator iterator;
   if (!rime_get_api()->config_begin_list(&iterator, &_config, option.UTF8String)) {
     return nil;
   }
   NSMutableArray *strList = [[NSMutableArray alloc] init];
   while (rime_get_api()->config_next(&iterator)) {
-    [strList addObject:[self getString:@(iterator.path)]];
+    [strList addObject:[self getStringForOption:@(iterator.path)]];
   }
   rime_get_api()->config_end(&iterator);
   return strList;
@@ -270,8 +286,8 @@
   NSMutableDictionary *switcher = [[NSMutableDictionary alloc] init];
   NSMutableDictionary *optionGroups = [[NSMutableDictionary alloc] init];
   while (rime_get_api()->config_next(&switchIter)) {
-    int reset = [self getInt:[@(switchIter.path) stringByAppendingString:@"/reset"]];
-    NSString *name = [self getString:[@(switchIter.path) stringByAppendingString:@"/name"]];
+    int reset = [self getIntForOption:[@(switchIter.path) stringByAppendingString:@"/reset"]];
+    NSString *name = [self getStringForOption:[@(switchIter.path) stringByAppendingString:@"/name"]];
     if (name) {
       if ([self hasSection:[@"style/!" stringByAppendingString:name]] ||
           [self hasSection:[@"style/" stringByAppendingString:name]]) {
@@ -287,7 +303,7 @@
       NSMutableArray *optionGroup = [[NSMutableArray alloc] init];
       BOOL hasStyleSection = NO;
       while (rime_get_api()->config_next(&optionIter)) {
-        NSString *option = [self getString:@(optionIter.path)];
+        NSString *option = [self getStringForOption:@(optionIter.path)];
         [optionGroup addObject:option];
         hasStyleSection |= [self hasSection:[@"style/" stringByAppendingString:option]];
       }
@@ -315,9 +331,9 @@
   }
   while (rime_get_api()->config_next(&iterator)) {
     //NSLog(@"DEBUG option[%d]: %s (%s)", iterator.index, iterator.key, iterator.path);
-    NSNumber *value = [self getOptionalBool:@(iterator.path)] ? :
-                      [self getOptionalInt:@(iterator.path)] ? :
-                      [self getOptionalDouble:@(iterator.path)];
+    NSNumber *value = [self getOptionalBoolForOption:@(iterator.path)] ? :
+                      [self getOptionalIntForOption:@(iterator.path)] ? :
+                      [self getOptionalDoubleForOption:@(iterator.path)];
     if (value) {
       appOptions[@(iterator.key)] = value;
     }

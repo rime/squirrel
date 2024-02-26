@@ -45,25 +45,31 @@ typedef NSMutableDictionary<NSString *, NSNumber *> SquirrelMutableAppOptions;
 
 - (BOOL)hasSection:(NSString *)section;
 
-- (BOOL)getBool:(NSString *)option;
-- (int)getInt:(NSString *)option;
-- (double)getDouble:(NSString *)option;
-- (double)getDouble:(NSString *)option 
-    applyConstraint:(double(*)(double param))func;
-- (NSNumber *)getOptionalBool:(NSString *)option;
-- (NSNumber *)getOptionalInt:(NSString *)option;
-- (NSNumber *)getOptionalDouble:(NSString *)option;
-- (NSNumber *)getOptionalDouble:(NSString *)option 
-                applyConstraint:(double(*)(double param))func;
+- (BOOL)setBool:(bool)value forOption:(NSString *)option;
+- (BOOL)setInt:(int)value forOption:(NSString *)option;
+- (BOOL)setDouble:(double)value forOption:(NSString *)option;
+- (BOOL)setString:(NSString *)value forOption:(NSString *)option;
 
-- (NSString *)getString:(NSString *)option;
+- (BOOL)getBoolForOption:(NSString *)option;
+- (int)getIntForOption:(NSString *)option;
+- (double)getDoubleForOption:(NSString *)option;
+- (double)getDoubleForOption:(NSString *)option
+             applyConstraint:(double(*)(double param))func;
+
+- (NSNumber *)getOptionalBoolForOption:(NSString *)option;
+- (NSNumber *)getOptionalIntForOption:(NSString *)option;
+- (NSNumber *)getOptionalDoubleForOption:(NSString *)option;
+- (NSNumber *)getOptionalDoubleForOption:(NSString *)option
+                         applyConstraint:(double(*)(double param))func;
+
+- (NSString *)getStringForOption:(NSString *)option;
 // 0xaabbggrr or 0xbbggrr
-- (NSColor *)getColor:(NSString *)option;
+- (NSColor *)getColorForOption:(NSString *)option;
 // file path (absolute or relative to ~/Library/Rime)
-- (NSImage *)getImage:(NSString *)option;
+- (NSImage *)getImageForOption:(NSString *)option;
 
-- (NSUInteger)getListSize:(NSString *)option;
-- (NSArray<NSString *> *)getList:(NSString *)option;
+- (NSUInteger)getListSizeForOption:(NSString *)option;
+- (NSArray<NSString *> *)getListForOption:(NSString *)option;
 
 - (SquirrelOptionSwitcher *)getOptionSwitcher;
 - (SquirrelAppOptions *)getAppOptions:(NSString *)appName;

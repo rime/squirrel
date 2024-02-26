@@ -10,10 +10,13 @@
                         Revert previous modifications to see if the problem recurs.";
 "say_voice" = "Alex";
 
-"candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.";
+"candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.\nPress and hold the ⌥option key to temporarily disable mouse interactions.";
 "delete" = "Click to ⌫Delete the input by character.\nSecondary click to ⎋Escape the composing.";
 "escape" = "Cannot delete any further.\nSecondary click to ⎋Escape the composing.";
 "page_up" = "Click to ⇞Page Up.\nSecondary click to jump to ↖Home.";
 "home" = "Cannot page up any further.\nSecondary click to jump to ↖Home.";
 "page_down" = "Click to ⇞Page Down.\nSecondary click to jump to ↘End.";
 "end" = "Cannot page down any further.\nSecondary click to jump to ↘End.";
+"compress" = "Click to compress candidate window.\nSecondary click to lock this multiple-row view";
+"expand" = "Click to expand candidate window.\nSecondary click to lock this single-row view.";
+"unlock" = "Click to unlock the view and allow it to be expanded or collapsed.";

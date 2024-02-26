@@ -10,7 +10,7 @@
 #import <IOKit/hid/IOHIDLib.h>
 #import <IOKit/hidsystem/IOHIDLib.h>
 
-const int N_KEY_ROLL_OVER = 50;
+static const int N_KEY_ROLL_OVER = 50;
 static NSString *const kFullWidthSpace = @"　";
 
 @implementation SquirrelInputController {
@@ -22,6 +22,7 @@ static NSString *const kFullWidthSpace = @"　";
   NSArray<NSString *> *_candidates;
   NSEventModifierFlags _lastModifiers;
   uint _lastEventCount;
+  NSUInteger _lastPageNum;
   RimeSessionId _session;
   NSString *_schemaId;
   BOOL _inlinePreedit;
@@ -41,7 +42,8 @@ static NSString *const kFullWidthSpace = @"　";
 }
 
 static SquirrelInputController *_currentController = nil;
-static NSMapTable<SquirrelInputController *, NSDate *> *_controllerDeactivationTime = NSMapTable.weakToWeakObjectsMapTable;
+static NSMapTable<SquirrelInputController *, NSDate *> *_controllerDeactivationTime =
+        NSMapTable.weakToWeakObjectsMapTable;
 
 + (void)setCurrentController:(SquirrelInputController *)controller {
   _currentController = controller;
@@ -212,9 +214,9 @@ static NSMapTable<SquirrelInputController *, NSDate *> *_controllerDeactivationT
       if (_inlineCandidate && !_inlinePreedit) {
         return NO;
       }
-      [self perform:kSELECT onIndex:kEnd];
+      [self perform:kPROCESS onIndex:kEndKey];
     } else if (point.x < head.x || index <= 0) {
-      [self perform:kSELECT onIndex:kHome];
+      [self perform:kPROCESS onIndex:kHomeKey];
     } else {
       [self moveCursor:_caretPos
             toPosition:index
@@ -240,15 +242,28 @@ void set_CapsLock_LED_state(bool target_state) {
 
 - (BOOL)processKey:(int)rime_keycode
          modifiers:(int)rime_modifiers {
+  SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
   // with linear candidate list, arrow keys may behave differently.
-  Bool is_linear = (Bool)NSApp.squirrelAppDelegate.panel.linear;
+  Bool is_linear = (Bool)panel.linear;
   if (is_linear != rime_get_api()->get_option(_session, "_linear")) {
     rime_get_api()->set_option(_session, "_linear", is_linear);
   }
   // with vertical text, arrow keys may behave differently.
-  Bool is_vertical = (Bool)NSApp.squirrelAppDelegate.panel.vertical;
+  Bool is_vertical = (Bool)panel.vertical;
   if (is_vertical != rime_get_api()->get_option(_session, "_vertical")) {
     rime_get_api()->set_option(_session, "_vertical", is_vertical);
+  }
+
+  if (panel.tabular && !rime_modifiers &&
+      (is_vertical ? rime_keycode == XK_Left || rime_keycode == XK_Right
+                   : rime_keycode == XK_Up || rime_keycode == XK_Down)) {
+    NSUInteger newIndex = [panel candidateIndexOnDirection:(SquirrelIndex)rime_keycode];
+    if (newIndex != NSNotFound) {
+      if (!panel.locked && !panel.expanded && rime_keycode == (is_vertical ? XK_Left : XK_Down)) {
+        panel.expanded = YES;
+      }
+      return rime_get_api()->highlight_candidate(_session, newIndex);
+    }
   }
 
   BOOL handled = (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
@@ -337,24 +352,26 @@ void set_CapsLock_LED_state(bool target_state) {
         onIndex:(SquirrelIndex)index {
   //NSLog(@"perform action: %lu on index: %lu", action, index);
   bool handled = false;
-  if (index >= '!' && index <= '~' && (action == kSELECT || action == kHILITE)) {
-    handled = rime_get_api()->process_key(_session, (int)index, action == kHILITE ? kAltMask : 0);
-  } else if (index >= 0xff08 && index <= 0xffff && action == kSELECT) {
-    handled = rime_get_api()->process_key(_session, (int)index, 0);
-  } else if (index >= 0 && index < 10) {
-    switch (action) {
-      case kDELETE:
-        handled = rime_get_api()->delete_candidate_on_current_page(_session, (size_t)index);
-        break;
-      case kSELECT:
-        handled = rime_get_api()->select_candidate_on_current_page(_session, (size_t)index);
-        break;
-      case kHILITE:
-        handled = rime_get_api()->highlight_candidate_on_current_page(_session, (size_t)index);
-        break;
-    }
+  switch (action) {
+    case kPROCESS:
+      if (index >= 0xff08 && index <= 0xffff) {
+        handled = rime_get_api()->process_key(_session, (int)index, 0);
+      } else if (index >= kExpandButton && index <= kLockButton) {
+        handled = true;
+      }
+      break;
+    case kSELECT:
+      handled = rime_get_api()->select_candidate(_session, index);
+      break;
+    case kHIGHLIGHT:
+      handled = rime_get_api()->highlight_candidate(_session, index);
+      break;
+    case kDELETE:
+      handled = rime_get_api()->delete_candidate(_session, index);
+      break;
   }
   if (handled) {
+    _lastPageNum = NSNotFound;
     [self rimeUpdate];
   }
 }
@@ -398,7 +415,7 @@ void set_CapsLock_LED_state(bool target_state) {
   }
   _chordDuration = 0.1;
   NSNumber *duration = [NSApp.squirrelAppDelegate.config 
-                        getOptionalDouble:@"chord_duration"];
+                        getOptionalDoubleForOption:@"chord_duration"];
   if (duration.doubleValue > 0) {
     _chordDuration = duration.doubleValue;
   }
@@ -467,7 +484,7 @@ NSString *getOptionLabel(RimeSessionId session, const char *option, Bool state) 
 - (void)activateServer:(id)sender {
   //NSLog(@"activateServer:");
   NSString *keyboardLayout = [NSApp.squirrelAppDelegate.config
-                              getString:@"keyboard_layout"];
+                              getStringForOption:@"keyboard_layout"];
   if ([keyboardLayout isEqualToString:@"last"] ||
       [keyboardLayout isEqualToString:@""]) {
     keyboardLayout = nil;
@@ -493,7 +510,7 @@ NSString *getOptionLabel(RimeSessionId session, const char *option, Bool state) 
   SquirrelConfig *defaultConfig = [[SquirrelConfig alloc] init];
   if ([defaultConfig openWithConfigId:@"default"] &&
       [defaultConfig hasSection:@"ascii_composer"]) {
-    _goodOldCapsLock = [defaultConfig getBool:
+    _goodOldCapsLock = [defaultConfig getBoolForOption:
                         @"ascii_composer/good_old_caps_lock"];
   }
   [defaultConfig close];
@@ -733,6 +750,7 @@ NSString *getOptionLabel(RimeSessionId session, const char *option, Bool state) 
                     lastPage:(BOOL)lastPage {
   //NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
+  _lastPageNum = pageNum;
   SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
   panel.IbeamRect = [self getIbeamRect];
   if (NSIsEmptyRect(panel.IbeamRect) && panel.statusMessage.length > 0) {
@@ -819,6 +837,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
   //NSLog(@"rimeUpdate");
   BOOL didCommit = [self rimeConsumeCommittedText];
 
+  SquirrelPanel *panel = NSApp.squirrelAppDelegate.panel;
   RIME_STRUCT(RimeStatus, status);
   if (rime_get_api()->get_status(_session, &status)) {
     // enable schema specific ui style
@@ -830,11 +849,9 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
         [NSApp.squirrelAppDelegate loadSchemaSpecificSettings:_schemaId
                                               withRimeSession:_session];
         // inline preedit
-        _inlinePreedit = (NSApp.squirrelAppDelegate.panel.inlinePreedit &&
-                          !rime_get_api()->get_option(_session, "no_inline")) ||
+        _inlinePreedit = (panel.inlinePreedit && !rime_get_api()->get_option(_session, "no_inline")) ||
                          rime_get_api()->get_option(_session, "inline");
-        _inlineCandidate = (NSApp.squirrelAppDelegate.panel.inlineCandidate &&
-                            !rime_get_api()->get_option(_session, "no_inline"));
+        _inlineCandidate = panel.inlineCandidate && !rime_get_api()->get_option(_session, "no_inline");
         // if not inline, embed soft cursor in preedit string
         rime_get_api()->set_option(_session, "soft_cursor", !_inlinePreedit);
       } else {
@@ -846,9 +863,10 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
 
   RIME_STRUCT(RimeContext, ctx);
   if (rime_get_api()->get_context(_session, &ctx)) {
-    BOOL showingStatus = NSApp.squirrelAppDelegate.panel.statusMessage.length > 0;
+    BOOL showingStatus = panel.statusMessage.length > 0;
     // update raw input
     const char *raw_input = rime_get_api()->get_input(_session);
+    BOOL didCompose = ![_originalString isEqualToString:raw_input ? @(raw_input) : @""];
     _originalString = raw_input ? @(raw_input) : @"";
 
     // update preedit text
@@ -873,7 +891,31 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
     NSUInteger end = UTF8LengthToUTF16Length(preedit, ctx.composition.sel_end);
     NSUInteger caretPos = UTF8LengthToUTF16Length(preedit, ctx.composition.cursor_pos);
     NSUInteger length = UTF8LengthToUTF16Length(preedit, ctx.composition.length);
-    NSUInteger numCandidate = (NSUInteger)ctx.menu.num_candidates;
+    NSUInteger numCandidates = (NSUInteger)ctx.menu.num_candidates;
+    NSUInteger pageNum = (NSUInteger)ctx.menu.page_no;
+    NSUInteger pageSize = (NSUInteger)ctx.menu.page_size;
+    NSUInteger highlightedIndex = numCandidates == 0 ? NSNotFound :
+                (NSUInteger)ctx.menu.highlighted_candidate_index;
+    BOOL isLastPage = (BOOL)ctx.menu.is_last_page;
+
+    // update discloser and active line status in gridded layout
+    if (panel.tabular && !showingStatus && numCandidates > 0) {
+      if (didCompose) {
+        panel.activePage = 0;
+      } else if (_lastPageNum != NSNotFound) {
+        if (!panel.locked && panel.expanded && (pageNum | _lastPageNum | highlightedIndex) == 0) {
+          panel.expanded = NO;
+        } else if (!panel.locked && !panel.expanded && pageNum > 0 && pageNum > _lastPageNum) {
+          panel.expanded = YES;
+        }
+        if (panel.expanded && pageNum > _lastPageNum && panel.activePage < 4) {
+          panel.activePage = MIN(panel.activePage + pageNum - _lastPageNum, isLastPage ? 4UL : 3UL);
+        } else if (panel.expanded && pageNum < _lastPageNum && panel.activePage > 0) {
+          panel.activePage = MAX(panel.activePage + pageNum - _lastPageNum, pageNum == 0 ? 0UL : 1UL);
+        }
+      }
+      highlightedIndex += pageSize * panel.activePage;
+    }
 
     if (showingStatus) {
       [self clearBuffer];
@@ -909,7 +951,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
       }
     } else {
       if (_inlinePreedit && !_showingSwitcherMenu) {
-        if (_inlinePlaceholder && preeditText.length == 0 && numCandidate > 0) {
+        if (_inlinePlaceholder && preeditText.length == 0 && numCandidates > 0) {
           [self showPlaceholder:kFullWidthSpace];
         } else if (!didCommit || preeditText.length > 0) {
           [self showPreeditString:preeditText
@@ -925,20 +967,44 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
       }
     }
     // update candidates
-    NSMutableArray *candidates = [[NSMutableArray alloc] initWithCapacity:numCandidate];
-    NSMutableArray *comments = [[NSMutableArray alloc] initWithCapacity:numCandidate];
-    for (NSUInteger i = 0; i < numCandidate; ++i) {
+    NSMutableArray *candidates = numCandidates ? [[NSMutableArray alloc] init] : nil;
+    NSMutableArray *comments = numCandidates ? [[NSMutableArray alloc] init] : nil;
+    if (numCandidates > 0 && panel.expanded && panel.activePage > 0) {
+      NSUInteger index = pageSize * (pageNum - panel.activePage);
+      RimeCandidateListIterator iterator;
+      if (rime_get_api()->candidate_list_from_index(_session, &iterator, (int)index)) {
+        NSUInteger endIndex = pageSize * pageNum;
+        while (index++ < endIndex && rime_get_api()->candidate_list_next(&iterator)) {
+          [candidates addObject:@(iterator.candidate.text)];
+          [comments addObject:@(iterator.candidate.comment ? : "")];
+        }
+        rime_get_api()->candidate_list_end(&iterator);
+      }
+    }
+    for (NSUInteger i = 0; i < numCandidates; ++i) {
       [candidates addObject:@(ctx.menu.candidates[i].text)];
       [comments addObject:@(ctx.menu.candidates[i].comment ? : "")];
+    }
+    if (numCandidates > 0 && panel.expanded && panel.activePage < 5) {
+      NSUInteger index = pageSize * (pageNum + 1);
+      RimeCandidateListIterator iterator;
+      if (rime_get_api()->candidate_list_from_index(_session, &iterator, (int)index)) {
+        NSUInteger endIndex = pageSize * (pageNum + 5 - panel.activePage);
+        while (index++ < endIndex && rime_get_api()->candidate_list_next(&iterator)) {
+          [candidates addObject:@(iterator.candidate.text)];
+          [comments addObject:@(iterator.candidate.comment ? : "")];
+        }
+        rime_get_api()->candidate_list_end(&iterator);
+      }
     }
     [self showPanelWithPreedit:_inlinePreedit && !_showingSwitcherMenu ? nil : preeditText
                       selRange:NSMakeRange(start, end - start)
                       caretPos:_showingSwitcherMenu ? NSNotFound : caretPos
                     candidates:candidates
                       comments:comments
-              highlightedIndex:(NSUInteger)ctx.menu.highlighted_candidate_index
-                       pageNum:(NSUInteger)ctx.menu.page_no
-                      lastPage:(BOOL)ctx.menu.is_last_page];
+              highlightedIndex:highlightedIndex
+                       pageNum:pageNum
+                      lastPage:isLastPage];
     rime_get_api()->free_context(&ctx);
   } else {
     [self hidePalettes];

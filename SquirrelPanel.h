@@ -14,8 +14,11 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 
 // Linear candidate list layout, as opposed to stacked candidate list layout.
 @property(nonatomic, readonly) BOOL linear;
-// Tabled candidate list layout, a subtype of linear candidate list with tabled layout.
-@property(nonatomic, readonly) BOOL tabled;
+// Tabular candidate list layout, initializes as tab-aligned linear layout, expandable to stack more candidates
+@property(nonatomic, readonly) BOOL tabular;
+@property(nonatomic, readonly) BOOL locked;
+@property(nonatomic, assign) BOOL expanded;
+@property(nonatomic, assign) NSUInteger activePage;
 // Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
@@ -28,6 +31,8 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 @property(nonatomic, strong, readonly) NSString *statusMessage;
 // position of the text input I-beam cursor on screen.
 @property(nonatomic, assign) NSRect IbeamRect;
+
+- (NSUInteger)candidateIndexOnDirection:(SquirrelIndex)arrowKey;
 
 - (void)showPreedit:(NSString *)preedit
            selRange:(NSRange)selRange
@@ -43,8 +48,7 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 - (void)updateStatusLong:(NSString *)messageLong
              statusShort:(NSString *)messageShort;
 
-- (void)loadConfig:(SquirrelConfig *)config
-     forAppearance:(SquirrelAppear)appear;
+- (void)loadConfig:(SquirrelConfig *)config;
 
 - (void)loadLabelConfig:(SquirrelConfig *)config
            directUpdate:(BOOL)update;
