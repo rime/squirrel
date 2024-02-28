@@ -1,10 +1,3 @@
-/* 
-  Localizable.strings
-  Squirrel
-
-  Created by 弓辰 on 12/12/22.
-
-*/
 "Squirrel" = "鼠须管";
 
 "deploy_update" = "更新输入法引擎…";
@@ -12,12 +5,7 @@
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";
 
-"problematic_launch" = "检测到启动有问题！\
-                        “鼠须管”可能因错误设置而崩溃。\
-                        请尝试撤销之前的修改，然后查看问题是否仍旧存在。";
-"say_voice" = "TingTing";
-
-"candidate" = "点按以⎆选择候选字。\n辅助点按以⎌删除所选的记忆字词。按住⌥Option键以暂时停用鼠标与“鼠须管”互动。";
+"candidate" = "点按以⎆选择候选字。\n辅助点按以⎌删除所选的记忆字词。\n按住⌃control键以暂时停用鼠标与“鼠须管”互动。\n按住⌥Option键以显示工具提示";
 "delete" = "点按以逐字⌫删除输入。\n辅助点按以⎋取消输入。";
 "escape" = "不能再删除。\n辅助点按以⎋取消输入。";
 "page_up" = "点按以⇞向上翻页。\n辅助点按以跳到↖开头。";

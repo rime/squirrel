@@ -17,8 +17,8 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 // expandable to stack more candidates
 @property(nonatomic, readonly) BOOL tabular;
 @property(nonatomic, readonly) BOOL locked;
-@property(nonatomic, assign) BOOL expanded;
-@property(nonatomic, assign) NSUInteger activePage;
+@property(nonatomic) BOOL expanded;
+@property(nonatomic) NSUInteger activePage;
 // Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
@@ -26,33 +26,34 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 // Show primary candidate inline
 @property(nonatomic, readonly) BOOL inlineCandidate;
 // Store switch options that change style (color theme) settings
-@property(nonatomic, strong) SquirrelOptionSwitcher* optionSwitcher;
+@property(nonatomic, strong, nullable) SquirrelOptionSwitcher* optionSwitcher;
 // Status message before pop-up is displayed; nil before normal panel is
 // displayed
-@property(nonatomic, strong, readonly) NSString* statusMessage;
+@property(nonatomic, strong, readonly, nullable) NSString* statusMessage;
 // position of the text input I-beam cursor on screen.
-@property(nonatomic, assign) NSRect IbeamRect;
+@property(nonatomic) NSRect IbeamRect;
 
-@property(nonatomic, assign) SquirrelInputController* inputController;
+@property(nonatomic, assign, nullable) SquirrelInputController* inputController;
 
 - (NSUInteger)candidateIndexOnDirection:(SquirrelIndex)arrowKey;
 
-- (void)showPreedit:(NSString*)preedit
+- (void)showPreedit:(NSString* _Nullable)preedit
             selRange:(NSRange)selRange
             caretPos:(NSUInteger)caretPos
-          candidates:(NSArray<NSString*>*)candidates
-            comments:(NSArray<NSString*>*)comments
+          candidates:(NSArray<NSString*>* _Nullable)candidates
+            comments:(NSArray<NSString*>* _Nullable)comments
     highlightedIndex:(NSUInteger)highlightedIndex
              pageNum:(NSUInteger)pageNum
-            lastPage:(BOOL)lastPage;
+           finalPage:(BOOL)finalPage;
 
 - (void)hide;
 
-- (void)updateStatusLong:(NSString*)messageLong
-             statusShort:(NSString*)messageShort;
+- (void)updateStatusLong:(NSString* _Nullable)messageLong
+             statusShort:(NSString* _Nullable)messageShort;
 
-- (void)loadConfig:(SquirrelConfig*)config;
+- (void)loadConfig:(SquirrelConfig* _Nonnull)config;
 
-- (void)loadLabelConfig:(SquirrelConfig*)config directUpdate:(BOOL)update;
+- (void)loadLabelConfig:(SquirrelConfig* _Nonnull)config
+           directUpdate:(BOOL)update;
 
 @end  // SquirrelPanel

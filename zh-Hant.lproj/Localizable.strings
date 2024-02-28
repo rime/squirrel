@@ -1,10 +1,3 @@
-/* 
-  Localizable.strings
-  Squirrel
-
-  Created by 弓辰 on 12/12/22.
-
-*/
 "Squirrel" = "鼠鬚管";
 
 "deploy_update" = "更新輸入法引擎…";
@@ -12,12 +5,7 @@
 "deploy_success" = "部署完成。";
 "deploy_failure" = "有錯誤！請查看日誌 $TMPDIR/rime.squirrel.INFO";
 
-"problematic_launch" = "啟動時偵測到問題！\
-                        「鼠鬚管」可能因設定不當而崩潰。\
-                        請嘗試回退先前的修改，然後查看問題是否依然存在。";
-"say_voice" = "MeiJia";
-
-"candidate" = "點按來⎆選取候選字。\n點按輔助按鈕來⎌清除所選的記憶字詞。按住⌥Option鍵以暫時停用滑鼠與「鼠鬚管」互動。";
+"candidate" = "點按來⎆選取候選字。\n點按輔助按鈕來⎌清除所選的記憶字詞。\n按住⌃control鍵來暫時停用滑鼠與「鼠鬚管」互動。\n按住⌥Option鍵來顯示工具提示。";
 "delete" = "點按來逐字⌫刪除輸入。\n點按輔助按鈕來⎋取消輸入。";
 "escape" = "無法再刪除。\n點按輔助按鈕來⎋取消輸入。";
 "page_up" = "點按來⇞向上翻頁。\n點按輔助按鈕來跳至↖起始處。";

@@ -410,7 +410,7 @@ static NSString* const kFullWidthSpace = @"　";
   _chordDuration = 0.1;
   NSNumber* duration = [NSApp.squirrelAppDelegate.config
       getOptionalDoubleForOption:@"chord_duration"];
-  if (duration && duration.doubleValue > 0) {
+  if (duration.doubleValue > 0) {
     _chordDuration = duration.doubleValue;
   }
   _chordTimer = [NSTimer scheduledTimerWithTimeInterval:_chordDuration
@@ -708,21 +708,25 @@ NSString* getOptionLabel(RimeSessionId session,
           NSRect capslockAccessory =
               NSMakeRect(NSMinX(IbeamRect) - 30, NSMinY(IbeamRect), 27,
                          NSHeight(IbeamRect));
-          if (NSMinX(capslockAccessory) < NSMinX(screenRect))
+          if (NSMinX(capslockAccessory) < NSMinX(screenRect)) {
             capslockAccessory.origin.x = NSMinX(screenRect);
-          if (NSMaxX(capslockAccessory) > NSMaxX(screenRect))
+          }
+          if (NSMaxX(capslockAccessory) > NSMaxX(screenRect)) {
             capslockAccessory.origin.x =
                 NSMaxX(screenRect) - NSWidth(capslockAccessory);
+          }
           IbeamRect = NSUnionRect(IbeamRect, capslockAccessory);
         } else {
           NSRect capslockAccessory =
               NSMakeRect(NSMinX(IbeamRect), NSMinY(IbeamRect) - 26,
                          NSWidth(IbeamRect), 23);
-          if (NSMinY(capslockAccessory) < NSMinY(screenRect))
+          if (NSMinY(capslockAccessory) < NSMinY(screenRect)) {
             capslockAccessory.origin.y = NSMaxY(screenRect) + 3;
-          if (NSMaxY(capslockAccessory) > NSMaxY(screenRect))
+          }
+          if (NSMaxY(capslockAccessory) > NSMaxY(screenRect)) {
             capslockAccessory.origin.y =
                 NSMaxY(screenRect) - NSHeight(capslockAccessory);
+          }
           IbeamRect = NSUnionRect(IbeamRect, capslockAccessory);
         }
       }
@@ -738,7 +742,7 @@ NSString* getOptionLabel(RimeSessionId session,
                     comments:(NSArray<NSString*>*)comments
             highlightedIndex:(NSUInteger)highlightedIndex
                      pageNum:(NSUInteger)pageNum
-                    lastPage:(BOOL)lastPage {
+                   finalPage:(BOOL)finalPage {
   // NSLog(@"showPanelWithPreedit:...:");
   _candidates = candidates;
   _lastPageNum = pageNum;
@@ -755,7 +759,7 @@ NSString* getOptionLabel(RimeSessionId session,
                 comments:comments
         highlightedIndex:highlightedIndex
                  pageNum:pageNum
-                lastPage:lastPage];
+               finalPage:finalPage];
   }
 }
 
@@ -887,7 +891,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
     NSUInteger highlightedIndex =
         numCandidates == 0 ? NSNotFound
                            : (NSUInteger)ctx.menu.highlighted_candidate_index;
-    BOOL isLastPage = (BOOL)ctx.menu.is_last_page;
+    BOOL finalPage = (BOOL)ctx.menu.is_last_page;
 
     // update discloser and active line status in gridded layout
     if (panel.tabular && !showingStatus && numCandidates > 0) {
@@ -903,7 +907,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
         }
         if (panel.expanded && pageNum > _lastPageNum && panel.activePage < 4) {
           panel.activePage = MIN(panel.activePage + pageNum - _lastPageNum,
-                                 isLastPage ? 4UL : 3UL);
+                                 finalPage ? 4UL : 3UL);
         } else if (panel.expanded && pageNum < _lastPageNum &&
                    panel.activePage > 0) {
           panel.activePage = MAX(panel.activePage + pageNum - _lastPageNum,
@@ -1009,7 +1013,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
                       comments:comments
               highlightedIndex:highlightedIndex
                        pageNum:pageNum
-                      lastPage:isLastPage];
+                     finalPage:finalPage];
     rime_get_api()->free_context(&ctx);
   } else {
     [self hidePalettes];

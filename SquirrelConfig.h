@@ -2,29 +2,33 @@
 
 @interface SquirrelOptionSwitcher : NSObject
 
-@property(nonatomic, strong, readonly) NSString* schemaId;
-@property(nonatomic, strong, readonly) NSArray<NSString*>* optionNames;
-@property(nonatomic, strong, readonly) NSArray<NSString*>* optionStates;
-@property(nonatomic, strong, readonly)
+@property(nonatomic, strong, readonly, nonnull) NSString* schemaId;
+@property(nonatomic, strong, readonly, nullable)
+    NSArray<NSString*>* optionNames;
+@property(nonatomic, strong, readonly, nullable)
+    NSArray<NSString*>* optionStates;
+@property(nonatomic, strong, readonly, nullable)
     NSDictionary<NSString*, NSArray<NSString*>*>* optionGroups;
-@property(nonatomic, strong, readonly)
+@property(nonatomic, strong, readonly, nullable)
     NSDictionary<NSString*, NSString*>* switcher;
 
-- (instancetype)initWithSchemaId:(NSString*)schemaId
-                        switcher:(NSDictionary<NSString*, NSString*>*)switcher
-                    optionGroups:(NSDictionary<NSString*, NSArray<NSString*>*>*)
-                                     optionGroups;
+- (instancetype _Nonnull)
+    initWithSchemaId:(NSString* _Nonnull)schemaId
+            switcher:(NSDictionary<NSString*, NSString*>* _Nullable)switcher
+        optionGroups:(NSDictionary<NSString*, NSArray<NSString*>*>* _Nullable)
+                         optionGroups;
 
-- (instancetype)initWithSchemaId:(NSString*)schemaId;
+- (instancetype _Nonnull)initWithSchemaId:(NSString* _Nonnull)schemaId;
 
 // return whether switcher options has been successfully updated
-- (BOOL)updateSwitcher:(NSDictionary<NSString*, NSString*>*)switcher;
+- (BOOL)updateSwitcher:(NSDictionary<NSString*, NSString*>* _Nullable)switcher;
 
-- (BOOL)updateGroupState:(NSString*)optionState ofOption:(NSString*)optionName;
+- (BOOL)updateGroupState:(NSString* _Nullable)optionState
+                ofOption:(NSString* _Nullable)optionName;
 
-- (BOOL)containsOption:(NSString*)optionName;
+- (BOOL)containsOption:(NSString* _Nonnull)optionName;
 
-- (NSMutableDictionary<NSString*, NSString*>*)mutableSwitcher;
+- (NSMutableDictionary<NSString*, NSString*>* _Nullable)mutableSwitcher;
 
 @end  // SquirrelOptionSwitcher
 
@@ -34,44 +38,47 @@ typedef NSDictionary<NSString*, NSNumber*> SquirrelAppOptions;
 typedef NSMutableDictionary<NSString*, NSNumber*> SquirrelMutableAppOptions;
 
 @property(nonatomic, readonly) BOOL isOpen;
-@property(nonatomic, strong) NSString* colorSpace;
-@property(nonatomic, strong, readonly) NSString* schemaId;
+@property(nonatomic, strong, nonnull) NSString* colorSpace;
+@property(nonatomic, strong, readonly, nonnull) NSString* schemaId;
 
 - (BOOL)openBaseConfig;
-- (BOOL)openWithSchemaId:(NSString*)schemaId baseConfig:(SquirrelConfig*)config;
-- (BOOL)openUserConfig:(NSString*)configId;
-- (BOOL)openWithConfigId:(NSString*)configId;
+- (BOOL)openWithSchemaId:(NSString* _Nonnull)schemaId
+              baseConfig:(SquirrelConfig* _Nullable)config;
+- (BOOL)openUserConfig:(NSString* _Nonnull)configId;
+- (BOOL)openWithConfigId:(NSString* _Nonnull)configId;
 - (void)close;
 
-- (BOOL)hasSection:(NSString*)section;
+- (BOOL)hasSection:(NSString* _Nonnull)section;
 
-- (BOOL)setBool:(bool)value forOption:(NSString*)option;
-- (BOOL)setInt:(int)value forOption:(NSString*)option;
-- (BOOL)setDouble:(double)value forOption:(NSString*)option;
-- (BOOL)setString:(NSString*)value forOption:(NSString*)option;
+- (BOOL)setOption:(NSString* _Nonnull)option withBool:(bool)value;
+- (BOOL)setOption:(NSString* _Nonnull)option withInt:(int)value;
+- (BOOL)setOption:(NSString* _Nonnull)option withDouble:(double)value;
+- (BOOL)setOption:(NSString* _Nonnull)option
+       withString:(NSString* _Nonnull)value;
 
-- (BOOL)getBoolForOption:(NSString*)option;
-- (int)getIntForOption:(NSString*)option;
-- (double)getDoubleForOption:(NSString*)option;
-- (double)getDoubleForOption:(NSString*)option
-             applyConstraint:(double (*)(double param))func;
+- (BOOL)getBoolForOption:(NSString* _Nonnull)option;
+- (int)getIntForOption:(NSString* _Nonnull)option;
+- (double)getDoubleForOption:(NSString* _Nonnull)option;
+- (double)getDoubleForOption:(NSString* _Nonnull)option
+             applyConstraint:(double (*_Nonnull)(double param))func;
 
-- (NSNumber*)getOptionalBoolForOption:(NSString*)option;
-- (NSNumber*)getOptionalIntForOption:(NSString*)option;
-- (NSNumber*)getOptionalDoubleForOption:(NSString*)option;
-- (NSNumber*)getOptionalDoubleForOption:(NSString*)option
-                        applyConstraint:(double (*)(double param))func;
+- (NSNumber* _Nullable)getOptionalBoolForOption:(NSString* _Nonnull)option;
+- (NSNumber* _Nullable)getOptionalIntForOption:(NSString* _Nonnull)option;
+- (NSNumber* _Nullable)getOptionalDoubleForOption:(NSString* _Nonnull)option;
+- (NSNumber* _Nullable)getOptionalDoubleForOption:(NSString* _Nonnull)option
+                                  applyConstraint:
+                                      (double (*_Nonnull)(double param))func;
 
-- (NSString*)getStringForOption:(NSString*)option;
+- (NSString* _Nullable)getStringForOption:(NSString* _Nonnull)option;
 // 0xaabbggrr or 0xbbggrr
-- (NSColor*)getColorForOption:(NSString*)option;
+- (NSColor* _Nullable)getColorForOption:(NSString* _Nonnull)option;
 // file path (absolute or relative to ~/Library/Rime)
-- (NSImage*)getImageForOption:(NSString*)option;
+- (NSImage* _Nullable)getImageForOption:(NSString* _Nonnull)option;
 
-- (NSUInteger)getListSizeForOption:(NSString*)option;
-- (NSArray<NSString*>*)getListForOption:(NSString*)option;
+- (NSUInteger)getListSizeForOption:(NSString* _Nonnull)option;
+- (NSArray<NSString*>* _Nullable)getListForOption:(NSString* _Nonnull)option;
 
-- (SquirrelOptionSwitcher*)getOptionSwitcher;
-- (SquirrelAppOptions*)getAppOptions:(NSString*)appName;
+- (SquirrelOptionSwitcher* _Nullable)getOptionSwitcher;
+- (SquirrelAppOptions* _Nullable)getAppOptions:(NSString* _Nonnull)appName;
 
 @end  // SquirrelConfig

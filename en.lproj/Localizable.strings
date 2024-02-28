@@ -5,7 +5,7 @@
 "deploy_success" = "Squirrel is ready.";
 "deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
 
-"candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.\nPress and hold the ⌥option key to temporarily disable mouse interactions.";
+"candidate" = "Click a candidate to ⎆select.\nSecondary click to ⎌forget selected word.\nPress and hold ⌃control to temporarily disable mouse interactions.\nPress and hold ⌥option to display tooltips.";
 "delete" = "Click to ⌫Delete the input by character.\nSecondary click to ⎋Escape the composing.";
 "escape" = "Cannot delete any further.\nSecondary click to ⎋Escape the composing.";
 "page_up" = "Click to ⇞Page Up.\nSecondary click to jump to ↖Home.";

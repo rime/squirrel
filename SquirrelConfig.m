@@ -284,9 +284,8 @@
     return nil;
   }
   NSMutableArray* strList = [[NSMutableArray alloc] init];
-  while (rime_get_api()->config_next(&iterator)) {
+  while (rime_get_api()->config_next(&iterator))
     [strList addObject:[self getStringForOption:@(iterator.path)]];
-  }
   rime_get_api()->config_end(&iterator);
   return strList;
 }
