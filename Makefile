@@ -39,7 +39,7 @@ $(RIME_DEPS):
 	$(MAKE) -C librime deps
 
 librime: $(RIME_DEPS)
-	$(MAKE) -C librime merged-plugins install
+	$(MAKE) -C librime release install
 	$(MAKE) copy-rime-binaries
 
 copy-rime-binaries:
