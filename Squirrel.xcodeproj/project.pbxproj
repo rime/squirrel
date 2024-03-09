@@ -77,14 +77,18 @@
 		7BDB21231C6EF1BE0025E351 /* SquirrelConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB21221C6EF1BE0025E351 /* SquirrelConfig.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; settings = {ATTRIBUTES = (); }; };
-		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		A45578F51146A75200592C6E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A45578F41146A75200592C6E /* MainMenu.xib */; };
 		A47C48DF105E8CE8006D528B /* macos_keycode.m in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DE105E8CE8006D528B /* macos_keycode.m */; };
-		A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A4B8E1B20F645B870094E08B /* Carbon.framework */; };
 		A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4FC48C90F6530EF0069BE81 /* Localizable.strings */; };
-		D26434552706A15100857391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26434542706A15100857391 /* QuartzCore.framework */; };
-		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
-		F45E005F2B8CA81C00179B75 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F45E005E2B8CA81C00179B75 /* UserNotifications.framework */; };
+		F440EC552B9C73A200059E3A /* rime-plugins in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC542B9C73A200059E3A /* rime-plugins */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		F440EC662B9C79A400059E3A /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC5F2B9C799400059E3A /* AppKit.framework */; };
+		F440EC682B9C79A400059E3A /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC622B9C799400059E3A /* Cocoa.framework */; };
+		F440EC692B9C79A400059E3A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC602B9C799400059E3A /* Foundation.framework */; };
+		F49829A52B9C8A830093E3A9 /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC652B9C799400059E3A /* Carbon.framework */; };
+		F49829A62B9C8A880093E3A9 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC612B9C799400059E3A /* InputMethodKit.framework */; };
+		F49829A72B9C8A8F0093E3A9 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC632B9C799400059E3A /* QuartzCore.framework */; };
+		F49829A82B9C8A920093E3A9 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F440EC642B9C799400059E3A /* UserNotifications.framework */; };
+		F49829B02B9D80700093E3A9 /* rime-plugins in Resources */ = {isa = PBXBuildFile; fileRef = F49829AF2B9D80700093E3A9 /* rime-plugins */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -180,6 +184,7 @@
 			files = (
 				44CD640C15E2646B0021234E /* librime.1.dylib in Copy 3rd-party Frameworks */,
 				447765CA25C30E97002415AF /* Sparkle.framework in Copy 3rd-party Frameworks */,
+				F440EC552B9C73A200059E3A /* rime-plugins in Copy 3rd-party Frameworks */,
 			);
 			name = "Copy 3rd-party Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -188,10 +193,7 @@
 
 /* Begin PBXFileReference section */
 		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
-		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
-		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
 		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
 		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
@@ -275,11 +277,16 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = macos_keycode.h; sourceTree = "<group>"; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macos_keycode.m; sourceTree = "<group>"; };
-		A4B8E1B20F645B870094E08B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		A4FC48CA0F6530EF0069BE81 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
-		D26434542706A15100857391 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
-		F45E005E2B8CA81C00179B75 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		F440EC542B9C73A200059E3A /* rime-plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "rime-plugins"; path = "lib/rime-plugins"; sourceTree = "<group>"; };
+		F440EC5F2B9C799400059E3A /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		F440EC602B9C799400059E3A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		F440EC612B9C799400059E3A /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = System/Library/Frameworks/InputMethodKit.framework; sourceTree = SDKROOT; };
+		F440EC622B9C799400059E3A /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		F440EC632B9C799400059E3A /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		F440EC642B9C799400059E3A /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		F440EC652B9C799400059E3A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		F49829AF2B9D80700093E3A9 /* rime-plugins */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "rime-plugins"; path = "lib/rime-plugins"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -287,12 +294,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D26434552706A15100857391 /* QuartzCore.framework in Frameworks */,
-				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				F45E005F2B8CA81C00179B75 /* UserNotifications.framework in Frameworks */,
-				E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */,
-				A4B8E1B30F645B870094E08B /* Carbon.framework in Frameworks */,
+				F440EC662B9C79A400059E3A /* AppKit.framework in Frameworks */,
+				F49829A52B9C8A830093E3A9 /* Carbon.framework in Frameworks */,
+				F440EC682B9C79A400059E3A /* Cocoa.framework in Frameworks */,
+				F440EC692B9C79A400059E3A /* Foundation.framework in Frameworks */,
+				F49829A62B9C8A880093E3A9 /* InputMethodKit.framework in Frameworks */,
+				F49829A72B9C8A8F0093E3A9 /* QuartzCore.framework in Frameworks */,
 				447765C925C30E97002415AF /* Sparkle.framework in Frameworks */,
+				F49829A82B9C8A920093E3A9 /* UserNotifications.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -322,9 +331,13 @@
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				44CD640915E2633D0021234E /* librime.1.dylib */,
-				447765C725C30E6B002415AF /* Sparkle.framework */,
-				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
+				F440EC5F2B9C799400059E3A /* AppKit.framework */,
+				F440EC652B9C799400059E3A /* Carbon.framework */,
+				F440EC622B9C799400059E3A /* Cocoa.framework */,
+				F440EC602B9C799400059E3A /* Foundation.framework */,
+				F440EC612B9C799400059E3A /* InputMethodKit.framework */,
+				F440EC632B9C799400059E3A /* QuartzCore.framework */,
+				F440EC642B9C799400059E3A /* UserNotifications.framework */,
 			);
 			name = "Linked Frameworks";
 			sourceTree = "<group>";
@@ -332,10 +345,9 @@
 		1058C7A2FEA54F0111CA2CBB /* Other Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				A4B8E1B20F645B870094E08B /* Carbon.framework */,
-				E93074B60A5C264700470842 /* InputMethodKit.framework */,
-				29B97324FDCFA39411CA2CEA /* AppKit.framework */,
-				29B97325FDCFA39411CA2CEA /* Foundation.framework */,
+				44CD640915E2633D0021234E /* librime.1.dylib */,
+				447765C725C30E6B002415AF /* Sparkle.framework */,
+				F49829AF2B9D80700093E3A9 /* rime-plugins */,
 			);
 			name = "Other Frameworks";
 			sourceTree = "<group>";
@@ -357,6 +369,7 @@
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				F49829A42B9C8A010093E3A9 /* Recovered References */,
 			);
 			indentWidth = 2;
 			name = Squirrel;
@@ -382,8 +395,6 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				F45E005E2B8CA81C00179B75 /* UserNotifications.framework */,
-				D26434542706A15100857391 /* QuartzCore.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -476,6 +487,14 @@
 			name = plum;
 			sourceTree = "<group>";
 		};
+		F49829A42B9C8A010093E3A9 /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				F440EC542B9C73A200059E3A /* rime-plugins */,
+			);
+			name = "Recovered References";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -540,6 +559,7 @@
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
+				F49829B02B9D80700093E3A9 /* rime-plugins in Resources */,
 				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
@@ -634,6 +654,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)/lib/rime-plugins",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
@@ -682,6 +703,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(LIBRARY_SEARCH_PATHS_QUOTED_FOR_TARGET_1)",
+					"$(PROJECT_DIR)/lib/rime-plugins",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				OTHER_CODE_SIGN_FLAGS = "--deep";
