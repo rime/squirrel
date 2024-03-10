@@ -6,8 +6,11 @@ static const CFStringRef kHansInputModeID =
 static const CFStringRef kHantInputModeID =
     CFSTR("im.rime.inputmethod.Squirrel.Hant");
 
-#define HANS_INPUT_MODE (1 << 0)
-#define HANT_INPUT_MODE (1 << 1)
+typedef NS_OPTIONS(int, RimeInputMode) {
+  DEFAULT_INPUT_MODE = 1 << 0,
+  HANS_INPUT_MODE = 1 << 0,
+  HANT_INPUT_MODE = 1 << 1
+};
 
 void RegisterInputSource(void) {
   CFURLRef installedLocationURL = CFURLCreateFromFileSystemRepresentation(
@@ -65,8 +68,8 @@ void DeactivateInputSource(void) {
   CFRelease(sourceList);
 }
 
-int GetEnabledInputModes(void) {
-  int input_modes = 0;
+RimeInputMode GetEnabledInputModes(void) {
+  RimeInputMode input_modes = 0;
   CFArrayRef sourceList = TISCreateInputSourceList(NULL, true);
   for (CFIndex i = 0; i < CFArrayGetCount(sourceList); ++i) {
     TISInputSourceRef inputSource =

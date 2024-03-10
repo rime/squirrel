@@ -3,14 +3,17 @@
 #import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 #import <rime_api.h>
-#import <string.h>
+
+typedef NS_OPTIONS(int, RimeInputMode) {
+  DEFAULT_INPUT_MODE = 1 << 0,
+  HANS_INPUT_MODE = 1 << 0,
+  HANT_INPUT_MODE = 1 << 1
+};
 
 void RegisterInputSource(void);
-int GetEnabledInputModes(void);
+RimeInputMode GetEnabledInputModes(void);
 void DeactivateInputSource(void);
-void ActivateInputSource(int input_modes);
-
-#define DEFAULT_INPUT_MODE 1
+void ActivateInputSource(RimeInputMode input_modes);
 
 // Each input method needs a unique connection name.
 // Note that periods and spaces are not allowed in the connection name.
@@ -45,7 +48,7 @@ int main(int argc, char* argv[]) {
 
   if (argc > 1 && !strcmp("--build", argv[1])) {
     // notification
-    show_message("deploy_update", "deploy");
+    show_notification("deploy_update");
     // build all schemas in current directory
     RIME_STRUCT(RimeTraits, builder_traits);
     builder_traits.app_name = "rime.squirrel-builder";
@@ -71,7 +74,7 @@ int main(int argc, char* argv[]) {
     // load the bundle explicitly because in this case the input method is a
     // background only application
     [main loadNibNamed:@"MainMenu"
-                  owner:[NSApplication sharedApplication]
+                  owner:NSApplication.sharedApplication
         topLevelObjects:nil];
 
     // opencc will be configured with relative dictionary paths

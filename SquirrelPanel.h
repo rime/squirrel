@@ -1,38 +1,60 @@
 #import <Cocoa/Cocoa.h>
 #import "SquirrelInputController.h"
-
 @class SquirrelConfig;
+@class SquirrelOptionSwitcher;
 
-@interface SquirrelPanel : NSPanel
+@interface SquirrelPanel : NSPanel <NSWindowDelegate>
 
-// Linear candidate list, as opposed to stacked candidate list.
+typedef NS_ENUM(NSUInteger, SquirrelAppear) {
+  defaultAppear = 0,
+  lightAppear = 0,
+  darkAppear = 1
+};
+
+// Linear candidate list layout, as opposed to stacked candidate list layout.
 @property(nonatomic, readonly) BOOL linear;
-// Vertical text, as opposed to horizontal text.
+// Tabular candidate list layout, initializes as tab-aligned linear layout,
+// expandable to stack more candidates
+@property(nonatomic, readonly) BOOL tabular;
+@property(nonatomic, readonly) BOOL locked;
+@property(nonatomic, readonly) BOOL topRow;
+@property(nonatomic) NSUInteger activePage;
+@property(nonatomic) BOOL expanded;
+// Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
 @property(nonatomic, readonly) BOOL inlinePreedit;
-// Show first candidate inline
+// Show primary candidate inline
 @property(nonatomic, readonly) BOOL inlineCandidate;
+// Store switch options that change style (color theme) settings
+@property(nonatomic, strong, nullable) SquirrelOptionSwitcher* optionSwitcher;
+// Status message before pop-up is displayed; nil before normal panel is
+// displayed
+@property(nonatomic, strong, readonly, nullable) NSString* statusMessage;
+// position of the text input I-beam cursor on screen.
+@property(nonatomic) NSRect IbeamRect;
 
-// position of input caret on screen.
-@property(nonatomic, assign) NSRect position;
-// position of input caret on screen.
-@property(nonatomic, assign) SquirrelInputController* inputController;
+@property(nonatomic, assign, nullable) SquirrelInputController* inputController;
 
-- (void)showPreedit:(NSString*)preedit
-           selRange:(NSRange)selRange
-           caretPos:(NSUInteger)caretPos
-         candidates:(NSArray<NSString*>*)candidates
-           comments:(NSArray<NSString*>*)comments
-             labels:(NSArray<NSString*>*)labels
-        highlighted:(NSUInteger)index
-             update:(BOOL)update;
+- (NSUInteger)candidateIndexOnDirection:(SquirrelIndex)arrowKey;
+
+- (void)showPreedit:(NSString* _Nullable)preedit
+            selRange:(NSRange)selRange
+            caretPos:(NSUInteger)caretPos
+          candidates:(NSArray<NSString*>* _Nullable)candidates
+            comments:(NSArray<NSString*>* _Nullable)comments
+    highlightedIndex:(NSUInteger)highlightedIndex
+             pageNum:(NSUInteger)pageNum
+           finalPage:(BOOL)finalPage;
 
 - (void)hide;
 
-- (void)updateStatusLong:(NSString*)messageLong
-             statusShort:(NSString*)messageShort;
+- (void)updateStatusLong:(NSString* _Nullable)messageLong
+             statusShort:(NSString* _Nullable)messageShort;
 
-- (void)loadConfig:(SquirrelConfig*)config forDarkMode:(BOOL)isDark;
+- (void)loadConfig:(SquirrelConfig* _Nonnull)config;
 
-@end
+- (void)loadLabelConfig:(SquirrelConfig* _Nonnull)config
+           directUpdate:(BOOL)update;
+
+@end  // SquirrelPanel

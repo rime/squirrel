@@ -1,39 +1,49 @@
 #import <Cocoa/Cocoa.h>
 
+#import <rime_api.h>
 @class SquirrelConfig;
 @class SquirrelPanel;
+@class SquirrelOptionSwitcher;
 
 // Note: the SquirrelApplicationDelegate is instantiated automatically as an
 // outlet of NSApp's instance
-@interface SquirrelApplicationDelegate : NSObject
+@interface SquirrelApplicationDelegate : NSObject <NSApplicationDelegate>
 
-@property(nonatomic, weak) IBOutlet NSMenu* menu;
-@property(nonatomic, weak) IBOutlet SquirrelPanel* panel;
-@property(nonatomic, weak) IBOutlet id updater;
+typedef NS_ENUM(NSUInteger, SquirrelNotificationPolicy) {
+  kShowNotificationsNever = 0,
+  kShowNotificationsWhenAppropriate = 1,
+  kShowNotificationsAlways = 2
+};
 
-@property(nonatomic, readonly, strong) SquirrelConfig* config;
-@property(nonatomic, readonly) BOOL enableNotifications;
+@property(nonatomic, weak, nullable) IBOutlet NSMenu* menu;
+@property(nonatomic, weak, nullable) IBOutlet SquirrelPanel* panel;
+@property(nonatomic, weak, nullable) IBOutlet id updater;
 
-- (IBAction)deploy:(id)sender;
-- (IBAction)syncUserData:(id)sender;
-- (IBAction)configure:(id)sender;
-- (IBAction)openWiki:(id)sender;
+@property(nonatomic, strong, readonly, nullable) SquirrelConfig* config;
+@property(nonatomic, readonly) SquirrelNotificationPolicy showNotifications;
+
+- (IBAction)deploy:(id _Nullable)sender;
+- (IBAction)syncUserData:(id _Nullable)sender;
+- (IBAction)configure:(id _Nullable)sender;
+- (IBAction)openWiki:(id _Nullable)sender;
 
 - (void)setupRime;
 - (void)startRimeWithFullCheck:(BOOL)fullCheck;
 - (void)loadSettings;
-- (void)loadSchemaSpecificSettings:(NSString*)schemaId;
+- (void)loadSchemaSpecificSettings:(NSString* _Nonnull)schemaId
+                   withRimeSession:(RimeSessionId)sessionId;
+- (void)loadSchemaSpecificLabels:(NSString* _Nonnull)schemaId;
 
 @property(nonatomic, readonly) BOOL problematicLaunchDetected;
 
-@end
+@end  // SquirrelApplicationDelegate
 
 @interface NSApplication (SquirrelApp)
 
-@property(nonatomic, readonly, strong)
+@property(nonatomic, strong, readonly, nonnull)
     SquirrelApplicationDelegate* squirrelAppDelegate;
 
-@end
+@end  // NSApplication (SquirrelApp)
 
 // also used in main.m
-extern void show_message(const char* msg_text, const char* msg_id);
+extern void show_notification(const char* _Nonnull msg_text);

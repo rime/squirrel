@@ -1,6 +1,5 @@
 #import "SquirrelApplicationDelegate.h"
 
-#import <rime_api.h>
 #import "SquirrelConfig.h"
 #import "SquirrelPanel.h"
 #import <UserNotifications/UserNotifications.h>
@@ -22,29 +21,30 @@ static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 }
 
 - (IBAction)configure:(id)sender {
-  [[NSWorkspace sharedWorkspace]
+  [NSWorkspace.sharedWorkspace
       openURL:[NSURL fileURLWithPath:@"~/Library/Rime/"
                                          .stringByExpandingTildeInPath
                          isDirectory:YES]];
 }
 
 - (IBAction)openWiki:(id)sender {
-  [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:kRimeWikiURL]];
+  [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:kRimeWikiURL]];
 }
 
-void show_message(const char* msg_text, const char* msg_id) {
+void show_notification(const char* msg_text) {
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
   [center requestAuthorizationWithOptions:UNAuthorizationOptionAlert |
                                           UNAuthorizationOptionProvisional
-                        completionHandler:^(BOOL granted, NSError* error) {
+                        completionHandler:^(BOOL granted,
+                                            NSError* _Nullable error) {
                           if (error) {
                             NSLog(@"User notification authorization error: %@",
                                   error.debugDescription);
                           }
                         }];
   [center getNotificationSettingsWithCompletionHandler:^(
-              UNNotificationSettings* settings) {
+              UNNotificationSettings* _Nonnull settings) {
     if ((settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
          settings.authorizationStatus == UNAuthorizationStatusProvisional) &&
         (settings.alertSetting == UNNotificationSettingEnabled)) {
@@ -60,7 +60,7 @@ void show_message(const char* msg_text, const char* msg_id) {
                                                content:content
                                                trigger:nil];
       [center addNotificationRequest:request
-               withCompletionHandler:^(NSError* error) {
+               withCompletionHandler:^(NSError* _Nullable error) {
                  if (error) {
                    NSLog(@"User notification request error: %@",
                          error.debugDescription);
@@ -70,60 +70,69 @@ void show_message(const char* msg_text, const char* msg_id) {
   }];
 }
 
-static void show_status_message(const char* msg_text_long,
-                                const char* msg_text_short,
-                                const char* msg_id) {
-  SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
+static void show_status(const char* msg_text_long, const char* msg_text_short) {
   NSString* msgLong = msg_text_long ? @(msg_text_long) : nil;
-  NSString* msgShort = msg_text_short ? @(msg_text_short) : nil;
-  [panel updateStatusLong:msgLong statusShort:msgShort];
+  NSString* msgShort =
+      msg_text_short
+          ? @(msg_text_short)
+          : [msgLong substringWithRange:
+                         [msgLong rangeOfComposedCharacterSequenceAtIndex:0]];
+  [NSApp.squirrelAppDelegate.panel updateStatusLong:msgLong
+                                        statusShort:msgShort];
 }
 
-void notification_handler(void* context_object,
-                          RimeSessionId session_id,
-                          const char* message_type,
-                          const char* message_value) {
+static void notification_handler(void* context_object,
+                                 RimeSessionId session_id,
+                                 const char* message_type,
+                                 const char* message_value) {
   if (!strcmp(message_type, "deploy")) {
     if (!strcmp(message_value, "start")) {
-      show_message("deploy_start", message_type);
+      show_notification("deploy_start");
     } else if (!strcmp(message_value, "success")) {
-      show_message("deploy_success", message_type);
+      show_notification("deploy_success");
     } else if (!strcmp(message_value, "failure")) {
-      show_message("deploy_failure", message_type);
+      show_notification("deploy_failure");
     }
     return;
   }
-  // off?
   SquirrelApplicationDelegate* app_delegate = (__bridge id)context_object;
-  if (app_delegate && ![app_delegate enableNotifications]) {
-    return;
-  }
   // schema change
-  if (!strcmp(message_type, "schema")) {
+  if (!strcmp(message_type, "schema") &&
+      app_delegate.showNotifications != kShowNotificationsNever) {
     const char* schema_name = strchr(message_value, '/');
     if (schema_name) {
       ++schema_name;
-      show_status_message(schema_name, schema_name, message_type);
+      show_status(schema_name, schema_name);
     }
     return;
   }
   // option change
-  if (!strcmp(message_type, "option")) {
+  if (!strcmp(message_type, "option") && app_delegate) {
     Bool state = message_value[0] != '!';
     const char* option_name = message_value + !state;
-    struct rime_string_slice_t state_label_long =
-        rime_get_api()->get_state_label_abbreviated(session_id, option_name,
-                                                    state, False);
-    struct rime_string_slice_t state_label_short =
-        rime_get_api()->get_state_label_abbreviated(session_id, option_name,
-                                                    state, True);
-
-    if (state_label_long.str || state_label_short.str) {
-      const char* short_message =
-          state_label_short.length < strlen(state_label_short.str)
-              ? NULL
-              : state_label_short.str;
-      show_status_message(state_label_long.str, short_message, message_type);
+    if ([app_delegate.panel.optionSwitcher containsOption:@(option_name)]) {
+      if ([app_delegate.panel.optionSwitcher updateGroupState:@(message_value)
+                                                     ofOption:@(option_name)]) {
+        NSString* schemaId = app_delegate.panel.optionSwitcher.schemaId;
+        [app_delegate loadSchemaSpecificLabels:schemaId];
+        [app_delegate loadSchemaSpecificSettings:schemaId
+                                 withRimeSession:session_id];
+      }
+    }
+    if (app_delegate.showNotifications != kShowNotificationsNever) {
+      RimeStringSlice state_label_long =
+          rime_get_api()->get_state_label_abbreviated(session_id, option_name,
+                                                      state, False);
+      RimeStringSlice state_label_short =
+          rime_get_api()->get_state_label_abbreviated(session_id, option_name,
+                                                      state, True);
+      if (state_label_long.str || state_label_short.str) {
+        const char* short_message =
+            state_label_short.length < strlen(state_label_short.str)
+                ? NULL
+                : state_label_short.str;
+        show_status(state_label_long.str, short_message);
+      }
     }
   }
 }
@@ -168,40 +177,87 @@ void notification_handler(void* context_object,
   rime_get_api()->finalize();
 }
 
+SquirrelOptionSwitcher* updateOptionSwitcher(
+    SquirrelOptionSwitcher* optionSwitcher,
+    RimeSessionId sessionId) {
+  NSMutableDictionary* switcher = optionSwitcher.mutableSwitcher;
+  NSSet* prevStates = [NSSet setWithArray:optionSwitcher.optionStates];
+  for (NSString* state in prevStates) {
+    NSString* updatedState;
+    NSArray* optionGroup = [optionSwitcher.switcher allKeysForObject:state];
+    for (NSString* option in optionGroup) {
+      if (rime_get_api()->get_option(sessionId, option.UTF8String)) {
+        updatedState = option;
+        break;
+      }
+    }
+    updatedState =
+        updatedState ?: [@"!" stringByAppendingString:optionGroup[0]];
+    if (![updatedState isEqualToString:state]) {
+      for (NSString* option in optionGroup) {
+        switcher[option] = updatedState;
+      }
+    }
+  }
+  [optionSwitcher updateSwitcher:switcher];
+  return optionSwitcher;
+}
+
 - (void)loadSettings {
   _config = [[SquirrelConfig alloc] init];
   if (![_config openBaseConfig]) {
     return;
   }
 
-  _enableNotifications = ![[_config getString:@"show_notifications_when"]
-      isEqualToString:@"never"];
-  [self.panel loadConfig:_config forDarkMode:NO];
-  if (@available(macOS 10.14, *)) {
-    [self.panel loadConfig:_config forDarkMode:YES];
+  NSString* showNotificationsWhen =
+      [_config getStringForOption:@"show_notifications_when"];
+  if ([showNotificationsWhen isEqualToString:@"never"]) {
+    _showNotifications = kShowNotificationsNever;
+  } else if ([showNotificationsWhen isEqualToString:@"appropriate"]) {
+    _showNotifications = kShowNotificationsWhenAppropriate;
+  } else {
+    _showNotifications = kShowNotificationsAlways;
   }
+  [self.panel loadConfig:_config];
 }
 
-- (void)loadSchemaSpecificSettings:(NSString*)schemaId {
-  if (schemaId.length == 0 || [schemaId characterAtIndex:0] == '.') {
+- (void)loadSchemaSpecificSettings:(NSString*)schemaId
+                   withRimeSession:(RimeSessionId)sessionId {
+  if (schemaId.length == 0 || [schemaId hasPrefix:@"."]) {
     return;
   }
+  // update the list of switchers that change styles and color-themes
   SquirrelConfig* schema = [[SquirrelConfig alloc] init];
   if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
       [schema hasSection:@"style"]) {
-    [self.panel loadConfig:schema forDarkMode:NO];
+    SquirrelOptionSwitcher* optionSwitcher = [schema getOptionSwitcher];
+    self.panel.optionSwitcher = updateOptionSwitcher(optionSwitcher, sessionId);
+    [self.panel loadConfig:schema];
   } else {
-    [self.panel loadConfig:self.config forDarkMode:NO];
-  }
-  if (@available(macOS 10.14, *)) {
-    if ([schema openWithSchemaId:schemaId baseConfig:self.config] &&
-        [schema hasSection:@"style"]) {
-      [self.panel loadConfig:schema forDarkMode:YES];
-    } else {
-      [self.panel loadConfig:self.config forDarkMode:YES];
-    }
+    self.panel.optionSwitcher =
+        [[SquirrelOptionSwitcher alloc] initWithSchemaId:schemaId];
+    [self.panel loadConfig:self.config];
   }
   [schema close];
+}
+
+- (void)loadSchemaSpecificLabels:(NSString*)schemaId {
+  SquirrelConfig* defaultConfig = [[SquirrelConfig alloc] init];
+  [defaultConfig openWithConfigId:@"default"];
+  if (schemaId.length == 0 || [schemaId hasPrefix:@"."]) {
+    [self.panel loadLabelConfig:defaultConfig directUpdate:YES];
+    [defaultConfig close];
+    return;
+  }
+  SquirrelConfig* schema = [[SquirrelConfig alloc] init];
+  if ([schema openWithSchemaId:schemaId baseConfig:defaultConfig] &&
+      [schema hasSection:@"menu"]) {
+    [self.panel loadLabelConfig:schema directUpdate:NO];
+  } else {
+    [self.panel loadLabelConfig:defaultConfig directUpdate:NO];
+  }
+  [schema close];
+  [defaultConfig close];
 }
 
 // prevent freezing the system
