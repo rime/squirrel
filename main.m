@@ -22,7 +22,7 @@ static NSString* const kConnectionName = @"Squirrel_1_Connection";
 int main(int argc, char* argv[]) {
   if (argc > 1 && !strcmp("--quit", argv[1])) {
     NSString* bundleId = [NSBundle mainBundle].bundleIdentifier;
-    NSArray* runningSquirrels =
+    NSArray<NSRunningApplication*>* runningSquirrels =
         [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
     for (NSRunningApplication* squirrelApp in runningSquirrels) {
       [squirrelApp terminate];
@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     RegisterInputSource();
     int input_modes = GetEnabledInputModes();
     DeactivateInputSource();
-    ActivateInputSource(input_modes ? input_modes : DEFAULT_INPUT_MODE);
+    ActivateInputSource(input_modes ?: DEFAULT_INPUT_MODE);
     return 0;
   }
 
@@ -86,10 +86,15 @@ int main(int argc, char* argv[]) {
       NSArray* args = @[ @"Problematic launch detected! \
                        Squirrel may be suffering a crash due to imporper configuration. \
                        Revert previous modifications to see if the problem recurs." ];
-      [NSTask launchedTaskWithLaunchPath:@"/usr/bin/say" arguments:args];
+      [NSTask
+          launchedTaskWithExecutableURL:[NSURL fileURLWithPath:@"/usr/bin/say"
+                                                   isDirectory:NO]
+                              arguments:args
+                                  error:nil
+                     terminationHandler:nil];
     } else {
       [NSApp.squirrelAppDelegate setupRime];
-      [NSApp.squirrelAppDelegate startRimeWithFullCheck:NO];
+      [NSApp.squirrelAppDelegate startRimeWithFullCheck:false];
       [NSApp.squirrelAppDelegate loadSettings];
       NSLog(@"Squirrel reporting!");
     }

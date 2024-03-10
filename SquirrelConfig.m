@@ -86,14 +86,14 @@
 
 - (BOOL)openBaseConfig {
   [self close];
-  _isOpen = !!rime_get_api()->config_open("squirrel", &_config);
+  _isOpen = (BOOL)rime_get_api()->config_open("squirrel", &_config);
   return _isOpen;
 }
 
 - (BOOL)openWithSchemaId:(NSString*)schemaId
               baseConfig:(SquirrelConfig*)baseConfig {
   [self close];
-  _isOpen = !!rime_get_api()->schema_open(schemaId.UTF8String, &_config);
+  _isOpen = (BOOL)rime_get_api()->schema_open(schemaId.UTF8String, &_config);
   if (_isOpen) {
     _schemaId = schemaId;
     _baseConfig = baseConfig;
@@ -103,13 +103,14 @@
 
 - (BOOL)openUserConfig:(NSString*)configId {
   [self close];
-  _isOpen = !!rime_get_api()->user_config_open(configId.UTF8String, &_config);
+  _isOpen =
+      (BOOL)rime_get_api()->user_config_open(configId.UTF8String, &_config);
   return _isOpen;
 }
 
 - (BOOL)openWithConfigId:(NSString*)configId {
   [self close];
-  _isOpen = !!rime_get_api()->config_open(configId.UTF8String, &_config);
+  _isOpen = (BOOL)rime_get_api()->config_open(configId.UTF8String, &_config);
   return _isOpen;
 }
 
@@ -137,22 +138,22 @@
   return NO;
 }
 
-- (BOOL)setBool:(bool)value forOption:(NSString*)option {
+- (BOOL)setOption:(NSString*)option withBool:(bool)value {
   return (BOOL)(rime_get_api()->config_set_bool(&_config, option.UTF8String,
                                                 value));
 }
 
-- (BOOL)setInt:(int)value forOption:(NSString*)option {
+- (BOOL)setOption:(NSString*)option withInt:(int)value {
   return (
       BOOL)(rime_get_api()->config_set_int(&_config, option.UTF8String, value));
 }
 
-- (BOOL)setDouble:(double)value forOption:(NSString*)option {
+- (BOOL)setOption:(NSString*)option withDouble:(double)value {
   return (BOOL)(rime_get_api()->config_set_double(&_config, option.UTF8String,
                                                   value));
 }
 
-- (BOOL)setString:(NSString*)value forOption:(NSString*)option {
+- (BOOL)setOption:(NSString*)option withString:(NSString*)value {
   return (BOOL)(rime_get_api()->config_set_string(&_config, option.UTF8String,
                                                   value.UTF8String));
 }

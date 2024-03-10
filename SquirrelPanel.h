@@ -17,8 +17,9 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 // expandable to stack more candidates
 @property(nonatomic, readonly) BOOL tabular;
 @property(nonatomic, readonly) BOOL locked;
-@property(nonatomic) BOOL expanded;
+@property(nonatomic, readonly) BOOL topRow;
 @property(nonatomic) NSUInteger activePage;
+@property(nonatomic) BOOL expanded;
 // Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.

@@ -32,54 +32,42 @@ static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 }
 
 void show_notification(const char* msg_text) {
-  if (@available(macOS 10.14, *)) {
-    UNUserNotificationCenter* center =
-        UNUserNotificationCenter.currentNotificationCenter;
-    [center
-        requestAuthorizationWithOptions:UNAuthorizationOptionAlert |
-                                        UNAuthorizationOptionProvisional
-                      completionHandler:^(BOOL granted,
-                                          NSError* _Nullable error) {
-                        if (error) {
-                          NSLog(@"User notification authorization error: %@",
-                                error.debugDescription);
-                        }
-                      }];
-    [center getNotificationSettingsWithCompletionHandler:^(
-                UNNotificationSettings* _Nonnull settings) {
-      if ((settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
-           settings.authorizationStatus == UNAuthorizationStatusProvisional) &&
-          (settings.alertSetting == UNNotificationSettingEnabled)) {
-        UNMutableNotificationContent* content =
-            [[UNMutableNotificationContent alloc] init];
-        content.title = NSLocalizedString(@"Squirrel", nil);
-        content.subtitle = NSLocalizedString(@(msg_text), nil);
-        if (@available(macOS 12.0, *)) {
-          content.interruptionLevel = UNNotificationInterruptionLevelActive;
-        }
-        UNNotificationRequest* request =
-            [UNNotificationRequest requestWithIdentifier:@"SquirrelNotification"
-                                                 content:content
-                                                 trigger:nil];
-        [center addNotificationRequest:request
-                 withCompletionHandler:^(NSError* _Nullable error) {
-                   if (error) {
-                     NSLog(@"User notification request error: %@",
-                           error.debugDescription);
-                   }
-                 }];
+  UNUserNotificationCenter* center =
+      UNUserNotificationCenter.currentNotificationCenter;
+  [center requestAuthorizationWithOptions:UNAuthorizationOptionAlert |
+                                          UNAuthorizationOptionProvisional
+                        completionHandler:^(BOOL granted,
+                                            NSError* _Nullable error) {
+                          if (error) {
+                            NSLog(@"User notification authorization error: %@",
+                                  error.debugDescription);
+                          }
+                        }];
+  [center getNotificationSettingsWithCompletionHandler:^(
+              UNNotificationSettings* _Nonnull settings) {
+    if ((settings.authorizationStatus == UNAuthorizationStatusAuthorized ||
+         settings.authorizationStatus == UNAuthorizationStatusProvisional) &&
+        (settings.alertSetting == UNNotificationSettingEnabled)) {
+      UNMutableNotificationContent* content =
+          [[UNMutableNotificationContent alloc] init];
+      content.title = NSLocalizedString(@"Squirrel", nil);
+      content.subtitle = NSLocalizedString(@(msg_text), nil);
+      if (@available(macOS 12.0, *)) {
+        content.interruptionLevel = UNNotificationInterruptionLevelActive;
       }
-    }];
-  } else {
-    NSUserNotification* notification = [[NSUserNotification alloc] init];
-    notification.title = NSLocalizedString(@"Squirrel", nil);
-    notification.subtitle = NSLocalizedString(@(msg_text), nil);
-
-    NSUserNotificationCenter* notificationCenter =
-        NSUserNotificationCenter.defaultUserNotificationCenter;
-    [notificationCenter removeAllDeliveredNotifications];
-    [notificationCenter deliverNotification:notification];
-  }
+      UNNotificationRequest* request =
+          [UNNotificationRequest requestWithIdentifier:@"SquirrelNotification"
+                                               content:content
+                                               trigger:nil];
+      [center addNotificationRequest:request
+               withCompletionHandler:^(NSError* _Nullable error) {
+                 if (error) {
+                   NSLog(@"User notification request error: %@",
+                         error.debugDescription);
+                 }
+               }];
+    }
+  }];
 }
 
 static void show_status(const char* msg_text_long, const char* msg_text_short) {
@@ -150,13 +138,13 @@ static void notification_handler(void* context_object,
 }
 
 - (void)setupRime {
-  NSString* userDataDir = (@"~/Library/Rime").stringByStandardizingPath;
+  NSString* userDataDir = @"~/Library/Rime".stringByExpandingTildeInPath;
   NSFileManager* fileManager = [NSFileManager defaultManager];
   if (![fileManager fileExistsAtPath:userDataDir]) {
     if (![fileManager createDirectoryAtPath:userDataDir
                 withIntermediateDirectories:YES
                                  attributes:nil
-                                      error:NULL]) {
+                                      error:nil]) {
       NSLog(@"Error creating user data directory: %@", userDataDir);
     }
   }
@@ -168,8 +156,8 @@ static void notification_handler(void* context_object,
   squirrel_traits.user_data_dir = userDataDir.UTF8String;
   squirrel_traits.distribution_code_name = "Squirrel";
   squirrel_traits.distribution_name = "鼠鬚管";
-  squirrel_traits.distribution_version =
-      [[NSBundle mainBundle].infoDictionary[@"CFBundleVersion"] UTF8String];
+  squirrel_traits.distribution_version = [[[NSBundle mainBundle]
+      objectForInfoDictionaryKey:(NSString*)kCFBundleVersionKey] UTF8String];
   squirrel_traits.app_name = "rime.squirrel";
   rime_get_api()->setup(&squirrel_traits);
 }
@@ -295,9 +283,7 @@ SquirrelOptionSwitcher* updateOptionSwitcher(
   NSData* record = [NSKeyedArchiver archivedDataWithRootObject:now
                                          requiringSecureCoding:NO
                                                          error:nil];
-  NSFileHandle* fileHandle = [NSFileHandle fileHandleForWritingToURL:logfile
-                                                               error:nil];
-  [fileHandle writeData:record];
+  [record writeToURL:logfile atomically:NO];
   return detected;
 }
 
@@ -350,9 +336,7 @@ SquirrelOptionSwitcher* updateOptionSwitcher(
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  if (_panel) {
-    [_panel hide];
-  }
+  [_panel hide];
 }
 
 @end  // SquirrelApplicationDelegate

@@ -38,6 +38,6 @@ typedef NS_ENUM(NSUInteger, SquirrelIndex) {
       inlinePreedit:(BOOL)inlinePreedit
     inlineCandidate:(BOOL)inlineCandidate;
 
-- (void)perform:(SquirrelAction)action onIndex:(SquirrelIndex)index;
+- (void)performAction:(SquirrelAction)action onIndex:(SquirrelIndex)index;
 
 @end  // SquirrelInputController
