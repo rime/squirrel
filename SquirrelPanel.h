@@ -14,12 +14,12 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 // Linear candidate list layout, as opposed to stacked candidate list layout.
 @property(nonatomic, readonly) BOOL linear;
 // Tabular candidate list layout, initializes as tab-aligned linear layout,
-// expandable to stack more candidates
+// expandable to stack 5 (3 for vertical) pages/sections of candidates
 @property(nonatomic, readonly) BOOL tabular;
 @property(nonatomic, readonly) BOOL locked;
-@property(nonatomic, readonly) BOOL topRow;
-@property(nonatomic) NSUInteger activePage;
+@property(nonatomic, readonly) BOOL firstLine;
 @property(nonatomic) BOOL expanded;
+@property(nonatomic) NSUInteger sectionNum;
 // Vertical text orientation, as opposed to horizontal text orientation.
 @property(nonatomic, readonly) BOOL vertical;
 // Show preedit text inline.
@@ -31,6 +31,9 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 // Status message before pop-up is displayed; nil before normal panel is
 // displayed
 @property(nonatomic, strong, readonly, nullable) NSString* statusMessage;
+// Store candidates and comments queried from rime
+@property(nonatomic, strong, nullable) NSMutableArray<NSString*>* candidates;
+@property(nonatomic, strong, nullable) NSMutableArray<NSString*>* comments;
 // position of the text input I-beam cursor on screen.
 @property(nonatomic) NSRect IbeamRect;
 
@@ -41,11 +44,11 @@ typedef NS_ENUM(NSUInteger, SquirrelAppear) {
 - (void)showPreedit:(NSString* _Nullable)preedit
             selRange:(NSRange)selRange
             caretPos:(NSUInteger)caretPos
-          candidates:(NSArray<NSString*>* _Nullable)candidates
-            comments:(NSArray<NSString*>* _Nullable)comments
+    candidateIndices:(NSRange)indexRange
     highlightedIndex:(NSUInteger)highlightedIndex
              pageNum:(NSUInteger)pageNum
-           finalPage:(BOOL)finalPage;
+           finalPage:(BOOL)finalPage
+          didCompose:(BOOL)didCompose;
 
 - (void)hide;
 

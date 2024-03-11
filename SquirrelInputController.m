@@ -25,6 +25,7 @@ static NSString* const kFullWidthSpace = @"　";
   NSRange _selRange;
   NSUInteger _caretPos;
   NSArray<NSString*>* _candidates;
+  NSUInteger _converted;
   NSEventModifierFlags _lastModifiers;
   NSEventType _lastEventType;
   uint _lastEventCount;
@@ -231,7 +232,7 @@ static NSString* const kFullWidthSpace = @"　";
     rime_get_api()->set_option(_session, "_vertical", is_vertical);
   }
 
-  if (panel.tabular && !rime_modifiers &&
+  if (panel.tabular && !rime_modifiers && panel.visible &&
       (is_vertical
            ? rime_keycode == XK_Left || rime_keycode == XK_KP_Left ||
                  rime_keycode == XK_Right || rime_keycode == XK_KP_Right
@@ -246,15 +247,13 @@ static NSString* const kFullWidthSpace = @"　";
       if (!panel.locked && !panel.expanded &&
           rime_keycode == (is_vertical ? XK_Left : XK_Down)) {
         [panel setExpanded:YES];
-        _currentIndex = NSNotFound;
       }
-      return (BOOL)rime_get_api()->highlight_candidate(_session, newIndex) ||
-             panel.visible;
-    } else if (!panel.locked && panel.expanded && panel.activePage == 0 &&
+      rime_get_api()->highlight_candidate(_session, newIndex);
+      return YES;
+    } else if (!panel.locked && panel.expanded && panel.sectionNum == 0 &&
                rime_keycode == (is_vertical ? XK_Right : XK_Up)) {
       [panel setExpanded:NO];
-      _currentIndex = NSNotFound;
-      return panel.visible;
+      return YES;
     }
   }
 
@@ -380,8 +379,8 @@ static NSString* const kFullWidthSpace = @"　";
       handled = rime_get_api()->select_candidate(_session, index);
       break;
     case kHIGHLIGHT:
-      rime_get_api()->highlight_candidate(_session, index);
-      _currentIndex = index;
+      handled = rime_get_api()->highlight_candidate(_session, index);
+      _currentIndex = NSNotFound;
       break;
     case kDELETE:
       handled = rime_get_api()->delete_candidate(_session, index);
@@ -618,7 +617,7 @@ NSString* getOptionLabel(RimeSessionId session,
 }
 
 - (NSArray*)candidates:(id)sender {
-  return _candidates;
+  return NSApp.squirrelAppDelegate.panel.candidates;
 }
 
 - (void)hidePalettes {
@@ -756,13 +755,12 @@ NSString* getOptionLabel(RimeSessionId session,
 - (void)showPanelWithPreedit:(NSString*)preedit
                     selRange:(NSRange)selRange
                     caretPos:(NSUInteger)caretPos
-                  candidates:(NSArray<NSString*>*)candidates
-                    comments:(NSArray<NSString*>*)comments
+            candidateIndices:(NSRange)indexRange
             highlightedIndex:(NSUInteger)highlightedIndex
                      pageNum:(NSUInteger)pageNum
-                   finalPage:(BOOL)finalPage {
+                   finalPage:(BOOL)finalPage
+                  didCompose:(BOOL)didCompose {
   // NSLog(@"showPanelWithPreedit:...:");
-  _candidates = candidates;
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   panel.inputController = self;
   panel.IbeamRect = [self getIbeamRect];
@@ -772,11 +770,11 @@ NSString* getOptionLabel(RimeSessionId session,
     [panel showPreedit:preedit
                 selRange:selRange
                 caretPos:caretPos
-              candidates:candidates
-                comments:comments
+        candidateIndices:indexRange
         highlightedIndex:highlightedIndex
                  pageNum:pageNum
-               finalPage:finalPage];
+               finalPage:finalPage
+              didCompose:didCompose];
   }
 }
 
@@ -842,6 +840,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
 - (void)rimeUpdate {
   // NSLog(@"rimeUpdate");
   BOOL didCommit = [self rimeConsumeCommittedText];
+  BOOL didCompose = didCommit;
 
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   RIME_STRUCT(RimeStatus, status);
@@ -865,6 +864,7 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
       } else {
         [NSApp.squirrelAppDelegate loadSchemaSpecificLabels:@""];
       }
+      didCompose = YES;
     }
     rime_get_api()->free_status(&status);
   }
@@ -872,37 +872,30 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
   RIME_STRUCT(RimeContext, ctx);
   if (rime_get_api()->get_context(_session, &ctx)) {
     BOOL showingStatus = panel.statusMessage.length > 0;
-    // update raw input
-    const char* raw_input = rime_get_api()->get_input(_session);
-    _originalString = raw_input ? @(raw_input) : @"";
-
     // update preedit text
     const char* preedit = ctx.composition.preedit;
     NSString* preeditText = preedit ? @(preedit) : @"";
 
+    // update raw input
+    const char* raw_input = rime_get_api()->get_input(_session);
+    NSString* originalString = raw_input ? @(raw_input) : @"";
+    didCompose |= ![originalString isEqualToString:_originalString];
+    _originalString = originalString;
+
     // update composed string
-    NSString* composedText;
     if (!preedit || _showingSwitcherMenu) {
-      composedText = @"";
-    } else if (rime_get_api()->get_option(_session, "soft_cursor")) {
+      _composedString = @"";
+    } else if (!_inlinePreedit) {  // remove soft cursor
       size_t cursorPos =
           (size_t)ctx.composition.cursor_pos -
           (ctx.composition.cursor_pos < ctx.composition.sel_end ? 3 : 0);
       char composed[strlen(preedit) - 2];
       strlcpy(composed, preedit, cursorPos + 1);
       strlcat(composed, preedit + cursorPos + 3, strlen(preedit) - 2);
-      composedText = @(composed);
+      _composedString = @(composed);
     } else {
-      composedText = @(preedit);
+      _composedString = @(preedit);
     }
-    BOOL didCompose =
-        didCommit ||
-        ![[composedText stringByReplacingOccurrencesOfString:@" "
-                                                  withString:@""]
-            isEqualToString:[_composedString
-                                stringByReplacingOccurrencesOfString:@" "
-                                                          withString:@""]];
-    _composedString = composedText;
 
     NSUInteger start =
         UTF8LengthToUTF16Length(preedit, ctx.composition.sel_start);
@@ -919,36 +912,44 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
                            : (NSUInteger)ctx.menu.highlighted_candidate_index;
     BOOL finalPage = (BOOL)ctx.menu.is_last_page;
 
-    // update expander and active page status in tabular layout;
+    didCompose |= start != _converted;
+    _converted = start;
+    // update expander and section status in tabular layout;
     // already processed the action if _currentIndex == NSNotFound
     if (panel.tabular && !showingStatus) {
       if (numCandidates == 0 || didCompose) {
-        panel.activePage = 0;
+        panel.sectionNum = 0;
       } else if (_currentIndex != NSNotFound) {
         NSUInteger currentPageNum = _currentIndex / pageSize;
-        if (!panel.locked && panel.expanded && panel.topRow && pageNum == 0 &&
-            highlightedIndex == 0) {
+        if (!panel.locked && panel.expanded && panel.firstLine &&
+            pageNum == 0 && highlightedIndex == 0 && _currentIndex == 0) {
           panel.expanded = NO;
         } else if (!panel.locked && !panel.expanded &&
                    pageNum > currentPageNum) {
           panel.expanded = YES;
         }
         if (panel.expanded && pageNum > currentPageNum &&
-            panel.activePage < 4) {
-          panel.activePage = MIN(panel.activePage + pageNum - currentPageNum,
-                                 finalPage ? 4UL : 3UL);
+            panel.sectionNum < (panel.vertical ? 2 : 4)) {
+          panel.sectionNum =
+              MIN(panel.sectionNum + pageNum - currentPageNum,
+                  (finalPage ? 4UL : 3UL) - (panel.vertical ? 2UL : 0UL));
         } else if (panel.expanded && pageNum < currentPageNum &&
-                   panel.activePage > 0) {
-          panel.activePage = MAX(panel.activePage + pageNum - currentPageNum,
+                   panel.sectionNum > 0) {
+          panel.sectionNum = MAX(panel.sectionNum + pageNum - currentPageNum,
                                  pageNum == 0 ? 0UL : 1UL);
         }
       }
-      highlightedIndex += pageSize * panel.activePage;
+      highlightedIndex += pageSize * panel.sectionNum;
     }
-    _currentIndex =
-        numCandidates == 0
-            ? NSNotFound
-            : highlightedIndex + pageSize * (pageNum - panel.activePage);
+    NSUInteger extraCandidates =
+        panel.expanded && caretPos >= end
+            ? (finalPage ? panel.sectionNum : (panel.vertical ? 2 : 4)) *
+                  pageSize
+            : 0;
+    NSRange candidateIndices =
+        NSMakeRange((pageNum - panel.sectionNum) * pageSize,
+                    numCandidates + extraCandidates);
+    _currentIndex = highlightedIndex + candidateIndices.location;
 
     if (showingStatus) {
       [self clearBuffer];
@@ -1000,41 +1001,48 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
                        caretPos:0];
       }
     }
+    if (didCompose || numCandidates == 0) {
+      [panel.candidates removeAllObjects];
+      [panel.comments removeAllObjects];
+    }
     // update candidates
-    NSMutableArray* candidates =
-        numCandidates ? [[NSMutableArray alloc] init] : nil;
-    NSMutableArray* comments =
-        numCandidates ? [[NSMutableArray alloc] init] : nil;
-    if (numCandidates > 0 && panel.expanded && panel.activePage > 0) {
-      NSUInteger index = pageSize * (pageNum - panel.activePage);
+    if (panel.candidates.count < pageSize * pageNum) {
+      NSUInteger index = panel.candidates.count;
       RimeCandidateListIterator iterator;
       if (rime_get_api()->candidate_list_from_index(_session, &iterator,
                                                     (int)index)) {
         NSUInteger endIndex = pageSize * pageNum;
         while (index++ < endIndex &&
                rime_get_api()->candidate_list_next(&iterator)) {
-          [candidates addObject:@(iterator.candidate.text)];
-          [comments addObject:@(iterator.candidate.comment ?: "")];
+          [panel.candidates addObject:@(iterator.candidate.text)];
+          [panel.comments addObject:@(iterator.candidate.comment ?: "")];
         }
         rime_get_api()->candidate_list_end(&iterator);
       }
     }
-    for (NSUInteger i = 0; i < numCandidates; ++i) {
-      [candidates addObject:@(ctx.menu.candidates[i].text)];
-      [comments addObject:@(ctx.menu.candidates[i].comment ?: "")];
+    if (panel.candidates.count < pageSize * (pageNum + 1)) {
+      for (NSUInteger i = 0; i < numCandidates; ++i) {
+        panel.candidates[pageSize * pageNum + i] =
+            @(ctx.menu.candidates[i].text);
+        panel.comments[pageSize * pageNum + i] =
+            @(ctx.menu.candidates[i].comment ?: "");
+      }
     }
-    if (numCandidates > 0 && panel.expanded && panel.activePage < 5) {
-      NSUInteger index = pageSize * (pageNum + 1);
+    if (panel.candidates.count < NSMaxRange(candidateIndices)) {
+      NSUInteger index = panel.candidates.count;
       RimeCandidateListIterator iterator;
       if (rime_get_api()->candidate_list_from_index(_session, &iterator,
                                                     (int)index)) {
-        NSUInteger endIndex = pageSize * (pageNum + 5 - panel.activePage);
+        NSUInteger endIndex =
+            pageSize * (pageNum + (panel.vertical ? 3 : 5) - panel.sectionNum);
         while (index++ < endIndex &&
                rime_get_api()->candidate_list_next(&iterator)) {
-          [candidates addObject:@(iterator.candidate.text)];
-          [comments addObject:@(iterator.candidate.comment ?: "")];
+          [panel.candidates addObject:@(iterator.candidate.text)];
+          [panel.comments addObject:@(iterator.candidate.comment ?: "")];
         }
         rime_get_api()->candidate_list_end(&iterator);
+        candidateIndices.length =
+            panel.candidates.count - candidateIndices.location;
       }
     }
     [self showPanelWithPreedit:_inlinePreedit && !_showingSwitcherMenu
@@ -1042,11 +1050,11 @@ NSUInteger inline UTF8LengthToUTF16Length(const char* string, int length) {
                                    : preeditText
                       selRange:NSMakeRange(start, end - start)
                       caretPos:_showingSwitcherMenu ? NSNotFound : caretPos
-                    candidates:candidates
-                      comments:comments
+              candidateIndices:candidateIndices
               highlightedIndex:highlightedIndex
                        pageNum:pageNum
-                     finalPage:finalPage];
+                     finalPage:finalPage
+                    didCompose:didCompose];
     rime_get_api()->free_context(&ctx);
   } else {
     [self hidePalettes];

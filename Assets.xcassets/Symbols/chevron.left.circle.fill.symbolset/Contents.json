@@ -3,9 +3,6 @@
     "author" : "xcode",
     "version" : 1
   },
-  "properties" : {
-    "symbol-rendering-intent" : "template"
-  },
   "symbols" : [
     {
       "filename" : "chevron.left.circle.fill.svg",
