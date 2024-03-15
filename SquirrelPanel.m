@@ -829,10 +829,6 @@ void removeCorner(NSMutableArray<NSValue*>* highlightedPoints,
   CGPathRef preeditPath = CGPathCreateMutable();
   SquirrelTheme* theme = self.currentTheme;
 
-  NSPoint textFieldOrigin = dirtyRect.origin;
-  textFieldOrigin.y += theme.edgeInset.height;
-  textFieldOrigin.x += theme.edgeInset.width;
-
   // Draw preedit Rect
   NSRect backgroundRect = dirtyRect;
   NSRect containingRect = dirtyRect;
@@ -1030,8 +1026,6 @@ void removeCorner(NSMutableArray<NSValue*>* highlightedPoints,
     }
     [panelLayer addSublayer:layer];
   }
-  [_textView
-      setTextContainerInset:NSMakeSize(textFieldOrigin.x, textFieldOrigin.y)];
 }
 
 - (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger*)_index {
@@ -1465,9 +1459,12 @@ NSAttributedString* insert(NSString* separator,
     [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
     [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   }
-  BOOL translucency = theme.translucency;
   [_view setFrame:self.contentView.bounds];
   [_view.textView setFrame:self.contentView.bounds];
+  [_view.textView setTextContainerInset:NSMakeSize(theme.edgeInset.width,
+                                                   theme.edgeInset.height)];
+
+  BOOL translucency = theme.translucency;
   if (translucency) {
     [_back setFrame:self.contentView.bounds];
     _back.appearance = NSApp.effectiveAppearance;
