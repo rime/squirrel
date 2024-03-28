@@ -60,9 +60,9 @@ void EnableInputSource(void) {
 
 void SelectInputSource(void) {
   int enabled_input_modes = GetEnabledInputModes();
-  int input_modes_to_select =
-    ((enabled_input_modes & DEFAULT_INPUT_MODE) != 0)
-    ? DEFAULT_INPUT_MODE : enabled_input_modes;
+  int input_modes_to_select = ((enabled_input_modes & DEFAULT_INPUT_MODE) != 0)
+                                  ? DEFAULT_INPUT_MODE
+                                  : enabled_input_modes;
   if (!input_modes_to_select) {
     NSLog(@"No enabled input sources.");
     return;
