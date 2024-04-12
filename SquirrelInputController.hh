@@ -33,11 +33,20 @@ typedef NS_ENUM(NSUInteger, SquirrelIndex) {
   kVoidSymbol = 0xffffff  // XK_VoidSymbol
 };
 
+@property(weak, readonly, nullable, direct, class)
+    SquirrelInputController* currentController;
+@property(nonatomic, strong, readonly, nonnull)
+    NSAppearance* viewEffectiveAppearance API_AVAILABLE(macos(10.14));
+@property(nonatomic, strong, readonly, nonnull, direct)
+    NSMutableArray<NSString*>* candidateTexts;
+@property(nonatomic, strong, readonly, nonnull, direct)
+    NSMutableArray<NSString*>* candidateComments;
+
 - (void)moveCursor:(NSUInteger)cursorPosition
          toPosition:(NSUInteger)targetPosition
       inlinePreedit:(BOOL)inlinePreedit
-    inlineCandidate:(BOOL)inlineCandidate;
-
-- (void)performAction:(SquirrelAction)action onIndex:(SquirrelIndex)index;
+    inlineCandidate:(BOOL)inlineCandidate __attribute__((objc_direct));
+- (void)performAction:(SquirrelAction)action
+              onIndex:(SquirrelIndex)index __attribute__((objc_direct));
 
 @end  // SquirrelInputController

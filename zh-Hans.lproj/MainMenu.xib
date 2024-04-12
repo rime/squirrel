@@ -14,14 +14,20 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="252" userLabel="SquirrelApplicationDelegate" customClass="SquirrelApplicationDelegate">
             <connections>
-                <outlet property="_menu" destination="773" id="779"/>
-                <outlet property="_panel" destination="770" id="771"/>
-                <outlet property="_updater" destination="772" id="794"/>
+                <outlet property="menu" destination="773" id="779"/>
+                <outlet property="panel" destination="770" id="771"/>
+                <outlet property="updater" destination="772" id="794"/>
             </connections>
         </customObject>
         <customObject id="770" userLabel="SquirrelPanel" customClass="SquirrelPanel"/>
         <menu id="773" userLabel="Menu">
             <items>
+                <menuItem title="鼠须管〔方案菜单〕" allowsKeyEquivalentWhenHidden="YES" id="780">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showSwitcher:" target="252" id="781"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="重新部署" keyEquivalent="`" id="774">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
                     <connections>
@@ -29,25 +35,21 @@
                     </connections>
                 </menuItem>
                 <menuItem title="同步用户数据" id="801">
-                    <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="syncUserData:" target="252" id="804"/>
                     </connections>
                 </menuItem>
-                <menuItem title="用户设定..." id="799">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="用户设置…" id="799">
                     <connections>
                         <action selector="configure:" target="252" id="800"/>
                     </connections>
                 </menuItem>
-                <menuItem title="在线文档..." tag="2" id="797">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="在线帮助…" tag="2" id="797">
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="检查新版本..." tag="1" id="776">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="检查更新…" tag="1" id="776">
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>
                     </connections>

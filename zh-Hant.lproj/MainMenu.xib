@@ -14,40 +14,42 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="252" userLabel="SquirrelApplicationDelegate" customClass="SquirrelApplicationDelegate">
             <connections>
-                <outlet property="_menu" destination="773" id="779"/>
-                <outlet property="_panel" destination="770" id="771"/>
-                <outlet property="_updater" destination="772" id="794"/>
+                <outlet property="menu" destination="773" id="779"/>
+                <outlet property="panel" destination="770" id="771"/>
+                <outlet property="updater" destination="772" id="794"/>
             </connections>
         </customObject>
         <customObject id="770" userLabel="SquirrelPanel" customClass="SquirrelPanel"/>
         <menu id="773" userLabel="Menu">
             <items>
-                <menuItem title="重新部署" keyEquivalent="`" id="774">
+                <menuItem title="鼠鬚管〔方案選單〕" allowsKeyEquivalentWhenHidden="YES" id="780">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showSwitcher:" target="252" id="781"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="重新部署" keyEquivalent="`" allowsKeyEquivalentWhenHidden="YES" id="774">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
                     <connections>
                         <action selector="deploy:" target="252" id="795"/>
                     </connections>
                 </menuItem>
-                <menuItem title="同步用戶資料" id="803">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="同步使用者資料" id="803">
                     <connections>
                         <action selector="syncUserData:" target="252" id="805"/>
                     </connections>
                 </menuItem>
-                <menuItem title="用戶設定..." id="799">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="使用者設定⋯" id="799">
                     <connections>
                         <action selector="configure:" target="252" id="800"/>
                     </connections>
                 </menuItem>
-                <menuItem title="在線文檔..." tag="2" id="797">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="線上輔助說明⋯" tag="2" id="797">
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="檢查新版本..." tag="1" id="776">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="檢查更新項目⋯" tag="1" id="776">
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>
                     </connections>
