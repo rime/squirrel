@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		2C6B9F9D2BCD086700E327DF /* librime-lua.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2C6B9F9E2BCD086700E327DF /* librime-octagram.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2C6B9F9F2BCD086700E327DF /* librime-predict.dylib in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */; };
 		441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */; };
 		441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */; };
@@ -88,6 +91,19 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		2C6B9F992BCD083D00E327DF /* Copy Rime plugins */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "rime-plugins";
+			dstSubfolderSpec = 10;
+			files = (
+				2C6B9F9D2BCD086700E327DF /* librime-lua.dylib in Copy Rime plugins */,
+				2C6B9F9E2BCD086700E327DF /* librime-octagram.dylib in Copy Rime plugins */,
+				2C6B9F9F2BCD086700E327DF /* librime-predict.dylib in Copy Rime plugins */,
+			);
+			name = "Copy Rime plugins";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		4407F3CA14EC079A001329FE /* Copy opencc Files */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -192,6 +208,9 @@
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
+		2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-lua.dylib"; path = "lib/rime-plugins/librime-lua.dylib"; sourceTree = "<group>"; };
+		2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-octagram.dylib"; path = "lib/rime-plugins/librime-octagram.dylib"; sourceTree = "<group>"; };
+		2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = "librime-predict.dylib"; path = "lib/rime-plugins/librime-predict.dylib"; sourceTree = "<group>"; };
 		32CA4F630368D1EE00C91783 /* Squirrel_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Squirrel_Prefix.pch; sourceTree = "<group>"; };
 		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
 		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
@@ -351,6 +370,9 @@
 		29B97314FDCFA39411CA2CEA /* Squirrel */ = {
 			isa = PBXGroup;
 			children = (
+				2C6B9F9A2BCD086700E327DF /* librime-lua.dylib */,
+				2C6B9F9B2BCD086700E327DF /* librime-octagram.dylib */,
+				2C6B9F9C2BCD086700E327DF /* librime-predict.dylib */,
 				442C648F1F7A40180027EFBE /* bin */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
@@ -487,6 +509,7 @@
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
 				A464E3780F65263000148227 /* Copy 3rd-party Frameworks */,
+				2C6B9F992BCD083D00E327DF /* Copy Rime plugins */,
 				44DA7A1614DD581B00C1ED3B /* Copy Shared Support Files */,
 				4407F3CA14EC079A001329FE /* Copy opencc Files */,
 				44E21A8D16A653AC00C2B08F /* CopyFiles */,
