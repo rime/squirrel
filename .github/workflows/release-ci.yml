@@ -47,7 +47,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Create nightly release
-        if: github.ref == 'refs/heads/master'
+        if: ${{ github.repository == 'rime/squirrel' && github.ref == 'refs/heads/master' }}
         uses: 'marvinpinto/action-automatic-releases@latest'
         with:
           repo_token: ${{ secrets.GITHUB_TOKEN }}
