@@ -3,6 +3,10 @@ on:
   push:
     tags:
       - '*'
+    branches:
+      - master
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: macos-14
@@ -30,8 +34,10 @@ jobs:
           echo 'changelog<<EOF' >> $GITHUB_OUTPUT
           ./action-changelog.sh >> $GITHUB_OUTPUT
           echo 'EOF' >> $GITHUB_OUTPUT
+        if: startsWith(github.ref, 'refs/tags/')
 
       - name: Create release
+        if: startsWith(github.ref, 'refs/tags/')
         uses: ncipollo/release-action@v1
         with:
           artifacts: "package/*.zip"
@@ -39,3 +45,14 @@ jobs:
             ${{ steps.release_log.outputs.changelog }}
           draft: true
           token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create nightly release
+        if: ${{ github.repository == 'rime/squirrel' && github.ref == 'refs/heads/master' }}
+        uses: 'marvinpinto/action-automatic-releases@latest'
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          automatic_release_tag: latest
+          prerelease: true
+          title: "Nightly build"
+          files: |
+            package/*.zip
