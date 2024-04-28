@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12121" systemVersion="16G29" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12121"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="22689"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -14,14 +14,20 @@
         <customObject id="-3" userLabel="Application"/>
         <customObject id="252" userLabel="SquirrelApplicationDelegate" customClass="SquirrelApplicationDelegate">
             <connections>
-                <outlet property="_menu" destination="773" id="779"/>
-                <outlet property="_panel" destination="770" id="771"/>
-                <outlet property="_updater" destination="772" id="794"/>
+                <outlet property="menu" destination="773" id="779"/>
+                <outlet property="panel" destination="770" id="771"/>
+                <outlet property="updater" destination="772" id="794"/>
             </connections>
         </customObject>
         <customObject id="770" userLabel="SquirrelPanel" customClass="SquirrelPanel"/>
         <menu id="773" userLabel="Menu">
             <items>
+                <menuItem title="Squirrel Switcher" allowsKeyEquivalentWhenHidden="YES" id="780">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="showSwitcher:" target="252" id="781"/>
+                    </connections>
+                </menuItem>
                 <menuItem title="Deploy" keyEquivalent="`" id="774">
                     <modifierMask key="keyEquivalentModifierMask" control="YES" option="YES"/>
                     <connections>
@@ -29,25 +35,21 @@
                     </connections>
                 </menuItem>
                 <menuItem title="Sync user data" id="804">
-                    <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="syncUserData:" target="252" id="806"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Settings..." id="802">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="Settings…" id="802">
                     <connections>
                         <action selector="configure:" target="252" id="803"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Rime Wiki..." tag="2" id="797">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="Rime Wiki…" tag="2" id="797">
                     <connections>
                         <action selector="openWiki:" target="252" id="798"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Check for updates..." tag="1" id="776">
-                    <modifierMask key="keyEquivalentModifierMask"/>
+                <menuItem title="Check for updates…" tag="1" id="776">
                     <connections>
                         <action selector="checkForUpdates:" target="772" id="796"/>
                     </connections>

@@ -80,10 +80,10 @@ copy-opencc-data:
 deps: librime data
 
 clang-format-lint:
-	find . -name '*.m' -o -name '*.h' -maxdepth 1 | xargs clang-format -Werror --dry-run || { echo Please lint your code by '"'"make clang-format-apply"'"'.; false; }
+	find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.hh' -maxdepth 1 | xargs clang-format -Werror --dry-run || { echo Please lint your code by '"'"make clang-format-apply"'"'.; false; }
 
 clang-format-apply:
-	find . -name '*.m' -o -name '*.h' -maxdepth 1 | xargs clang-format --verbose -i
+	find . -name '*.m' -o -name '*.mm' -o -name '*.h' -o -name '*.hh' -maxdepth 1 | xargs clang-format --verbose -i
 
 ifdef ARCHS
 BUILD_SETTINGS += ARCHS="$(ARCHS)"
