@@ -3912,7 +3912,6 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
   NSUInteger _functionButton;
   NSUInteger _caretPos;
   NSUInteger _pageNum;
-  BOOL _caretAtHome;
   BOOL _finalPage;
 }
 
@@ -4474,9 +4473,14 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
           addAttribute:NSForegroundColorAttributeName
                  value:theme.hilitedPreeditForeColor
                  range:NSMakeRange(NSMaxRange(_view.preeditRange) - 1, 1)];
-      functionButton = _caretAtHome ? kEscapeKey : kBackSpaceKey;
+      functionButton = _caretPos == NSNotFound || _caretPos == 0
+                           ? kEscapeKey
+                           : kBackSpaceKey;
       [_toolTip showWithToolTip:NSLocalizedString(
-                                    _caretAtHome ? @"escape" : @"delete", nil)
+                                    _caretPos == NSNotFound || _caretPos == 0
+                                        ? @"escape"
+                                        : @"delete",
+                                    nil)
                       withDelay:delay];
       break;
   }
@@ -4821,8 +4825,6 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
            finalPage:(BOOL)finalPage
           didCompose:(BOOL)didCompose {
   BOOL updateCandidates = didCompose || !NSEqualRanges(_indexRange, indexRange);
-  _caretAtHome = caretPos == NSNotFound ||
-                 (caretPos == selRange.location && selRange.location == 1);
   _caretPos = caretPos;
   _pageNum = pageNum;
   _finalPage = finalPage;
@@ -4897,16 +4899,15 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
                         range:NSMakeRange(NSMaxRange(selRange) - 1, 1)];
       }
     }
-    [preedit appendAttributedString:_caretAtHome ? theme.symbolDeleteStroke
-                                                 : theme.symbolDeleteFill];
+    [preedit appendAttributedString:_caretPos == NSNotFound || _caretPos == 0
+                                        ? theme.symbolDeleteStroke
+                                        : theme.symbolDeleteFill];
     // force caret to be rendered sideways, instead of uprights, in vertical
     // orientation
     if (theme.vertical && caretPos != NSNotFound) {
-      [preedit
-          addAttribute:NSVerticalGlyphFormAttributeName
-                 value:@(NO)
-                 range:NSMakeRange(caretPos - (caretPos < NSMaxRange(selRange)),
-                                   1)];
+      [preedit addAttribute:NSVerticalGlyphFormAttributeName
+                      value:@(NO)
+                      range:NSMakeRange(caretPos, 1)];
     }
     preeditRange = NSMakeRange(0, preedit.length);
     if (rulerAttrsPreedit) {
