@@ -829,6 +829,10 @@ void removeCorner(NSMutableArray<NSValue*>* highlightedPoints,
   CGPathRef preeditPath = CGPathCreateMutable();
   SquirrelTheme* theme = self.currentTheme;
 
+  NSPoint textFieldOrigin = dirtyRect.origin;
+  textFieldOrigin.y += theme.edgeInset.height;
+  textFieldOrigin.x += theme.edgeInset.width;
+
   // Draw preedit Rect
   NSRect backgroundRect = dirtyRect;
   NSRect containingRect = dirtyRect;
@@ -1026,9 +1030,13 @@ void removeCorner(NSMutableArray<NSValue*>* highlightedPoints,
     }
     [panelLayer addSublayer:layer];
   }
+  [_textView
+      setTextContainerInset:NSMakeSize(textFieldOrigin.x, textFieldOrigin.y)];
 }
 
-- (BOOL)clickAtPoint:(NSPoint)_point index:(NSInteger*)_index {
+- (BOOL)clickAtPoint:(NSPoint)_point
+               index:(NSInteger*)_index
+        preeditIndex:(NSInteger*)_preeditIndex {
   if (CGPathContainsPoint(_shape.path, nil, _point, NO)) {
     NSPoint point =
         NSMakePoint(_point.x - self.textView.textContainerInset.width,
@@ -1047,11 +1055,20 @@ void removeCorner(NSMutableArray<NSValue*>* highlightedPoints,
           point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
                               point.y - NSMinY(lineFragment.typographicBounds));
           index += [lineFragment characterIndexForPoint:point];
-          for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
-            NSRange range = [_candidateRanges[i] rangeValue];
-            if (index >= range.location && index < NSMaxRange(range)) {
-              *_index = i;
-              break;
+          if (index >= _preeditRange.location &&
+              index < NSMaxRange(_preeditRange)) {
+            if (_preeditIndex) {
+              *_preeditIndex = index;
+            }
+          } else {
+            for (NSUInteger i = 0; i < _candidateRanges.count; i += 1) {
+              NSRange range = [_candidateRanges[i] rangeValue];
+              if (index >= range.location && index < NSMaxRange(range)) {
+                if (_index) {
+                  *_index = i;
+                }
+                break;
+              }
             }
           }
           break;
@@ -1227,7 +1244,7 @@ NSAttributedString* insert(NSString* separator,
     case NSEventTypeLeftMouseDown: {
       NSPoint point = [self mousePosition];
       NSInteger index = -1;
-      if ([_view clickAtPoint:point index:&index]) {
+      if ([_view clickAtPoint:point index:&index preeditIndex:nil]) {
         if (index >= 0 && index < _candidates.count) {
           _index = index;
         }
@@ -1236,7 +1253,15 @@ NSAttributedString* insert(NSString* separator,
     case NSEventTypeLeftMouseUp: {
       NSPoint point = [self mousePosition];
       NSInteger index = -1;
-      if ([_view clickAtPoint:point index:&index]) {
+      NSInteger preeditIndex = -1;
+      if ([_view clickAtPoint:point index:&index preeditIndex:&preeditIndex]) {
+        if (preeditIndex >= 0 && preeditIndex < _preedit.length) {
+          if (preeditIndex < _caretPos) {
+            [_inputController moveCaret:YES];
+          } else if (preeditIndex > _caretPos) {
+            [_inputController moveCaret:NO];
+          }
+        }
         if (index >= 0 && index < _candidates.count && index == _index) {
           [_inputController selectCandidate:index];
         }
@@ -1261,7 +1286,7 @@ NSAttributedString* insert(NSString* separator,
     case NSEventTypeMouseMoved: {
       NSPoint point = [self mousePosition];
       NSInteger index = -1;
-      if ([_view clickAtPoint:point index:&index]) {
+      if ([_view clickAtPoint:point index:&index preeditIndex:nil]) {
         if (index >= 0 && index < _candidates.count && _cursorIndex != index) {
           [self showPreedit:_preedit
                    selRange:_selRange
@@ -1459,12 +1484,9 @@ NSAttributedString* insert(NSString* separator,
     [self.contentView setBoundsOrigin:NSMakePoint(0, 0)];
     [_view.textView setBoundsOrigin:NSMakePoint(0, 0)];
   }
+  BOOL translucency = theme.translucency;
   [_view setFrame:self.contentView.bounds];
   [_view.textView setFrame:self.contentView.bounds];
-  [_view.textView setTextContainerInset:NSMakeSize(theme.edgeInset.width,
-                                                   theme.edgeInset.height)];
-
-  BOOL translucency = theme.translucency;
   if (translucency) {
     [_back setFrame:self.contentView.bounds];
     _back.appearance = NSApp.effectiveAppearance;

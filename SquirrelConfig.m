@@ -189,15 +189,15 @@
     sscanf(string.UTF8String, "0x%02x%02x%02x", &b, &g, &r);
   }
   if ([self.colorSpace isEqualToString:@"display_p3"]) {
-    return [NSColor colorWithDisplayP3Red:r / 255.0
-                                    green:g / 255.0
-                                     blue:b / 255.0
-                                    alpha:a / 255.0];
+    return [NSColor colorWithDisplayP3Red:(CGFloat)r / 255.
+                                    green:(CGFloat)g / 255.
+                                     blue:(CGFloat)b / 255.
+                                    alpha:(CGFloat)a / 255.];
   } else {  // sRGB by default
-    return [NSColor colorWithSRGBRed:r / 255.0
-                               green:g / 255.0
-                                blue:b / 255.0
-                               alpha:a / 255.0];
+    return [NSColor colorWithSRGBRed:(CGFloat)r / 255.
+                               green:(CGFloat)g / 255.
+                                blue:(CGFloat)b / 255.
+                               alpha:(CGFloat)a / 255.];
   }
 }
 
