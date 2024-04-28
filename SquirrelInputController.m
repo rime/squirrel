@@ -253,6 +253,24 @@ const int N_KEY_ROLL_OVER = 50;
   return handled;
 }
 
+- (BOOL)moveCaret:(BOOL)forward {
+  size_t current_caret_pos = rime_get_api()->get_caret_pos(_session);
+  const char* input = rime_get_api()->get_input(_session);
+  if (forward) {
+    if (current_caret_pos <= 0) {
+      return NO;
+    }
+    rime_get_api()->set_caret_pos(_session, current_caret_pos - 1);
+  } else {
+    if (current_caret_pos >= strlen(input)) {
+      return NO;
+    }
+    rime_get_api()->set_caret_pos(_session, current_caret_pos + 1);
+  }
+  [self rimeUpdate];
+  return YES;
+}
+
 - (void)onChordTimer:(NSTimer*)timer {
   // chord release triggered by timer
   int processed_keys = 0;
