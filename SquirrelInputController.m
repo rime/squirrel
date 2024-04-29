@@ -169,7 +169,9 @@ const int N_KEY_ROLL_OVER = 50;
     }
   }
 
-  _lastModifier = modifiers;
+  if (event.type == NSEventTypeFlagsChanged) {
+    _lastModifier = modifiers;
+  }
   _lastEventType = event.type;
 
   return handled;
