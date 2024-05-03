@@ -2911,16 +2911,21 @@ NS_INLINE NSUInteger NSMaxRange(SquirrelCandidateRanges ranges) {
     NSUInteger newActivePage = hilitedIndex / _currentTheme.pageSize;
     if (newActivePage != priorActivePage) {
       self.needsDisplayInRect = _sectionRects[priorActivePage];
-      _textView.needsDisplayInRect =
-          [self convertRect:_sectionRects[priorActivePage] toView:_textView];
+      [_textView
+          setNeedsDisplayInRect:[self convertRect:_sectionRects[priorActivePage]
+                                           toView:_textView]
+          avoidAdditionalLayout:YES];
     }
     self.needsDisplayInRect = _sectionRects[newActivePage];
-    _textView.needsDisplayInRect =
-        [self convertRect:_sectionRects[newActivePage] toView:_textView];
+    [_textView
+        setNeedsDisplayInRect:[self convertRect:_sectionRects[newActivePage]
+                                         toView:_textView]
+        avoidAdditionalLayout:YES];
   } else {
     self.needsDisplayInRect = _candidateBlock;
-    _textView.needsDisplayInRect = [self convertRect:_candidateBlock
-                                              toView:_textView];
+    [_textView setNeedsDisplayInRect:[self convertRect:_candidateBlock
+                                                toView:_textView]
+               avoidAdditionalLayout:YES];
   }
   _hilitedIndex = hilitedIndex;
 }
@@ -2932,27 +2937,31 @@ NS_INLINE NSUInteger NSMaxRange(SquirrelCandidateRanges ranges) {
       case kPageUpKey:
       case kHomeKey:
         self.needsDisplayInRect = _pageUpRect;
-        _textView.needsDisplayInRect = [self convertRect:_pageUpRect
-                                                  toView:_textView];
+        [_textView setNeedsDisplayInRect:[self convertRect:_pageUpRect
+                                                    toView:_textView]
+                   avoidAdditionalLayout:YES];
         break;
       case kPageDownKey:
       case kEndKey:
         self.needsDisplayInRect = _pageDownRect;
-        _textView.needsDisplayInRect = [self convertRect:_pageDownRect
-                                                  toView:_textView];
+        [_textView setNeedsDisplayInRect:[self convertRect:_pageDownRect
+                                                    toView:_textView]
+                   avoidAdditionalLayout:YES];
         break;
       case kBackSpaceKey:
       case kEscapeKey:
         self.needsDisplayInRect = _deleteBackRect;
-        _textView.needsDisplayInRect = [self convertRect:_deleteBackRect
-                                                  toView:_textView];
+        [_textView setNeedsDisplayInRect:[self convertRect:_deleteBackRect
+                                                    toView:_textView]
+                   avoidAdditionalLayout:YES];
         break;
       case kExpandButton:
       case kCompressButton:
       case kLockButton:
         self.needsDisplayInRect = _expanderRect;
-        _textView.needsDisplayInRect = [self convertRect:_expanderRect
-                                                  toView:_textView];
+        [_textView setNeedsDisplayInRect:[self convertRect:_expanderRect
+                                                    toView:_textView]
+                   avoidAdditionalLayout:YES];
         break;
     }
   }
@@ -3951,6 +3960,7 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
   if (_view.currentTheme.tabular && !_locked && _view.expanded != expanded) {
     _view.expanded = expanded;
     _sectionNum = 0;
+    _needsRedraw = YES;
   }
 }
 
@@ -4053,7 +4063,6 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
                               defer:YES];
   if (self) {
     self.level = CGWindowLevelForKey(kCGCursorWindowLevelKey) - 100;
-    self.alphaValue = 1.0;
     self.hasShadow = NO;
     self.opaque = NO;
     self.backgroundColor = NSColor.clearColor;
@@ -4173,7 +4182,8 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
                                                1)
                       withAttributedString:_view.expanded ? theme.symbolCompress
                                                           : theme.symbolExpand];
-              _view.textView.needsDisplayInRect = _view.expanderRect;
+              _view.textView.needsDisplayInRect =
+                  [_view convertRect:_view.expanderRect toView:_view.textView];
             } else {
               self.expanded = !_view.expanded;
               self.sectionNum = 0;
@@ -4213,7 +4223,10 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
                          range:NSMakeRange(_view.pagingRange.location +
                                                _view.pagingRange.length / 2,
                                            1)];
-              _view.textView.needsDisplayInRect = _view.expanderRect;
+              [_view.textView
+                  setNeedsDisplayInRect:[_view convertRect:_view.expanderRect
+                                                    toView:_view.textView]
+                  avoidAdditionalLayout:YES];
               [_inputController performAction:kPROCESS onIndex:kLockButton];
               break;
             case kBackSpaceKey:
@@ -4534,6 +4547,12 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
   _view.textView.textContainer.size =
       NSMakeSize(_textWidthLimit, textHeightLimit);
 
+  // opacity and transluecency
+  if (@available(macOS 10.14, *)) {
+    _back.hidden = theme.translucency < 0.001;
+  }
+  self.alphaValue = theme.opacity;
+
   // resize background image, if any
   if (theme.backImage.valid) {
     CGFloat widthLimit = _textWidthLimit + theme.fullWidth;
@@ -4787,14 +4806,10 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
       NSWidth(viewRect) - insets.left - insets.right,
       NSHeight(viewRect) - insets.top - insets.bottom);
   if (@available(macOS 10.14, *)) {
-    if (theme.translucency > 0.001) {
+    if (!_back.hidden) {
       _back.frame = viewRect;
-      _back.hidden = NO;
-    } else {
-      _back.hidden = YES;
     }
   }
-  self.alphaValue = theme.opacity;
   [self orderFront:nil];
   // reset to initial position after showing status message
   _initPosition = _statusMessage != nil;
@@ -4899,7 +4914,7 @@ static void textPolygonVertices(SquirrelTextPolygon textPolygon,
                         range:NSMakeRange(NSMaxRange(selRange) - 1, 1)];
       }
     }
-    [preedit appendAttributedString:_caretPos == NSNotFound || _caretPos == 0
+    [preedit appendAttributedString:caretPos == NSNotFound || caretPos == 0
                                         ? theme.symbolDeleteStroke
                                         : theme.symbolDeleteFill];
     // force caret to be rendered sideways, instead of uprights, in vertical

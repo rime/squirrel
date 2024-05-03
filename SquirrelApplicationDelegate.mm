@@ -15,9 +15,11 @@ static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 - (IBAction)showSwitcher:(id)sender {
   NSLog(@"Show Switcher");
-  RimeSessionId session = [sender unsignedLongValue];
-  rime_get_api()->process_key(session, _switcherKeyEquivalent,
-                              _switcherKeyModifierMask);
+  if (_switcherKeyEquivalent) {
+    RimeSessionId session = [sender unsignedLongValue];
+    rime_get_api()->process_key(session, _switcherKeyEquivalent,
+                                _switcherKeyModifierMask);
+  }
 }
 
 - (IBAction)deploy:(id)sender {
@@ -188,7 +190,7 @@ static void notification_handler(void* context_object,
   NSLog(@"Initializing la rime...");
   rime_get_api()->initialize(NULL);
   // check for configuration updates
-  if (rime_get_api()->start_maintenance((Bool)fullCheck)) {
+  if (rime_get_api()->start_maintenance(fullCheck)) {
     // update squirrel config
     rime_get_api()->deploy_config_file("squirrel.yaml", "config_version");
   }
@@ -200,24 +202,21 @@ static void notification_handler(void* context_object,
 }
 
 - (void)loadSettings {
+  _switcherKeyModifierMask = 0;
+  _switcherKeyEquivalent = 0;
   SquirrelConfig* defaultConfig = SquirrelConfig.alloc.init;
   if ([defaultConfig openWithConfigId:@"default"]) {
-    NSString* hotKeys =
+    NSString* hotkey =
         [defaultConfig getStringForOption:@"switcher/hotkeys/@0"];
-    NSArray<NSString*>* keys = [hotKeys componentsSeparatedByString:@"+"];
-    NSEventModifierFlags modifiers = 0;
-    int rime_modifiers = 0;
-    for (NSUInteger i = 0; i < keys.count - 1; ++i) {
-      modifiers |= parse_macos_modifiers(keys[i].UTF8String);
-      rime_modifiers |= parse_rime_modifiers(keys[i].UTF8String);
+    if (hotkey) {
+      NSArray<NSString*>* keys = [hotkey componentsSeparatedByString:@"+"];
+      for (NSUInteger i = 0; i < keys.count - 1; ++i) {
+        _switcherKeyModifierMask |=
+            rime_modifiers_from_name(keys[i].UTF8String);
+      }
+      _switcherKeyEquivalent =
+          rime_keycode_from_name(keys.lastObject.UTF8String);
     }
-    int keycode = parse_keycode(keys.lastObject.UTF8String);
-    unichar keychar = keycode <= 0xFFFF ? (unichar)keycode : 0;
-    _menu.itemArray[0].keyEquivalent = [NSString stringWithCharacters:&keychar
-                                                               length:1];
-    _menu.itemArray[0].keyEquivalentModifierMask = modifiers;
-    _switcherKeyEquivalent = keycode;
-    _switcherKeyModifierMask = rime_modifiers;
   }
   [defaultConfig close];
 
@@ -225,7 +224,6 @@ static void notification_handler(void* context_object,
   if (!_config.openBaseConfig) {
     return;
   }
-
   NSString* showNotificationsWhen =
       [_config getStringForOption:@"show_notifications_when"];
   if ([@"never" caseInsensitiveCompare:showNotificationsWhen] ==

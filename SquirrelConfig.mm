@@ -247,21 +247,21 @@ static NSDictionary<NSString*, NSColorSpace*>* const colorSpaceMap = @{
                                                   value.UTF8String));
 }
 
-- (BOOL)getBoolForOption:(NSString*)option {
-  return [self getOptionalBoolForOption:option].boolValue;
+- (bool)getBoolForOption:(NSString*)option {
+  return [self getOptionalBoolForOption:option alias:nil].boolValue;
 }
 
 - (int)getIntForOption:(NSString*)option {
-  return [self getOptionalIntForOption:option].intValue;
+  return [self getOptionalIntForOption:option alias:nil].intValue;
 }
 
 - (double)getDoubleForOption:(NSString*)option {
-  return [self getOptionalDoubleForOption:option].doubleValue;
+  return [self getOptionalDoubleForOption:option alias:nil].doubleValue;
 }
 
 - (double)getDoubleForOption:(NSString*)option
              applyConstraint:(double (*)(double param))func {
-  NSNumber* value = [self getOptionalDoubleForOption:option];
+  NSNumber* value = [self getOptionalDoubleForOption:option alias:nil];
   return func(value.doubleValue);
 }
 

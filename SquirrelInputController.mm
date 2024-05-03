@@ -25,7 +25,6 @@ static const int N_KEY_ROLL_OVER = 50;
   NSString* _originalString;
   NSString* _composedString;
   NSString* _schemaId;
-  NSString* _currentApp;
   NSRange _selRange;
   NSRange _candidateIndices;
   NSRange _inlineSelRange;
@@ -79,9 +78,7 @@ static Bool _asciiMode = -1;
   // Key processing will not continue in that case.  In other words the
   // system will not deliver a key down event to the application.
   // Returning NO means the original key down will be passed on to the client.
-
   NSEventModifierFlags modifiers = event.modifierFlags;
-
   BOOL handled = NO;
 
   @autoreleasepool {
@@ -93,11 +90,13 @@ static Bool _asciiMode = -1;
     }
 
     NSString* app = [sender bundleIdentifier];
-
     if (![_currentApp isEqualToString:app]) {
-      _currentApp = [app copy];
+      _currentApp = app.copy;
       [self updateAppOptions];
     }
+    int rime_modifiers = rime_modifiers_from_mac_modifiers(modifiers);
+    ushort keyCode = (ushort)CGEventGetIntegerValueField(
+        event.CGEvent, kCGKeyboardEventKeycode);
 
     switch (event.type) {
       case NSEventTypeFlagsChanged: {
@@ -107,11 +106,8 @@ static Bool _asciiMode = -1;
         }
         // NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender,
         // modifiers);
-        int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-        ushort keyCode = (ushort)CGEventGetIntegerValueField(
-            event.CGEvent, kCGKeyboardEventKeycode);
         int release_mask = 0;
-        int rime_keycode = osx_keycode_to_rime_keycode((int)keyCode, 0, 0, 0);
+        int rime_keycode = rime_keycode_from_mac_keycode(keyCode);
         NSUInteger changes = _lastModifiers ^ modifiers;
         if (changes & NSEventModifierFlagCapsLock) {
           // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
@@ -149,30 +145,28 @@ static Bool _asciiMode = -1;
         [self rimeUpdate];
       } break;
       case NSEventTypeKeyDown: {
-        // ignore Command+X hotkeys.
-        if (modifiers & NSEventModifierFlagCommand) {
-          break;
-        }
-
-        ushort keyCode = event.keyCode;
-        NSString* keyChars = ((modifiers & NSEventModifierFlagShift) &&
-                              !(modifiers & NSEventModifierFlagControl) &&
-                              !(modifiers & NSEventModifierFlagOption))
-                                 ? event.characters
-                                 : event.charactersIgnoringModifiers;
         // NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars:
         // [%@]",
         //       sender, modifiers, keyCode, keyChars);
-
-        // translate osx keyevents to rime keyevents
-        int rime_keycode = osx_keycode_to_rime_keycode(
-            (int)keyCode, (int)[keyChars characterAtIndex:0],
-            (int)(modifiers & NSEventModifierFlagShift),
-            (int)(modifiers & NSEventModifierFlagCapsLock));
+        //  translate mac keydown events to rime keyevents
+        int rime_keycode = rime_keycode_from_mac_keycode(keyCode);
+        if (!rime_keycode) {
+          NSString* keyChars = ((modifiers & NSEventModifierFlagShift) &&
+                                !(modifiers & (NSEventModifierFlagControl |
+                                               NSEventModifierFlagOption)))
+                                   ? event.characters
+                                   : event.charactersIgnoringModifiers;
+          keyChars = keyChars.precomposedStringWithCanonicalMapping;
+          rime_keycode = rime_keycode_from_keychar(
+              [keyChars characterAtIndex:0],
+              (modifiers & NSEventModifierFlagShift) != 0,
+              (modifiers & NSEventModifierFlagCapsLock) != 0);
+        }
         if (rime_keycode) {
-          int rime_modifiers = osx_modifiers_to_rime_modifiers(modifiers);
-          handled = [self processKey:rime_keycode modifiers:rime_modifiers];
-          [self rimeUpdate];
+          if ((handled = [self processKey:rime_keycode
+                                modifiers:rime_modifiers])) {
+            [self rimeUpdate];
+          }
         }
       } break;
       default:
@@ -226,12 +220,12 @@ static Bool _asciiMode = -1;
          modifiers:(int)rime_modifiers __attribute__((objc_direct)) {
   SquirrelPanel* panel = NSApp.squirrelAppDelegate.panel;
   // with linear candidate list, arrow keys may behave differently.
-  Bool is_linear = (Bool)panel.linear;
+  bool is_linear = panel.linear;
   if (is_linear != rime_get_api()->get_option(_session, "_linear")) {
     rime_get_api()->set_option(_session, "_linear", is_linear);
   }
   // with vertical text, arrow keys may behave differently.
-  Bool is_vertical = (Bool)panel.vertical;
+  bool is_vertical = panel.vertical;
   if (is_vertical != rime_get_api()->get_option(_session, "_vertical")) {
     rime_get_api()->set_option(_session, "_vertical", is_vertical);
   }
@@ -261,8 +255,8 @@ static Bool _asciiMode = -1;
     }
   }
 
-  BOOL handled =
-      (BOOL)rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
+  bool handled =
+      rime_get_api()->process_key(_session, rime_keycode, rime_modifiers);
   // NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d",
   // rime_keycode, rime_modifiers, handled);
 
@@ -554,6 +548,10 @@ static NSString* getOptionLabel(RimeSessionId session,
       [self showInitialStatus];
     }
   }
+
+  _lastModifiers = 0;
+  _lastEventCount = 0;
+  NSApp.squirrelAppDelegate.panel.IbeamRect = NSZeroRect;
   [super activateServer:sender];
 }
 
@@ -714,8 +712,8 @@ static NSString* getOptionLabel(RimeSessionId session,
   //       range.location, range.length, pos);
   NSDictionary* attrs = [self markForStyle:kTSMHiliteRawText
                                    atRange:NSMakeRange(0, preedit.length)];
-  _preeditString = [[NSMutableAttributedString alloc] initWithString:preedit
-                                                          attributes:attrs];
+  _preeditString = [NSMutableAttributedString.alloc initWithString:preedit
+                                                        attributes:attrs];
   if (range.location > 0) {
     [_preeditString
         addAttributes:[self markForStyle:kTSMHiliteConvertedText
@@ -805,7 +803,6 @@ static NSString* getOptionLabel(RimeSessionId session,
   if (NSIsEmptyRect(panel.IbeamRect) && panel.statusMessage.length > 0) {
     [panel updateStatusLong:nil statusShort:nil];
   } else {
-    _candidateIndices = candidateIndices;
     [panel showPreedit:preedit
                 selRange:selRange
                 caretPos:caretPos
@@ -826,10 +823,8 @@ static NSString* getOptionLabel(RimeSessionId session,
   NSString* app = self.client.bundleIdentifier;
   // NSLog(@"createSession: %@", app);
   _session = rime_get_api()->create_session();
-
   _schemaId = nil;
-
-  if (_session) {
+  if (_session != 0) {
     [self updateAppOptions];
   }
   if ([app isEqualToString:_currentApp] && _asciiMode >= 0) {
@@ -837,9 +832,6 @@ static NSString* getOptionLabel(RimeSessionId session,
   }
   _currentApp = app;
   _asciiMode = -1;
-  _lastModifiers = 0;
-  _lastEventCount = 0;
-  NSApp.squirrelAppDelegate.panel.IbeamRect = NSZeroRect;
   [self rimeUpdate];
 }
 
@@ -850,8 +842,8 @@ static NSString* getOptionLabel(RimeSessionId session,
       [NSApp.squirrelAppDelegate.config getAppOptions:_currentApp];
   for (NSString* key in appOptions) {
     NSNumber* number = appOptions[key];
-    if (!strcmp(number.objCType, @encode(BOOL))) {
-      Bool value = number.intValue;
+    if (strcmp(number.objCType, @encode(BOOL)) == 0) {
+      Bool value = number.boolValue;
       // NSLog(@"set app option: %@ = %d", key, value);
       rime_get_api()->set_option(_session, key.UTF8String, value);
     }
@@ -860,7 +852,7 @@ static NSString* getOptionLabel(RimeSessionId session,
 
 - (void)destroySession {
   // NSLog(@"destroySession:");
-  if (_session) {
+  if (_session != 0) {
     rime_get_api()->destroy_session(_session);
     _session = 0;
   }
@@ -878,12 +870,20 @@ static NSString* getOptionLabel(RimeSessionId session,
   return NO;
 }
 
-static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
+static inline NSUInteger UTF8LengthToUTF16Length(const char* string,
                                                  int length) {
-  return [[NSString alloc] initWithBytes:string
-                                  length:(NSUInteger)length
-                                encoding:NSUTF8StringEncoding]
+  return [NSString.alloc initWithBytes:string
+                                length:(NSUInteger)length
+                              encoding:NSUTF8StringEncoding]
       .length;
+}
+
+static inline NSUInteger fmin(NSUInteger int_a, NSUInteger int_b) {
+  return int_a < int_b ? int_a : int_b;
+}
+
+static inline NSUInteger fmax(NSUInteger int_a, NSUInteger int_b) {
+  return int_a < int_b ? int_b : int_a;
 }
 
 - (void)rimeUpdate {
@@ -923,11 +923,11 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
     BOOL showingStatus = panel.statusMessage.length > 0;
     // update preedit text
     const char* preedit = ctx.composition.preedit;
-    NSString* preeditText = preedit ? @(preedit) : @"";
+    NSString* preeditText = @(preedit ?: "");
 
     // update raw input
     const char* raw_input = rime_get_api()->get_input(_session);
-    NSString* originalString = raw_input ? @(raw_input) : @"";
+    NSString* originalString = @(raw_input ?: "");
     didCompose |= ![originalString isEqualToString:_originalString];
     _originalString = originalString;
 
@@ -962,7 +962,7 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
     BOOL finalPage = (BOOL)ctx.menu.is_last_page;
 
     NSRange selRange = NSMakeRange(start, end - start);
-    didCompose |= !NSEqualRanges(_selRange, selRange);
+    didCompose |= !NSEqualRanges(_selRange, selRange) && pageNum == 0;
     _selRange = selRange;
     // update expander and section status in tabular layout;
     // already processed the action if _currentIndex == NSNotFound
@@ -981,25 +981,24 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
         if (panel.expanded && pageNum > currentPageNum &&
             panel.sectionNum < (panel.vertical ? 2 : 4)) {
           panel.sectionNum =
-              MIN(panel.sectionNum + pageNum - currentPageNum,
-                  (finalPage ? 4UL : 3UL) - (panel.vertical ? 2UL : 0UL));
+              fmin(panel.sectionNum + pageNum - currentPageNum,
+                   (finalPage ? 4UL : 3UL) - (panel.vertical ? 2UL : 0UL));
         } else if (panel.expanded && pageNum < currentPageNum &&
                    panel.sectionNum > 0) {
-          panel.sectionNum = MAX(panel.sectionNum + pageNum - currentPageNum,
-                                 pageNum == 0 ? 0UL : 1UL);
+          panel.sectionNum = fmax(panel.sectionNum + pageNum - currentPageNum,
+                                  pageNum == 0 ? 0UL : 1UL);
         }
       }
       highlightedIndex += pageSize * panel.sectionNum;
     }
     NSUInteger extraCandidates =
-        panel.expanded && caretPos >= end
+        panel.expanded
             ? (finalPage ? panel.sectionNum : (panel.vertical ? 2 : 4)) *
                   pageSize
             : 0;
-    NSRange candidateIndices =
-        NSMakeRange((pageNum - panel.sectionNum) * pageSize,
-                    numCandidates + extraCandidates);
-    _currentIndex = highlightedIndex + candidateIndices.location;
+    _candidateIndices = NSMakeRange((pageNum - panel.sectionNum) * pageSize,
+                                    numCandidates + extraCandidates);
+    _currentIndex = highlightedIndex + _candidateIndices.location;
 
     if (showingStatus) {
       [self clearBuffer];
@@ -1074,7 +1073,7 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
         [self updateCandidate:&ctx.menu.candidates[i] atIndex:index++];
       }
     }
-    if (index < NSMaxRange(candidateIndices)) {
+    if (index < NSMaxRange(_candidateIndices)) {
       RimeCandidateListIterator iterator;
       if (rime_get_api()->candidate_list_from_index(_session, &iterator,
                                                     (int)index)) {
@@ -1085,7 +1084,7 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
           [self updateCandidate:&iterator.candidate atIndex:index++];
         }
         rime_get_api()->candidate_list_end(&iterator);
-        candidateIndices.length = index - candidateIndices.location;
+        _candidateIndices.length = index - _candidateIndices.location;
       }
     }
     // remove old candidates that were not overwritted, if any, subscripted from
@@ -1097,7 +1096,7 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
                                    : preeditText
                       selRange:selRange
                       caretPos:_showingSwitcherMenu ? NSNotFound : caretPos
-              candidateIndices:candidateIndices
+              candidateIndices:_candidateIndices
               highlightedIndex:highlightedIndex
                        pageNum:pageNum
                      finalPage:finalPage
@@ -1119,11 +1118,12 @@ static NSUInteger inline UTF8LengthToUTF16Length(const char* string,
     return;
   }
   if (index == _candidateTexts.count ||
-      strcmp(candidate->text, _candidateTexts[index].UTF8String)) {
+      strcmp(candidate->text, _candidateTexts[index].UTF8String) != 0) {
     _candidateTexts[index] = @(candidate->text);
   }
   if (index == _candidateComments.count ||
-      strcmp(candidate->comment ?: "", _candidateComments[index].UTF8String)) {
+      strcmp(candidate->comment ?: "", _candidateComments[index].UTF8String) !=
+          0) {
     _candidateComments[index] = @(candidate->comment ?: "");
   }
 }

@@ -22,7 +22,7 @@
         <customObject id="770" userLabel="SquirrelPanel" customClass="SquirrelPanel"/>
         <menu id="773" userLabel="Menu">
             <items>
-                <menuItem title="鼠鬚管〔方案選單〕" allowsKeyEquivalentWhenHidden="YES" id="780">
+                <menuItem title="ㄓ⃣鼠鬚管〔方案選單〕" id="780">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="showSwitcher:" target="252" id="781"/>

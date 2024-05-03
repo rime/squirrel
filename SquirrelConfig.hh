@@ -61,7 +61,7 @@ typedef NSDictionary<NSString*, NSNumber*> SquirrelAppOptions;
 - (BOOL)setOption:(NSString* _Nonnull)option
        withString:(NSString* _Nonnull)value;
 
-- (BOOL)getBoolForOption:(NSString* _Nonnull)option;
+- (bool)getBoolForOption:(NSString* _Nonnull)option;
 - (int)getIntForOption:(NSString* _Nonnull)option;
 - (double)getDoubleForOption:(NSString* _Nonnull)option;
 - (double)getDoubleForOption:(NSString* _Nonnull)option
