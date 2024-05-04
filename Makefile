@@ -169,6 +169,7 @@ clean:
 	rm build.log > /dev/null 2>&1 || true
 	rm bin/* > /dev/null 2>&1 || true
 	rm lib/* > /dev/null 2>&1 || true
+	rm lib/rime-plugins/* > /dev/null 2>&1 || true
 	rm data/plum/* > /dev/null 2>&1 || true
 	rm data/opencc/* > /dev/null 2>&1 || true
 
