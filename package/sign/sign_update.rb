@@ -4,4 +4,4 @@ if ARGV.length < 2
   exit
 end
 
-puts `openssl dgst -sha1 -binary < "#{ARGV[0]}" | openssl dgst -dss1 -sign "#{ARGV[1]}" | openssl enc -base64`
+puts `openssl dgst -sha1 -binary < "#{ARGV[0]}" | openssl dgst -sha1 -sign "#{ARGV[1]}" | openssl enc -base64`
