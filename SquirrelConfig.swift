@@ -131,8 +131,7 @@ class SquirrelConfig {
     var iterator = RimeConfigIterator()
     let _ = rimeAPI.config_begin_map(&iterator, &config, rootKey)
     while rimeAPI.config_next(&iterator) {
-      // NSLog(@"DEBUG option[%d]: %s (%s)", iterator.index, iterator.key,
-      // iterator.path);
+      // print("[DEBUG] option[\(iterator.index)]: \(String(cString: iterator.key)), path: (\(String(cString: iterator.path))")
       if let path = iterator.path, let value = getBool(String(cString: path)) {
         appOptions[String(cString: iterator.key)] = value
       }

@@ -58,8 +58,7 @@ class SquirrelInputController: IMKInputController {
           handled = true
           break
         }
-        // NSLog(@"FLAGSCHANGED client: %@, modifiers: 0x%lx", sender,
-        // modifiers);
+        // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
         var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
         // For flags-changed event, keyCode is available since macOS 10.15
         // (#715)
@@ -102,9 +101,7 @@ class SquirrelInputController: IMKInputController {
         if let code = keyChars?.unicodeScalars.first, !code.isASCII {
           keyChars = event.characters
         }
-        // NSLog(@"KEYDOWN client: %@, modifiers: 0x%lx, keyCode: %d, keyChars:
-        // [%@]",
-        //       sender, modifiers, keyCode, keyChars);
+        // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
         
         // translate osx keyevents to rime keyevents
         if let char = keyChars?.first {
@@ -169,12 +166,12 @@ class SquirrelInputController: IMKInputController {
   }
   
   func recognizedEvents(_ sender: Any!) -> NSEvent.EventTypeMask {
-    // NSLog(@"recognizedEvents:");
-    [.keyDown, .flagsChanged]
+    // print("[DEBUG] recognizedEvents:")
+    return [.keyDown, .flagsChanged]
   }
   
   override func activateServer(_ sender: Any!) {
-    // NSLog(@"activateServer:");
+    // print("[DEBUG] activateServer:")
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
       keyboardLayout = ""
@@ -190,13 +187,13 @@ class SquirrelInputController: IMKInputController {
   }
   
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {
-    // NSLog(@"initWithServer:delegate:client:");
+    // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
     super.init(server: server, delegate: delegate, client: client)
     createSession()
   }
   
   override func deactivateServer(_ sender: Any!) {
-    // NSLog(@"deactivateServer:");
+    // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
     hidePalettes()
     commitComposition(sender)
   }
@@ -217,7 +214,7 @@ class SquirrelInputController: IMKInputController {
    to clean up if that is necessary.
    */
   override func commitComposition(_ sender: Any!) {
-    // NSLog(@"commitComposition:");
+    // print("[DEBUG] commitComposition: \(sender ?? "nil")")
     //  commit raw input
     if session != 0 {
       if let rawInput = rimeAPI.get_input(session) {
@@ -275,7 +272,7 @@ private extension SquirrelInputController {
   }
   
   func updateChord(keycode: UInt32, modifiers: UInt32) {
-    // NSLog(@"update chord: {%s} << %x", _chord, keycode);
+    // print("[DEBUG] update chord: {\(chordKeyCodes)} << \(keycode)")
     for i in 0..<chordKeyCount {
       if chordKeyCodes[i] == keycode {
         return
@@ -334,7 +331,7 @@ private extension SquirrelInputController {
   }
   
   func destroySession() {
-    // NSLog(@"destroySession:");
+    // print("[DEBUG] destroySession:")
     if session != 0 {
       let _ = rimeAPI.destroy_session(session)
       session = 0
@@ -357,8 +354,7 @@ private extension SquirrelInputController {
     }
     
     let handled = rimeAPI.process_key(session, Int32(rimeKeycode), Int32(rimeModifiers))
-    // NSLog(@"rime_keycode: 0x%x, rime_modifiers: 0x%x, handled = %d",
-    // rime_keycode, rime_modifiers, handled);
+    // print("[DEBUG] rime_keycode: \(rimeKeycode), rime_modifiers: \(rimeModifiers), handled = \(handled)")
     
     // TODO add special key event postprocessing here
     
@@ -367,7 +363,7 @@ private extension SquirrelInputController {
       if isVimBackInCommandMode && rimeAPI.get_option(session, "vim_mode") &&
           !rimeAPI.get_option(session, "ascii_mode") {
         rimeAPI.set_option(session, "ascii_mode", true)
-        // NSLog(@"turned Chinese mode off in vim-like editor's command mode");
+        // print("[DEBUG] turned Chinese mode off in vim-like editor's command mode")
       }
     } else {
       let isChordingKey =
@@ -398,7 +394,7 @@ private extension SquirrelInputController {
   }
   
   func rimeUpdate() {
-    // NSLog(@"rimeUpdate");
+    // print("[DEBUG] rimeUpdate")
     rimeConsumeCommittedText()
     
     var status = RimeStatus()
@@ -483,14 +479,14 @@ private extension SquirrelInputController {
   }
   
   func commit(string: String) {
-    // NSLog(@"commitString:");
+    // print("[DEBUG] commitString: \(string)")
     client().insertText(string, replacementRange: NSMakeRange(NSNotFound, 0))
     preedit = ""
     hidePalettes()
   }
   
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
-    // NSLog(@"showPreeditString: '%@'", preedit);
+    // print("[DEBUG] showPreeditString: '\(preedit)'")
     if self.preedit == preedit && self.caretPos == caretPos && self.selRange == selRange {
       return
     }
@@ -499,10 +495,9 @@ private extension SquirrelInputController {
     self.caretPos = caretPos
     self.selRange = selRange
     
-    // NSLog(@"selRange.location = %ld, selRange.length = %ld; caretPos = %ld",
-    //       range.location, range.length, pos);
+    // print("[DEBUG] selRange.location = \(selRange.location), selRange.length = \(selRange.length); caretPos = \(caretPos)")
     let start = selRange.location
-    var attrString = NSMutableAttributedString(string: preedit)
+    let attrString = NSMutableAttributedString(string: preedit)
     if start > 0 {
       let attrs = mark(forStyle: kTSMHiliteConvertedText, at: NSMakeRange(0, start))! as! [NSAttributedString.Key : Any]
       attrString.setAttributes(attrs, range: NSMakeRange(0, start))
@@ -515,7 +510,7 @@ private extension SquirrelInputController {
   }
   
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int) {
-    // NSLog(@"showPanelWithPreedit:...:");
+    // print("[DEBUG] showPanelWithPreedit:...:")
     self.candidates = candidates
     var inputPos = NSRect()
     client().attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)

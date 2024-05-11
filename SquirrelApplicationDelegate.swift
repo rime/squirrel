@@ -58,7 +58,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     NSWorkspace.shared.open(Self.rimeWikiURL)
   }
   
-  static func showMessage(msgText: String?) {
+  static func showMessage(msgText: String?, msgId: String?) {
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.alert, .provisional]) { granted, error in
       if let error = error {
@@ -84,13 +84,13 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   }
   
   func setupRime() {
-    let userDataDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime")
+    let userDataDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
     let fileManager = FileManager.default
-    if !fileManager.fileExists(atPath: userDataDir.absoluteString) {
+    if !fileManager.fileExists(atPath: userDataDir.path()) {
       do {
         try fileManager.createDirectory(at: userDataDir, withIntermediateDirectories: true)
       } catch {
-        print("Error creating user data directory: \(userDataDir.absoluteString)")
+        print("Error creating user data directory: \(userDataDir.path())")
       }
     }
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
@@ -98,10 +98,10 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     rimeAPI.set_notification_handler(notification_handler, context_object)
     
     var squirrelTraits = RimeTraits()
-    Bundle.main.sharedSupportPath?.withCString { cString in
+    Bundle.main.sharedSupportPath!.withCString { cString in
       squirrelTraits.shared_data_dir = cString
     }
-    userDataDir.absoluteString.withCString { cString in
+    userDataDir.path().withCString { cString in
       squirrelTraits.user_data_dir = cString
     }
     "Squirrel".withCString { cString in
@@ -125,7 +125,10 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     // check for configuration updates
     if rimeAPI.start_maintenance(fullCheck) {
       // update squirrel config
+      // print("[DEBUG] maintenance suceeds")
       let _ = rimeAPI.deploy_config_file("squirrel.yaml", "config_version")
+    } else {
+      // print("[DEBUG] maintenance fails")
     }
   }
   
@@ -162,8 +165,8 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   // prevent freezing the system
   func problematicLaunchDetected() -> Bool {
     var detected = false
-    let logFile = FileManager.default.temporaryDirectory.appendingPathComponent("squirrel_launch.dat", conformingTo: .data)
-    // NSLog(@"[DEBUG] archive: %@", logfile);
+    let logFile = FileManager.default.temporaryDirectory.appendingPathComponent("squirrel_launch.json", conformingTo: .json)
+    //print("[DEBUG] archive: \(logFile)")
     do {
       let archive = try Data(contentsOf: logFile, options: [.uncached])
       let decoder = JSONDecoder()
@@ -172,13 +175,19 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
       if previousLaunch.timeIntervalSinceNow >= -2 {
         detected = true
       }
+    } catch let error as NSError where error.domain == NSCocoaErrorDomain && error.code == NSFileReadNoSuchFileError {
+      
+    } catch {
+      print("Error occurred during processing launch time archive: \(error.localizedDescription)")
+      return detected
+    }
+    do {
       let encoder = JSONEncoder()
       encoder.dateEncodingStrategy = .millisecondsSince1970
       let record = try encoder.encode(Date.now)
       try record.write(to: logFile)
     } catch {
-      print("Error occurred during processing launch time archive: \(error.localizedDescription)")
-      return detected
+      print("Error occurred during saving launch time to archive: \(error.localizedDescription)")
     }
     return detected
   }
@@ -203,7 +212,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
 
 }
 
-func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
+private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
   
   let messageType = messageTypeC.map { String(cString: $0) }
@@ -211,11 +220,11 @@ func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: Rim
   if messageType == "deploy" {
     switch messageValue {
     case "start":
-      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_start", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_start", comment: ""), msgId: messageType)
     case "success":
-      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_success", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_success", comment: ""), msgId: messageType)
     case "failure":
-      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_failure", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_failure", comment: ""), msgId: messageType)
     default:
       break
     }

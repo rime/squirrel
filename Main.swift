@@ -40,7 +40,7 @@ struct SquirrelApp {
         return
       case "--build":
         // Notification
-        SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
+        SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""), msgId: "deploy")
         // Build all schemas in current directory
         var builderTraits = RimeTraits()
         "rime.squirrel-builder".withCString { appName in
@@ -58,36 +58,40 @@ struct SquirrelApp {
       }
     }
     
-    // find the bundle identifier and then initialize the input method server
-    let main = Bundle.main
-    let _ = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
-    // load the bundle explicitly because in this case the input method is a
-    // background only application
-    let app = NSApplication.shared
-    let delegate = SquirrelApplicationDelegate()
-    app.delegate = delegate
-    app.setActivationPolicy(.accessory)
-    
-    // opencc will be configured with relative dictionary paths
-    FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
-    
-    if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
-      print("Problematic launch detected!")
-      let args = ["Problematic launch detected! Squirrel may be suffering a crash due to improper configuration. Revert previous modifications to see if the problem recurs."]
-      let task = Process()
-      task.executableURL = URL(fileURLWithPath: "/usr/bin/say")
-      task.arguments = args
-      try? task.run()
-    } else {
-      NSApp.squirrelAppDelegate.setupRime()
-      NSApp.squirrelAppDelegate.startRime(fullCheck: false)
-      NSApp.squirrelAppDelegate.loadSettings()
-      print("Squirrel reporting!")
+    autoreleasepool {
+      // find the bundle identifier and then initialize the input method server
+      let main = Bundle.main
+      let server = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
+      // load the bundle explicitly because in this case the input method is a
+      // background only application
+      let app = NSApplication.shared
+      let delegate = SquirrelApplicationDelegate()
+      app.delegate = delegate
+      app.setActivationPolicy(.accessory)
+      
+      // opencc will be configured with relative dictionary paths
+      let userDataDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
+      FileManager.default.changeCurrentDirectoryPath(userDataDir.path())
+      
+      if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
+        print("Problematic launch detected!")
+        let args = ["Problematic launch detected! Squirrel may be suffering a crash due to improper configuration. Revert previous modifications to see if the problem recurs."]
+        let task = Process()
+        task.executableURL = URL(fileURLWithPath: "/usr/bin/say")
+        task.arguments = args
+        try? task.run()
+      } else {
+        NSApp.squirrelAppDelegate.setupRime()
+        NSApp.squirrelAppDelegate.startRime(fullCheck: true)
+        NSApp.squirrelAppDelegate.loadSettings()
+        print("Squirrel reporting!")
+      }
+      
+      // finally run everything
+      app.run()
+      print("Squirrel is quitting...")
+      rimeAPI.finalize()
     }
-    
-    // finally run everything
-    app.run()
-    print("Squirrel is quitting...")
-    rimeAPI.finalize()
+    return
   }
 }

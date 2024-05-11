@@ -24,7 +24,7 @@ class SquirrelInstaller {
       let inputSource = sourceList[i] as! TISInputSource
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return [] }
-      // NSLog(@"Examining input source: %@", sourceID);
+      // print("[DEBUG] Examining input source: \(sourceID)")
       for supportedMode in InputMode.allCases {
         if sourceID == supportedMode.rawValue {
           let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
@@ -92,7 +92,7 @@ class SquirrelInstaller {
       let inputSource = sourceList[i] as! TISInputSource
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
-      // NSLog(@"Examining input source: %@", sourceID);
+      // print("[DEBUG] Examining input source: \(sourceID)")
       if sourceID == mode.rawValue {
         let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
         guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return }
@@ -117,7 +117,7 @@ class SquirrelInstaller {
       let inputSource = sourceList[i] as! TISInputSource
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
-      // NSLog(@"Examining input source: %@", sourceID);
+      // print("[DEBUG] Examining input source: \(sourceID)")
       for mode in modes {
         if sourceID == mode.rawValue {
           let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
