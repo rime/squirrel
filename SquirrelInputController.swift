@@ -417,14 +417,14 @@ private extension SquirrelInputController {
     var ctx = RimeContext()
     if rimeAPI.get_context(session, &ctx) {
       // update preedit text
-      let preedit = String(cString: ctx.composition.preedit)
-      
+      let preedit = ctx.composition.preedit.map({ String(cString: $0) }) ?? ""
+        
       let start = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_start)), within: preedit) ?? preedit.startIndex
       let end = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_end)), within: preedit) ?? preedit.startIndex
       let caretPos = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.cursor_pos)), within: preedit) ?? preedit.endIndex
       
       if inlineCandidate {
-        var candidatePreview = String(cString: ctx.commit_text_preview)
+        var candidatePreview = ctx.commit_text_preview.map { String(cString: $0) } ?? ""
         if inlinePreedit {
           if caretPos >= end && caretPos < preedit.endIndex {
             candidatePreview += preedit[caretPos...]
@@ -453,14 +453,15 @@ private extension SquirrelInputController {
           show(preedit: preedit.isEmpty ? "" : "　", selRange: NSMakeRange(0, 0), caretPos: 0)
         }
       }
+      
       // update candidates
       let numCandidates = Int(ctx.menu.num_candidates)
       var candidates = [String]()
       var comments = [String]()
       for i in 0..<numCandidates {
         let candidate = ctx.menu.candidates[i]
-        candidates.append(String(cString: candidate.text))
-        comments.append(String(cString: candidate.comment))
+        candidates.append(candidate.text.map { String(cString: $0) } ?? "")
+        comments.append(candidate.comment.map { String(cString: $0) } ?? "")
       }
       var labels = [String]()
       if let select_keys = ctx.menu.select_keys {
@@ -468,7 +469,7 @@ private extension SquirrelInputController {
       } else if let select_labels = ctx.select_labels {
         let pageSize = Int(ctx.menu.page_size)
         for i in 0..<pageSize {
-          labels.append(select_labels[i] != nil ? String(cString: select_labels[i]!) : "")
+          labels.append(select_labels[i].map { String(cString: $0) } ?? "")
         }
       }
       showPanel(preedit: inlinePreedit ? "" : preedit, selRange: NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end)), caretPos: caretPos.utf16Offset(in: preedit), candidates: candidates, comments: comments, labels: labels, highlighted: Int(ctx.menu.highlighted_candidate_index))

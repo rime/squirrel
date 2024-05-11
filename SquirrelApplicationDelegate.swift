@@ -249,8 +249,8 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     }
     let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, optionName?.cString(using: .utf8), state, false)
     let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, optionName?.cString(using: .utf8), state, true)
-    let longLabel = String(cString: stateLabelLong.str)
-    let shortLabel = String(cString: stateLabelShort.str)
+    let longLabel = stateLabelLong.str.map { String(cString: $0) }
+    let shortLabel = stateLabelShort.str.map { String(cString: $0) }
     delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
   }
 }

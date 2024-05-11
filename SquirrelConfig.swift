@@ -132,8 +132,8 @@ class SquirrelConfig {
     let _ = rimeAPI.config_begin_map(&iterator, &config, rootKey)
     while rimeAPI.config_next(&iterator) {
       // print("[DEBUG] option[\(iterator.index)]: \(String(cString: iterator.key)), path: (\(String(cString: iterator.path))")
-      if let path = iterator.path, let value = getBool(String(cString: path)) {
-        appOptions[String(cString: iterator.key)] = value
+      if let key = iterator.key, let path = iterator.path, let value = getBool(String(cString: path)) {
+        appOptions[String(cString: key)] = value
       }
     }
     rimeAPI.config_end(&iterator)
