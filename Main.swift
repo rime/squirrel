@@ -40,7 +40,7 @@ struct SquirrelApp {
         return
       case "--build":
         // Notification
-        NSApp.squirrelAppDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
+        SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
         // Build all schemas in current directory
         var builderTraits = RimeTraits()
         "rime.squirrel-builder".withCString { appName in

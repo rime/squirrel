@@ -58,7 +58,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     NSWorkspace.shared.open(Self.rimeWikiURL)
   }
   
-  func showMessage(msgText: String?) {
+  static func showMessage(msgText: String?) {
     let center = UNUserNotificationCenter.current()
     center.requestAuthorization(options: [.alert, .provisional]) { granted, error in
       if let error = error {
@@ -211,11 +211,11 @@ func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: Rim
   if messageType == "deploy" {
     switch messageValue {
     case "start":
-      delegate.showMessage(msgText: NSLocalizedString("deploy_start", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_start", comment: ""))
     case "success":
-      delegate.showMessage(msgText: NSLocalizedString("deploy_success", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_success", comment: ""))
     case "failure":
-      delegate.showMessage(msgText: NSLocalizedString("deploy_failure", comment: ""))
+      SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_failure", comment: ""))
     default:
       break
     }
