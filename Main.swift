@@ -22,16 +22,22 @@ struct SquirrelApp {
         let bundleId = Bundle.main.bundleIdentifier!
         let runningSquirrels = NSRunningApplication.runningApplications(withBundleIdentifier: bundleId)
         runningSquirrels.forEach { $0.terminate() }
+        return
       case "--reload":
         DistributedNotificationCenter.default().postNotificationName(.init("SquirrelReloadNotification"), object: nil)
+        return
       case "--register-input-source", "--install":
         installer.register()
+        return
       case "--enable-input-source":
         installer.enable()
+        return
       case "--disable-input-source":
         installer.disable()
+        return
       case "--select-input-source":
         installer.select()
+        return
       case "--build":
         // Notification
         NSApp.squirrelAppDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
@@ -43,12 +49,13 @@ struct SquirrelApp {
         rimeAPI.setup(&builderTraits)
         rimeAPI.deployer_initialize(nil)
         _ = rimeAPI.deploy()
+        return
       case "--sync":
         DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
+        return
       default:
         break
       }
-      return
     }
     
     // find the bundle identifier and then initialize the input method server
@@ -56,9 +63,9 @@ struct SquirrelApp {
     let server = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
     // load the bundle explicitly because in this case the input method is a
     // background only application
-    main.loadNibNamed("MainMenu", owner: NSApplication.shared, topLevelObjects: nil)
+    main.load()
     // opencc will be configured with relative dictionary paths
-    FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
+    FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath)
     
     if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
       print("Problematic launch detected!")

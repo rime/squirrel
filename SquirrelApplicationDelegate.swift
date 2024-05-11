@@ -18,6 +18,16 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   var enableNotifications = false
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   
+  func applicationWillFinishLaunching(_ notification: Notification) {
+    addObservers()
+  }
+  
+  func applicationWillTerminate(_ notification: Notification) {
+    NotificationCenter.default.removeObserver(self)
+    DistributedNotificationCenter.default().removeObserver(self)
+    panel?.hide()
+  }
+  
   @objc func deploy() {
     print("Start maintenance...")
     self.shutdownRime()
@@ -86,6 +96,27 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
     let context_object = Unmanaged.passUnretained(self).toOpaque()
     rimeAPI.set_notification_handler(notification_handler, context_object)
+    
+    var squirrelTraits = RimeTraits()
+    Bundle.main.sharedSupportPath?.withCString { cString in
+      squirrelTraits.shared_data_dir = cString
+    }
+    userDataDir.absoluteString.withCString { cString in
+      squirrelTraits.user_data_dir = cString
+    }
+    "Squirrel".withCString { cString in
+      squirrelTraits.distribution_code_name = cString
+    }
+    "鼠鬚管".withCString { cString in
+      squirrelTraits.distribution_name = cString
+    }
+    (Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as! String).withCString { cString in
+      squirrelTraits.distribution_version = cString
+    }
+    "rime.squirrel".withCString { cString in
+      squirrelTraits.app_name = cString
+    }
+    rimeAPI.setup(&squirrelTraits)
   }
   
   func startRime(fullCheck: Bool) {
@@ -155,7 +186,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   // add an awakeFromNib item so that we can set the action method.  Note that
   // any menuItems without an action will be disabled when displayed in the Text
   // Input Menu.
-  override func awakeFromNib() {
+  func addObservers() {
     let center = NSWorkspace.shared.notificationCenter
     center.addObserver(forName: NSWorkspace.willPowerOffNotification, object: nil, queue: nil, using: workspaceWillPowerOff)
     
@@ -169,12 +200,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     rimeAPI.cleanup_all_sessions()
     return .terminateNow
   }
-  
-  deinit {
-    NotificationCenter.default.removeObserver(self)
-    DistributedNotificationCenter.default().removeObserver(self)
-    panel?.hide()
-  }
+
 }
 
 func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
