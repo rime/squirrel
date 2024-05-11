@@ -88,11 +88,11 @@
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>
-	<string>Squirrel_1_Connection</string>
+	<string>im.rime.inputmethod.Squirrel_1_Connection</string>
 	<key>InputMethodServerControllerClass</key>
-	<string>SquirrelInputController</string>
+	<string>Squirrel.SquirrelInputController</string>
 	<key>InputMethodServerDelegateClass</key>
-	<string>SquirrelInputController</string>
+	<string>Squirrel.SquirrelInputController</string>
 	<key>LSBackgroundOnly</key>
 	<false/>
 	<key>LSUIElement</key>

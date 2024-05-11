@@ -10,7 +10,7 @@ import InputMethodKit
 
 @main
 struct SquirrelApp {
-  static let connectionName = "Squirrel_1_Connection"
+  static let connectionName = "im.rime.inputmethod.Squirrel_1_Connection"
   
   static func main() {
     let installer = SquirrelInstaller()
