@@ -42,7 +42,7 @@ struct SquirrelApp {
         // Notification
         SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""), msgId: "deploy")
         // Build all schemas in current directory
-        var builderTraits = RimeTraits()
+        var builderTraits = RimeTraits.rimeStructInit()
         "rime.squirrel-builder".withCString { appName in
           builderTraits.app_name = appName
         }
@@ -70,8 +70,7 @@ struct SquirrelApp {
       app.setActivationPolicy(.accessory)
       
       // opencc will be configured with relative dictionary paths
-      let userDataDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
-      FileManager.default.changeCurrentDirectoryPath(userDataDir.path())
+      FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
       
       if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
         print("Problematic launch detected!")

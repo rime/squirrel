@@ -217,8 +217,8 @@ class SquirrelInputController: IMKInputController {
     // print("[DEBUG] commitComposition: \(sender ?? "nil")")
     //  commit raw input
     if session != 0 {
-      if let rawInput = rimeAPI.get_input(session) {
-        commit(string: String(cString: rawInput))
+      if let input = rimeAPI.get_input(session) {
+        commit(string: String(cString: input))
         rimeAPI.clear_composition(session)
       }
     }
@@ -384,7 +384,7 @@ private extension SquirrelInputController {
   }
   
   func rimeConsumeCommittedText() {
-    var commitText = RimeCommit()
+    var commitText = RimeCommit.rimeStructInit()
     if rimeAPI.get_commit(session, &commitText) {
       if let text = commitText.text {
         commit(string: String(cString: text))
@@ -397,7 +397,7 @@ private extension SquirrelInputController {
     // print("[DEBUG] rimeUpdate")
     rimeConsumeCommittedText()
     
-    var status = RimeStatus()
+    var status = RimeStatus.rimeStructInit()
     if rimeAPI.get_status(session, &status) {
       // enable schema specific ui style
       if let schema_id = status.schema_id, schemaId == "" || schemaId != String(cString: schema_id) {
@@ -414,7 +414,7 @@ private extension SquirrelInputController {
       let _ = rimeAPI.free_status(&status)
     }
     
-    var ctx = RimeContext()
+    var ctx = RimeContext.rimeStructInit()
     if rimeAPI.get_context(session, &ctx) {
       // update preedit text
       let preedit = ctx.composition.preedit.map({ String(cString: $0) }) ?? ""

@@ -97,7 +97,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     let context_object = Unmanaged.passUnretained(self).toOpaque()
     rimeAPI.set_notification_handler(notification_handler, context_object)
     
-    var squirrelTraits = RimeTraits()
+    var squirrelTraits = RimeTraits.rimeStructInit()
     Bundle.main.sharedSupportPath!.withCString { cString in
       squirrelTraits.shared_data_dir = cString
     }
