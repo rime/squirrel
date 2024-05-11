@@ -60,12 +60,16 @@ struct SquirrelApp {
     
     // find the bundle identifier and then initialize the input method server
     let main = Bundle.main
-    let server = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
+    let _ = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
     // load the bundle explicitly because in this case the input method is a
     // background only application
-    main.load()
+    let app = NSApplication.shared
+    let delegate = SquirrelApplicationDelegate()
+    app.delegate = delegate
+    app.setActivationPolicy(.accessory)
+    
     // opencc will be configured with relative dictionary paths
-    FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath)
+    FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
     
     if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
       print("Problematic launch detected!")
@@ -82,7 +86,7 @@ struct SquirrelApp {
     }
     
     // finally run everything
-    NSApplication.shared.run()
+    app.run()
     print("Squirrel is quitting...")
     rimeAPI.finalize()
   }
