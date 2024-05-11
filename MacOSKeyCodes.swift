@@ -43,7 +43,6 @@ struct SquirrelKeycode {
       
       switch codeValue {
       case 0x20...0x7e:
-        print(codeValue)
         return codeValue
       case 0x1b:
         return UInt32(XK_bracketleft)
