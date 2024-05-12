@@ -1,4 +1,5 @@
 #import <Cocoa/Cocoa.h>
+#import "rime_api.h"
 
 @class SquirrelConfig;
 @class SquirrelPanel;
@@ -8,13 +9,11 @@
 // outlet of NSApp's instance
 @interface SquirrelApplicationDelegate : NSObject <NSApplicationDelegate>
 
-typedef NS_ENUM(NSUInteger, SquirrelNotificationPolicy) {
+typedef NS_CLOSED_ENUM(NSUInteger, SquirrelNotificationPolicy) {
   kShowNotificationsNever = 0,
   kShowNotificationsWhenAppropriate = 1,
   kShowNotificationsAlways = 2
 };
-
-typedef uintptr_t RimeSessionId;
 
 @property(nonatomic, weak, nullable) IBOutlet NSMenu* menu;
 @property(nonatomic, weak, nullable) IBOutlet SquirrelPanel* panel;

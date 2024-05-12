@@ -1,4 +1,3 @@
-#import <Cocoa/Cocoa.h>
 #import <InputMethodKit/InputMethodKit.h>
 
 @interface SquirrelInputController : IMKInputController
@@ -33,7 +32,7 @@ typedef NS_ENUM(NSUInteger, SquirrelIndex) {
   kVoidSymbol = 0xffffff  // XK_VoidSymbol
 };
 
-@property(weak, readonly, nullable, direct, class)
+@property(nonatomic, weak, readonly, nullable, direct, class)
     SquirrelInputController* currentController;
 @property(nonatomic, strong, readonly, nonnull)
     NSAppearance* viewEffectiveAppearance API_AVAILABLE(macos(10.14));

@@ -1,6 +1,5 @@
 #import <Cocoa/Cocoa.h>
-
-typedef uintptr_t RimeSessionId;
+#import <rime_api.h>
 
 __attribute__((objc_direct_members))
 @interface SquirrelOptionSwitcher : NSObject
@@ -39,11 +38,18 @@ __attribute__((objc_direct_members))
 @end  // SquirrelOptionSwitcher
 
 __attribute__((objc_direct_members))
+@interface SquirrelAppOptions : NSDictionary<NSString*, NSNumber*>
+
+- (BOOL)boolValueForKey:(NSString* _Nonnull)key;
+- (int)intValueForKey:(NSString* _Nonnull)key;
+- (double)doubleValueForKey:(NSString* _Nonnull)key;
+
+@end  // SquirrelAppOptions
+
+__attribute__((objc_direct_members))
 @interface SquirrelConfig : NSObject
 
-typedef NSDictionary<NSString*, NSNumber*> SquirrelAppOptions;
-
-@property(nonatomic, strong, readonly, nonnull) NSString* schemaId;
+@property(nonatomic, strong, readonly, nullable) NSString* schemaId;
 @property(nonatomic, strong, nonnull) NSString* colorSpace;
 
 - (BOOL)openBaseConfig;
@@ -55,13 +61,13 @@ typedef NSDictionary<NSString*, NSNumber*> SquirrelAppOptions;
 
 - (BOOL)hasSection:(NSString* _Nonnull)section;
 
-- (BOOL)setOption:(NSString* _Nonnull)option withBool:(bool)value;
+- (BOOL)setOption:(NSString* _Nonnull)option withBool:(BOOL)value;
 - (BOOL)setOption:(NSString* _Nonnull)option withInt:(int)value;
 - (BOOL)setOption:(NSString* _Nonnull)option withDouble:(double)value;
 - (BOOL)setOption:(NSString* _Nonnull)option
        withString:(NSString* _Nonnull)value;
 
-- (bool)getBoolForOption:(NSString* _Nonnull)option;
+- (BOOL)getBoolForOption:(NSString* _Nonnull)option;
 - (int)getIntForOption:(NSString* _Nonnull)option;
 - (double)getDoubleForOption:(NSString* _Nonnull)option;
 - (double)getDoubleForOption:(NSString* _Nonnull)option
@@ -101,7 +107,7 @@ typedef NSDictionary<NSString*, NSNumber*> SquirrelAppOptions;
 - (NSUInteger)getListSizeForOption:(NSString* _Nonnull)option;
 - (NSArray<NSString*>* _Nullable)getListForOption:(NSString* _Nonnull)option;
 
-- (SquirrelOptionSwitcher* _Nullable)getOptionSwitcher;
+- (SquirrelOptionSwitcher* _Nonnull)getOptionSwitcher;
 - (SquirrelAppOptions* _Nonnull)getAppOptions:(NSString* _Nonnull)appName;
 
 @end  // SquirrelConfig

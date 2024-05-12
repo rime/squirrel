@@ -14,7 +14,7 @@ void SelectInputSource(void);
 static NSString* const kConnectionName = @"Squirrel_1_Connection";
 
 int main(int argc, char* argv[]) {
-  if (argc > 1 && !strcmp("--quit", argv[1])) {
+  if (argc > 1 && strcmp("--quit", argv[1]) == 0) {
     NSString* bundleId = NSBundle.mainBundle.bundleIdentifier;
     NSArray<NSRunningApplication*>* runningSquirrels =
         [NSRunningApplication runningApplicationsWithBundleIdentifier:bundleId];
@@ -24,35 +24,35 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
-  if (argc > 1 && !strcmp("--reload", argv[1])) {
-    [[NSDistributedNotificationCenter defaultCenter]
+  if (argc > 1 && strcmp("--reload", argv[1]) == 0) {
+    [NSDistributedNotificationCenter.defaultCenter
         postNotificationName:@"SquirrelReloadNotification"
                       object:nil];
     return 0;
   }
 
-  if (argc > 1 && (!strcmp("--register-input-source", argv[1]) ||
-                   !strcmp("--install", argv[1]))) {
+  if (argc > 1 && (strcmp("--register-input-source", argv[1]) == 0 ||
+                   strcmp("--install", argv[1]) == 0)) {
     RegisterInputSource();
     return 0;
   }
 
-  if (argc > 1 && !strcmp("--enable-input-source", argv[1])) {
+  if (argc > 1 && strcmp("--enable-input-source", argv[1]) == 0) {
     EnableInputSource();
     return 0;
   }
 
-  if (argc > 1 && !strcmp("--disable-input-source", argv[1])) {
+  if (argc > 1 && strcmp("--disable-input-source", argv[1]) == 0) {
     DisableInputSource();
     return 0;
   }
 
-  if (argc > 1 && !strcmp("--select-input-source", argv[1])) {
+  if (argc > 1 && strcmp("--select-input-source", argv[1]) == 0) {
     SelectInputSource();
     return 0;
   }
 
-  if (argc > 1 && !strcmp("--build", argv[1])) {
+  if (argc > 1 && strcmp("--build", argv[1]) == 0) {
     // notification
     show_notification("deploy_update");
     // build all schemas in current directory
@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
     return rime_get_api()->deploy() ? 0 : 1;
   }
 
-  if (argc > 1 && !strcmp("--sync", argv[1])) {
-    [[NSDistributedNotificationCenter defaultCenter]
+  if (argc > 1 && strcmp("--sync", argv[1]) == 0) {
+    [NSDistributedNotificationCenter.defaultCenter
         postNotificationName:@"SquirrelSyncNotification"
                       object:nil];
     return 0;
@@ -72,7 +72,7 @@ int main(int argc, char* argv[]) {
 
   @autoreleasepool {
     // find the bundle identifier and then initialize the input method server
-    NSBundle* main = [NSBundle mainBundle];
+    NSBundle* main = NSBundle.mainBundle;
     IMKServer* server __unused =
         [IMKServer.alloc initWithName:kConnectionName
                      bundleIdentifier:main.bundleIdentifier];
@@ -80,11 +80,11 @@ int main(int argc, char* argv[]) {
     // load the bundle explicitly because in this case the input method is a
     // background only application
     [main loadNibNamed:@"MainMenu"
-                  owner:[NSApplication sharedApplication]
+                  owner:NSApplication.sharedApplication
         topLevelObjects:nil];
 
     // opencc will be configured with relative dictionary paths
-    [[NSFileManager defaultManager]
+    [NSFileManager.defaultManager
         changeCurrentDirectoryPath:main.sharedSupportPath];
 
     if (NSApp.squirrelAppDelegate.problematicLaunchDetected) {
@@ -106,7 +106,7 @@ int main(int argc, char* argv[]) {
     }
 
     // finally run everything
-    [[NSApplication sharedApplication] run];
+    [NSApplication.sharedApplication run];
 
     NSLog(@"Squirrel is quitting...");
     rime_get_api()->finalize();

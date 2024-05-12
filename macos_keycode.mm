@@ -6,15 +6,15 @@
 int rime_modifiers_from_mac_modifiers(NSEventModifierFlags modifiers) {
   int ret = 0;
 
-  if (modifiers & NSEventModifierFlagCapsLock)
+  if ((modifiers & NSEventModifierFlagCapsLock) != 0)
     ret |= kLockMask;
-  if (modifiers & NSEventModifierFlagShift)
+  if ((modifiers & NSEventModifierFlagShift) != 0)
     ret |= kShiftMask;
-  if (modifiers & NSEventModifierFlagControl)
+  if ((modifiers & NSEventModifierFlagControl) != 0)
     ret |= kControlMask;
-  if (modifiers & NSEventModifierFlagOption)
+  if ((modifiers & NSEventModifierFlagOption) != 0)
     ret |= kAltMask;
-  if (modifiers & NSEventModifierFlagCommand)
+  if ((modifiers & NSEventModifierFlagCommand) != 0)
     ret |= kSuperMask;
 
   return ret;
@@ -165,6 +165,7 @@ int rime_keycode_from_mac_keycode(ushort mac_keycode) {
       return XK_Eisu_toggle;
     case kVK_JIS_Kana:
       return XK_Kana_Shift;
+
     default:
       return 0;
   }
@@ -270,11 +271,12 @@ static const char* rime_modidifers[] = {
 };
 
 int rime_modifiers_from_name(const char* modifier_name) {
-  if (!modifier_name)
+  if (modifier_name == NULL) {
     return 0;
+  }
   for (int i = 0; i < 6; ++i) {
-    if (!strcmp(modifier_name, rime_modidifers[i])) {
-      return (1 << (i < 4 ? i : i + 22));
+    if (strcmp(modifier_name, rime_modidifers[i]) == 0) {
+      return 1 << (i < 4 ? i : i + 22);
     }
   }
   return 0;

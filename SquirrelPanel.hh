@@ -1,4 +1,3 @@
-#import <Cocoa/Cocoa.h>
 #import "SquirrelInputController.hh"
 
 @class SquirrelConfig;
@@ -40,11 +39,11 @@
              statusShort:(NSString* _Nullable)messageShort
     __attribute__((objc_direct));
 // display
-- (void)showPreedit:(NSString* _Nullable)preeditString
+- (void)showPreedit:(NSString* _Nullable)preedit
             selRange:(NSRange)selRange
             caretPos:(NSUInteger)caretPos
     candidateIndices:(NSRange)indexRange
-    highlightedIndex:(NSUInteger)highlightedIndex
+    hilitedCandidate:(NSUInteger)hilitedCandidate
              pageNum:(NSUInteger)pageNum
            finalPage:(BOOL)finalPage
           didCompose:(BOOL)didCompose __attribute__((objc_direct));

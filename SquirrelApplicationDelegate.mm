@@ -3,10 +3,10 @@
 #import "SquirrelConfig.hh"
 #import "SquirrelPanel.hh"
 #import "macos_keycode.hh"
-#import "rime_api.h"
 #import <UserNotifications/UserNotifications.h>
 
 static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
+static const CFStringRef kBundleId = CFSTR("im.rime.inputmethod.Squirrel");
 
 @implementation SquirrelApplicationDelegate {
   int _switcherKeyEquivalent;
@@ -15,7 +15,7 @@ static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
 
 - (IBAction)showSwitcher:(id)sender {
   NSLog(@"Show Switcher");
-  if (_switcherKeyEquivalent) {
+  if (_switcherKeyEquivalent != 0) {
     RimeSessionId session = [sender unsignedLongValue];
     rime_get_api()->process_key(session, _switcherKeyEquivalent,
                                 _switcherKeyModifierMask);
@@ -45,14 +45,14 @@ static NSString* const kRimeWikiURL = @"https://github.com/rime/home/wiki";
   [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:kRimeWikiURL]];
 }
 
-void show_notification(const char* msg_text) {
+extern void show_notification(const char* msg_text) {
   UNUserNotificationCenter* center =
       UNUserNotificationCenter.currentNotificationCenter;
   [center requestAuthorizationWithOptions:UNAuthorizationOptionAlert |
                                           UNAuthorizationOptionProvisional
                         completionHandler:^(BOOL granted,
                                             NSError* _Nullable error) {
-                          if (error) {
+                          if (error != nil) {
                             NSLog(@"User notification authorization error: %@",
                                   error.debugDescription);
                           }
@@ -63,7 +63,7 @@ void show_notification(const char* msg_text) {
          settings.authorizationStatus == UNAuthorizationStatusProvisional) &&
         (settings.alertSetting == UNNotificationSettingEnabled)) {
       UNMutableNotificationContent* content =
-          [[UNMutableNotificationContent alloc] init];
+          UNMutableNotificationContent.alloc.init;
       content.title = NSLocalizedString(@"Squirrel", nil);
       content.subtitle = NSLocalizedString(@(msg_text), nil);
       if (@available(macOS 12.0, *)) {
@@ -75,7 +75,7 @@ void show_notification(const char* msg_text) {
                                                trigger:nil];
       [center addNotificationRequest:request
                withCompletionHandler:^(NSError* _Nullable error) {
-                 if (error) {
+                 if (error != nil) {
                    NSLog(@"User notification request error: %@",
                          error.debugDescription);
                  }
@@ -85,9 +85,9 @@ void show_notification(const char* msg_text) {
 }
 
 static void show_status(const char* msg_text_long, const char* msg_text_short) {
-  NSString* msgLong = msg_text_long ? @(msg_text_long) : nil;
+  NSString* msgLong = msg_text_long != NULL ? @(msg_text_long) : nil;
   NSString* msgShort =
-      msg_text_short
+      msg_text_short != NULL
           ? @(msg_text_short)
           : [msgLong substringWithRange:
                          [msgLong rangeOfComposedCharacterSequenceAtIndex:0]];
@@ -99,37 +99,34 @@ static void notification_handler(void* context_object,
                                  RimeSessionId session_id,
                                  const char* message_type,
                                  const char* message_value) {
-  if (!strcmp(message_type, "deploy")) {
-    if (!strcmp(message_value, "start")) {
+  if (strcmp(message_type, "deploy") == 0) {
+    if (strcmp(message_value, "start") == 0) {
       show_notification("deploy_start");
-    } else if (!strcmp(message_value, "success")) {
+    } else if (strcmp(message_value, "success") == 0) {
       show_notification("deploy_success");
-    } else if (!strcmp(message_value, "failure")) {
+    } else if (strcmp(message_value, "failure") == 0) {
       show_notification("deploy_failure");
     }
     return;
   }
   SquirrelApplicationDelegate* app_delegate = (__bridge id)context_object;
   // schema change
-  if (!strcmp(message_type, "schema") &&
+  if (strcmp(message_type, "schema") == 0 &&
       app_delegate.showNotifications != kShowNotificationsNever) {
     const char* schema_name = strchr(message_value, '/');
-    if (schema_name) {
+    if (schema_name != NULL) {
       ++schema_name;
       show_status(schema_name, schema_name);
     }
     return;
   }
   // option change
-  if (!strcmp(message_type, "option") && app_delegate) {
+  if (strcmp(message_type, "option") == 0 && app_delegate) {
     Bool state = message_value[0] != '!';
     const char* option_name = message_value + !state;
+    BOOL updateScriptVariant = [app_delegate.panel.optionSwitcher
+        updateCurrentScriptVariant:@(message_value)];
     BOOL updateStyleOptions = NO;
-    BOOL updateScriptVariant = NO;
-    if ([app_delegate.panel.optionSwitcher
-            updateCurrentScriptVariant:@(message_value)]) {
-      updateScriptVariant = YES;
-    }
     if ([app_delegate.panel.optionSwitcher updateGroupState:@(message_value)
                                                    ofOption:@(option_name)]) {
       updateStyleOptions = YES;
@@ -148,7 +145,7 @@ static void notification_handler(void* context_object,
       RimeStringSlice state_label_short =
           rime_get_api()->get_state_label_abbreviated(session_id, option_name,
                                                       state, True);
-      if (state_label_long.str || state_label_short.str) {
+      if (state_label_long.str != NULL || state_label_short.str != NULL) {
         const char* short_message =
             state_label_short.length < strlen(state_label_short.str)
                 ? NULL
@@ -208,7 +205,7 @@ static void notification_handler(void* context_object,
   if ([defaultConfig openWithConfigId:@"default"]) {
     NSString* hotkey =
         [defaultConfig getStringForOption:@"switcher/hotkeys/@0"];
-    if (hotkey) {
+    if (hotkey != nil) {
       NSArray<NSString*>* keys = [hotkey componentsSeparatedByString:@"+"];
       for (NSUInteger i = 0; i < keys.count - 1; ++i) {
         _switcherKeyModifierMask |=
@@ -285,7 +282,7 @@ static void notification_handler(void* context_object,
   NSData* archive = [NSData dataWithContentsOfURL:logfile
                                           options:NSDataReadingUncached
                                             error:nil];
-  if (archive) {
+  if (archive != nil) {
     NSDate* previousLaunch =
         [NSKeyedUnarchiver unarchivedObjectOfClass:NSDate.class
                                           fromData:archive
@@ -294,8 +291,7 @@ static void notification_handler(void* context_object,
       detected = YES;
     }
   }
-  NSDate* now = [NSDate date];
-  NSData* record = [NSKeyedArchiver archivedDataWithRootObject:now
+  NSData* record = [NSKeyedArchiver archivedDataWithRootObject:NSDate.date
                                          requiringSecureCoding:NO
                                                          error:nil];
   [record writeToURL:logfile atomically:NO];
@@ -325,11 +321,11 @@ static void notification_handler(void* context_object,
 }
 
 - (void)inputSourceChanged:(NSNotification*)aNotification {
-  CFStringRef inputSource = (CFStringRef)TISGetInputSourceProperty(
-      TISCopyCurrentKeyboardInputSource(), kTISPropertyInputSourceID);
-  CFStringRef bundleId = CFBundleGetIdentifier(CFBundleGetMainBundle());
-  if (!CFStringHasPrefix(inputSource, bundleId)) {
-    _isCurrentInputMethod = NO;
+  if (CFStringRef inputSource = (CFStringRef)TISGetInputSourceProperty(
+          TISCopyCurrentKeyboardInputSource(), kTISPropertyInputSourceID)) {
+    if (!CFStringHasPrefix(inputSource, kBundleId)) {
+      _isCurrentInputMethod = NO;
+    }
   }
 }
 
@@ -337,8 +333,7 @@ static void notification_handler(void* context_object,
 // any menuItems without an action will be disabled when displayed in the Text
 // Input Menu.
 - (void)awakeFromNib {
-  NSNotificationCenter* center =
-      [NSWorkspace sharedWorkspace].notificationCenter;
+  NSNotificationCenter* center = NSWorkspace.sharedWorkspace.notificationCenter;
   [center addObserver:self
              selector:@selector(workspaceWillPowerOff:)
                  name:NSWorkspaceWillPowerOffNotification
@@ -365,8 +360,8 @@ static void notification_handler(void* context_object,
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
+  [NSDistributedNotificationCenter.defaultCenter removeObserver:self];
   [_panel hide];
 }
 
