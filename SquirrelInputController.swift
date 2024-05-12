@@ -225,19 +225,19 @@ class SquirrelInputController: IMKInputController {
   }
   
   override func menu() -> NSMenu! {
-    let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(SquirrelApplicationDelegate.deploy), keyEquivalent: "`")
-    deploy.target = NSApp.squirrelAppDelegate
+    let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(deploy), keyEquivalent: "`")
+    deploy.target = self
     deploy.keyEquivalentModifierMask = [NSEvent.ModifierFlags.control, NSEvent.ModifierFlags.option]
-    let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(SquirrelApplicationDelegate.syncUserData), keyEquivalent: "")
-    sync.target = NSApp.squirrelAppDelegate
-    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(SquirrelApplicationDelegate.configure), keyEquivalent: "")
-    setting.target = NSApp.squirrelAppDelegate
-    let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(SquirrelApplicationDelegate.openWiki), keyEquivalent: "")
-    wiki.target = NSApp.squirrelAppDelegate
-    let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(SquirrelApplicationDelegate.checkForUpdates), keyEquivalent: "")
-    update.target = NSApp.squirrelAppDelegate
+    let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(syncUserData), keyEquivalent: "")
+    sync.target = self
+    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(configure), keyEquivalent: "")
+    setting.target = self
+    let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(openWiki), keyEquivalent: "")
+    wiki.target = self
+    let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
+    update.target = self
     
-    let menu = NSMenu(title: NSLocalizedString("Squirrel", comment: "Menu title"))
+    let menu = NSMenu()
     menu.addItem(deploy)
     menu.addItem(sync)
     menu.addItem(setting)
@@ -245,6 +245,26 @@ class SquirrelInputController: IMKInputController {
     menu.addItem(update)
     
     return menu
+  }
+  
+  @objc func deploy() {
+    NSApp.squirrelAppDelegate.deploy()
+  }
+  
+  @objc func syncUserData() {
+    NSApp.squirrelAppDelegate.syncUserData()
+  }
+  
+  @objc func configure() {
+    NSApp.squirrelAppDelegate.configure()
+  }
+  
+  @objc func checkForUpdates() {
+    NSApp.squirrelAppDelegate.checkForUpdates()
+  }
+  
+  @objc func openWiki() {
+    NSApp.squirrelAppDelegate.openWiki()
   }
   
   deinit {

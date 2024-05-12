@@ -29,24 +29,24 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     panel?.hide()
   }
   
-  @objc func deploy() {
+  func deploy() {
     print("Start maintenance...")
     self.shutdownRime()
     self.startRime(fullCheck: true)
     self.loadSettings()
   }
   
-  @objc func syncUserData() {
+  func syncUserData() {
     print("Sync user data")
     let _ = rimeAPI.sync_user_data()
   }
   
-  @objc func configure() {
+  func configure() {
     let configURL = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
     NSWorkspace.shared.open(configURL)
   }
   
-  @objc func checkForUpdates() {
+  func checkForUpdates() {
     if updateController.updater.canCheckForUpdates {
       print("Checking for updates")
       updateController.updater.checkForUpdates()
@@ -55,7 +55,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     }
   }
   
-  @objc func openWiki() {
+  func openWiki() {
     NSWorkspace.shared.open(Self.rimeWikiURL)
   }
   
@@ -99,24 +99,12 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     rimeAPI.set_notification_handler(notification_handler, context_object)
     
     var squirrelTraits = RimeTraits.rimeStructInit()
-    Bundle.main.sharedSupportPath!.withCString { cString in
-      squirrelTraits.shared_data_dir = cString
-    }
-    userDataDir.path().withCString { cString in
-      squirrelTraits.user_data_dir = cString
-    }
-    "Squirrel".withCString { cString in
-      squirrelTraits.distribution_code_name = cString
-    }
-    "鼠鬚管".withCString { cString in
-      squirrelTraits.distribution_name = cString
-    }
-    (Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as! String).withCString { cString in
-      squirrelTraits.distribution_version = cString
-    }
-    "rime.squirrel".withCString { cString in
-      squirrelTraits.app_name = cString
-    }
+    squirrelTraits.setCString(Bundle.main.sharedSupportPath!, to: \.shared_data_dir)
+    squirrelTraits.setCString(userDataDir.path(), to: \.user_data_dir)
+    squirrelTraits.setCString("Squirrel", to: \.distribution_code_name)
+    squirrelTraits.setCString("鼠鬚管", to: \.distribution_name)
+    squirrelTraits.setCString(Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as! String, to: \.distribution_version)
+    squirrelTraits.setCString("rime.squirrel", to: \.app_name)
     rimeAPI.setup(&squirrelTraits)
   }
   
@@ -248,11 +236,15 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     } else {
       String(messageValue![messageValue!.index(after: messageValue!.startIndex)...])
     }
-    let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, optionName?.cString(using: .utf8), state, false)
-    let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, optionName?.cString(using: .utf8), state, true)
-    let longLabel = stateLabelLong.str.map { String(cString: $0) }
-    let shortLabel = stateLabelShort.str.map { String(cString: $0) }
-    delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
+    if let optionName = optionName {
+      optionName.withCString { name in
+        let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
+        let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
+        let longLabel = stateLabelLong.str.map { String(cString: $0) }
+        let shortLabel = stateLabelShort.str.map { String(cString: $0) }
+        delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
+      }
+    }
   }
 }
 

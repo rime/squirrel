@@ -10,8 +10,6 @@ import InputMethodKit
 
 @main
 struct SquirrelApp {
-  static let connectionName = "im.rime.inputmethod.Squirrel_1_Connection"
-  
   static func main() {
     let installer = SquirrelInstaller()
     let rimeAPI = rime_get_api().pointee
@@ -43,9 +41,7 @@ struct SquirrelApp {
         SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""), msgId: "deploy")
         // Build all schemas in current directory
         var builderTraits = RimeTraits.rimeStructInit()
-        "rime.squirrel-builder".withCString { appName in
-          builderTraits.app_name = appName
-        }
+        builderTraits.setCString("rime.squirrel-builder", to: \.app_name)
         rimeAPI.setup(&builderTraits)
         rimeAPI.deployer_initialize(nil)
         _ = rimeAPI.deploy()
@@ -61,7 +57,8 @@ struct SquirrelApp {
     autoreleasepool {
       // find the bundle identifier and then initialize the input method server
       let main = Bundle.main
-      let server = IMKServer(name: Self.connectionName, bundleIdentifier: main.bundleIdentifier!)
+      let connectionName = main.object(forInfoDictionaryKey: "InputMethodConnectionName") as! String
+      let server = IMKServer(name: connectionName, bundleIdentifier: main.bundleIdentifier!)
       // load the bundle explicitly because in this case the input method is a
       // background only application
       let app = NSApplication.shared
