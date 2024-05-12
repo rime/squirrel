@@ -236,10 +236,10 @@ private extension SquirrelConfig {
   }
   
   func color(from colorStr: String) -> NSColor? {
-    if let matched = try? /0x(\x{2})(\x{2})(\x{2})(\x{2})/.wholeMatch(in: colorStr) {
+    if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
       let (_, a, b, g, r) = matched.output
       return color(alpha: Int(a, radix: 16)!, red: Int(r, radix: 16)!, green: Int(g, radix: 16)!, blue: Int(b, radix: 16)!, colorspace: colorSpace)
-    } else if let matched = try? /0x(\x{2})(\x{2})(\x{2})/.wholeMatch(in: colorStr) {
+    } else if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
       let (_, b, g, r) = matched.output
       return color(alpha: 255, red: Int(r, radix: 16)!, green: Int(g, radix: 16)!, blue: Int(b, radix: 16)!, colorspace: colorSpace)
     } else {
