@@ -220,7 +220,7 @@ class SquirrelPanel: NSPanel {
           // default: 1. 2. 3...
           label = theme.prefixLabelFormat.replacingOccurrences(of: "%c", with: "\(i+1)")
         }
-        line.append(NSAttributedString(string: label, attributes: labelAttrs))
+        line.append(NSAttributedString(string: label.precomposedStringWithCanonicalMapping, attributes: labelAttrs))
         
         // get the label size for indent
         if !linear {
@@ -233,7 +233,7 @@ class SquirrelPanel: NSPanel {
       }
         
       let candidateStart = line.length
-      var candidate = NSAttributedString(string: candidates[i], attributes: attrs)
+      var candidate = NSAttributedString(string: candidates[i].precomposedStringWithCanonicalMapping, attributes: attrs)
       let candidateWidth = candidate.boundingRect(with: .zero, options: .usesLineFragmentOrigin).width
       if candidateWidth <= maxTextWidth * 0.2 {
         // Unicode Word Joiner so that line will not break within
@@ -243,7 +243,7 @@ class SquirrelPanel: NSPanel {
       line.append(candidate)
       // Use left-to-right marks to prevent right-to-left text from changing the
       // layout of non-candidate text.
-      line.addAttribute(.writingDirection, value: 0, range: NSMakeRange(candidateStart, line.length - candidateStart))
+      line.addAttribute(.writingDirection, value: [0], range: NSMakeRange(candidateStart, line.length - candidateStart))
       
       if !theme.suffixLabelFormat.isEmpty {
         let label: String
@@ -257,7 +257,7 @@ class SquirrelPanel: NSPanel {
           // default: 1. 2. 3...
           label = theme.suffixLabelFormat.replacingOccurrences(of: "%c", with: "\(i+1)")
         }
-        line.append(NSAttributedString(string: label, attributes: labelAttrs))
+        line.append(NSAttributedString(string: label.precomposedStringWithCanonicalMapping, attributes: labelAttrs))
       }
       
       if i < comments.count && !comments[i].isEmpty {

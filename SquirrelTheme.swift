@@ -187,8 +187,8 @@ class SquirrelTheme {
   }
   
   func blendColor(foregroundColor: NSColor, backgroundColor: NSColor?) -> NSColor {
-    let foregroundColor = foregroundColor.usingColorSpace(NSColorSpace.deviceRGB) ?? NSColor.lightGray
-    let backgroundColor = backgroundColor?.usingColorSpace(NSColorSpace.deviceRGB) ?? NSColor.lightGray
+    let foregroundColor = foregroundColor.usingColorSpace(NSColorSpace.deviceRGB)!
+    let backgroundColor = (backgroundColor ?? NSColor.darkGray).usingColorSpace(NSColorSpace.deviceRGB)!
     func blend(_ a: CGFloat, _ b: CGFloat) -> CGFloat {
       return (a * 2 + b) / 3
     }

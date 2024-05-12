@@ -14,7 +14,6 @@ class SquirrelInputController: IMKInputController {
   private var preedit: String = ""
   private var selRange: NSRange = NSMakeRange(NSNotFound, 0)
   private var caretPos: Int = 0
-  private var candidates: [String] = []
   private var lastModifier: NSEvent.ModifierFlags = .init()
   private var lastEventType: NSEvent.EventType = .keyDown
   private var session: RimeSessionId = 0
@@ -526,13 +525,11 @@ private extension SquirrelInputController {
     let remainingRange = NSMakeRange(start, preedit.utf16.count - start)
     let attrs = mark(forStyle: kTSMHiliteSelectedRawText, at: remainingRange)! as! [NSAttributedString.Key : Any]
     attrString.setAttributes(attrs, range: remainingRange)
-    
-    client().setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, 0))
+    client().setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, NSNotFound))
   }
   
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int) {
     // print("[DEBUG] showPanelWithPreedit:...:")
-    self.candidates = candidates
     var inputPos = NSRect()
     client().attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
     if let panel = NSApp.squirrelAppDelegate.panel {
