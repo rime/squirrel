@@ -169,13 +169,13 @@ class SquirrelPanel: NSPanel {
     currentScreen()
     let maxTextWidth = maxTextWidth()
     
-    var text = NSMutableAttributedString()
+    let text = NSMutableAttributedString()
     var preeditRange = NSMakeRange(NSNotFound, 0)
     var highlightedPreeditRange = NSMakeRange(NSNotFound, 0)
     
     // preedit
     if !preedit.isEmpty {
-      var line = NSMutableAttributedString()
+      let line = NSMutableAttributedString()
       let startIndex = String.Index(utf16Offset: selRange.location, in: preedit)
       let endIndex = String.Index(utf16Offset: selRange.upperBound, in: preedit)
       if selRange.location > 0 {
@@ -201,7 +201,7 @@ class SquirrelPanel: NSPanel {
     // candidates
     var candidateRanges = [NSRange]()
     for i in 0..<candidates.count {
-      var line = NSMutableAttributedString()
+      let line = NSMutableAttributedString()
       
       let attrs = i == index ? theme.highlightedAttrs : theme.attrs
       let labelAttrs = i == index ? theme.labelHighlightedAttrs : theme.labelAttrs
@@ -224,7 +224,7 @@ class SquirrelPanel: NSPanel {
         
         // get the label size for indent
         if !linear {
-          var str = line.mutableCopy() as! NSMutableAttributedString
+          let str = line.mutableCopy() as! NSMutableAttributedString
           if vertical {
             str.addAttribute(.verticalGlyphForm, value: 1, range: NSMakeRange(0, str.length))
           }
@@ -283,13 +283,13 @@ class SquirrelPanel: NSPanel {
       if i > 0 {
         text.append(lineSeparator)
       }
-      var str = lineSeparator.mutableCopy() as! NSMutableAttributedString
+      let str = lineSeparator.mutableCopy() as! NSMutableAttributedString
       if vertical {
         str.addAttribute(.verticalGlyphForm, value: 1, range: NSMakeRange(0, str.length))
       }
       view.separatorWidth = str.boundingRect(with: .zero).width
       
-      var paragraphStyleCandidate = (i == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
+      let paragraphStyleCandidate = (i == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
       if linear {
         paragraphStyleCandidate.lineSpacing = theme.linespace
       }

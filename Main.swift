@@ -58,7 +58,7 @@ struct SquirrelApp {
       // find the bundle identifier and then initialize the input method server
       let main = Bundle.main
       let connectionName = main.object(forInfoDictionaryKey: "InputMethodConnectionName") as! String
-      let server = IMKServer(name: connectionName, bundleIdentifier: main.bundleIdentifier!)
+      _ = IMKServer(name: connectionName, bundleIdentifier: main.bundleIdentifier!)
       // load the bundle explicitly because in this case the input method is a
       // background only application
       let app = NSApplication.shared
