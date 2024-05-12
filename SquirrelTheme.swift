@@ -53,7 +53,7 @@ class SquirrelTheme {
   var inlinePreedit = false
   var inlineCandidate = true
   
-  var fonts: Array<NSFont> = [NSFont.userFont(ofSize: 15)!]
+  var fonts: Array<NSFont> = [NSFont.userFont(ofSize: SquirrelTheme.defaultFontSize)!]
   var labelFonts = Array<NSFont>()
   var commentFonts = Array<NSFont>()
   

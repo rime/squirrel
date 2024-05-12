@@ -9,8 +9,6 @@ import AppKit
 
 class SquirrelView: NSView {
   let textView: NSTextView
-  private let layoutManager: NSTextLayoutManager
-  private let textStorage: NSTextContentStorage
   
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
@@ -24,16 +22,23 @@ class SquirrelView: NSView {
   var currentTheme: SquirrelTheme {
     isDark ? darkTheme : lightTheme
   }
+  var textLayoutManager: NSTextLayoutManager {
+    textView.textLayoutManager!
+  }
+  var textContentStorage: NSTextContentStorage {
+    textView.textContentStorage!
+  }
+  var textContainer: NSTextContainer {
+    textLayoutManager.textContainer!
+  }
   
   override init(frame frameRect: NSRect) {
     textView = NSTextView(frame: frameRect)
     textView.drawsBackground = false
     textView.isEditable = false
     textView.isSelectable = false
-    layoutManager = textView.textLayoutManager!
-    layoutManager.textContainer!.lineFragmentPadding = 0
-    textStorage = textView.textContentStorage!
     super.init(frame: frameRect)
+    textContainer.lineFragmentPadding = 0
     self.wantsLayer = true
     self.layer?.masksToBounds = true
   }
@@ -49,11 +54,11 @@ class SquirrelView: NSView {
   }
   
   func convert(range: NSRange) -> NSTextRange {
-    let nullRange = NSTextRange(location: layoutManager.documentRange.location)
+    let nullRange = NSTextRange(location: textLayoutManager.documentRange.location)
     guard range.location != NSNotFound else { return nullRange }
-    guard let startLocation = layoutManager.location(layoutManager.documentRange.location, offsetBy: range.location) else { return nullRange }
-    guard let endLocation = layoutManager.location(startLocation, offsetBy: range.length) else { return nullRange }
-    return NSTextRange(location: startLocation, end: endLocation) ?? layoutManager.documentRange
+    guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nullRange }
+    guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nullRange }
+    return NSTextRange(location: startLocation, end: endLocation) ?? textLayoutManager.documentRange
   }
   
   // Get the rectangle containing entire contents, expensive to calculate
@@ -75,7 +80,7 @@ class SquirrelView: NSView {
   // Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
   func contentRect(range: NSTextRange) -> NSRect {
     var x0 = CGFloat.infinity, x1 = -CGFloat.infinity, y0 = CGFloat.infinity, y1 = -CGFloat.infinity
-    layoutManager.enumerateTextSegments(in: range, type: .standard, options: .rangeNotRequired) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: .rangeNotRequired) { _, rect, _, _ in
       x0 = min(NSMinX(rect), x0)
       x1 = max(NSMaxX(rect), x1)
       y0 = min(NSMinY(rect), y0)
@@ -261,11 +266,11 @@ class SquirrelView: NSView {
     if let path = shape.path, path.contains(clickPoint) {
       var point = NSMakePoint(clickPoint.x - textView.textContainerInset.width,
                               clickPoint.y - textView.textContainerInset.height)
-      let fragment = layoutManager.textLayoutFragment(for: point)
+      let fragment = textLayoutManager.textLayoutFragment(for: point)
       if let fragment = fragment {
         point = NSMakePoint(point.x - NSMinX(fragment.layoutFragmentFrame),
                             point.y - NSMinY(fragment.layoutFragmentFrame))
-        index = layoutManager.offset(from: layoutManager.documentRange.location, to: fragment.rangeInElement.location)
+        index = textLayoutManager.offset(from: textLayoutManager.documentRange.location, to: fragment.rangeInElement.location)
         for lineFragment in fragment.textLineFragments {
           if lineFragment.typographicBounds.contains(point) {
             point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
@@ -371,7 +376,7 @@ private extension SquirrelView {
   func multilineRects(forRange range: NSTextRange, extraSurounding: Double, bounds: NSRect) -> (NSRect, NSRect, NSRect) {
     let edgeInset = currentTheme.edgeInset
     var lineRects = [NSRect]()
-    layoutManager.enumerateTextSegments(in: range, type: .standard, options: [.rangeNotRequired]) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: [.rangeNotRequired]) { _, rect, _, _ in
       var newRect = rect
       newRect.origin.x += edgeInset.width
       newRect.origin.y += edgeInset.height

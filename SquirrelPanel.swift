@@ -199,7 +199,7 @@ class SquirrelPanel: NSPanel {
     }
     
     // candidates
-    var candidateRanegs = [NSRange]()
+    var candidateRanges = [NSRange]()
     for i in 0..<candidates.count {
       var line = NSMutableAttributedString()
       
@@ -296,14 +296,14 @@ class SquirrelPanel: NSPanel {
       paragraphStyleCandidate.headIndent = labelWidth
       line.addAttribute(.paragraphStyle, value: paragraphStyleCandidate, range: NSMakeRange(0, line.length))
       
-      candidateRanegs.append(NSMakeRange(text.length, line.length))
+      candidateRanges.append(NSMakeRange(text.length, line.length))
       text.append(line)
     }
 
     // text done!
     view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
-    view.drawView(candidateRanges: candidateRanegs, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange)
+    view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange)
     show()
   }
   
@@ -335,7 +335,7 @@ private extension SquirrelPanel {
   func insert(separator: String, between text: NSAttributedString) -> NSAttributedString {
     var range = (text.string as NSString).rangeOfComposedCharacterSequence(at: 0)
     let attributedSeparator = NSAttributedString(string: separator, attributes: text.attributes(at: 0, effectiveRange: nil))
-    var workingString = text.attributedSubstring(from: range).mutableCopy() as! NSMutableAttributedString
+    let workingString = text.attributedSubstring(from: range).mutableCopy() as! NSMutableAttributedString
     while range.upperBound < text.length{
       range = (text.string as NSString).rangeOfComposedCharacterSequence(at: range.upperBound)
       workingString.append(attributedSeparator)
@@ -388,7 +388,7 @@ private extension SquirrelPanel {
     // Break line if the text is too long, based on screen size.
     let textWidth = maxTextWidth()
     let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
-    view.textView.textContainer!.containerSize = NSMakeSize(textWidth, maxTextHeight)
+    view.textContainer.size = NSMakeSize(textWidth, maxTextHeight)
     
     var panelRect = NSZeroRect
     // in vertical mode, the width and height are interchanged
@@ -399,7 +399,7 @@ private extension SquirrelPanel {
         maxHeight = contentRect.width
       } else {
         contentRect.size.width = maxHeight
-        view.textView.textContainer!.containerSize = NSMakeSize(maxHeight, maxTextHeight)
+        view.textContainer.size = NSMakeSize(maxHeight, maxTextHeight)
       }
     }
 
@@ -474,9 +474,9 @@ private extension SquirrelPanel {
   
   func show(status message: String) {
     let theme = view.currentTheme
-    var text = NSMutableAttributedString(string: message, attributes: theme.attrs)
+    let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
     text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSMakeRange(0, text.length))
-    view.textView.textContentStorage!.attributedString = text
+    view.textContentStorage.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: [NSMakeRange(0, text.length)], hilightedIndex: -1, preeditRange: NSMakeRange(NSNotFound, 0), highlightedPreeditRange: NSMakeRange(NSNotFound, 0))
     show()

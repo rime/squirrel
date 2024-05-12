@@ -19,6 +19,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   
   func applicationWillFinishLaunching(_ notification: Notification) {
+    panel = SquirrelPanel(position: .zero)
     addObservers()
   }
   
