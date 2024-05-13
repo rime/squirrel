@@ -39,7 +39,7 @@ $(RIME_DEPS):
 	$(MAKE) -C librime deps
 
 librime: $(RIME_DEPS)
-	$(MAKE) -C librime release install
+	$(MAKE) -C librime CFLAGS="-DSTDBOOL" CXXFLAGS="-DSTDBOOL" release install
 	$(MAKE) copy-rime-binaries
 
 copy-rime-binaries:
