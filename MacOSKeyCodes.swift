@@ -6,24 +6,25 @@
 //
 
 import Carbon
+import AppKit
 
 struct SquirrelKeycode {
   
   static func osxModifiersToRime(modifiers: UInt) -> UInt32 {
     var ret: UInt32 = 0
-    if modifiers & UInt(kVK_CapsLock) != 0 {
+    if modifiers & NSEvent.ModifierFlags.capsLock.rawValue != 0 {
       ret |= kLockMask.rawValue
     }
-    if modifiers & UInt(kVK_Shift | kVK_RightShift) != 0 {
+    if modifiers & NSEvent.ModifierFlags.shift.rawValue != 0 {
       ret |= kShiftMask.rawValue
     }
-    if modifiers & UInt(kVK_Control | kVK_RightControl) != 0 {
+    if modifiers & NSEvent.ModifierFlags.control.rawValue != 0 {
       ret |= kControlMask.rawValue
     }
-    if modifiers & UInt(kVK_Option | kVK_RightOption) != 0 {
+    if modifiers & NSEvent.ModifierFlags.option.rawValue != 0 {
       ret |= kAltMask.rawValue
     }
-    if modifiers & UInt(kVK_Command | kVK_RightCommand) != 0 {
+    if modifiers & NSEvent.ModifierFlags.command.rawValue != 0 {
       ret |= kSuperMask.rawValue
     }
     return ret
