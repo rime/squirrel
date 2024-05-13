@@ -525,7 +525,7 @@ private extension SquirrelInputController {
     let remainingRange = NSMakeRange(start, preedit.utf16.count - start)
     let attrs = mark(forStyle: kTSMHiliteSelectedRawText, at: remainingRange)! as! [NSAttributedString.Key : Any]
     attrString.setAttributes(attrs, range: remainingRange)
-    client().setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, NSNotFound))
+    client().setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, 0))
   }
   
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int) {

@@ -414,8 +414,8 @@ private extension SquirrelPanel {
       }
       // Make the first candidate fixed at the left of cursor
       panelRect.origin.x = position.minX - panelRect.width - SquirrelTheme.offsetHeight
-      if view.preeditRange.length > 0 {
-        let preeditRect = view.contentRect(range: view.convert(range: view.preeditRange))
+      if view.preeditRange.length > 0, let preeditTextRange = view.convert(range: view.preeditRange) {
+        let preeditRect = view.contentRect(range: preeditTextRange)
         panelRect.origin.x += preeditRect.height + theme.edgeInset.width
       }
     } else {

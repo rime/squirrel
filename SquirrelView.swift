@@ -53,11 +53,10 @@ class SquirrelView: NSView {
     NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
   }
   
-  func convert(range: NSRange) -> NSTextRange {
-    let nullRange = NSTextRange(location: textLayoutManager.documentRange.location)
-    guard range.location != NSNotFound else { return nullRange }
-    guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nullRange }
-    guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nullRange }
+  func convert(range: NSRange) -> NSTextRange? {
+    guard range.location != NSNotFound else { return nil }
+    guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nil }
+    guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nil }
     return NSTextRange(location: startLocation, end: endLocation) ?? textLayoutManager.documentRange
   }
   
@@ -69,11 +68,13 @@ class SquirrelView: NSView {
     }
     var x0 = CGFloat.infinity, x1 = -CGFloat.infinity, y0 = CGFloat.infinity, y1 = -CGFloat.infinity
     for range in ranges {
-      let rect = self.contentRect(range: convert(range: range))
-      x0 = min(NSMinX(rect), x0)
-      x1 = max(NSMaxX(rect), x1)
-      y0 = min(NSMinY(rect), y0)
-      y1 = max(NSMaxY(rect), y1)
+      if let textRange = convert(range: range) {
+        let rect = contentRect(range: textRange)
+        x0 = min(NSMinX(rect), x0)
+        x1 = max(NSMaxX(rect), x1)
+        y0 = min(NSMinY(rect), y0)
+        y1 = max(NSMaxY(rect), y1)
+      }
     }
     return NSMakeRect(x0, y0, x1-x0, y1-y0)
   }
@@ -113,8 +114,8 @@ class SquirrelView: NSView {
     
     // Draw preedit Rect
     var preeditRect = NSZeroRect
-    if (preeditRange.length > 0) {
-      preeditRect = contentRect(range: convert(range: preeditRange))
+    if preeditRange.length > 0, let preeditTextRange = convert(range: preeditRange) {
+      preeditRect = contentRect(range: preeditTextRange)
       preeditRect.size.width = backgroundRect.size.width
       preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2
       preeditRect.origin = backgroundRect.origin
@@ -152,7 +153,7 @@ class SquirrelView: NSView {
     }
     
     // Draw highlighted part of preedit text
-    if (highlightedPreeditRange.length > 0) && (theme.highlightedPreeditColor != nil) {
+    if (highlightedPreeditRange.length > 0) && (theme.highlightedPreeditColor != nil), let highlightedPreeditTextRange = convert(range: highlightedPreeditRange) {
       var innerBox = preeditRect
       innerBox.size.width -= (theme.edgeInset.width + 1) * 2
       innerBox.origin.x += theme.edgeInset.width + 1
@@ -168,7 +169,7 @@ class SquirrelView: NSView {
       outerBox.origin.x += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
       outerBox.origin.y += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
       
-      let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: convert(range: highlightedPreeditRange), extraSurounding: 0, bounds: outerBox)
+      let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: highlightedPreeditTextRange, extraSurounding: 0, bounds: outerBox)
       var (highlightedPoints, highlightedPoints2, rightCorners, rightCorners2) = linearMultilineFor(body: bodyRect, leading: leadingRect, trailing: trailingRect)
       
       containingRect = carveInset(rect: preeditRect)
@@ -276,7 +277,7 @@ class SquirrelView: NSView {
             point = NSMakePoint(point.x - NSMinX(lineFragment.typographicBounds),
                                 point.y - NSMinY(lineFragment.typographicBounds))
             index += lineFragment.characterIndex(for: point)
-            if index >= (preeditRange.location == NSNotFound ? 0 : preeditRange.upperBound) && index < preeditRange.upperBound {
+            if index >= preeditRange.location && index < preeditRange.upperBound {
               preeditIndex = index
             } else {
               for i in 0..<candidateRanges.count {
@@ -618,9 +619,8 @@ private extension SquirrelView {
     
     let effectiveRadius = max(0, theme.hilitedCornerRadius + 2 * extraExpansion / theme.hilitedCornerRadius * max(0, theme.cornerRadius - theme.hilitedCornerRadius))
     
-    if theme.linear {
-      let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: convert(range: highlightedRange), extraSurounding: separatorWidth, bounds: outerBox)
-      
+    if theme.linear, let highlightedTextRange = convert(range: highlightedRange) {
+      let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: highlightedTextRange, extraSurounding: separatorWidth, bounds: outerBox)
       var (highlightedPoints, highlightedPoints2, rightCorners, rightCorners2) = linearMultilineFor(body: bodyRect, leading: leadingRect, trailing: trailingRect)
       
       // Expand the boxes to reach proper border
@@ -638,8 +638,8 @@ private extension SquirrelView {
           resultingPath?.addPath(highlightedPath2)
         }
       }
-    } else {
-      var highlightedRect = self.contentRect(range: convert(range: highlightedRange))
+    } else if let highlightedTextRange = convert(range: highlightedRange) {
+      var highlightedRect = self.contentRect(range: highlightedTextRange)
       if !nearEmpty(highlightedRect) {
         highlightedRect.size.width = backgroundRect.size.width
         highlightedRect.size.height += theme.linespace
@@ -664,6 +664,8 @@ private extension SquirrelView {
       } else {
         resultingPath = nil
       }
+    } else {
+      resultingPath = nil
     }
     return resultingPath
   }
