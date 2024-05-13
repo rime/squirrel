@@ -15,9 +15,20 @@ class SquirrelTheme {
   enum StatusMessageType: String {
     case long, short, mix
   }
+  enum RimeColorSpace {
+    case displayP3, sRGB
+    static func from(name: String) -> Self {
+      if name == "display_p3" {
+        return .displayP3
+      } else {
+        return .sRGB
+      }
+    }
+  }
   
   var native = true
   var memorizeSize = true
+  private var colorSpace: RimeColorSpace = .sRGB
   
   var backgroundColor: NSColor = .windowBackgroundColor
   var highlightedPreeditColor: NSColor?
@@ -152,6 +163,98 @@ class SquirrelTheme {
     }
   }
   
+  func load(config: SquirrelConfig, dark: Bool) {
+    linear = config.updateCandidateListLayout(prefix: "style")
+    vertical = config.updateTextOrientation(prefix: "style")
+    inlinePreedit = config.getBool("style/inline_preedit") ?? inlinePreedit
+    inlineCandidate = config.getBool("style/inline_candidate") ?? inlineCandidate
+    translucency = config.getBool("style/translucency") ?? translucency
+    mutualExclusive = config.getBool("style/mutual_exclusive") ?? mutualExclusive
+    memorizeSize = config.getBool("style/memorize_size") ?? memorizeSize
+    
+    statusMessageType = .init(rawValue: config.getString("style/status_message_type") ?? "") ?? statusMessageType
+    candidateFormat = config.getString("style/candidate_format") ?? candidateFormat
+    
+    alpha = max(0, min(1, config.getDouble("style/alpha") ?? alpha))
+    cornerRadius = config.getDouble("style/corner_radius") ?? cornerRadius
+    hilitedCornerRadius = config.getDouble("style/hilited_corner_radius") ?? hilitedCornerRadius
+    surroundingExtraExpansion = config.getDouble("style/surrounding_extra_expansion") ?? surroundingExtraExpansion
+    borderHeight = config.getDouble("style/border_height") ?? borderHeight
+    borderWidth = config.getDouble("style/border_width") ?? borderWidth
+    linespace = config.getDouble("style/line_spacing") ?? linespace
+    preeditLinespace = config.getDouble("style/spacing") ?? preeditLinespace
+    baseOffset = config.getDouble("style/base_offset") ?? baseOffset
+    shadowSize = max(0, config.getDouble("style/shadow_size") ?? shadowSize)
+    
+    var fontName = config.getString("style/font_face")
+    var fontSize = config.getDouble("style/font_point")
+    var labelFontName = config.getString("style/label_font_face")
+    var labelFontSize = config.getDouble("style/label_font_point")
+    var commentFontName = config.getString("style/comment_font_face")
+    var commentFontSize = config.getDouble("style/comment_font_point")
+    
+    let colorSchemeOption = dark ? "style/color_scheme_dark" : "style/color_scheme"
+    if let colorScheme = config.getString(colorSchemeOption), colorScheme != "native" {
+      native = false
+      let prefix = "preset_color_schemes/\(colorScheme)"
+      colorSpace = .from(name: config.getString("\(prefix)/color_space") ?? "")
+      backgroundColor = config.getColor("\(prefix)/back_color", inSpace: colorSpace) ?? backgroundColor
+      highlightedPreeditColor = config.getColor("\(prefix)/hilited_back_color", inSpace: colorSpace)
+      highlightedBackColor = config.getColor("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
+      preeditBackgroundColor = config.getColor("\(prefix)/preedit_back_color", inSpace: colorSpace)
+      candidateBackColor = config.getColor("\(prefix)/candidate_back_color", inSpace: colorSpace)
+      borderColor = config.getColor("\(prefix)/border_color", inSpace: colorSpace)
+      
+      textColor = config.getColor("\(prefix)/text_color", inSpace: colorSpace) ?? textColor
+      highlightedTextColor = config.getColor("\(prefix)/hilited_text_color", inSpace: colorSpace) ?? textColor
+      candidateTextColor = config.getColor("\(prefix)/candidate_text_color", inSpace: colorSpace) ?? textColor
+      highlightedCandidateTextColor = config.getColor("\(prefix)/hilited_candidate_text_color", inSpace: colorSpace) ?? highlightedTextColor
+      candidateLabelColor = config.getColor("\(prefix)/label_color", inSpace: colorSpace)
+      highlightedCandidateLabelColor = config.getColor("\(prefix)/label_hilited_color", inSpace: colorSpace) ?? config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
+      commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
+      highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
+      
+      // the following per-color-scheme configurations, if exist, will
+      // override configurations with the same name under the global 'style'
+      // section
+      inlinePreedit = config.getBool("\(prefix)/inline_preedit") ?? inlinePreedit
+      inlineCandidate = config.getBool("\(prefix)/inline_candidate") ?? inlineCandidate
+      translucency = config.getBool("\(prefix)/translucency") ?? translucency
+      mutualExclusive = config.getBool("\(prefix)/mutual_exclusive") ?? mutualExclusive
+      candidateFormat = config.getString("\(prefix)/candidate_format") ?? candidateFormat
+      fontName = config.getString("\(prefix)/font_face") ?? fontName
+      fontSize = config.getDouble("\(prefix)/font_point") ?? fontSize
+      labelFontName = config.getString("\(prefix)/label_font_face") ?? labelFontName
+      labelFontSize = config.getDouble("\(prefix)/label_font_point") ?? labelFontSize
+      commentFontName = config.getString("\(prefix)/comment_font_face") ?? commentFontName
+      commentFontSize = config.getDouble("\(prefix)/comment_font_point") ?? commentFontSize
+      
+      alpha = max(0, min(1, config.getDouble("\(prefix)/alpha") ?? alpha))
+      cornerRadius = config.getDouble("\(prefix)/corner_radius") ?? cornerRadius
+      hilitedCornerRadius = config.getDouble("\(prefix)/hilited_corner_radius") ?? hilitedCornerRadius
+      surroundingExtraExpansion = config.getDouble("\(prefix)/surrounding_extra_expansion") ?? surroundingExtraExpansion
+      borderHeight = config.getDouble("\(prefix)/border_height") ?? borderHeight
+      borderWidth = config.getDouble("\(prefix)/border_width") ?? borderWidth
+      linespace = config.getDouble("\(prefix)/line_spacing") ?? linespace
+      preeditLinespace = config.getDouble("\(prefix)/spacing") ?? preeditLinespace
+      baseOffset = config.getDouble("\(prefix)/base_offset") ?? baseOffset
+      shadowSize = config.getDouble("\(prefix)/shadow_size") ?? shadowSize
+    } else {
+      native = true
+    }
+    if let name = fontName, let size = fontSize {
+      fonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    }
+    if let name = labelFontName, let size = labelFontSize {
+      labelFonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    }
+    if let name = commentFontName, let size = commentFontSize {
+      commentFonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    }
+  }
+}
+  
+private extension SquirrelTheme {
   func combineFonts(_ fonts: Array<NSFont>) -> NSFont? {
     if fonts.count == 0 { return nil }
     if fonts.count == 1 { return fonts[0] }
