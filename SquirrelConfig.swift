@@ -131,11 +131,12 @@ class SquirrelConfig {
   // isLinear
   func updateCandidateListLayout(prefix: String) -> Bool {
     let candidateListLayout = getString("\(prefix)/candidate_list_layout")
-    if candidateListLayout == "stacked" {
+    switch candidateListLayout {
+    case "stacked":
       return false
-    } else if candidateListLayout == "linear" {
+    case "linear":
       return true
-    } else {
+    default:
       // Deprecated. Not to be confused with text_orientation: horizontal
       return getBool("\(prefix)/horizontal") ?? false
     }
@@ -144,13 +145,14 @@ class SquirrelConfig {
   // isVertical
   func updateTextOrientation(prefix: String) -> Bool {
   let textOrientation = getString("\(prefix)/text_orientation")
-    if textOrientation == "horizontal" {
+    switch textOrientation {
+    case "horizontal":
       return false
-    } else if textOrientation == "vertical" {
+    case "vertical":
       return true
-    } else {
+    default:
       // Deprecated.
-      return getBool("\(prefix)/vertical") ?? true
+      return getBool("\(prefix)/vertical") ?? false
     }
   }
 }
