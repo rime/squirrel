@@ -440,7 +440,7 @@ private extension SquirrelInputController {
         
       let start = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_start)), within: preedit) ?? preedit.startIndex
       let end = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_end)), within: preedit) ?? preedit.startIndex
-      let caretPos = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.cursor_pos)), within: preedit) ?? preedit.endIndex
+      let caretPos = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.cursor_pos)), within: preedit) ?? preedit.startIndex
       
       if inlineCandidate {
         var candidatePreview = ctx.commit_text_preview.map { String(cString: $0) } ?? ""
@@ -450,12 +450,12 @@ private extension SquirrelInputController {
           }
           show(preedit: candidatePreview,
                selRange: NSRange(location: start.utf16Offset(in: candidatePreview), length: candidatePreview.utf16.distance(from: start, to: candidatePreview.endIndex)),
-               caretPos: candidatePreview.utf16.count - preedit.utf16.distance(from: caretPos, to: preedit.endIndex))
+               caretPos: candidatePreview.utf16.count - max(0, preedit.utf16.distance(from: caretPos, to: preedit.endIndex)))
         } else {
           if end < caretPos && start < caretPos {
-            candidatePreview = String(candidatePreview[..<candidatePreview.index(candidatePreview.endIndex, offsetBy: -preedit.distance(from: end, to: caretPos))])
+            candidatePreview = String(candidatePreview[..<candidatePreview.index(candidatePreview.endIndex, offsetBy: -max(0, preedit.distance(from: end, to: caretPos)))])
           } else if end < preedit.endIndex && caretPos <= start {
-            candidatePreview = String(candidatePreview[..<candidatePreview.index(candidatePreview.endIndex, offsetBy: -preedit.distance(from: end, to: preedit.endIndex))])
+            candidatePreview = String(candidatePreview[..<candidatePreview.index(candidatePreview.endIndex, offsetBy: -max(0, preedit.distance(from: end, to: preedit.endIndex)))])
           }
           show(preedit: candidatePreview,
                selRange: NSRange(location: start.utf16Offset(in: candidatePreview), length: candidatePreview.utf16.distance(from: start, to: candidatePreview.endIndex)),
