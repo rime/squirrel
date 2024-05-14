@@ -1,3 +1,89 @@
+<a name="0.18"></a>
+## 0.18 (2024-05-04)
+
+#### 主要功能更新
+* 現可設定非高亮候選項背景色：
+  * 以 `preset_color_schemes/xxx/candidate_back_color: 0xAABBGGRR` 設定，未設定則不啓用本功能
+  * 以 `style/surrounding_extra_expansion` 控制非高亮候選背景大小，正數則相對高亮背景擴大，負數則相對高亮背景收縮，默認爲0
+* 更稳定的介面渲染，尤其繪文字無論橫排豎排皆能穩定顯示，行高不會跳變
+* 支持鼠標操作：
+  * 鼠標懸浮則更改高亮候選，點擊則選定候選，滾輪和觸控板滑動則翻䈎
+  * 點擊編碼區則可前後移動光標位置
+* 其它介面改進：
+  * 解決候選框首次出現可能位於屏幕一角的問題
+  * `style/border_height`、`style/border_width`、`style/line_spacing`、`style/spacing`現可正確處理負值
+  * 字號可包含小數
+  * 序號字號不同於候選字號時，序號居中
+  * 可以`style/status_message_type`: `mix`(default) / `long` / `short`控制狀態改變時如何展示狀態標籤，默認短標籤優先，無短標籤則使用完整標籤，不再自動截取完整標籤首字，除非設爲`short`
+  * 以`style/memorize_size`: `true`/`false`控制候選標是否在接觸屏幕邊緣時有粘性
+  * `style/alpha`可爲0，爲0則完全隱藏候選框
+  * 以`style/shadow_size`設定高亮候選背景的陰影，默認爲0，即無陰影
+  * 以`style/mutual_exclusive`: `true`/`false`控制半透明顏色是否互相疊加，默認爲`false`，即互相疊加
+* `librime` 更新至1.11.2：
+  * 詳見 librime [更新紀錄](https://github.com/rime/librime/blob/master/CHANGELOG.md)，含 1.9、1.10、1.11 三個主要版本更新
+* librime 插件現單獨構建，不再合併於 librime 內，本安裝包含 `lua`、`octagram`、`predict` 三個插件
+* 最低支持的系統應爲 13.0，14.0 以上系統經過較好測試
+
+#### 其它更新內容
+* 啓用CI自動構建
+* 應用 Clang 格式標準化
+* 更新已過時的方法
+* 支持沙盒機制
+
+#### Main Updates
+* Surrounding high lights for all candidates:
+  * Set `preset_color_schemes/xxx/candidate_back_color` to enable (Not specified unless explicitly defined)
+  * `style/surrounding_extra_expansion` controls the relative size to the selected candidate's surrounding block. Negative value means smaller, while positive means larger, default to 0.
+* More reliable text layout, especially in vertical mode, and with exotic characters like Emoji.
+* Mouse interactions:
+  * Hover over to change selection, click on any candidate to select, and swipe or scroll to change page
+  * Click in preedit area to change caret position
+* Other UI improvements:
+  * Resolve a issue that Squirrel panel shows in corner on first launch
+  * `style/border_height`, `style/border_width`, `style/line_spacing` and `style/spacing` can now be negative.
+  * All `font_size` accepts float number.
+  * Labels are vertically centered when using a different `label_font_size` from the main `font_size`
+  * Add `style/status_message_type`: `mix(default) / long / short` to Handle abbrev status label when status updates
+  * Add `style/memorize_size: true/false` to control sticking panel width behavior 
+  * `style/alpha: 0` is now valid, setting so completely hides the panel
+  * Add `style/shadow_size` to specify shadow under selected candidate. Default to `0` with no shadow.
+  * Add `style/mutual_exclusive`: `true`/`false` to allow colors not stacking on each other. Default to `false`
+* `librime` updated to 1.11.2:
+  * See librime [change log](https://github.com/rime/librime/blob/master/CHANGELOG.md) for details, including 1.9, 1.10 and 1.11 major updates
+* librime plugins are built separately, no longer integrated inside librime library. This install package is compiled with `lua`, `octagram` and `predict` plugins
+* Minimum OS supported should be 13.0, while 14.0+ is better tested
+
+#### Other Updates
+* Adopts CI workflow
+* Applies Clang linting
+* Modernized several deprecated methods
+* Supports sandbox
+
+#### 完整更新列表 Change Log
+* build: specify build target OS in makefile by @LEOYoon-Tsaw in https://github.com/rime/squirrel/pull/727
+* Consolidated update to Squirrel by @LEOYoon-Tsaw in https://github.com/rime/squirrel/pull/749
+* Update INSTALL.md: Fix script by @EdgarDegas in https://github.com/rime/squirrel/pull/800
+* fix action-changelog.sh by @hezhizhen in https://github.com/rime/squirrel/pull/794
+* Update weasel introduction in README.md by @determ1ne in https://github.com/rime/squirrel/pull/777
+* Upgrade GitHub action to v4 by @Bambooin in https://github.com/rime/squirrel/pull/834
+* chore: use macos 14 runner with M1 by @Bambooin in https://github.com/rime/squirrel/pull/835
+* Add mac app sandbox support. by @ShikiSuen in https://github.com/rime/squirrel/pull/841
+* Apply clang format by @Bambooin in https://github.com/rime/squirrel/pull/836
+* fix: fix wrong git blame ignore by @Bambooin in https://github.com/rime/squirrel/pull/845
+* replace deprecated API calls by @groverlynn in https://github.com/rime/squirrel/pull/846
+* fix(SquirrelPanel): text shown in top-left corner by @lotem in https://github.com/rime/squirrel/pull/856
+* deps: update librime to 1.11.0 by @ksqsf in https://github.com/rime/squirrel/pull/860
+* build(ci): nightly release by @ksqsf in https://github.com/rime/squirrel/pull/861
+* ci: disable nightly build in forked repos by @Bambooin in https://github.com/rime/squirrel/pull/862
+
+#### 新增貢獻者 New Contributors
+* @EdgarDegas made their first contribution in https://github.com/rime/squirrel/pull/800
+* @hezhizhen made their first contribution in https://github.com/rime/squirrel/pull/794
+* @determ1ne made their first contribution in https://github.com/rime/squirrel/pull/777
+* @ksqsf made their first contribution in https://github.com/rime/squirrel/pull/860
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/0.16.2...0.18
+
 <a name="0.16.2"></a>
 ## 0.16.2 (2023-02-05)
 

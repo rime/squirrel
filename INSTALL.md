@@ -6,8 +6,8 @@
 
 ### Prerequisites
 
-Install **Xcode 12.2** or above from App Store, to build Squirrel as a Universal
-app. The minimum required version is *Xcode 10* to build for `x86_64` only.
+Install **Xcode 14.0 or above from App Store, to build Squirrel as a Universal
+app.
 
 Install **cmake**.
 
@@ -118,7 +118,7 @@ make ARCHS='arm64'
 
 ## Install it on your Mac
 
-## Make Package
+### Make Package
 
 Just add `package` after `make`
 
@@ -138,7 +138,7 @@ xcrun notarytool store-credentials 'your name/org'
 
 You **don't** need to define `DEV_ID` if you don't intend to distribute the package.
 
-## Directly Install
+### Directly Install
 
 **You might need to precede with sudo, and without a logout, the App might not work properly. Direct install is not very recommended.**
 
