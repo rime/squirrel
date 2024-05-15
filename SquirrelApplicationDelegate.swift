@@ -41,9 +41,14 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
     let _ = rimeAPI.sync_user_data()
   }
   
-  func configure() {
-    let configURL = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
-    NSWorkspace.shared.open(configURL)
+  func openLogFolder() {
+    let logDir = FileManager.default.temporaryDirectory
+    NSWorkspace.shared.open(logDir)
+  }
+  
+  func openRimeFolder() {
+    let rimeDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
+    NSWorkspace.shared.open(rimeDir)
   }
   
   func checkForUpdates() {

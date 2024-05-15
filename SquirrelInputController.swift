@@ -229,7 +229,9 @@ class SquirrelInputController: IMKInputController {
     deploy.keyEquivalentModifierMask = [NSEvent.ModifierFlags.control, NSEvent.ModifierFlags.option]
     let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(syncUserData), keyEquivalent: "")
     sync.target = self
-    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(configure), keyEquivalent: "")
+    let logDir = NSMenuItem(title: NSLocalizedString("Logs...", comment: "Menu item"), action: #selector(openLogFolder), keyEquivalent: "")
+    logDir.target = self
+    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(openRimeFolder), keyEquivalent: "")
     setting.target = self
     let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(openWiki), keyEquivalent: "")
     wiki.target = self
@@ -239,6 +241,7 @@ class SquirrelInputController: IMKInputController {
     let menu = NSMenu()
     menu.addItem(deploy)
     menu.addItem(sync)
+    menu.addItem(logDir)
     menu.addItem(setting)
     menu.addItem(wiki)
     menu.addItem(update)
@@ -254,8 +257,12 @@ class SquirrelInputController: IMKInputController {
     NSApp.squirrelAppDelegate.syncUserData()
   }
   
-  @objc func configure() {
-    NSApp.squirrelAppDelegate.configure()
+  @objc func openLogFolder() {
+    NSApp.squirrelAppDelegate.openLogFolder()
+  }
+  
+  @objc func openRimeFolder() {
+    NSApp.squirrelAppDelegate.openRimeFolder()
   }
   
   @objc func checkForUpdates() {
