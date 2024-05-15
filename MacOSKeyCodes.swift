@@ -134,5 +134,13 @@ struct SquirrelKeycode {
     kVK_ANSI_KeypadPlus: XK_KP_Add,
     kVK_ANSI_KeypadDivide: XK_KP_Divide,
     kVK_ANSI_KeypadEnter: XK_KP_Enter,
+    
+    // other
+    kVK_ISO_Section: XK_section,
+    kVK_JIS_Yen: XK_yen,
+    kVK_JIS_Underscore: XK_underscore,
+    kVK_JIS_KeypadComma: XK_comma,
+    kVK_JIS_Eisu: XK_Eisu_Shift,
+    kVK_JIS_Kana: XK_Kana_Shift,
   ]
 }

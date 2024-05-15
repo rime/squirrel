@@ -8,7 +8,7 @@
 import Foundation
 import InputMethodKit
 
-class SquirrelInstaller {
+struct SquirrelInstaller {
   static let installLocation = try! FileManager.default.url(for: .libraryDirectory, in: .localDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Input Methods").appendingPathComponent("Squirrel.app")
 
   enum InputMode: String, CaseIterable {
