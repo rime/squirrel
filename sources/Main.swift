@@ -97,8 +97,29 @@ struct SquirrelApp {
       // finally run everything
       app.run()
       print("Squirrel is quitting...")
+      cleanupOldFiles(olderThan: 5)
       rimeAPI.finalize()
     }
     return
+  }
+  
+  static func cleanupOldFiles(olderThan days: Int) {
+    let fileManager = FileManager.default
+    let currentDate = Date()
+    let calendar = Calendar.current
+    
+    do {
+      let fileURLs = try fileManager.contentsOfDirectory(at: fileManager.temporaryDirectory, includingPropertiesForKeys: [.creationDateKey], options: .skipsHiddenFiles)
+      for fileURL in fileURLs {
+        if let creationDate = try fileURL.resourceValues(forKeys: [.creationDateKey]).creationDate {
+          if let daysDifference = calendar.dateComponents([.day], from: creationDate, to: currentDate).day, daysDifference > days {
+            try fileManager.removeItem(at: fileURL)
+            // print("Deleted: \(fileURL.path)")
+          }
+        }
+      }
+    } catch {
+      print("Error: \(error.localizedDescription)")
+    }
   }
 }
