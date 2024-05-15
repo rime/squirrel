@@ -68,8 +68,7 @@ class SquirrelTheme {
   var labelFonts = Array<NSFont>()
   var commentFonts = Array<NSFont>()
   
-  var prefixLabelFormat = "%c.\u{00A0}"
-  var suffixLabelFormat = ""
+  private var candidateTemplate = "[label]. [candidate] [comment]"
   var statusMessageType: StatusMessageType = .mix
   
   var font: NSFont! {
@@ -152,14 +151,16 @@ class SquirrelTheme {
   }
   var candidateFormat: String {
     get {
-      "\(prefixLabelFormat)%@\(suffixLabelFormat)"
+      candidateTemplate
     } set {
-      if let (_, pre, post) = try? /(.*)%@(.*)/.wholeMatch(in: newValue)?.output {
-        prefixLabelFormat = String(pre)
-        suffixLabelFormat = String(post)
-      } else {
-        prefixLabelFormat = newValue
+      var newTemplate = newValue
+      if newTemplate.contains(/%@/) {
+        newTemplate.replace(/%@/, with: "[candidate] [comment]")
       }
+      if newTemplate.contains(/%c/) {
+        newTemplate.replace(/%c/, with: "[label]")
+      }
+      candidateTemplate = newTemplate
     }
   }
   

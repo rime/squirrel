@@ -201,83 +201,34 @@ class SquirrelPanel: NSPanel {
     // candidates
     var candidateRanges = [NSRange]()
     for i in 0..<candidates.count {
-      let line = NSMutableAttributedString()
-      
       let attrs = i == index ? theme.highlightedAttrs : theme.attrs
       let labelAttrs = i == index ? theme.labelHighlightedAttrs : theme.labelAttrs
       let commentAttrs = i == index ? theme.commentHighlightedAttrs : theme.commentAttrs
-      var labelWidth: CGFloat = 0
       
-      if !theme.prefixLabelFormat.isEmpty {
-        let label: String
+      let label = if theme.candidateFormat.contains(/\[label\]/) {
         if labels.count > 1 && i < labels.count {
-          label = theme.prefixLabelFormat.replacingOccurrences(of: "%c", with: labels[i])
+          labels[i]
         } else if labels.count == 1 && i < labels.first!.count {
           // custom: A. B. C...
-          let labelCharacter = labels.first![labels.first!.index(labels.first!.startIndex, offsetBy: i)]
-          label = theme.prefixLabelFormat.replacingOccurrences(of: "%c", with: String(labelCharacter))
+          String(labels.first![labels.first!.index(labels.first!.startIndex, offsetBy: i)])
         } else {
           // default: 1. 2. 3...
-          label = theme.prefixLabelFormat.replacingOccurrences(of: "%c", with: "\(i+1)")
+          "\(i+1)"
         }
-        line.append(NSAttributedString(string: label.precomposedStringWithCanonicalMapping, attributes: labelAttrs))
-        
-        // get the label size for indent
-        if !linear {
-          let str = line.mutableCopy() as! NSMutableAttributedString
-          if vertical {
-            str.addAttribute(.verticalGlyphForm, value: 1, range: NSMakeRange(0, str.length))
-          }
-          labelWidth = str.boundingRect(with: .zero, options: .usesLineFragmentOrigin).width
-        }
+      } else {
+        ""
       }
         
-      let candidateStart = line.length
-      var candidate = NSAttributedString(string: candidates[i].precomposedStringWithCanonicalMapping, attributes: attrs)
-      let candidateWidth = candidate.boundingRect(with: .zero, options: .usesLineFragmentOrigin).width
-      if candidateWidth <= maxTextWidth * 0.2 {
-        // Unicode Word Joiner so that line will not break within
-        candidate = insert(separator: "\u{2060}", between: candidate)
-      }
+      let candidate = candidates[i].precomposedStringWithCanonicalMapping
+      let comment = comments[i].precomposedStringWithCanonicalMapping
       
-      line.append(candidate)
-      // Use left-to-right marks to prevent right-to-left text from changing the
-      // layout of non-candidate text.
-      line.addAttribute(.writingDirection, value: [0], range: NSMakeRange(candidateStart, line.length - candidateStart))
-      
-      if !theme.suffixLabelFormat.isEmpty {
-        let label: String
-        if labels.count > 1 && i < labels.count {
-          label = theme.suffixLabelFormat.replacingOccurrences(of: "%c", with: labels[i])
-        } else if labels.count == 1 && i < labels.first!.count {
-          // custom: A. B. C...
-          let labelCharacter = labels.first![labels.first!.index(labels.first!.startIndex, offsetBy: i)]
-          label = theme.suffixLabelFormat.replacingOccurrences(of: "%c", with: String(labelCharacter))
-        } else {
-          // default: 1. 2. 3...
-          label = theme.suffixLabelFormat.replacingOccurrences(of: "%c", with: "\(i+1)")
-        }
-        line.append(NSAttributedString(string: label.precomposedStringWithCanonicalMapping, attributes: labelAttrs))
-      }
-      
-      if i < comments.count && !comments[i].isEmpty {
-        let candidateAndLabelWidth = line.boundingRect(with: .zero, options: .usesLineFragmentOrigin).width
-        var comment = NSAttributedString(string: comments[i], attributes: commentAttrs)
-        let commentWidth = comment.boundingRect(with: .zero, options: .usesLineFragmentOrigin).width
-        if commentWidth <= maxTextWidth * 0.2 {
-          // Unicode Word Joiner so that line will not break within
-          comment = insert(separator: "\u{2060}", between: comment)
-        }
-        
-        let commentSeparator = if candidateAndLabelWidth + commentWidth <= maxTextWidth * 0.3 {
-          // Non-Breaking White Space
-          "\u{A0}"
-        } else {
-          " "
-        }
-        line.append(NSAttributedString(string: commentSeparator, attributes: commentAttrs))
-        line.append(comment)
-      }
+      let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
+      line.addAttributes(attrs, range: (line.string as NSString).range(of: "[candidate]"))
+      line.addAttributes(commentAttrs, range: (line.string as NSString).range(of: "[comment]"))
+      line.mutableString.replaceOccurrences(of: "[label]", with: label, range: NSMakeRange(0, line.length))
+      let labeledLine = line.copy() as! NSAttributedString
+      line.mutableString.replaceOccurrences(of: "[candidate]", with: candidate, range: NSMakeRange(0, line.length))
+      line.mutableString.replaceOccurrences(of: "[comment]", with: comment, range: NSMakeRange(0, line.length))
       
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
       if i > 0 {
@@ -293,7 +244,11 @@ class SquirrelPanel: NSPanel {
       if linear {
         paragraphStyleCandidate.lineSpacing = theme.linespace
       }
-      paragraphStyleCandidate.headIndent = labelWidth
+      if let labelEnd = labeledLine.string.firstMatch(of: /\[(candidate|comment)\]/)?.range.lowerBound {
+        let labelString = labeledLine.attributedSubstring(from: NSMakeRange(0, labelEnd.utf16Offset(in: labeledLine.string)))
+        let labelWidth = labelString.boundingRect(with: .zero, options: [.usesLineFragmentOrigin]).width
+        paragraphStyleCandidate.headIndent = labelWidth
+      }
       line.addAttribute(.paragraphStyle, value: paragraphStyleCandidate, range: NSMakeRange(0, line.length))
       
       candidateRanges.append(NSMakeRange(text.length, line.length))
@@ -332,18 +287,6 @@ class SquirrelPanel: NSPanel {
 }
 
 private extension SquirrelPanel {
-  func insert(separator: String, between text: NSAttributedString) -> NSAttributedString {
-    var range = (text.string as NSString).rangeOfComposedCharacterSequence(at: 0)
-    let attributedSeparator = NSAttributedString(string: separator, attributes: text.attributes(at: 0, effectiveRange: nil))
-    let workingString = text.attributedSubstring(from: range).mutableCopy() as! NSMutableAttributedString
-    while range.upperBound < text.length{
-      range = (text.string as NSString).rangeOfComposedCharacterSequence(at: range.upperBound)
-      workingString.append(attributedSeparator)
-      workingString.append(text.attributedSubstring(from: range))
-    }
-    return workingString
-  }
-  
   func mousePosition() -> NSPoint {
     var point = NSEvent.mouseLocation
     point = self.convertPoint(fromScreen: point)
