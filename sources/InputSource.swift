@@ -9,8 +9,6 @@ import Foundation
 import InputMethodKit
 
 struct SquirrelInstaller {
-  static let installLocation = try! FileManager.default.url(for: .libraryDirectory, in: .localDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Input Methods").appendingPathComponent("Squirrel.app")
-
   enum InputMode: String, CaseIterable {
     static let primary = Self.hant
     case hans = "im.rime.inputmethod.Squirrel.Hans"
@@ -49,8 +47,8 @@ struct SquirrelInstaller {
       // Already registered.
       return
     }
-    TISRegisterInputSource(SquirrelInstaller.installLocation as CFURL)
-    print("Registered input source from \(SquirrelInstaller.installLocation)")
+    TISRegisterInputSource(SquirrelApp.appDir as CFURL)
+    print("Registered input source from \(SquirrelApp.appDir)")
   }
   
   func enable(modes: [InputMode] = [.primary]) {

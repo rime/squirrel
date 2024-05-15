@@ -10,6 +10,15 @@ import InputMethodKit
 
 @main
 struct SquirrelApp {
+  static let userDir = if let pw = getpwuid(getuid()) {
+    URL(fileURLWithFileSystemRepresentation: pw.pointee.pw_dir, isDirectory: true, relativeTo: nil).appending(components: "Library", "Rime")
+  } else {
+    try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
+  }
+  static let appDir = "/Library/Input Library/Squirrel.app".withCString { dir in
+    URL(fileURLWithFileSystemRepresentation: dir, isDirectory: false, relativeTo: nil)
+  }
+  
   static func main() {
     let installer = SquirrelInstaller()
     let rimeAPI = rime_get_api().pointee
@@ -73,7 +82,9 @@ struct SquirrelApp {
         print("Problematic launch detected!")
         let args = ["Problematic launch detected! Squirrel may be suffering a crash due to improper configuration. Revert previous modifications to see if the problem recurs."]
         let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/say")
+        task.executableURL = "/usr/bin/say".withCString { dir in
+          URL(fileURLWithFileSystemRepresentation: dir, isDirectory: false, relativeTo: nil)
+        }
         task.arguments = args
         try? task.run()
       } else {

@@ -47,8 +47,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   }
   
   func openRimeFolder() {
-    let rimeDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
-    NSWorkspace.shared.open(rimeDir)
+    NSWorkspace.shared.open(SquirrelApp.userDir)
   }
   
   func checkForUpdates() {
@@ -90,7 +89,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
   }
   
   func setupRime() {
-    let userDataDir = try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
+    let userDataDir = SquirrelApp.userDir
     let fileManager = FileManager.default
     if !fileManager.fileExists(atPath: userDataDir.path()) {
       do {
