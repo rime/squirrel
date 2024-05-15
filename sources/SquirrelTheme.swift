@@ -62,7 +62,7 @@ class SquirrelTheme {
   var linear = false
   var vertical = false
   var inlinePreedit = false
-  var inlineCandidate = true
+  var inlineCandidate = false
   
   var fonts: Array<NSFont> = [NSFont.userFont(ofSize: SquirrelTheme.defaultFontSize)!]
   var labelFonts = Array<NSFont>()
