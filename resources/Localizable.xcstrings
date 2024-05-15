@@ -123,6 +123,23 @@
         }
       }
     },
+    "Logs..." : {
+      "comment" : "Menu item",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日志..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "日誌..."
+          }
+        }
+      }
+    },
     "Rime Wiki..." : {
       "comment" : "Menu item",
       "localizations" : {
