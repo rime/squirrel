@@ -7,7 +7,7 @@
 
 import AppKit
 
-class SquirrelView: NSView {
+final class SquirrelView: NSView {
   let textView: NSTextView
   
   var candidateRanges: [NSRange] = []

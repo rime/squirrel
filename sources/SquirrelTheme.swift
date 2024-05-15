@@ -7,7 +7,7 @@
 
 import AppKit
 
-class SquirrelTheme {
+final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
   static let defaultFontSize: CGFloat = 24
   static let showStatusDuration: Double = 1.2
@@ -37,14 +37,14 @@ class SquirrelTheme {
   var candidateBackColor: NSColor?
   var borderColor: NSColor?
   
-  var textColor: NSColor = .disabledControlTextColor
-  var highlightedTextColor: NSColor = .controlTextColor
-  var candidateTextColor: NSColor = .controlTextColor
-  var highlightedCandidateTextColor: NSColor = .selectedControlTextColor
-  var candidateLabelColor: NSColor?
-  var highlightedCandidateLabelColor: NSColor?
-  var commentTextColor: NSColor? = .disabledControlTextColor
-  var highlightedCommentTextColor: NSColor?
+  private var textColor: NSColor = .disabledControlTextColor
+  private var highlightedTextColor: NSColor = .controlTextColor
+  private var candidateTextColor: NSColor = .controlTextColor
+  private var highlightedCandidateTextColor: NSColor = .selectedControlTextColor
+  private var candidateLabelColor: NSColor?
+  private var highlightedCandidateLabelColor: NSColor?
+  private var commentTextColor: NSColor? = .disabledControlTextColor
+  private var highlightedCommentTextColor: NSColor?
   
   var cornerRadius: CGFloat = 0
   var hilitedCornerRadius: CGFloat = 0
@@ -64,9 +64,9 @@ class SquirrelTheme {
   var inlinePreedit = false
   var inlineCandidate = false
   
-  var fonts: Array<NSFont> = [NSFont.userFont(ofSize: SquirrelTheme.defaultFontSize)!]
-  var labelFonts = Array<NSFont>()
-  var commentFonts = Array<NSFont>()
+  private var fonts: Array<NSFont> = [NSFont.userFont(ofSize: SquirrelTheme.defaultFontSize)!]
+  private var labelFonts = Array<NSFont>()
+  private var commentFonts = Array<NSFont>()
   
   private var candidateTemplate = "[label]. [candidate] [comment]"
   var statusMessageType: StatusMessageType = .mix

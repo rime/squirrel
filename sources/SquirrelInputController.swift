@@ -7,7 +7,7 @@
 
 import InputMethodKit
 
-class SquirrelInputController: IMKInputController {
+final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   
   private let rimeAPI: RimeApi = rime_get_api().pointee

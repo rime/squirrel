@@ -7,7 +7,7 @@
 
 import AppKit
 
-class SquirrelPanel: NSPanel {
+final class SquirrelPanel: NSPanel {
   private let view: SquirrelView
   private let back: NSVisualEffectView
   var inputController: SquirrelInputController?
@@ -167,7 +167,6 @@ class SquirrelPanel: NSPanel {
     
     let theme = view.currentTheme
     currentScreen()
-    let maxTextWidth = maxTextWidth()
     
     let text = NSMutableAttributedString()
     var preeditRange = NSMakeRange(NSNotFound, 0)
