@@ -1,6 +1,23 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "A new update is available" : {
+      "comment" : "Update",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有新版本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "有新版本"
+          }
+        }
+      }
+    },
     "Check for updates..." : {
       "comment" : "Menu item",
       "localizations" : {
@@ -204,6 +221,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "同步用戶資料"
+          }
+        }
+      }
+    },
+    "Version [version] is now available" : {
+      "comment" : "Update",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[version] 现已发布"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "[version] 現已發佈"
           }
         }
       }

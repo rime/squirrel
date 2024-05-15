@@ -9,14 +9,48 @@ import UserNotifications
 import Sparkle
 import AppKit
 
-class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
+final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandardUserDriverDelegate, UNUserNotificationCenterDelegate {
   static let rimeWikiURL = URL(string: "https://github.com/rime/home/wiki")!
+  static let updateNotificationIdentifier = "SquirrelUpdateNotification"
+  static let notificationIdentifier = "SquirrelNotification"
   
   let rimeAPI: RimeApi = rime_get_api().pointee
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
   var enableNotifications = false
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+  var supportsGentleScheduledUpdateReminders: Bool {
+    true
+  }
+  
+  func standardUserDriverWillHandleShowingUpdate(_ handleShowingUpdate: Bool, forUpdate update: SUAppcastItem, state: SPUUserUpdateState) {
+    NSApp.setActivationPolicy(.regular)
+    if !state.userInitiated {
+      NSApp.dockTile.badgeLabel = "1"
+      let content = UNMutableNotificationContent()
+      content.title = NSLocalizedString("A new update is available", comment: "Update")
+      content.body = NSLocalizedString("Version [version] is now available", comment: "Update").replacingOccurrences(of: "[version]", with: update.displayVersionString)
+      let request = UNNotificationRequest(identifier: Self.updateNotificationIdentifier, content: content, trigger: nil)
+      UNUserNotificationCenter.current().add(request)
+    }
+  }
+  
+  func standardUserDriverDidReceiveUserAttention(forUpdate update: SUAppcastItem) {
+    NSApp.dockTile.badgeLabel = ""
+    UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [Self.updateNotificationIdentifier])
+  }
+  
+  func standardUserDriverWillFinishUpdateSession() {
+    NSApp.setActivationPolicy(.accessory)
+  }
+  
+  func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    if response.notification.request.identifier == Self.updateNotificationIdentifier && response.actionIdentifier == UNNotificationDefaultActionIdentifier {
+      updateController.updater.checkForUpdates()
+    }
+    
+    completionHandler()
+  }
   
   func applicationWillFinishLaunching(_ notification: Notification) {
     panel = SquirrelPanel(position: .zero)
@@ -78,7 +112,7 @@ class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate {
           content.subtitle = msgText
         }
         content.interruptionLevel = .active
-        let request = UNNotificationRequest(identifier: "SquirrelNotification", content: content, trigger: nil)
+        let request = UNNotificationRequest(identifier: Self.notificationIdentifier, content: content, trigger: nil)
         center.add(request) { error in
           if let error = error {
             print("User notification request error: \(error.localizedDescription)")
