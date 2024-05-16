@@ -10,16 +10,16 @@ import InputMethodKit
 
 struct SquirrelInstaller {
   enum InputMode: String, CaseIterable {
-    static let primary = Self.hant
+    static let primary = Self.main
+    case main = "im.rime.inputmethod.Squirrel"
     case hans = "im.rime.inputmethod.Squirrel.Hans"
     case hant = "im.rime.inputmethod.Squirrel.Hant"
   }
   
   func enabledModes() -> [InputMode] {
     var enabledModes = Set<InputMode>()
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as NSArray
-    for i in 0..<sourceList.count {
-      let inputSource = sourceList[i] as! TISInputSource
+    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
+    for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return [] }
       // print("[DEBUG] Examining input source: \(sourceID)")
@@ -53,15 +53,14 @@ struct SquirrelInstaller {
   
   func enable(modes: [InputMode] = [.primary]) {
     let enabledInputModes = enabledModes()
-    if enabledInputModes.count > 0 {
+    if Set(modes).isSubset(of: enabledInputModes) {
       print("User already enabled Squirrel method(s): \(enabledInputModes)")
       // keep user's manually enabled input modes.
       return
     }
     // neither is enabled, enable the default input mode.
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as NSArray
-    for i in 0..<sourceList.count {
-      let inputSource = sourceList[i] as! TISInputSource
+    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
+    for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
       // print("Examining input source: \(sourceID)")
@@ -70,8 +69,8 @@ struct SquirrelInstaller {
           let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
           guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return }
           if !CFBooleanGetValue(enabled) {
-            TISEnableInputSource(inputSource)
-            print("Enabled input source: \(sourceID)");
+            let error = TISEnableInputSource(inputSource)
+            print("Enable \(error == noErr ? "succeeds" : "fails") for input source: \(sourceID)");
           }
           break
         }
@@ -82,12 +81,10 @@ struct SquirrelInstaller {
   func select(mode: InputMode = .primary) {
     let enabledInputModes = enabledModes()
     if !enabledInputModes.contains(mode) {
-      print("Target input source not enabled: \(mode.rawValue)")
-      return
+      enable(modes: [mode])
     }
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as NSArray
-    for i in 0..<sourceList.count {
-      let inputSource = sourceList[i] as! TISInputSource
+    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
+    for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
       // print("[DEBUG] Examining input source: \(sourceID)")
@@ -100,8 +97,8 @@ struct SquirrelInstaller {
           let selectedRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsSelected)
           guard let selected = unsafeBitCast(selectedRef, to: CFBoolean?.self) else { return }
           if CFBooleanGetValue(selectable) && !CFBooleanGetValue(selected) {
-            TISSelectInputSource(inputSource)
-            print("Selected input source: \(mode.rawValue)")
+            let error = TISSelectInputSource(inputSource)
+            print("Selection \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)")
           }
           return
         }
@@ -110,9 +107,8 @@ struct SquirrelInstaller {
   }
   
   func disable(modes: [InputMode] = InputMode.allCases) {
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as NSArray
-    for i in 0..<sourceList.count {
-      let inputSource = sourceList[i] as! TISInputSource
+    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
+    for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
       // print("[DEBUG] Examining input source: \(sourceID)")
