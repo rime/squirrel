@@ -40,8 +40,8 @@ final class SquirrelTheme {
   
   private var textColor: NSColor = .disabledControlTextColor
   private var highlightedTextColor: NSColor = .controlTextColor
-  private var candidateTextColor: NSColor = .controlTextColor
-  private var highlightedCandidateTextColor: NSColor = .selectedControlTextColor
+  private var candidateTextColor: NSColor = .secondaryLabelColor
+  private var highlightedCandidateTextColor: NSColor = .labelColor
   private var candidateLabelColor: NSColor?
   private var highlightedCandidateLabelColor: NSColor?
   private var commentTextColor: NSColor? = .disabledControlTextColor
@@ -293,7 +293,7 @@ private extension SquirrelTheme {
   
   func blendColor(foregroundColor: NSColor, backgroundColor: NSColor?) -> NSColor {
     let foregroundColor = foregroundColor.usingColorSpace(NSColorSpace.deviceRGB)!
-    let backgroundColor = (backgroundColor ?? NSColor.darkGray).usingColorSpace(NSColorSpace.deviceRGB)!
+    let backgroundColor = (backgroundColor ?? NSColor.gray).usingColorSpace(NSColorSpace.deviceRGB)!
     func blend(_ a: CGFloat, _ b: CGFloat) -> CGFloat {
       return (a * 2 + b) / 3
     }
