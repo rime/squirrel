@@ -79,7 +79,7 @@ final class SquirrelConfig {
     return baseConfig?.getInt(option)
   }
   
-  func getDouble(_ option: String) -> Double? {
+  func getDouble(_ option: String) -> CGFloat? {
     if let cachedValue = cachedValue(of: Double.self, forKey: option) {
       return cachedValue
     }

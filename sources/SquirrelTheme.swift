@@ -11,6 +11,7 @@ final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
   static let defaultFontSize: CGFloat = 24
   static let showStatusDuration: Double = 1.2
+  static let defaultFont = NSFont.userFont(ofSize: defaultFontSize)!
   
   enum StatusMessageType: String {
     case long, short, mix
@@ -64,15 +65,15 @@ final class SquirrelTheme {
   var inlinePreedit = false
   var inlineCandidate = false
   
-  private var fonts: Array<NSFont> = [NSFont.userFont(ofSize: SquirrelTheme.defaultFontSize)!]
+  private var fonts = Array<NSFont>()
   private var labelFonts = Array<NSFont>()
   private var commentFonts = Array<NSFont>()
   
   private var candidateTemplate = "[label]. [candidate] [comment]"
   var statusMessageType: StatusMessageType = .mix
   
-  var font: NSFont! {
-    return combineFonts(fonts)
+  var font: NSFont {
+    return combineFonts(fonts) ?? Self.defaultFont
   }
   var labelFont: NSFont? {
     return combineFonts(labelFonts)
@@ -82,42 +83,42 @@ final class SquirrelTheme {
   }
   var attrs: [NSAttributedString.Key : Any] {
     [.foregroundColor: candidateTextColor,
-     .font: font!,
+     .font: font,
      .baselineOffset: baseOffset]
   }
   var highlightedAttrs: [NSAttributedString.Key : Any] {
     [.foregroundColor: highlightedCandidateTextColor,
-     .font: font!,
+     .font: font,
      .baselineOffset: baseOffset]
   }
   var labelAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
-            .font: labelFont ?? font!,
+            .font: labelFont ?? font,
             .baselineOffset: baseOffset]
   }
   var labelHighlightedAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
-            .font: labelFont ?? font!,
+            .font: labelFont ?? font,
             .baselineOffset: baseOffset]
   }
   var commentAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: commentTextColor ?? candidateTextColor,
-            .font: commentFont ?? font!,
+            .font: commentFont ?? font,
             .baselineOffset: baseOffset]
   }
   var commentHighlightedAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: highlightedCommentTextColor ?? highlightedCandidateTextColor,
-            .font: commentFont ?? font!,
+            .font: commentFont ?? font,
             .baselineOffset: baseOffset]
   }
   var preeditAttrs: [NSAttributedString.Key : Any] {
     [.foregroundColor: textColor,
-     .font: font!,
+     .font: font,
      .baselineOffset: baseOffset]
   }
   var preeditHighlightedAttrs: [NSAttributedString.Key : Any] {
     [.foregroundColor: highlightedTextColor,
-     .font: font!,
+     .font: font,
      .baselineOffset: baseOffset]
   }
   
@@ -243,14 +244,14 @@ final class SquirrelTheme {
     } else {
       native = true
     }
-    if let name = fontName, let size = fontSize {
-      fonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    if let name = fontName {
+      fonts = decodeFonts(from: name, size: fontSize)
     }
-    if let name = labelFontName, let size = labelFontSize {
-      labelFonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    if let name = labelFontName ?? fontName {
+      labelFonts = decodeFonts(from: name, size: labelFontSize ?? fontSize)
     }
-    if let name = commentFontName, let size = commentFontSize {
-      commentFonts = decodeFonts(from: name, size: size > 0 ? size : Self.defaultFontSize)
+    if let name = commentFontName ?? fontName {
+      commentFonts = decodeFonts(from: name, size: commentFontSize ?? fontSize)
     }
   }
 }
@@ -264,7 +265,7 @@ private extension SquirrelTheme {
     return NSFont.init(descriptor: fontDescriptor, size: fonts[0].pointSize)
   }
   
-  func decodeFonts(from fontString: String, size: CGFloat) -> Array<NSFont> {
+  func decodeFonts(from fontString: String, size: CGFloat?) -> Array<NSFont> {
     var seenFontFamilies = Set<String>()
     let fontStrings = fontString.split(separator: ",")
     var fonts = Array<NSFont>()
@@ -283,7 +284,7 @@ private extension SquirrelTheme {
           seenFontFamilies.insert(trimedString)
         }
       }
-      if let validFont = NSFont(name: String(trimedString), size: size) {
+      if let validFont = NSFont(name: String(trimedString), size: size ?? Self.defaultFontSize) {
         fonts.append(validFont)
       }
     }
