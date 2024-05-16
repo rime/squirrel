@@ -222,8 +222,12 @@ final class SquirrelPanel: NSPanel {
       let comment = comments[i].precomposedStringWithCanonicalMapping
       
       let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
-      line.addAttributes(attrs, range: (line.string as NSString).range(of: "[candidate]"))
-      line.addAttributes(commentAttrs, range: (line.string as NSString).range(of: "[comment]"))
+      for range in line.string.ranges(of: /\[candidate\]/) {
+        line.addAttributes(attrs, range: convert(range: range, in: line.string))
+      }
+      for range in line.string.ranges(of: /\[comment\]/) {
+        line.addAttributes(commentAttrs, range: convert(range: range, in: line.string))
+      }
       line.mutableString.replaceOccurrences(of: "[label]", with: label, range: NSMakeRange(0, line.length))
       let labeledLine = line.copy() as! NSAttributedString
       line.mutableString.replaceOccurrences(of: "[candidate]", with: candidate, range: NSMakeRange(0, line.length))
@@ -427,5 +431,11 @@ private extension SquirrelPanel {
     statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { _ in
       self.hide()
     }
+  }
+  
+  func convert(range: Range<String.Index>, in string: String) -> NSRange {
+    let startPos = range.lowerBound.utf16Offset(in: string)
+    let endPos = range.upperBound.utf16Offset(in: string)
+    return NSRange(location: startPos, length: endPos - startPos)
   }
 }
