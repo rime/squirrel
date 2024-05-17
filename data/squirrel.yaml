@@ -25,7 +25,7 @@ style:
   #horizontal: false
   # NOTE: do not set a default value for `candidate_list_layout`, in order to
   # keep the deprecated `horizontal` option working for existing users.
-  #candidate_list_layout: stacked  # stacked | linear
+  candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
   # whether to embed selected candidate as text in input field
@@ -35,14 +35,14 @@ style:
   # whether transparent colors stack on each other
   #mutual_exclusive: false
 
-  corner_radius: 10
+  corner_radius: 7
   hilited_corner_radius: 0
-  border_height: 0
-  border_width: 0
+  border_height: -2
+  border_width: -2
   # space between candidates in stacked layout
-  line_spacing: 10
+  line_spacing: 5
   # space between preedit and candidates in non-inline mode
-  spacing: 15
+  spacing: 8
   # a number greater than 0 renders shadow around high-lighted candidate
   #shadow_size: 0
 
@@ -53,12 +53,12 @@ style:
 
   # adjust the base line of vertical text
   #base_offset: 6
-  font_face: 'Lucida Grande'
-  font_point: 21
-  #label_font_face: 'Lucida Grande'
-  label_font_point: 18
-  #comment_font_face: 'Lucida Grande'
-  comment_font_point: 18
+  font_face: 'Avenir'
+  font_point: 15
+  #label_font_face: 'Avenir'
+  label_font_point: 12
+  #comment_font_face: 'Avenir'
+  comment_font_point: 15
 
 preset_color_schemes:
   native:

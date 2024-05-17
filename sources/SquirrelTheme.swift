@@ -38,13 +38,13 @@ final class SquirrelTheme {
   var candidateBackColor: NSColor?
   var borderColor: NSColor?
   
-  private var textColor: NSColor = .disabledControlTextColor
-  private var highlightedTextColor: NSColor = .controlTextColor
+  private var textColor: NSColor = .tertiaryLabelColor
+  private var highlightedTextColor: NSColor = .labelColor
   private var candidateTextColor: NSColor = .secondaryLabelColor
   private var highlightedCandidateTextColor: NSColor = .labelColor
   private var candidateLabelColor: NSColor?
   private var highlightedCandidateLabelColor: NSColor?
-  private var commentTextColor: NSColor? = .disabledControlTextColor
+  private var commentTextColor: NSColor? = .tertiaryLabelColor
   private var highlightedCommentTextColor: NSColor?
   
   var cornerRadius: CGFloat = 0
