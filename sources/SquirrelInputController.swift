@@ -14,8 +14,9 @@ final class SquirrelInputController: IMKInputController {
   private var preedit: String = ""
   private var selRange: NSRange = NSMakeRange(NSNotFound, 0)
   private var caretPos: Int = 0
-  private var lastModifier: NSEvent.ModifierFlags = .init()
-  private var lastEventType: NSEvent.EventType = .keyDown
+  private var lastModifiers: NSEvent.ModifierFlags = .init()
+  private var lastEventType: NSEvent.EventType = .init(rawValue: 0)!
+  private var lastModifiersChange: NSEvent.ModifierFlags = .init()
   private var session: RimeSessionId = 0
   private var schemaId: String = ""
   private var inlinePreedit = false
@@ -30,101 +31,98 @@ final class SquirrelInputController: IMKInputController {
   
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
     let modifiers = event.modifierFlags
+    let changes = lastModifiers.symmetricDifference(modifiers)
     
-    // Return YES to indicate the the key input was received and dealt with.
+    // Return true to indicate the the key input was received and dealt with.
     // Key processing will not continue in that case.  In other words the
     // system will not deliver a key down event to the application.
-    // Returning NO means the original key down will be passed on to the client.
-    let handled  = autoreleasepool {
-      var handled = false
-      
-      if session == 0 || !rimeAPI.find_session(session) {
-        createSession()
-        if session == 0 {
-          return false
-        }
+    // Returning false means the original key down will be passed on to the client.
+    var handled = false
+    
+    if session == 0 || !rimeAPI.find_session(session) {
+      createSession()
+      if session == 0 {
+        return false
       }
-      
-      let app = (sender as? IMKTextInput)?.bundleIdentifier()
-      if let app = app, currentApp != app {
-        currentApp = app
-        updateAppOptions()
-      }
-      
-      switch event.type {
-      case .flagsChanged:
-        if lastModifier == modifiers {
-          handled = true
-          break
-        }
-        // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
-        var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
-        // For flags-changed event, keyCode is available since macOS 10.15
-        // (#715)
-        let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: event.keyCode, keychar: Character(""), shift: false, caps: false)
-        var releaseMask: UInt32 = 0
-        let changes: UInt = UInt(lastModifier.rawValue ^ modifiers.rawValue)
-        if changes & NSEvent.ModifierFlags.capsLock.rawValue != 0 {
-          // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
-          // while NSFlagsChanged event has the flag changed already.
-          // so it is necessary to revert kLockMask.
-          rimeModifiers ^= UInt32(kLockMask.rawValue);
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers)
-        }
-        if changes & NSEvent.ModifierFlags.shift.rawValue != 0 {
-          releaseMask = modifiers.rawValue & NSEvent.ModifierFlags.shift.rawValue != 0 ? 0 : kReleaseMask.rawValue
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
-        }
-        if changes & NSEvent.ModifierFlags.control.rawValue != 0 {
-          releaseMask = modifiers.rawValue & NSEvent.ModifierFlags.control.rawValue != 0 ? 0 : kReleaseMask.rawValue
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
-        }
-        if changes & NSEvent.ModifierFlags.option.rawValue != 0 {
-          releaseMask = modifiers.rawValue & NSEvent.ModifierFlags.option.rawValue != 0 ? 0 : kReleaseMask.rawValue
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
-        }
-        if changes & NSEvent.ModifierFlags.command.rawValue != 0 {
-          releaseMask = modifiers.rawValue & NSEvent.ModifierFlags.command.rawValue != 0 ? 0 : kReleaseMask.rawValue
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
-        }
-        rimeUpdate()
-        
-      case .keyDown:
-        // ignore Command+X hotkeys.
-        if modifiers.rawValue & NSEvent.ModifierFlags.command.rawValue != 0 {
-          break
-        }
-        
-        let keyCode = event.keyCode
-        var keyChars = event.charactersIgnoringModifiers
-        if let code = keyChars?.first, !code.isLetter {
-          keyChars = event.characters
-        }
-        // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
-        
-        // translate osx keyevents to rime keyevents
-        if let char = keyChars?.first {
-          let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
-                                             shift: modifiers.rawValue & NSEvent.ModifierFlags.shift.rawValue != 0,
-                                             caps: modifiers.rawValue & NSEvent.ModifierFlags.capsLock.rawValue != 0)
-          if rimeKeycode != 0 {
-            let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
-            handled = processKey(rimeKeycode, modifiers: rimeModifiers)
-            rimeUpdate()
-          }
-        }
-        
-      default:
+    }
+    
+    let app = (sender as? IMKTextInput)?.bundleIdentifier()
+    if let app = app, currentApp != app {
+      currentApp = app
+      updateAppOptions()
+    }
+    
+    switch event.type {
+    case .flagsChanged:
+      if lastModifiers == modifiers {
+        handled = true
         break
       }
-      return handled
+      // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
+      var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
+      let lastRimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: lastModifiers.rawValue)
+      // For flags-changed event, keyCode is available since macOS 10.15
+      // (#715)
+      let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: event.keyCode, keychar: nil, shift: false, caps: false)
+      let chording = rimeAPI.get_option(session, "_chord_typing")
+      
+      if changes.contains(.capsLock) {
+        // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
+        // while NSFlagsChanged event has the flag changed already.
+        // so it is necessary to revert kLockMask.
+        rimeModifiers ^= kLockMask.rawValue
+        handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+      }
+      for flag in [NSEvent.ModifierFlags.shift, .control, .option, .command] {
+        if changes.contains(flag) {
+          // different behavier in chording
+          if chording {
+            let releaseMask = modifiers.contains(flag) ? 0 : kReleaseMask.rawValue
+            handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
+          } else {
+            // flag is released and the change equals last change, so no other event between pressing and releasing
+            if lastEventType == .flagsChanged && !modifiers.contains(flag) && changes == lastModifiersChange {
+              handled = processKey(rimeKeycode, modifiers: lastRimeModifiers)
+            }
+          }
+        }
+      }
+      lastModifiers = modifiers
+      lastModifiersChange = changes
+      
+      rimeUpdate()
+      
+    case .keyDown:
+      // ignore Command+X hotkeys.
+      if modifiers.contains(.command) {
+        break
+      }
+      
+      let keyCode = event.keyCode
+      var keyChars = event.charactersIgnoringModifiers
+      if let code = keyChars?.first, !code.isLetter {
+        keyChars = event.characters
+      }
+      // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
+      
+      // translate osx keyevents to rime keyevents
+      if let char = keyChars?.first {
+        let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
+                                                           shift: modifiers.contains(.shift),
+                                                           caps: modifiers.contains(.capsLock))
+        if rimeKeycode != 0 {
+          let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
+          handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+          rimeUpdate()
+        }
+      }
+      lastModifiersChange = .init()
+      
+    default:
+      break
     }
     
-    if event.type == .flagsChanged {
-      lastModifier = modifiers
-    }
     lastEventType = event.type
-    
     return handled
   }
   
@@ -164,9 +162,9 @@ final class SquirrelInputController: IMKInputController {
     return true
   }
   
-  func recognizedEvents(_ sender: Any!) -> NSEvent.EventTypeMask {
+  override func recognizedEvents(_ sender: Any!) -> Int {
     // print("[DEBUG] recognizedEvents:")
-    return [.keyDown, .flagsChanged]
+    return Int(NSEvent.EventTypeMask.Element(arrayLiteral: .keyDown, .flagsChanged).rawValue)
   }
   
   override func activateServer(_ sender: Any!) {
@@ -226,7 +224,7 @@ final class SquirrelInputController: IMKInputController {
   override func menu() -> NSMenu! {
     let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(deploy), keyEquivalent: "`")
     deploy.target = self
-    deploy.keyEquivalentModifierMask = [NSEvent.ModifierFlags.control, NSEvent.ModifierFlags.option]
+    deploy.keyEquivalentModifierMask = [.control, .option]
     let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(syncUserData), keyEquivalent: "")
     sync.target = self
     let logDir = NSMenuItem(title: NSLocalizedString("Logs...", comment: "Menu item"), action: #selector(openLogFolder), keyEquivalent: "")
@@ -392,13 +390,13 @@ private extension SquirrelInputController {
         // print("[DEBUG] turned Chinese mode off in vim-like editor's command mode")
       }
     } else {
-      let isChordingKey =
-      (rimeKeycode >= XK_space && rimeKeycode <= XK_asciitilde) ||
-      rimeKeycode == XK_Control_L || rimeKeycode == XK_Control_R ||
-      rimeKeycode == XK_Alt_L || rimeKeycode == XK_Alt_R ||
-      rimeKeycode == XK_Shift_L || rimeKeycode == XK_Shift_R
-      if isChordingKey &&
-          rimeAPI.get_option(session, "_chord_typing") {
+      let isChordingKey = switch Int32(rimeKeycode) {
+      case XK_space...XK_asciitilde, XK_Control_L, XK_Control_R, XK_Alt_L, XK_Alt_R, XK_Shift_L, XK_Shift_R:
+        true
+      default:
+        false
+      }
+      if isChordingKey && rimeAPI.get_option(session, "_chord_typing") {
         updateChord(keycode: rimeKeycode, modifiers: rimeModifiers)
       } else if (rimeModifiers & kReleaseMask.rawValue) == 0 {
         // non-chording key pressed

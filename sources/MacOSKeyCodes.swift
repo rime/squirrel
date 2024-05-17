@@ -30,12 +30,12 @@ struct SquirrelKeycode {
     return ret
   }
   
-  static func osxKeycodeToRime(keycode: UInt16, keychar: Character, shift: Bool, caps: Bool) -> UInt32 {
+  static func osxKeycodeToRime(keycode: UInt16, keychar: Character?, shift: Bool, caps: Bool) -> UInt32 {
     if let code = keycodeMappings[Int(keycode)] {
       return UInt32(code)
     }
     
-    if keychar.isASCII, let codeValue = keychar.unicodeScalars.first?.value {
+    if let keychar = keychar, keychar.isASCII, let codeValue = keychar.unicodeScalars.first?.value {
       // NOTE: IBus/Rime use different keycodes for uppercase/lowercase letters.
       if keychar.isLowercase && (shift || caps) {
         // lowercase -> Uppercase
