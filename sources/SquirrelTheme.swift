@@ -9,7 +9,7 @@ import AppKit
 
 final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
-  static let defaultFontSize: CGFloat = 21
+  static let defaultFontSize: CGFloat = NSFont.systemFontSize
   static let showStatusDuration: Double = 1.2
   static let defaultFont = NSFont.userFont(ofSize: defaultFontSize)!
   
@@ -94,22 +94,22 @@ final class SquirrelTheme {
   var labelAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
             .font: labelFont ?? font,
-            .baselineOffset: baseOffset]
+            .baselineOffset: baseOffset + (labelFont != nil && !vertical ? (font.pointSize - labelFont!.pointSize) / 2 : 0)]
   }
   var labelHighlightedAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
             .font: labelFont ?? font,
-            .baselineOffset: baseOffset]
+            .baselineOffset: baseOffset + (labelFont != nil && !vertical ? (font.pointSize - labelFont!.pointSize) / 2 : 0)]
   }
   var commentAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: commentTextColor ?? candidateTextColor,
             .font: commentFont ?? font,
-            .baselineOffset: baseOffset]
+            .baselineOffset: baseOffset + (commentFont != nil && !vertical ? (font.pointSize - commentFont!.pointSize) / 2 : 0)]
   }
   var commentHighlightedAttrs: [NSAttributedString.Key : Any] {
     return [.foregroundColor: highlightedCommentTextColor ?? highlightedCandidateTextColor,
             .font: commentFont ?? font,
-            .baselineOffset: baseOffset]
+            .baselineOffset: baseOffset + (commentFont != nil && !vertical ? (font.pointSize - commentFont!.pointSize) / 2 : 0)]
   }
   var preeditAttrs: [NSAttributedString.Key : Any] {
     [.foregroundColor: textColor,
