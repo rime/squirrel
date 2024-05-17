@@ -6,6 +6,7 @@ project_file=Squirrel.xcodeproj/project.pbxproj
 test -f "${project_file}"
 
 anchor=(80 65 terra_pinyin.schema.yaml)
+anchor_lib=(9D 9A librime-lua.dylib)
 
 lastid=80
 
@@ -35,6 +36,27 @@ group_entry() {
     local ref=$2
     local file="$3"
     echo "441E63${ref}22B7E90C006DCCDD /* ${file} */,"
+}
+
+lib_entry() {
+    local id=$1
+    local ref=$2
+    local lib="$3"
+    echo "2C6B9F${id}2BCD086700E327DF /* ${lib} in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F${ref}2BCD086700E327DF /* ${lib} */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };"
+}
+
+lib_ref_entry() {
+    local id=$1
+    local ref=$2
+    local lib="$3"
+    echo "2C6B9F${ref}2BCD086700E327DF /* ${lib} */ = {isa = PBXFileReference; lastKnownFileType = \"compiled.mach-o.dylib\"; name = \"${lib}\"; path = \"lib/rime-plugins/${lib}\"; sourceTree = \"<group>\"; };"
+}
+
+frameworks_phase_entry() {
+    local id=$1
+    local ref=$2
+    local lib="$3"
+    echo "2C6B9F${id}2BCD086700E327DF /* ${lib} in Copy Rime plugins */,"
 }
 
 add_line() {
@@ -68,8 +90,34 @@ add_file() {
     add_line "${anchor_line}" "${new_line}"
 }
 
+add_lib() {
+    local lib="$1"
+    local new_lib_id=$(( ++lastid ))
+    local new_lib_refid=$(( ++lastid ))
+    local anchor_line
+    local new_line
+
+    # Assuming you have similar 'anchor' values for library entries
+    anchor_lib_line="$(lib_entry ${anchor_lib[@]})"
+    new_lib_line="$(lib_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    add_line "${anchor_lib_line}" "${new_lib_line}"
+
+    anchor_lib_line="$(lib_ref_entry ${anchor_lib[@]})"
+    new_lib_line="$(lib_ref_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    add_line "${anchor_lib_line}" "${new_lib_line}"
+
+    anchor_lib_line="$(frameworks_phase_entry ${anchor_lib[@]})"
+    new_lib_line="$(frameworks_phase_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    add_line "${anchor_lib_line}" "${new_lib_line}"
+}
+
+
 data_files=(
     $(ls data/plum/* | xargs basename)
+)
+
+lib_files=(
+    $(ls lib/rime-plugins/* | xargs basename)
 )
 
 for file in "${data_files[@]}"
@@ -81,4 +129,15 @@ do
     fi
     echo "adding ${file} to ${project_file}"
     add_file "${file}"
+done
+
+for lib in "${lib_files[@]}"
+do
+    if grep -Fq " ${lib} " "${project_file}"
+    then
+        echo "found ${lib}"
+        continue
+    fi
+    echo "adding ${lib} to ${project_file}"
+    add_lib "${lib}"
 done
