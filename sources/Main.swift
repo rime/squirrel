@@ -1,5 +1,5 @@
 //
-//  CommandLine.swift
+//  Main.swift
 //  Squirrel
 //
 //  Created by Leo Liu on 5/10/24.

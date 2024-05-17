@@ -1,5 +1,5 @@
 //
-//  SquirrelView.swift
+//  SquirrelTheme.swift
 //  Squirrel
 //
 //  Created by Leo Liu on 5/9/24.
