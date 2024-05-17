@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.38'
+config_version: '0.4'
 
 # options: last | default | _custom_
 # last: the last used latin keyboard layout
@@ -28,17 +28,28 @@ style:
   #candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
+  # whether to embed selected candidate as text in input field
+  #inline_candidate: false
+  # whether candidate panel stick to screen edge to reduce jumping
+  #memorize_size: true
+  # whether transparent colors stack on each other
+  #mutual_exclusive: false
 
   corner_radius: 10
   hilited_corner_radius: 0
   border_height: 0
   border_width: 0
   # space between candidates in stacked layout
-  line_spacing: 5
+  line_spacing: 10
   # space between preedit and candidates in non-inline mode
-  spacing: 10
+  spacing: 15
+  # a number greater than 0 renders shadow around high-lighted candidate
+  #shadow_size: 0
 
-  #candidate_format: '[label]. [candidate] [comment]'
+  # format using %@ and %c is deprecated since 0.4, Squirrel 1.0
+  # %@ is automatically expanded to "[candidate] [comment]"
+  # and %c is replaced by "[label]"
+  candidate_format: '[label]. [candidate] [comment]'
 
   # adjust the base line of vertical text
   #base_offset: 6
@@ -301,6 +312,7 @@ preset_color_schemes:
     back_color: 0xF0E5F6FB                  #Lab 97 , 0 , 10
     border_color: 0xEDFFFF                  #Lab 100, 0 , 10
     preedit_back_color: 0x403516            #Lab 20 ,-12,-12
+    #candidate_back_color: 0x403516         #Lab 20 ,-12,-12
     candidate_text_color: 0x595E00          #Lab 35 ,-35,-5
     label_color: 0xA36407                   #Lab 40 ,-10,-45
     comment_text_color: 0x005947            #Lab 35 ,-20, 65
@@ -318,6 +330,7 @@ preset_color_schemes:
     back_color: 0xF0352A0A                  #Lab 15 ,-12,-12
     border_color: 0x2A1F00                  #Lab 10 ,-12,-12
     preedit_back_color: 0xD7E8ED            #Lab 92 , 0 , 10
+    #candidate_back_color: 0xD7E8ED         #Lab 92 , 0 , 10
     candidate_text_color: 0x7389FF          #Lab 75 , 65, 45
     label_color: 0x478DF4                   #Lab 70 , 45, 65
     comment_text_color: 0xC38AFF            #Lab 75 , 65,-5

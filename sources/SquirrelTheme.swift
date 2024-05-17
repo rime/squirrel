@@ -9,7 +9,7 @@ import AppKit
 
 final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
-  static let defaultFontSize: CGFloat = 24
+  static let defaultFontSize: CGFloat = 21
   static let showStatusDuration: Double = 1.2
   static let defaultFont = NSFont.userFont(ofSize: defaultFontSize)!
   
