@@ -10,6 +10,7 @@ import InputMethodKit
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   
+  private var client: IMKTextInput?
   private let rimeAPI: RimeApi = rime_get_api().pointee
   private var preedit: String = ""
   private var selRange: NSRange = NSMakeRange(NSNotFound, 0)
@@ -184,6 +185,7 @@ final class SquirrelInputController: IMKInputController {
   }
   
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {
+    self.client = client as? IMKTextInput
     // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
     super.init(server: server, delegate: delegate, client: client)
     createSession()
@@ -331,7 +333,7 @@ private extension SquirrelInputController {
   }
   
   func createSession() {
-    guard let app = client().bundleIdentifier() else { return }
+    guard let app = client?.bundleIdentifier() else { return }
     print("createSession: \(app)")
     currentApp = app
     session = rimeAPI.create_session()
@@ -504,13 +506,15 @@ private extension SquirrelInputController {
   }
   
   func commit(string: String) {
+    guard let client = client else { return }
     // print("[DEBUG] commitString: \(string)")
-    client().insertText(string, replacementRange: NSMakeRange(NSNotFound, 0))
+    client.insertText(string, replacementRange: NSMakeRange(NSNotFound, 0))
     preedit = ""
     hidePalettes()
   }
   
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
+    guard let client = client else { return }
     // print("[DEBUG] showPreeditString: '\(preedit)'")
     if self.preedit == preedit && self.caretPos == caretPos && self.selRange == selRange {
       return
@@ -530,13 +534,14 @@ private extension SquirrelInputController {
     let remainingRange = NSMakeRange(start, preedit.utf16.count - start)
     let attrs = mark(forStyle: kTSMHiliteSelectedRawText, at: remainingRange)! as! [NSAttributedString.Key : Any]
     attrString.setAttributes(attrs, range: remainingRange)
-    client().setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, 0))
+    client.setMarkedText(attrString, selectionRange: NSMakeRange(caretPos, 0), replacementRange: NSMakeRange(NSNotFound, 0))
   }
   
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int) {
     // print("[DEBUG] showPanelWithPreedit:...:")
+    guard let client = client else { return }
     var inputPos = NSRect()
-    client().attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
+    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
     if let panel = NSApp.squirrelAppDelegate.panel {
       panel.position = inputPos
       panel.inputController = self
