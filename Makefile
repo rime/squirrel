@@ -25,6 +25,7 @@ DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
 OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
+PLUM_OPENCC_OUTPUT = plum/output/opencc/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
@@ -62,6 +63,9 @@ $(OPENCC_DATA):
 
 plum-data:
 	$(MAKE) -C plum
+ifdef PLUM_TAG
+	rime_dir=plum/output bash plum/rime-install $(PLUM_TAG)
+endif
 	$(MAKE) copy-plum-data
 
 opencc-data:
@@ -76,6 +80,7 @@ copy-plum-data:
 copy-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
+	cp $(PLUM_OPENCC_OUTPUT) data/opencc/ || true
 
 deps: librime data
 
