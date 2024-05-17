@@ -117,11 +117,13 @@ $(SPARKLE_FRAMEWORK):
 
 sparkle:
 	xcodebuild -project Sparkle/Sparkle.xcodeproj -configuration Release $(BUILD_SETTINGS) build
+	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme sign_update -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
 	$(MAKE) copy-sparkle-framework
 
 copy-sparkle-framework:
 	mkdir -p Frameworks
 	cp -RP Sparkle/build/Release/Sparkle.framework Frameworks/
+	cp Sparkle/build/Build/Products/Release/sign_update package/
 
 clean-sparkle:
 	rm -rf Frameworks/* > /dev/null 2>&1 || true
