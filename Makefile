@@ -80,7 +80,7 @@ copy-plum-data:
 copy-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
-	cp $(PLUM_OPENCC_OUTPUT) data/opencc/ || true
+	cp $(PLUM_OPENCC_OUTPUT) data/opencc/ > /dev/null 2>&1 || true
 
 deps: librime data
 
@@ -129,7 +129,7 @@ clean-sparkle:
 	rm -rf Frameworks/* > /dev/null 2>&1 || true
 	rm -rf Sparkle/build > /dev/null 2>&1 || true
 
-.PHONY: package archive sign-archive
+.PHONY: package archive
 
 package: release
 ifdef DEV_ID
@@ -146,10 +146,6 @@ endif
 
 archive: package
 	bash package/make_archive
-
-sign-archive:
-	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
-	sign_key=sign/dsa_priv.pem bash package/make_archive
 
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
@@ -183,4 +179,5 @@ clean:
 clean-deps:
 	$(MAKE) -C plum clean
 	$(MAKE) -C librime clean
+	rm -rf librime/dist > /dev/null 2>&1 || true
 	$(MAKE) clean-sparkle
