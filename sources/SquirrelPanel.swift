@@ -245,9 +245,10 @@ final class SquirrelPanel: NSPanel {
       
       let paragraphStyleCandidate = (i == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
       if linear {
+        paragraphStyleCandidate.paragraphSpacingBefore -= theme.linespace
         paragraphStyleCandidate.lineSpacing = theme.linespace
       }
-      if let labelEnd = labeledLine.string.firstMatch(of: /\[(candidate|comment)\]/)?.range.lowerBound {
+      if !linear, let labelEnd = labeledLine.string.firstMatch(of: /\[(candidate|comment)\]/)?.range.lowerBound {
         let labelString = labeledLine.attributedSubstring(from: NSMakeRange(0, labelEnd.utf16Offset(in: labeledLine.string)))
         let labelWidth = labelString.boundingRect(with: .zero, options: [.usesLineFragmentOrigin]).width
         paragraphStyleCandidate.headIndent = labelWidth
@@ -350,7 +351,8 @@ private extension SquirrelPanel {
     }
 
     if vertical {
-      panelRect.size = NSMakeSize(contentRect.height + theme.edgeInset.height * 2, contentRect.width + theme.edgeInset.width * 2)
+      panelRect.size = NSMakeSize(min(0.95 * screenRect.width, contentRect.height + theme.edgeInset.height * 2),
+                                  min(0.95 * screenRect.height, contentRect.width + theme.edgeInset.width * 2))
       // To avoid jumping up and down while typing, use the lower screen when
       // typing on upper, and vice versa
       if position.midY / screenRect.height >= 0.5 {
@@ -365,10 +367,10 @@ private extension SquirrelPanel {
         panelRect.origin.x += preeditRect.height + theme.edgeInset.width
       }
     } else {
-      panelRect.size = NSMakeSize(contentRect.width + theme.edgeInset.width * 2, contentRect.height + theme.edgeInset.height * 2)
+      panelRect.size = NSMakeSize(min(0.95 * screenRect.width, contentRect.width + theme.edgeInset.width * 2),
+                                  min(0.95 * screenRect.height, contentRect.height + theme.edgeInset.height * 2))
       panelRect.origin = NSMakePoint(position.minX, position.minY - SquirrelTheme.offsetHeight - panelRect.height)
     }
-    
     if panelRect.maxX > screenRect.maxX {
       panelRect.origin.x = screenRect.maxX - panelRect.width
     }
