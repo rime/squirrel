@@ -11,7 +11,7 @@ final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   
   private var client: IMKTextInput?
-  private let rimeAPI: RimeApi = rime_get_api().pointee
+  private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private var preedit: String = ""
   private var selRange: NSRange = NSMakeRange(NSNotFound, 0)
   private var caretPos: Int = 0
@@ -408,7 +408,7 @@ private extension SquirrelInputController {
     // print("[DEBUG] rimeUpdate")
     rimeConsumeCommittedText()
     
-    var status = RimeStatus.rimeStructInit()
+    var status = RimeStatus_stdbool.rimeStructInit()
     if rimeAPI.get_status(session, &status) {
       // enable schema specific ui style
       if let schema_id = status.schema_id, schemaId == "" || schemaId != String(cString: schema_id) {
@@ -425,7 +425,7 @@ private extension SquirrelInputController {
       _ = rimeAPI.free_status(&status)
     }
     
-    var ctx = RimeContext.rimeStructInit()
+    var ctx = RimeContext_stdbool.rimeStructInit()
     if rimeAPI.get_context(session, &ctx) {
       // update preedit text
       let preedit = ctx.composition.preedit.map({ String(cString: $0) }) ?? ""

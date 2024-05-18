@@ -8,7 +8,7 @@
 import AppKit
 
 final class SquirrelConfig {
-  private let rimeAPI = rime_get_api().pointee
+  private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private(set) var isOpen = false
   var schemaID: String = ""
   

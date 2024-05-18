@@ -11,10 +11,10 @@ protocol DataSizeable {
     var data_size: Int32 { get set }
 }
 
-extension RimeContext: DataSizeable {}
+extension RimeContext_stdbool: DataSizeable {}
 extension RimeTraits: DataSizeable {}
 extension RimeCommit: DataSizeable {}
-extension RimeStatus: DataSizeable {}
+extension RimeStatus_stdbool: DataSizeable {}
 extension RimeModule: DataSizeable {}
 
 extension DataSizeable {
