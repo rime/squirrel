@@ -20,47 +20,54 @@ struct SquirrelApp {
   }
   
   static func main() {
-    let installer = SquirrelInstaller()
-    let rimeAPI = rime_get_api().pointee
-    let args = CommandLine.arguments
-    if args.count > 1 {
-      switch args[1] {
-      case "--quit":
-        let bundleId = Bundle.main.bundleIdentifier!
-        let runningSquirrels = NSRunningApplication.runningApplications(withBundleIdentifier: bundleId)
-        runningSquirrels.forEach { $0.terminate() }
-        return
-      case "--reload":
-        DistributedNotificationCenter.default().postNotificationName(.init("SquirrelReloadNotification"), object: nil)
-        return
-      case "--register-input-source", "--install":
-        installer.register()
-        return
-      case "--enable-input-source":
-        installer.enable()
-        return
-      case "--disable-input-source":
-        installer.disable()
-        return
-      case "--select-input-source":
-        installer.select()
-        return
-      case "--build":
-        // Notification
-        SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""), msgId: "deploy")
-        // Build all schemas in current directory
-        var builderTraits = RimeTraits.rimeStructInit()
-        builderTraits.setCString("rime.squirrel-builder", to: \.app_name)
-        rimeAPI.setup(&builderTraits)
-        rimeAPI.deployer_initialize(nil)
-        _ = rimeAPI.deploy()
-        return
-      case "--sync":
-        DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
-        return
-      default:
-        break
+    let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
+    
+    let handled = autoreleasepool {
+      let installer = SquirrelInstaller()
+      let args = CommandLine.arguments
+      if args.count > 1 {
+        switch args[1] {
+        case "--quit":
+          let bundleId = Bundle.main.bundleIdentifier!
+          let runningSquirrels = NSRunningApplication.runningApplications(withBundleIdentifier: bundleId)
+          runningSquirrels.forEach { $0.terminate() }
+          return true
+        case "--reload":
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelReloadNotification"), object: nil)
+          return true
+        case "--register-input-source", "--install":
+          installer.register()
+          return true
+        case "--enable-input-source":
+          installer.enable()
+          return true
+        case "--disable-input-source":
+          installer.disable()
+          return true
+        case "--select-input-source":
+          installer.select()
+          return true
+        case "--build":
+          // Notification
+          SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""), msgId: "deploy")
+          // Build all schemas in current directory
+          var builderTraits = RimeTraits.rimeStructInit()
+          builderTraits.setCString("rime.squirrel-builder", to: \.app_name)
+          rimeAPI.setup(&builderTraits)
+          rimeAPI.deployer_initialize(nil)
+          _ = rimeAPI.deploy()
+          return true
+        case "--sync":
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
+          return true
+        default:
+          break
+        }
       }
+      return false
+    }
+    if handled {
+      return
     }
     
     autoreleasepool {

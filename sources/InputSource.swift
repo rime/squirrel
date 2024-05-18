@@ -8,30 +8,31 @@
 import Foundation
 import InputMethodKit
 
-struct SquirrelInstaller {
+final class SquirrelInstaller {
   enum InputMode: String, CaseIterable {
     static let primary = Self.main
     case main = "im.rime.inputmethod.Squirrel"
     case hans = "im.rime.inputmethod.Squirrel.Hans"
     case hant = "im.rime.inputmethod.Squirrel.Hant"
   }
-  
-  func enabledModes() -> [InputMode] {
-    var enabledModes = Set<InputMode>()
+  private lazy var inputSources: [String: TISInputSource] = {
+    var inputSources = [String: TISInputSource]()
+    var matchingSources = [InputMode: TISInputSource]()
     let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
     for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
-      guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return [] }
+      guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { continue }
       // print("[DEBUG] Examining input source: \(sourceID)")
-      for supportedMode in InputMode.allCases {
-        if sourceID == supportedMode.rawValue {
-          let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
-          guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return [] }
-          if CFBooleanGetValue(enabled) {
-            enabledModes.insert(supportedMode)
-          }
-          break
-        }
+      inputSources[sourceID] = inputSource
+    }
+    return inputSources
+  }()
+  
+  func enabledModes() -> [InputMode] {
+    var enabledModes = Set<InputMode>()
+    for (mode, inputSource) in getInputSource(modes: InputMode.allCases) {
+      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled), enabled {
+        enabledModes.insert(mode)
       }
       if enabledModes.count == InputMode.allCases.count {
         break
@@ -58,22 +59,10 @@ struct SquirrelInstaller {
       // keep user's manually enabled input modes.
       return
     }
-    // neither is enabled, enable the default input mode.
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
-    for inputSource in sourceList {
-      let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
-      guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
-      // print("Examining input source: \(sourceID)")
-      for mode in modes {
-        if sourceID == mode.rawValue {
-          let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
-          guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return }
-          if !CFBooleanGetValue(enabled) {
-            let error = TISEnableInputSource(inputSource)
-            print("Enable \(error == noErr ? "succeeds" : "fails") for input source: \(sourceID)");
-          }
-          break
-        }
+    for (mode, inputSource) in getInputSource(modes: modes) {
+      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled), enabled {
+        let error = TISEnableInputSource(inputSource)
+        print("Enable \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)");
       }
     }
   }
@@ -83,46 +72,39 @@ struct SquirrelInstaller {
     if !enabledInputModes.contains(mode) {
       enable(modes: [mode])
     }
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
-    for inputSource in sourceList {
-      let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
-      guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
-      // print("[DEBUG] Examining input source: \(sourceID)")
-      if sourceID == mode.rawValue {
-        let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
-        guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return }
-        if CFBooleanGetValue(enabled) {
-          let selectableRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsSelectCapable)
-          guard let selectable = unsafeBitCast(selectableRef, to: CFBoolean?.self) else { return }
-          let selectedRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsSelected)
-          guard let selected = unsafeBitCast(selectedRef, to: CFBoolean?.self) else { return }
-          if CFBooleanGetValue(selectable) && !CFBooleanGetValue(selected) {
-            let error = TISSelectInputSource(inputSource)
-            print("Selection \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)")
-          }
-          return
-        }
+    for (mode, inputSource) in getInputSource(modes: [mode]) {
+      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled),
+          let selectable = getBool(for: inputSource, key: kTISPropertyInputSourceIsSelectCapable),
+          let selected = getBool(for: inputSource, key: kTISPropertyInputSourceIsSelected),
+         enabled && selectable && !selected {
+          let error = TISSelectInputSource(inputSource)
+          print("Selection \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)")
       }
     }
   }
   
   func disable(modes: [InputMode] = InputMode.allCases) {
-    let sourceList = TISCreateInputSourceList(nil, true).takeUnretainedValue() as! [TISInputSource]
-    for inputSource in sourceList {
-      let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
-      guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { return }
-      // print("[DEBUG] Examining input source: \(sourceID)")
-      for mode in modes {
-        if sourceID == mode.rawValue {
-          let enabledRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceIsEnabled)
-          guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return }
-          if CFBooleanGetValue(enabled) {
-            TISDisableInputSource(inputSource)
-            print("Disabled input source: \(sourceID)")
-          }
-          break
-        }
+    for (mode, inputSource) in getInputSource(modes: modes) {
+      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled), enabled {
+        TISDisableInputSource(inputSource)
+        print("Disabled input source: \(mode.rawValue)")
       }
     }
+  }
+  
+  private func getInputSource(modes: [InputMode]) -> [InputMode: TISInputSource] {
+    var matchingSources = [InputMode: TISInputSource]()
+    for mode in modes {
+      if let inputSource = inputSources[mode.rawValue] {
+        matchingSources[mode] = inputSource
+      }
+    }
+    return matchingSources
+  }
+  
+  private func getBool(for inputSource: TISInputSource, key: CFString!) -> Bool? {
+    let enabledRef = TISGetInputSourceProperty(inputSource, key)
+    guard let enabled = unsafeBitCast(enabledRef, to: CFBoolean?.self) else { return nil }
+    return CFBooleanGetValue(enabled)
   }
 }
