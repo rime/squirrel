@@ -285,8 +285,13 @@ final class SquirrelPanel: NSPanel {
   }
   
   func load(config: SquirrelConfig, forDarkMode isDark: Bool) {
-    let theme = isDark ? view.darkTheme : view.lightTheme
-    theme.load(config: config, dark: isDark)
+    if isDark {
+      view.darkTheme = SquirrelTheme()
+      view.darkTheme.load(config: config, dark: true)
+    } else {
+      view.lightTheme = SquirrelTheme()
+      view.lightTheme.load(config: config, dark: isDark)
+    }
   }
 }
 
