@@ -9,6 +9,7 @@ source common.sh
 pkgbuild \
     --info PackageInfo \
     --root "${PROJECT_ROOT}/build/Release" \
+    --filter '.*\.swiftmodule$' \
     --component-plist Squirrel-component.plist \
     --identifier "${BUNDLE_IDENTIFIER}" \
     --version "$(get_app_version)" \
