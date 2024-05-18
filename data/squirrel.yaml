@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.4'
+config_version: '0.99'
 
 # options: last | default | _custom_
 # last: the last used latin keyboard layout
@@ -17,34 +17,37 @@ show_notifications_when: appropriate
 
 style:
   color_scheme: native
-  # optional: define both light and dark color schemes to match system appearance
+  # Optional: define both light and dark color schemes to match system appearance
   #color_scheme: solarized_light
   #color_scheme_dark: solarized_dark
 
   # Deprecated since 0.36, Squirrel 0.15
   #horizontal: false
-  # NOTE: do not set a default value for `candidate_list_layout`, in order to
-  # keep the deprecated `horizontal` option working for existing users.
   candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
   inline_preedit: true
-  # whether to embed selected candidate as text in input field
-  #inline_candidate: false
-  # whether candidate panel stick to screen edge to reduce jumping
-  #memorize_size: true
-  # whether transparent colors stack on each other
-  #mutual_exclusive: false
+  # Whether to embed selected candidate as text in input field
+  inline_candidate: false
+  # Whether candidate panel stick to screen edge to reduce jumping
+  memorize_size: true
+  # Whether transparent colors stack on each other
+  mutual_exclusive: false
+  # Whether to use a translucent background. Only visible when background color is transparent
+  translucency: false
 
   corner_radius: 7
   hilited_corner_radius: 0
   border_height: -2
   border_width: -2
-  # space between candidates in stacked layout
+  # Space between candidates in stacked layout
   line_spacing: 5
-  # space between preedit and candidates in non-inline mode
+  # Space between preedit and candidates in non-inline mode
   spacing: 8
-  # a number greater than 0 renders shadow around high-lighted candidate
-  #shadow_size: 0
+  # A number greater than 0 renders shadow around high-lighted candidate
+  shadow_size: 0
+  # Controls non-hililighted candidate background size, relative to highlighted
+  # Nagetive means shrink, positive meas expand
+  #surrounding_extra_expansion: 0
 
   # format using %@ and %c is deprecated since 0.4, Squirrel 1.0
   # %@ is automatically expanded to "[candidate] [comment]"
@@ -52,7 +55,7 @@ style:
   candidate_format: '[label]. [candidate] [comment]'
 
   # adjust the base line of vertical text
-  #base_offset: 6
+  #base_offset: 0
   font_face: 'Avenir'
   font_point: 15
   #label_font_face: 'Avenir'
