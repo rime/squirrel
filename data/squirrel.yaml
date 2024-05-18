@@ -1,7 +1,7 @@
 # Squirrel settings
 # encoding: utf-8
 
-config_version: '0.99'
+config_version: '1.0'
 
 # options: last | default | _custom_
 # last: the last used latin keyboard layout
@@ -49,7 +49,7 @@ style:
   # Nagetive means shrink, positive meas expand
   #surrounding_extra_expansion: 0
 
-  # format using %@ and %c is deprecated since 0.4, Squirrel 1.0
+  # format using %@ and %c is deprecated since 1.0, Squirrel 1.0
   # %@ is automatically expanded to "[candidate] [comment]"
   # and %c is replaced by "[label]"
   candidate_format: '[label]. [candidate] [comment]'
