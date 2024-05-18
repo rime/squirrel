@@ -10,8 +10,7 @@ import InputMethodKit
 
 final class SquirrelInstaller {
   enum InputMode: String, CaseIterable {
-    static let primary = Self.main
-    case main = "im.rime.inputmethod.Squirrel"
+    static let primary = Self.hant
     case hans = "im.rime.inputmethod.Squirrel.Hans"
     case hant = "im.rime.inputmethod.Squirrel.Hant"
   }
@@ -77,8 +76,10 @@ final class SquirrelInstaller {
           let selectable = getBool(for: inputSource, key: kTISPropertyInputSourceIsSelectCapable),
           let selected = getBool(for: inputSource, key: kTISPropertyInputSourceIsSelected),
          enabled && selectable && !selected {
-          let error = TISSelectInputSource(inputSource)
-          print("Selection \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)")
+        let error = TISSelectInputSource(inputSource)
+        print("Selection \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)")
+      } else {
+        print("Failed to select \(mode.rawValue)")
       }
     }
   }
