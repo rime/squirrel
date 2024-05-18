@@ -16,8 +16,6 @@ final class SquirrelInputController: IMKInputController {
   private var selRange: NSRange = NSMakeRange(NSNotFound, 0)
   private var caretPos: Int = 0
   private var lastModifiers: NSEvent.ModifierFlags = .init()
-  private var lastEventType: NSEvent.EventType = .init(rawValue: 0)!
-  private var lastModifiersChange: NSEvent.ModifierFlags = .init()
   private var session: RimeSessionId = 0
   private var schemaId: String = ""
   private var inlinePreedit = false
@@ -61,35 +59,24 @@ final class SquirrelInputController: IMKInputController {
       }
       // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
       var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
-      let lastRimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: lastModifiers.rawValue)
       // For flags-changed event, keyCode is available since macOS 10.15
       // (#715)
       let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: event.keyCode, keychar: nil, shift: false, caps: false)
-      let chording = rimeAPI.get_option(session, "_chord_typing")
       
       if changes.contains(.capsLock) {
         // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
         // while NSFlagsChanged event has the flag changed already.
         // so it is necessary to revert kLockMask.
         rimeModifiers ^= kLockMask.rawValue
-        handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+        _ = processKey(rimeKeycode, modifiers: rimeModifiers)
       }
       for flag in [NSEvent.ModifierFlags.shift, .control, .option, .command] {
         if changes.contains(flag) {
-          // different behavier in chording
-          if chording {
-            let releaseMask = modifiers.contains(flag) ? 0 : kReleaseMask.rawValue
-            handled = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
-          } else {
-            // flag is released and the change equals last change, so no other event between pressing and releasing
-            if lastEventType == .flagsChanged && !modifiers.contains(flag) && changes == lastModifiersChange {
-              handled = processKey(rimeKeycode, modifiers: lastRimeModifiers)
-            }
-          }
+          let releaseMask = modifiers.contains(flag) ? 0 : kReleaseMask.rawValue
+          _ = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
         }
       }
       lastModifiers = modifiers
-      lastModifiersChange = changes
       
       rimeUpdate()
       
@@ -117,13 +104,11 @@ final class SquirrelInputController: IMKInputController {
           rimeUpdate()
         }
       }
-      lastModifiersChange = .init()
       
     default:
       break
     }
     
-    lastEventType = event.type
     return handled
   }
   
@@ -359,7 +344,7 @@ private extension SquirrelInputController {
   func destroySession() {
     // print("[DEBUG] destroySession:")
     if session != 0 {
-      let _ = rimeAPI.destroy_session(session)
+      _ = rimeAPI.destroy_session(session)
       session = 0
     }
     clearChord()
@@ -414,7 +399,7 @@ private extension SquirrelInputController {
     if rimeAPI.get_commit(session, &commitText) {
       if let text = commitText.text {
         commit(string: String(cString: text))
-        let _ = rimeAPI.free_commit(&commitText)
+        _ = rimeAPI.free_commit(&commitText)
       }
     }
   }
@@ -437,7 +422,7 @@ private extension SquirrelInputController {
           rimeAPI.set_option(session, "soft_cursor", !inlinePreedit)
         }
       }
-      let _ = rimeAPI.free_status(&status)
+      _ = rimeAPI.free_status(&status)
     }
     
     var ctx = RimeContext.rimeStructInit()
@@ -499,7 +484,7 @@ private extension SquirrelInputController {
         }
       }
       showPanel(preedit: inlinePreedit ? "" : preedit, selRange: NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end)), caretPos: caretPos.utf16Offset(in: preedit), candidates: candidates, comments: comments, labels: labels, highlighted: Int(ctx.menu.highlighted_candidate_index))
-      let _ = rimeAPI.free_context(&ctx)
+      _ = rimeAPI.free_context(&ctx)
     } else {
       hidePalettes()
     }

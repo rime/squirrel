@@ -75,13 +75,13 @@ final class SquirrelPanel: NSPanel {
       let (index, preeditIndex) = view.click(at: mousePosition())
       if let preeditIndex = preeditIndex, preeditIndex >= 0 && preeditIndex < preedit.utf16.count {
         if preeditIndex < caretPos {
-          let _ = inputController?.moveCaret(forward: true)
+          _ = inputController?.moveCaret(forward: true)
         } else if preeditIndex > caretPos {
-          let _ = inputController?.moveCaret(forward: false)
+          _ = inputController?.moveCaret(forward: false)
         }
       }
       if let index = index, index == self.index && index >= 0 && index < candidates.count {
-        let _ = inputController?.selectCandidate(index)
+        _ = inputController?.selectCandidate(index)
       }
     case .mouseEntered:
       acceptsMouseMovedEvents = true
@@ -101,9 +101,9 @@ final class SquirrelPanel: NSPanel {
       // Scrollboard span
       } else if event.phase == .ended || (event.phase == .init(rawValue: 0) && event.momentumPhase != .init(rawValue: 0)) {
         if abs(scrollDirection.dx) > abs(scrollDirection.dy) && abs(scrollDirection.dx) > 10 {
-          let _ = inputController?.page(up: (scrollDirection.dx < 0) == vertical)
+          _ = inputController?.page(up: (scrollDirection.dx < 0) == vertical)
         } else if abs(scrollDirection.dx) < abs(scrollDirection.dy) && abs(scrollDirection.dy) > 10 {
-          let _ = inputController?.page(up: scrollDirection.dx > 0)
+          _ = inputController?.page(up: scrollDirection.dx > 0)
         }
         scrollDirection = .zero
       // Mouse scroll wheel
@@ -118,7 +118,7 @@ final class SquirrelPanel: NSPanel {
           scrollDirection = .zero
         }
         if abs(scrollDirection.dy) > 10 {
-          let _ = inputController?.page(up: scrollDirection.dy > 0)
+          _ = inputController?.page(up: scrollDirection.dy > 0)
           scrollDirection = .zero
         }
       } else {

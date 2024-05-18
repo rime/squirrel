@@ -34,7 +34,7 @@ final class SquirrelConfig {
   
   func close() {
     if isOpen {
-      let _ = rimeAPI.config_close(&config)
+      _ = rimeAPI.config_close(&config)
       baseConfig = nil
       isOpen = false
     }
@@ -117,7 +117,7 @@ final class SquirrelConfig {
     let rootKey = "app_options/\(appName)"
     var appOptions = [String : Bool]()
     var iterator = RimeConfigIterator()
-    let _ = rimeAPI.config_begin_map(&iterator, &config, rootKey)
+    _ = rimeAPI.config_begin_map(&iterator, &config, rootKey)
     while rimeAPI.config_next(&iterator) {
       // print("[DEBUG] option[\(iterator.index)]: \(String(cString: iterator.key)), path: (\(String(cString: iterator.path))")
       if let key = iterator.key, let path = iterator.path, let value = getBool(String(cString: path)) {

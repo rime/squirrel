@@ -72,7 +72,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   
   func syncUserData() {
     print("Sync user data")
-    let _ = rimeAPI.sync_user_data()
+    _ = rimeAPI.sync_user_data()
   }
   
   func openLogFolder() {
@@ -153,7 +153,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     if rimeAPI.start_maintenance(fullCheck) {
       // update squirrel config
       // print("[DEBUG] maintenance suceeds")
-      let _ = rimeAPI.deploy_config_file("squirrel.yaml", "config_version")
+      _ = rimeAPI.deploy_config_file("squirrel.yaml", "config_version")
     } else {
       // print("[DEBUG] maintenance fails")
     }
