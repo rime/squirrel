@@ -59,7 +59,7 @@ final class SquirrelInstaller {
       return
     }
     for (mode, inputSource) in getInputSource(modes: modes) {
-      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled), enabled {
+      if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled), !enabled {
         let error = TISEnableInputSource(inputSource)
         print("Enable \(error == noErr ? "succeeds" : "fails") for input source: \(mode.rawValue)");
       }
