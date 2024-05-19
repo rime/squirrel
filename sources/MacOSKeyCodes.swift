@@ -10,21 +10,21 @@ import AppKit
 
 struct SquirrelKeycode {
   
-  static func osxModifiersToRime(modifiers: UInt) -> UInt32 {
+  static func osxModifiersToRime(modifiers: NSEvent.ModifierFlags) -> UInt32 {
     var ret: UInt32 = 0
-    if modifiers & NSEvent.ModifierFlags.capsLock.rawValue != 0 {
+    if modifiers.contains(.capsLock) {
       ret |= kLockMask.rawValue
     }
-    if modifiers & NSEvent.ModifierFlags.shift.rawValue != 0 {
+    if modifiers.contains(.shift) {
       ret |= kShiftMask.rawValue
     }
-    if modifiers & NSEvent.ModifierFlags.control.rawValue != 0 {
+    if modifiers.contains(.control) {
       ret |= kControlMask.rawValue
     }
-    if modifiers & NSEvent.ModifierFlags.option.rawValue != 0 {
+    if modifiers.contains(.option) {
       ret |= kAltMask.rawValue
     }
-    if modifiers & NSEvent.ModifierFlags.command.rawValue != 0 {
+    if modifiers.contains(.command) {
       ret |= kSuperMask.rawValue
     }
     return ret

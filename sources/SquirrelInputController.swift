@@ -58,7 +58,7 @@ final class SquirrelInputController: IMKInputController {
         break
       }
       // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
-      var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
+      var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
       // For flags-changed event, keyCode is available since macOS 10.15
       // (#715)
       let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: event.keyCode, keychar: nil, shift: false, caps: false)
@@ -99,7 +99,7 @@ final class SquirrelInputController: IMKInputController {
                                                            shift: modifiers.contains(.shift),
                                                            caps: modifiers.contains(.capsLock))
         if rimeKeycode != 0 {
-          let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers.rawValue)
+          let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
           handled = processKey(rimeKeycode, modifiers: rimeModifiers)
           rimeUpdate()
         }
