@@ -78,6 +78,9 @@ struct SquirrelApp {
         case "--sync":
           DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
           return true
+        case "--help":
+          print(helpDoc)
+          return true
         default:
           break
         }
@@ -147,4 +150,18 @@ struct SquirrelApp {
       print("Error: \(error.localizedDescription)")
     }
   }
+  
+  static let helpDoc = """
+Supported arguments:
+Perform actions:
+  --quit                     quit all Squirrel process
+  --reload                   deploy
+  --sync                     sync user data
+  --build                    build all schemas in current directory
+Install Squirrel:
+  --install, --register-input-source    register input source
+  --enable-input-source [source id...]  input source list optional
+  --disable-input-source [source id...] input source list optional
+  --select-input-source [source id]     input source optional
+"""
 }

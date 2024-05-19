@@ -34,6 +34,7 @@
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
+					<string>Latn</string>
 					<string>Hans</string>
 					<string>Hant</string>
 				</array>
@@ -62,6 +63,7 @@
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
+					<string>Latn</string>
 					<string>Hant</string>
 					<string>Hans</string>
 				</array>
@@ -88,7 +90,7 @@
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>
-	<string>im.rime.inputmethod.Squirrel_1_Connection</string>
+	<string>Squirrel_Connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>Squirrel.SquirrelInputController</string>
 	<key>InputMethodServerDelegateClass</key>
