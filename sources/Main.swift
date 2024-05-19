@@ -39,13 +39,31 @@ struct SquirrelApp {
           installer.register()
           return true
         case "--enable-input-source":
+          if args.count > 2 {
+            let modes = args[2...].map { SquirrelInstaller.InputMode(rawValue: $0) }.compactMap { $0 }
+            if !modes.isEmpty {
+              installer.enable(modes: modes)
+              return true
+            }
+          }
           installer.enable()
           return true
         case "--disable-input-source":
+          if args.count > 2 {
+            let modes = args[2...].map { SquirrelInstaller.InputMode(rawValue: $0) }.compactMap { $0 }
+            if !modes.isEmpty {
+              installer.disable(modes: modes)
+              return true
+            }
+          }
           installer.disable()
           return true
         case "--select-input-source":
-          installer.select()
+          if args.count > 2, let mode = SquirrelInstaller.InputMode(rawValue: args[2]) {
+            installer.select(mode: mode)
+          } else {
+            installer.select()
+          }
           return true
         case "--build":
           // Notification

@@ -10,7 +10,7 @@ import InputMethodKit
 
 final class SquirrelInstaller {
   enum InputMode: String, CaseIterable {
-    static let primary = Self.hant
+    static let primary = Self.hans
     case hans = "im.rime.inputmethod.Squirrel.Hans"
     case hant = "im.rime.inputmethod.Squirrel.Hant"
   }
@@ -42,8 +42,8 @@ final class SquirrelInstaller {
   
   func register() {
     let enabledInputModes = enabledModes()
-    if enabledInputModes.count > 0 {
-      print("User already registered Squirrel method(s): \(enabledInputModes)")
+    if !enabledInputModes.isEmpty {
+      print("User already registered Squirrel method(s): \(enabledInputModes.map { $0.rawValue })")
       // Already registered.
       return
     }
@@ -53,8 +53,8 @@ final class SquirrelInstaller {
   
   func enable(modes: [InputMode] = [.primary]) {
     let enabledInputModes = enabledModes()
-    if Set(modes).isSubset(of: enabledInputModes) {
-      print("User already enabled Squirrel method(s): \(enabledInputModes)")
+    if !enabledInputModes.isEmpty {
+      print("User already enabled Squirrel method(s): \(enabledInputModes.map { $0.rawValue })")
       // keep user's manually enabled input modes.
       return
     }
@@ -69,7 +69,8 @@ final class SquirrelInstaller {
   func select(mode: InputMode = .primary) {
     let enabledInputModes = enabledModes()
     if !enabledInputModes.contains(mode) {
-      enable(modes: [mode])
+      print("Target not enabled yet: \(mode.rawValue)")
+      return
     }
     for (mode, inputSource) in getInputSource(modes: [mode]) {
       if let enabled = getBool(for: inputSource, key: kTISPropertyInputSourceIsEnabled),
