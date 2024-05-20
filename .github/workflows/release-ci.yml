@@ -40,7 +40,7 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         uses: ncipollo/release-action@v1
         with:
-          artifacts: "package/*.zip"
+          artifacts: "package/Squirrel-*.pkg"
           body: |
             ${{ steps.release_log.outputs.changelog }}
           draft: true
@@ -55,4 +55,4 @@ jobs:
           prerelease: true
           title: "Nightly build"
           files: |
-            package/*.zip
+            package/Squirrel-*.pkg

@@ -36,7 +36,12 @@ else
     create_archive
 fi
 
-signature=$(sign_update "${target_pkg}")
+if signature=$(sign_update "${target_pkg}"); then
+    echo "sign update is successful."
+else
+    echo "sign_update not working, skiping signing update."
+    exit 0
+fi
 edSignature=$(echo $signature | awk -F'"' '{print $2}')
 length=$(echo $signature | awk -F'"' '{print $4}')
 pub_date=$(date -R)

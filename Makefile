@@ -133,7 +133,7 @@ clean-sparkle:
 
 package: release
 ifdef DEV_ID
-	package/sign.bash $(DEV_ID)
+	bash package/sign_app $(DEV_ID)
 endif
 	bash package/make_package
 ifdef DEV_ID
