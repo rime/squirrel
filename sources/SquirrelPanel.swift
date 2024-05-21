@@ -223,7 +223,11 @@ final class SquirrelPanel: NSPanel {
       
       let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
       for range in line.string.ranges(of: /\[candidate\]/) {
-        line.addAttributes(attrs, range: convert(range: range, in: line.string))
+        let convertedRange = convert(range: range, in: line.string)
+        line.addAttributes(attrs, range: convertedRange)
+        if candidate.count <= 5 {
+          line.addAttribute(.noBreak, value: true, range: NSMakeRange(convertedRange.location+1, convertedRange.length-1))
+        }
       }
       for range in line.string.ranges(of: /\[comment\]/) {
         line.addAttributes(commentAttrs, range: convert(range: range, in: line.string))
@@ -232,6 +236,10 @@ final class SquirrelPanel: NSPanel {
       let labeledLine = line.copy() as! NSAttributedString
       line.mutableString.replaceOccurrences(of: "[candidate]", with: candidate, range: NSMakeRange(0, line.length))
       line.mutableString.replaceOccurrences(of: "[comment]", with: comment, range: NSMakeRange(0, line.length))
+      
+      if line.length <= 10 {
+        line.addAttribute(.noBreak, value: true, range: NSMakeRange(1, line.length-1))
+      }
       
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
       if i > 0 {

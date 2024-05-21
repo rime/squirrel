@@ -10,6 +10,7 @@ import AppKit
 final class SquirrelView: NSView {
   let textView: NSTextView
   
+  private let squirrelLayoutDelegate: SquirrelLayoutDelegate
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
   var preeditRange = NSMakeRange(NSNotFound, 0)
@@ -33,10 +34,12 @@ final class SquirrelView: NSView {
   }
   
   override init(frame frameRect: NSRect) {
+    squirrelLayoutDelegate = SquirrelLayoutDelegate()
     textView = NSTextView(frame: frameRect)
     textView.drawsBackground = false
     textView.isEditable = false
     textView.isSelectable = false
+    textView.textLayoutManager?.delegate = squirrelLayoutDelegate
     super.init(frame: frameRect)
     textContainer.lineFragmentPadding = 0
     self.wantsLayer = true
@@ -57,7 +60,7 @@ final class SquirrelView: NSView {
     guard range.location != NSNotFound else { return nil }
     guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nil }
     guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nil }
-    return NSTextRange(location: startLocation, end: endLocation) ?? textLayoutManager.documentRange
+    return NSTextRange(location: startLocation, end: endLocation)
   }
   
   // Get the rectangle containing entire contents, expensive to calculate
@@ -678,4 +681,18 @@ private extension SquirrelView {
     newRect.origin.y += currentTheme.hilitedCornerRadius + currentTheme.borderWidth
     return newRect
   }
+}
+
+fileprivate class SquirrelLayoutDelegate: NSObject, NSTextLayoutManagerDelegate {
+  func textLayoutManager(_ textLayoutManager: NSTextLayoutManager, shouldBreakLineBefore location: any NSTextLocation, hyphenating: Bool) -> Bool {
+    let index = textLayoutManager.offset(from: textLayoutManager.documentRange.location, to: location)
+    if let attributes = textLayoutManager.textContainer?.textView?.textContentStorage?.attributedString?.attributes(at: index, effectiveRange: nil), let noBreak = attributes[.noBreak] as? Bool, noBreak {
+      return false
+    }
+    return true
+  }
+}
+
+extension NSAttributedString.Key {
+  static let noBreak = NSAttributedString.Key("noBreak")
 }
