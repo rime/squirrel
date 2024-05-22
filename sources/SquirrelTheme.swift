@@ -7,6 +7,18 @@
 
 import AppKit
 
+infix operator ?= : AssignmentPrecedence
+fileprivate func ?=<T>(left: inout T, right: T?) {
+  if let right = right {
+    left = right
+  }
+}
+fileprivate func ?=<T>(left: inout T?, right: T?) {
+  if let right = right {
+    left = right
+  }
+}
+
 final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
   static let defaultFontSize: CGFloat = NSFont.systemFontSize
@@ -168,25 +180,25 @@ final class SquirrelTheme {
   func load(config: SquirrelConfig, dark: Bool) {
     linear = config.updateCandidateListLayout(prefix: "style")
     vertical = config.updateTextOrientation(prefix: "style")
-    inlinePreedit = config.getBool("style/inline_preedit") ?? inlinePreedit
-    inlineCandidate = config.getBool("style/inline_candidate") ?? inlineCandidate
-    translucency = config.getBool("style/translucency") ?? translucency
-    mutualExclusive = config.getBool("style/mutual_exclusive") ?? mutualExclusive
-    memorizeSize = config.getBool("style/memorize_size") ?? memorizeSize
+    inlinePreedit ?= config.getBool("style/inline_preedit")
+    inlineCandidate ?= config.getBool("style/inline_candidate")
+    translucency ?= config.getBool("style/translucency")
+    mutualExclusive ?= config.getBool("style/mutual_exclusive")
+    memorizeSize ?= config.getBool("style/memorize_size")
     
-    statusMessageType = .init(rawValue: config.getString("style/status_message_type") ?? "") ?? statusMessageType
-    candidateFormat = config.getString("style/candidate_format") ?? candidateFormat
+    statusMessageType ?= .init(rawValue: config.getString("style/status_message_type") ?? "")
+    candidateFormat ?= config.getString("style/candidate_format")
     
-    alpha = max(0, min(1, config.getDouble("style/alpha") ?? alpha))
-    cornerRadius = config.getDouble("style/corner_radius") ?? cornerRadius
-    hilitedCornerRadius = config.getDouble("style/hilited_corner_radius") ?? hilitedCornerRadius
-    surroundingExtraExpansion = config.getDouble("style/surrounding_extra_expansion") ?? surroundingExtraExpansion
-    borderHeight = config.getDouble("style/border_height") ?? borderHeight
-    borderWidth = config.getDouble("style/border_width") ?? borderWidth
-    linespace = config.getDouble("style/line_spacing") ?? linespace
-    preeditLinespace = config.getDouble("style/spacing") ?? preeditLinespace
-    baseOffset = config.getDouble("style/base_offset") ?? baseOffset
-    shadowSize = max(0, config.getDouble("style/shadow_size") ?? shadowSize)
+    alpha ?= config.getDouble("style/alpha").map { min(1, max(0, $0)) }
+    cornerRadius ?= config.getDouble("style/corner_radius")
+    hilitedCornerRadius ?= config.getDouble("style/hilited_corner_radius")
+    surroundingExtraExpansion ?= config.getDouble("style/surrounding_extra_expansion")
+    borderHeight ?= config.getDouble("style/border_height")
+    borderWidth ?= config.getDouble("style/border_width")
+    linespace ?= config.getDouble("style/line_spacing")
+    preeditLinespace ?= config.getDouble("style/spacing")
+    baseOffset ?= config.getDouble("style/base_offset")
+    shadowSize ?= config.getDouble("style/shadow_size").map { max(0, $0) }
     
     var fontName = config.getString("style/font_face")
     var fontSize = config.getDouble("style/font_point")
@@ -200,47 +212,47 @@ final class SquirrelTheme {
       native = false
       let prefix = "preset_color_schemes/\(colorScheme)"
       colorSpace = .from(name: config.getString("\(prefix)/color_space") ?? "")
-      backgroundColor = config.getColor("\(prefix)/back_color", inSpace: colorSpace) ?? backgroundColor
+      backgroundColor ?= config.getColor("\(prefix)/back_color", inSpace: colorSpace)
       highlightedPreeditColor = config.getColor("\(prefix)/hilited_back_color", inSpace: colorSpace)
       highlightedBackColor = config.getColor("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
       preeditBackgroundColor = config.getColor("\(prefix)/preedit_back_color", inSpace: colorSpace)
       candidateBackColor = config.getColor("\(prefix)/candidate_back_color", inSpace: colorSpace)
       borderColor = config.getColor("\(prefix)/border_color", inSpace: colorSpace)
       
-      textColor = config.getColor("\(prefix)/text_color", inSpace: colorSpace) ?? textColor
+      textColor ?= config.getColor("\(prefix)/text_color", inSpace: colorSpace)
       highlightedTextColor = config.getColor("\(prefix)/hilited_text_color", inSpace: colorSpace) ?? textColor
       candidateTextColor = config.getColor("\(prefix)/candidate_text_color", inSpace: colorSpace) ?? textColor
       highlightedCandidateTextColor = config.getColor("\(prefix)/hilited_candidate_text_color", inSpace: colorSpace) ?? highlightedTextColor
       candidateLabelColor = config.getColor("\(prefix)/label_color", inSpace: colorSpace)
-      highlightedCandidateLabelColor = config.getColor("\(prefix)/label_hilited_color", inSpace: colorSpace) ?? config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
+      highlightedCandidateLabelColor = config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
       commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
       highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
       
       // the following per-color-scheme configurations, if exist, will
       // override configurations with the same name under the global 'style'
       // section
-      inlinePreedit = config.getBool("\(prefix)/inline_preedit") ?? inlinePreedit
-      inlineCandidate = config.getBool("\(prefix)/inline_candidate") ?? inlineCandidate
-      translucency = config.getBool("\(prefix)/translucency") ?? translucency
-      mutualExclusive = config.getBool("\(prefix)/mutual_exclusive") ?? mutualExclusive
-      candidateFormat = config.getString("\(prefix)/candidate_format") ?? candidateFormat
-      fontName = config.getString("\(prefix)/font_face") ?? fontName
-      fontSize = config.getDouble("\(prefix)/font_point") ?? fontSize
-      labelFontName = config.getString("\(prefix)/label_font_face") ?? labelFontName
-      labelFontSize = config.getDouble("\(prefix)/label_font_point") ?? labelFontSize
-      commentFontName = config.getString("\(prefix)/comment_font_face") ?? commentFontName
-      commentFontSize = config.getDouble("\(prefix)/comment_font_point") ?? commentFontSize
+      inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")
+      inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
+      translucency ?= config.getBool("\(prefix)/translucency")
+      mutualExclusive ?= config.getBool("\(prefix)/mutual_exclusive")
+      candidateFormat ?= config.getString("\(prefix)/candidate_format")
+      fontName ?= config.getString("\(prefix)/font_face")
+      fontSize ?= config.getDouble("\(prefix)/font_point")
+      labelFontName ?= config.getString("\(prefix)/label_font_face")
+      labelFontSize ?= config.getDouble("\(prefix)/label_font_point")
+      commentFontName ?= config.getString("\(prefix)/comment_font_face")
+      commentFontSize ?= config.getDouble("\(prefix)/comment_font_point")
       
-      alpha = max(0, min(1, config.getDouble("\(prefix)/alpha") ?? alpha))
-      cornerRadius = config.getDouble("\(prefix)/corner_radius") ?? cornerRadius
-      hilitedCornerRadius = config.getDouble("\(prefix)/hilited_corner_radius") ?? hilitedCornerRadius
-      surroundingExtraExpansion = config.getDouble("\(prefix)/surrounding_extra_expansion") ?? surroundingExtraExpansion
-      borderHeight = config.getDouble("\(prefix)/border_height") ?? borderHeight
-      borderWidth = config.getDouble("\(prefix)/border_width") ?? borderWidth
-      linespace = config.getDouble("\(prefix)/line_spacing") ?? linespace
-      preeditLinespace = config.getDouble("\(prefix)/spacing") ?? preeditLinespace
-      baseOffset = config.getDouble("\(prefix)/base_offset") ?? baseOffset
-      shadowSize = config.getDouble("\(prefix)/shadow_size") ?? shadowSize
+      alpha ?= config.getDouble("\(prefix)/alpha").map { max(0, min(1, $0)) }
+      cornerRadius ?= config.getDouble("\(prefix)/corner_radius")
+      hilitedCornerRadius ?= config.getDouble("\(prefix)/hilited_corner_radius")
+      surroundingExtraExpansion ?= config.getDouble("\(prefix)/surrounding_extra_expansion")
+      borderHeight ?= config.getDouble("\(prefix)/border_height")
+      borderWidth ?= config.getDouble("\(prefix)/border_width")
+      linespace ?= config.getDouble("\(prefix)/line_spacing")
+      preeditLinespace ?= config.getDouble("\(prefix)/spacing")
+      baseOffset ?= config.getDouble("\(prefix)/base_offset")
+      shadowSize ?= config.getDouble("\(prefix)/shadow_size").map { max(0, $0) }
     } else {
       native = true
     }
