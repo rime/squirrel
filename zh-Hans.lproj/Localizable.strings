@@ -10,7 +10,7 @@
 "deploy_update" = "更新输入法引擎…";
 "deploy_start" = "部署输入法引擎…";
 "deploy_success" = "部署完成。";
-"deploy_failure" = "有错误！请查看日志 $TMPDIR/rime.squirrel.INFO";
+"deploy_failure" = "有错误！请查看日志 $TMPDIR/Squirrel.INFO";
 "ascii_mode" = "Ａ";
 "!ascii_mode" = "中";
 "full_shape" = "全角";

@@ -3,7 +3,7 @@
 "deploy_update" = "Deploying Rime for updates.";
 "deploy_start" = "Deploying Rime input method engine.";
 "deploy_success" = "Squirrel is ready.";
-"deploy_failure" = "Error occurred. See log file $TMPDIR/rime.squirrel.INFO.";
+"deploy_failure" = "Error occurred. See log file $TMPDIR/Squirrel.INFO.";
 "ascii_mode" = "Ａ";
 "!ascii_mode" = "中";
 "full_shape" = "Full shape";
