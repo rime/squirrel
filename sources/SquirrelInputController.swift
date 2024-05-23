@@ -70,14 +70,24 @@ final class SquirrelInputController: IMKInputController {
         rimeModifiers ^= kLockMask.rawValue
         _ = processKey(rimeKeycode, modifiers: rimeModifiers)
       }
+      
+      // Need to process release before modifier down. Because
+      // sometimes release event is delayed to next modifier keydown.
+      var buffer = [(keycode: UInt32, modifier: UInt32)]()
       for flag in [NSEvent.ModifierFlags.shift, .control, .option, .command] {
         if changes.contains(flag) {
-          let releaseMask = modifiers.contains(flag) ? 0 : kReleaseMask.rawValue
-          _ = processKey(rimeKeycode, modifiers: rimeModifiers | releaseMask)
+          if modifiers.contains(flag) { // New modifier
+            buffer.append((keycode: rimeKeycode, modifier: rimeModifiers))
+          } else { // Release
+            buffer.insert((keycode: rimeKeycode, modifier: rimeModifiers | kReleaseMask.rawValue), at: 0)
+          }
         }
       }
-      lastModifiers = modifiers
+      for (keycode, modifier) in buffer {
+        _ = processKey(keycode, modifiers: modifier)
+      }
       
+      lastModifiers = modifiers
       rimeUpdate()
       
     case .keyDown:
