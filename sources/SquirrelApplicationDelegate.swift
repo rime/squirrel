@@ -261,13 +261,11 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
   if !delegate.enableNotifications {
     return
   }
-  // schema change
+
   if messageType == "schema", let messageValue = messageValue, let schemaName = try? /^[^\/]*\/(.*)$/.firstMatch(in: messageValue)?.output.1 {
     delegate.showStatusMessage(msgTextLong: String(schemaName), msgTextShort: String(schemaName))
     return
-  }
-  // option change
-  if messageType == "option" {
+  } else if messageType == "option" {
     let state = messageValue?.first != "!"
     let optionName = if state {
       messageValue
@@ -288,7 +286,9 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
 
 private extension SquirrelApplicationDelegate {
   func showStatusMessage(msgTextLong: String?, msgTextShort: String?) {
-    panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
+    if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
+      panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
+    }
   }
   
   func shutdownRime() {
