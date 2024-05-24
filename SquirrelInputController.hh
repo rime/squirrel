@@ -32,13 +32,13 @@ typedef NS_ENUM(NSUInteger, SquirrelIndex) {
   kVoidSymbol = 0xffffff  // XK_VoidSymbol
 };
 
-@property(nonatomic, weak, readonly, nullable, direct, class)
+@property(nonatomic, readonly, weak, nullable, direct, class)
     SquirrelInputController* currentController;
-@property(nonatomic, strong, readonly, nonnull)
+@property(nonatomic, readonly, strong, nonnull)
     NSAppearance* viewEffectiveAppearance API_AVAILABLE(macos(10.14));
-@property(nonatomic, strong, readonly, nonnull, direct)
+@property(nonatomic, readonly, strong, nonnull, direct)
     NSMutableArray<NSString*>* candidateTexts;
-@property(nonatomic, strong, readonly, nonnull, direct)
+@property(nonatomic, readonly, strong, nonnull, direct)
     NSMutableArray<NSString*>* candidateComments;
 
 - (void)moveCursor:(NSUInteger)cursorPosition

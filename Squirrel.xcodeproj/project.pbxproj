@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 51;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -74,12 +74,12 @@
 		7B5488C11D2DACDF0056A1BE /* luna_quanpin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */; };
 		7B5488C91D2DACDF0056A1BE /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54883B1D2DAAD10056A1BE /* symbols.yaml */; };
 		7BDB21231C6EF1BE0025E351 /* SquirrelConfig.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7BDB21221C6EF1BE0025E351 /* SquirrelConfig.mm */; };
-		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072D0486CEB800E47090 /* main.mm in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.mm */; settings = {ATTRIBUTES = (); }; };
 		A45578F51146A75200592C6E /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = A45578F41146A75200592C6E /* MainMenu.xib */; };
 		A47C48DF105E8CE8006D528B /* macos_keycode.mm in Sources */ = {isa = PBXBuildFile; fileRef = A47C48DE105E8CE8006D528B /* macos_keycode.mm */; };
-		A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = A4FC48C90F6530EF0069BE81 /* Localizable.strings */; };
 		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
+		F42760A92C06EC0C0050B08A /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F42760A82C06EC0C0050B08A /* InfoPlist.xcstrings */; };
+		F42760AB2C06EC0C0050B08A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F42760AA2C06EC0C0050B08A /* Localizable.xcstrings */; };
 		F4483C062BDE44B1005B6DE7 /* Quartz.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4483C052BDE4483005B6DE7 /* Quartz.framework */; };
 		F4483C072BDE44B5005B6DE7 /* Sparkle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 447765C725C30E6B002415AF /* Sparkle.framework */; };
 		F4483C082BDE44C0005B6DE7 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F4483C022BDE446E005B6DE7 /* Cocoa.framework */; };
@@ -208,7 +208,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		089C165DFE840E0CC02AAC07 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = main.mm; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -226,8 +225,6 @@
 		442C64901F7A404A0027EFBE /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
 		4443A8391828CC5100731305 /* input_source.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = input_source.mm; sourceTree = "<group>"; };
 		446C01D61F767BD400A6C23E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		446D18E014F0191200EC3116 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
-		446D18E114F0193100EC3116 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/InfoPlist.strings"; sourceTree = "<group>"; };
 		447765C725C30E6B002415AF /* Sparkle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Sparkle.framework; path = Frameworks/Sparkle.framework; sourceTree = "<group>"; };
 		448363D925BDBBBF0022C7BA /* pinyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = pinyin.yaml; path = data/plum/pinyin.yaml; sourceTree = "<group>"; };
 		448363DA25BDBBBF0022C7BA /* zhuyin.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = zhuyin.yaml; path = data/plum/zhuyin.yaml; sourceTree = "<group>"; };
@@ -242,16 +239,12 @@
 		44CB5E872585EFAE0022654F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
 		44CD7D9E1828D981006E9222 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = rime.pdf; sourceTree = "<group>"; };
-		44DA191A152B8CB600FB8EF0 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hans"; path = "zh-Hans.lproj/MainMenu.xib"; sourceTree = "<group>"; };
-		44DA191B152B8CBC00FB8EF0 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = "zh-Hant"; path = "zh-Hant.lproj/MainMenu.xib"; sourceTree = "<group>"; };
 		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
 		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
 		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		44F7708E152B3334005CF491 /* dsa_pub.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dsa_pub.pem; sourceTree = "<group>"; };
 		44F84AD514E94C490005D70B /* SquirrelPanel.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SquirrelPanel.hh; sourceTree = "<group>"; };
 		44F84AD614E94C490005D70B /* SquirrelPanel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = SquirrelPanel.mm; sourceTree = "<group>"; };
-		44FA4D891685997300116C1F /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
-		44FA4D8E16859B2900116C1F /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -294,8 +287,10 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		A44571AB0DBF42C200F793F9 /* macos_keycode.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = macos_keycode.hh; sourceTree = "<group>"; usesTabs = 0; };
 		A47C48DE105E8CE8006D528B /* macos_keycode.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = macos_keycode.mm; sourceTree = "<group>"; };
-		A4FC48CA0F6530EF0069BE81 /* en */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = System/Library/Frameworks/InputMethodKit.framework; sourceTree = SDKROOT; };
+		F42760A82C06EC0C0050B08A /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
+		F42760AA2C06EC0C0050B08A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		F42760AC2C06EC0C0050B08A /* mul */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = mul; path = mul.lproj/MainMenu.xcstrings; sourceTree = "<group>"; };
 		F4483C022BDE446E005B6DE7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		F4483C052BDE4483005B6DE7 /* Quartz.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quartz.framework; path = System/Library/Frameworks/Quartz.framework; sourceTree = SDKROOT; };
 		F493BF7A2B76F27E008BD7D0 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
@@ -399,9 +394,9 @@
 				44986A94184B421700B3278D /* README.md */,
 				44CD7D9E1828D981006E9222 /* rime.pdf */,
 				44F7708E152B3334005CF491 /* dsa_pub.pem */,
-				A4FC48C90F6530EF0069BE81 /* Localizable.strings */,
+				F42760AA2C06EC0C0050B08A /* Localizable.xcstrings */,
 				8D1107310486CEB800E47090 /* Info.plist */,
-				089C165CFE840E0CC02AAC07 /* InfoPlist.strings */,
+				F42760A82C06EC0C0050B08A /* InfoPlist.xcstrings */,
 				A45578F41146A75200592C6E /* MainMenu.xib */,
 				446C01D61F767BD400A6C23E /* Assets.xcassets */,
 			);
@@ -576,11 +571,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
 				A45578F51146A75200592C6E /* MainMenu.xib in Resources */,
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
-				A4FC48CB0F6530EF0069BE81 /* Localizable.strings in Resources */,
+				F42760A92C06EC0C0050B08A /* InfoPlist.xcstrings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
+				F42760AB2C06EC0C0050B08A /* Localizable.xcstrings in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				44F7708F152B3334005CF491 /* dsa_pub.pem in Resources */,
 				44CD7D9F1828D981006E9222 /* rime.pdf in Resources */,
@@ -607,34 +602,13 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		089C165CFE840E0CC02AAC07 /* InfoPlist.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				089C165DFE840E0CC02AAC07 /* en */,
-				446D18E014F0191200EC3116 /* zh-Hans */,
-				446D18E114F0193100EC3116 /* zh-Hant */,
-			);
-			name = InfoPlist.strings;
-			sourceTree = "<group>";
-		};
 		A45578F41146A75200592C6E /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
-				44DA191A152B8CB600FB8EF0 /* zh-Hans */,
-				44DA191B152B8CBC00FB8EF0 /* zh-Hant */,
 				44CB5E872585EFAE0022654F /* Base */,
+				F42760AC2C06EC0C0050B08A /* mul */,
 			);
 			name = MainMenu.xib;
-			sourceTree = "<group>";
-		};
-		A4FC48C90F6530EF0069BE81 /* Localizable.strings */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A4FC48CA0F6530EF0069BE81 /* en */,
-				44FA4D891685997300116C1F /* zh-Hans */,
-				44FA4D8E16859B2900116C1F /* zh-Hant */,
-			);
-			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -653,7 +627,7 @@
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 0.16.2u;
+				CURRENT_PROJECT_VERSION = 0.18.0u;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -693,6 +667,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -709,7 +684,7 @@
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 0.16.2u;
+				CURRENT_PROJECT_VERSION = 0.18.0u;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -748,6 +723,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
 				PRODUCT_NAME = Squirrel;
 				SDKROOT = macosx;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
@@ -804,6 +780,7 @@
 					/usr/local/lib,
 				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -860,6 +837,7 @@
 					/usr/lib,
 				);
 				LIBRARY_SEARCH_PATHS = "$(SRCROOT)/lib";
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = "$(RECOMMENDED_MACOSX_DEPLOYMENT_TARGET)";
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;

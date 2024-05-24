@@ -4,15 +4,15 @@
 __attribute__((objc_direct_members))
 @interface SquirrelOptionSwitcher : NSObject
 
-@property(nonatomic, strong, readonly, nonnull) NSString* schemaId;
-@property(nonatomic, strong, readonly, nonnull) NSString* currentScriptVariant;
-@property(nonatomic, strong, readonly, nonnull) NSSet<NSString*>* optionNames;
-@property(nonatomic, strong, readonly, nonnull) NSSet<NSString*>* optionStates;
-@property(nonatomic, strong, readonly, nonnull)
+@property(nonatomic, readonly, strong, nonnull) NSString* schemaId;
+@property(nonatomic, readonly, strong, nonnull) NSString* currentScriptVariant;
+@property(nonatomic, readonly, strong, nonnull) NSSet<NSString*>* optionNames;
+@property(nonatomic, readonly, strong, nonnull) NSSet<NSString*>* optionStates;
+@property(nonatomic, readonly, strong, nonnull)
     NSDictionary<NSString*, NSString*>* scriptVariantOptions;
-@property(nonatomic, strong, readonly, nonnull)
+@property(nonatomic, readonly, strong, nonnull)
     NSMutableDictionary<NSString*, NSString*>* switcher;
-@property(nonatomic, strong, readonly, nonnull)
+@property(nonatomic, readonly, strong, nonnull)
     NSDictionary<NSString*, NSOrderedSet<NSString*>*>* optionGroups;
 
 - (instancetype _Nonnull)
