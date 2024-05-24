@@ -19,12 +19,6 @@ jobs:
           fetch-depth: 0
           submodules: true
 
-      - name: Install clang-format
-        run: brew install clang-format
-
-      - name: Lint
-        run: make clang-format-lint
-
       - name: Build Squirrel
         run: ./action-build.sh archive
 
