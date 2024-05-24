@@ -6,7 +6,7 @@
 
 ### Prerequisites
 
-Install **Xcode 14.0 or above from App Store, to build Squirrel as a Universal
+Install **Xcode 14.0** or above from App Store, to build Squirrel as a Universal
 app.
 
 Install **cmake**.
@@ -39,7 +39,7 @@ Optionally, checkout Rime plugins (a list of GitHub repo slugs):
 bash librime/install-plugins.sh rime/librime-sample # ...
 ```
 
-Popular plugins include [librime-lua](https://github.com/hchunhui/librime-lua) and [librime-octagram](https://github.com/lotem/librime-octagram)
+Popular plugins include [librime-lua](https://github.com/hchunhui/librime-lua), [librime-octagram](https://github.com/lotem/librime-octagram) and [librime-predict](https://github.com/rime/librime-predict)
 
 ### Shortcut: get the latest librime release
 
@@ -100,20 +100,28 @@ port install boost -no_static
 git submodule update --init --recursive
 ```
 
+* There are a few environmental variables that you can define. Here's a list and possible values they may take:
+
+``` sh
+export BOOST_ROOT="path_to_boost" # required
+export DEV_ID="Your Apple ID name" # include this to codesign, optional
+export BUILD_UNIVERSAL=1 # set to build universal binary
+export PLUM_TAG=":preset” # or ":extra", optional, build with a set of plum formulae
+export ARCHS='arm64 x86_64' # optional, if not defined, only active arch is used
+export MACOSX_DEPLOYMENT_TARGET='13.0' # optional, lower version than 13.0 is not tested and may not work properly
+```
+
 * With all dependencies ready, build `Squirrel.app`:
 
 ``` sh
 make
 ```
 
-To build only for the native architecture, and/or specify the lowest supported macOS version, pass variable `ARCHS` and/or `MACOSX_DEPLOYMENT_TARGET` to `make`:
+* You can either define the environment variables in your shell/terminal, or append them as arguments to the make command. For example:
 
 ``` sh
 # for Universal macOS App
-make ARCHS='arm64 x86_64'
-
-# for ARM macOS App
-make ARCHS='arm64'
+make ARCHS='arm64 x86_64' BUILD_UNIVERSAL=1
 ```
 
 ## Install it on your Mac
@@ -126,7 +134,7 @@ Just add `package` after `make`
 make package ARCHS='arm64'
 ```
 
-Define or echo `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
+Define `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
 
 To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable. 
 
@@ -147,9 +155,24 @@ Once built, you can install and try it live on your Mac computer:
 ``` sh
 # Squirrel as a Universal app
 make install
-
-# for Intel-based Mac only
-make ARCHS='x86_64' install
 ```
+
+## Clean Up Artifacts
+
+After installation or after a failed attempt, you may want to start over. Before you do so, **make sure you have cleaned up artifacts from previous build.**
+
+To clean **Squirrel** artifacts, without touching dependencies, run:
+
+``` sh
+make clean
+```
+
+To clean up **dependencies**, including librime, librime plugins, plum and sparkle, run:
+
+``` sh
+make clean-deps
+```
+
+If you want to clean both, do both.
 
 That's it, a verbal journal. Thanks for riming with Squirrel.

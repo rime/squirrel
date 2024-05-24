@@ -7,27 +7,27 @@ cd "$(dirname $0)"
 source common.sh
 
 app_version="$(get_app_version)"
-target_archive="Squirrel-${app_version}.zip"
-download_url="https://github.com/rime/squirrel/releases/download/${app_version}/${target_archive}"
+target_pkg="Squirrel-${app_version}.pkg"
+download_url="https://github.com/rime/squirrel/releases/download/${app_version}/${target_pkg}"
 
 verify_archive() {
-    if ! [ -f "${target_archive}" ]; then
-        echo >&2 "ERROR: file does not exit: ${target_archive}"
+    if ! [ -f "${target_pkg}" ]; then
+        echo >&2 "ERROR: file does not exit: ${target_pkg}"
         exit 1
     fi
     echo 'sha256 checksum:'
-    echo "${checksum}  ${target_archive}"
-    shasum -a 256 -c <<<"${checksum}  ${target_archive}" || exit 1
+    echo "${checksum}  ${target_pkg}"
+    shasum -a 256 -c <<<"${checksum}  ${target_pkg}" || exit 1
 }
 
 create_archive() {
-    if [ -e "${target_archive}" ]; then
-        echo >&2 "ERROR: target archive already exists: ${target_archive}"
+    if [ -e "${target_pkg}" ]; then
+        echo >&2 "ERROR: target archive already exists: ${target_pkg}"
         exit 1
     fi
-    zip -r "${target_archive}" Squirrel.pkg
+    cp Squirrel.pkg "${target_pkg}"
     echo 'sha256 checksum:'
-    shasum -a 256 "${target_archive}"
+    shasum -a 256 "${target_pkg}"
 }
 
 if [ -n "${checksum}" ]; then
@@ -36,15 +36,14 @@ else
     create_archive
 fi
 
-# sign_key: the private key file for signing the zip archive in Sparkle appcast.
-# usage: checksum='...' sign_key='sign/dsa_priv.pem' ./make_archive
-if [ -z "${sign_key}" ]; then
-    echo 'sign_key unspecified; skip signing.'
-    exit
+if signature=$(sign_update "${target_pkg}"); then
+    echo "sign update is successful."
+else
+    echo "sign_update not working, skiping signing update."
+    exit 0
 fi
-
-dsa_signature=$(ruby sign/sign_update.rb "${target_archive}" "${sign_key}")
-file_length=$(stat -f%z "${target_archive}")
+edSignature=$(echo $signature | awk -F'"' '{print $2}')
+length=$(echo $signature | awk -F'"' '{print $4}')
 pub_date=$(date -R)
 
 # for release channel
@@ -61,12 +60,12 @@ cat > "${appcast_file}" << EOF
     <item>
       <title>鼠鬚管 ${app_version}</title>
       <sparkle:releaseNotesLink>https://rime.github.io/release/squirrel/</sparkle:releaseNotesLink>
-      <sparkle:minimumSystemVersion>10.9.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"
-                 sparkle:dsaSignature="${dsa_signature}"
-                 length="${file_length}"
+                 sparkle:edSignature="${edSignature}"
+                 length="${length}"
                  type="application/octet-stream"/>
     </item>
   </channel>
@@ -89,12 +88,12 @@ cat > "${appcast_file}" << EOF
     <item>
       <title>鼠鬚管 ${app_version}</title>
       <sparkle:releaseNotesLink>https://rime.github.io/testing/squirrel/</sparkle:releaseNotesLink>
-      <sparkle:minimumSystemVersion>10.9.0</sparkle:minimumSystemVersion>
+      <sparkle:minimumSystemVersion>13.0.0</sparkle:minimumSystemVersion>
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"
-                 sparkle:dsaSignature="${dsa_signature}"
-                 length="${file_length}"
+                 sparkle:edSignature="${edSignature}"
+                 length="${length}"
                  type="application/octet-stream"/>
     </item>
   </channel>
@@ -105,7 +104,7 @@ ls -l ${appcast_file}
 
 # for testing appcast push locally.
 appcast_file='debug-appcast.xml'
-download_url="file://${PROJECT_ROOT}/package/${target_archive}"
+download_url="file://${PROJECT_ROOT}/package/${target_pkg}"
 
 cat > "${appcast_file}" << EOF
 <?xml version="1.0" encoding="UTF-8"?>
@@ -122,8 +121,8 @@ cat > "${appcast_file}" << EOF
       <pubDate>${pub_date}</pubDate>
       <enclosure url="${download_url}"
                  sparkle:version="${app_version}"
-                 sparkle:dsaSignature="${dsa_signature}"
-                 length="${file_length}"
+                 sparkle:edSignature="${edSignature}"
+                 length="${length}"
                  type="application/octet-stream"/>
     </item>
   </channel>

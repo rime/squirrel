@@ -34,6 +34,7 @@
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
+					<string>Latn</string>
 					<string>Hans</string>
 					<string>Hant</string>
 				</array>
@@ -62,6 +63,7 @@
 				<string>rime.pdf</string>
 				<key>tsInputModeCharacterRepertoireKey</key>
 				<array>
+					<string>Latn</string>
 					<string>Hant</string>
 					<string>Hans</string>
 				</array>
@@ -88,25 +90,21 @@
 		</array>
 	</dict>
 	<key>InputMethodConnectionName</key>
-	<string>Squirrel_1_Connection</string>
+	<string>Squirrel_Connection</string>
 	<key>InputMethodServerControllerClass</key>
-	<string>SquirrelInputController</string>
+	<string>Squirrel.SquirrelInputController</string>
 	<key>InputMethodServerDelegateClass</key>
-	<string>SquirrelInputController</string>
+	<string>Squirrel.SquirrelInputController</string>
 	<key>LSBackgroundOnly</key>
 	<false/>
 	<key>LSUIElement</key>
 	<true/>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 	<key>SUEnableAutomaticChecks</key>
 	<true/>
 	<key>SUFeedURL</key>
 	<string>https://rime.github.io/release/squirrel/appcast.xml</string>
-	<key>SUPublicDSAKeyFile</key>
-	<string>dsa_pub.pem</string>
 	<key>SUPublicEDKey</key>
 	<string>ukvWq2dKOWn3B9AsdsQIwOptiDdDKdUjAVNgFxSvB2o=</string>
 	<key>TICapsLockLanguageSwitchCapable</key>

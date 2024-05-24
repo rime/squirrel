@@ -25,6 +25,7 @@ DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
 OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
 PLUM_DATA_OUTPUT = plum/output/*.*
+PLUM_OPENCC_OUTPUT = plum/output/opencc/*.*
 RIME_PACKAGE_INSTALLER = plum/rime-install
 
 INSTALL_NAME_TOOL = $(shell xcrun -find install_name_tool)
@@ -62,6 +63,9 @@ $(OPENCC_DATA):
 
 plum-data:
 	$(MAKE) -C plum
+ifdef PLUM_TAG
+	rime_dir=plum/output bash plum/rime-install $(PLUM_TAG)
+endif
 	$(MAKE) copy-plum-data
 
 opencc-data:
@@ -76,6 +80,7 @@ copy-plum-data:
 copy-opencc-data:
 	mkdir -p data/opencc
 	cp $(OPENCC_DATA_OUTPUT) data/opencc/
+	cp $(PLUM_OPENCC_OUTPUT) data/opencc/ > /dev/null 2>&1 || true
 
 deps: librime data
 
@@ -112,21 +117,23 @@ $(SPARKLE_FRAMEWORK):
 
 sparkle:
 	xcodebuild -project Sparkle/Sparkle.xcodeproj -configuration Release $(BUILD_SETTINGS) build
+	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme sign_update -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
 	$(MAKE) copy-sparkle-framework
 
 copy-sparkle-framework:
 	mkdir -p Frameworks
 	cp -RP Sparkle/build/Release/Sparkle.framework Frameworks/
+	cp Sparkle/build/Build/Products/Release/sign_update package/
 
 clean-sparkle:
 	rm -rf Frameworks/* > /dev/null 2>&1 || true
 	rm -rf Sparkle/build > /dev/null 2>&1 || true
 
-.PHONY: package archive sign-archive
+.PHONY: package archive
 
 package: release
 ifdef DEV_ID
-	package/sign.bash $(DEV_ID)
+	bash package/sign_app $(DEV_ID)
 endif
 	bash package/make_package
 ifdef DEV_ID
@@ -139,10 +146,6 @@ endif
 
 archive: package
 	bash package/make_archive
-
-sign-archive:
-	[ -n "${checksum}" ] || (echo >&2 'ERROR: $$checksum not specified.'; false)
-	sign_key=sign/dsa_priv.pem bash package/make_archive
 
 DSTROOT = /Library/Input Methods
 SQUIRREL_APP_ROOT = $(DSTROOT)/Squirrel.app
@@ -176,4 +179,5 @@ clean:
 clean-deps:
 	$(MAKE) -C plum clean
 	$(MAKE) -C librime clean
+	rm -rf librime/dist > /dev/null 2>&1 || true
 	$(MAKE) clean-sparkle
