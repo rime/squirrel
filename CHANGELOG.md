@@ -1,3 +1,31 @@
+<a name="1.0.0"></a>
+## 1.0.0 (2024-06-01)
+
+#### 主要功能更新
+* 純 Swift 重寫，代碼更易維護，更易讀，貢獻代碼的門檻更低。今天就來看看源代碼，嘗試動手吧！
+#### 其它更新內容
+* `style/candidate_format` 格式修改爲 `"[label]. [candidate] [comment]"`，原格式仍能使用，建議遷移至更靈活、直觀的新格式
+* `style/horizontal` 將徹底移除，雖然本版程序仍支持，但會被新控件的默認值覆蓋，請使用 `candidate_list_layout`: `stacked`/`linear` 和 `text_orientation`: `horizontal`/`vertical`
+* `style/label_hilited_color` 已移除，請使用 `hilited_candidate_label_color`
+* 在菜單欄新增日志檔案夾，方便快速進入
+* 序號居中顯示，更像原生輸入法
+* `native` 配色小幅修改，減小字號，更像原生輸入法
+* 增加 `--help` 命令行選項
+* bug 修復
+  * 偶發使用<kbd>⇧</kbd>輸入大寫時造成中英切換
+#### Major Update
+* Migrated code to pure Swift, which is easier to maintain, read and contribute. Build your own Squirrel today!
+#### Other Updates
+* `style/candidate_format` now updated to `"[index]. [candidate] [comment]"`, while the old format still works, please migrate to this more readable and flexible format at your convenience
+* `style/horizontal` will be dropped, it's still supported but will be overwrite by the default values of new options. Please adopt `candidate_list_layout`: `stacked`/`linear` and `text_orientation`: `horizontal`/`vertical`
+* `style/label_hilited_color` is removed, please use `hilited_candidate_label_color` instead
+* Added a menu item for logs folder for quick access
+* labels will vertically center if label font is smaller than candidate font, better matches macOS builtin IME
+* `native` color scheme is updated with smaller font size, better matches macOS builtin IME
+* Added `--help` command line argument
+* Bug fixes:
+  * Occasionally, press <kbd>⇧</kbd> to enter Cap case may switch ascii mode
+
 <a name="0.18"></a>
 ## 0.18 (2024-05-04)
 
