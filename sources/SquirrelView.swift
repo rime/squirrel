@@ -7,6 +7,20 @@
 
 import AppKit
 
+fileprivate class SquirrelLayoutDelegate: NSObject, NSTextLayoutManagerDelegate {
+  func textLayoutManager(_ textLayoutManager: NSTextLayoutManager, shouldBreakLineBefore location: any NSTextLocation, hyphenating: Bool) -> Bool {
+    let index = textLayoutManager.offset(from: textLayoutManager.documentRange.location, to: location)
+    if let attributes = textLayoutManager.textContainer?.textView?.textContentStorage?.attributedString?.attributes(at: index, effectiveRange: nil), let noBreak = attributes[.noBreak] as? Bool, noBreak {
+      return false
+    }
+    return true
+  }
+}
+
+extension NSAttributedString.Key {
+  static let noBreak = NSAttributedString.Key("noBreak")
+}
+
 final class SquirrelView: NSView {
   let textView: NSTextView
   
@@ -681,18 +695,4 @@ private extension SquirrelView {
     newRect.origin.y += currentTheme.hilitedCornerRadius + currentTheme.borderWidth
     return newRect
   }
-}
-
-fileprivate class SquirrelLayoutDelegate: NSObject, NSTextLayoutManagerDelegate {
-  func textLayoutManager(_ textLayoutManager: NSTextLayoutManager, shouldBreakLineBefore location: any NSTextLocation, hyphenating: Bool) -> Bool {
-    let index = textLayoutManager.offset(from: textLayoutManager.documentRange.location, to: location)
-    if let attributes = textLayoutManager.textContainer?.textView?.textContentStorage?.attributedString?.attributes(at: index, effectiveRange: nil), let noBreak = attributes[.noBreak] as? Bool, noBreak {
-      return false
-    }
-    return true
-  }
-}
-
-extension NSAttributedString.Key {
-  static let noBreak = NSAttributedString.Key("noBreak")
 }

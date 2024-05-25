@@ -43,3 +43,15 @@ extension DataSizeable {
     }
   }
 }
+
+infix operator ?= : AssignmentPrecedence
+func ?=<T>(left: inout T, right: T?) {
+  if let right = right {
+    left = right
+  }
+}
+func ?=<T>(left: inout T?, right: T?) {
+  if let right = right {
+    left = right
+  }
+}

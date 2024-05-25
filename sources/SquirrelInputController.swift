@@ -45,8 +45,8 @@ final class SquirrelInputController: IMKInputController {
       }
     }
     
-    let app = (sender as? IMKTextInput)?.bundleIdentifier()
-    if let app = app, currentApp != app {
+    self.client ?= sender as? IMKTextInput
+    if let app = client?.bundleIdentifier(), currentApp != app {
       currentApp = app
       updateAppOptions()
     }
@@ -164,6 +164,7 @@ final class SquirrelInputController: IMKInputController {
   }
   
   override func activateServer(_ sender: Any!) {
+    self.client ?= sender as? IMKTextInput
     // print("[DEBUG] activateServer:")
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
@@ -174,7 +175,7 @@ final class SquirrelInputController: IMKInputController {
       keyboardLayout = "com.apple.keylayout.\(keyboardLayout)"
     }
     if keyboardLayout != "" {
-      (sender as? IMKTextInput)?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
+      client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
     preedit = ""
   }
@@ -190,6 +191,7 @@ final class SquirrelInputController: IMKInputController {
     // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
     hidePalettes()
     commitComposition(sender)
+    client = nil
   }
   
   override func hidePalettes() {
@@ -208,6 +210,7 @@ final class SquirrelInputController: IMKInputController {
    to clean up if that is necessary.
    */
   override func commitComposition(_ sender: Any!) {
+    self.client ?= sender as? IMKTextInput
     // print("[DEBUG] commitComposition: \(sender ?? "nil")")
     //  commit raw input
     if session != 0 {

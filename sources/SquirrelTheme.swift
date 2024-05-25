@@ -7,18 +7,6 @@
 
 import AppKit
 
-infix operator ?= : AssignmentPrecedence
-fileprivate func ?=<T>(left: inout T, right: T?) {
-  if let right = right {
-    left = right
-  }
-}
-fileprivate func ?=<T>(left: inout T?, right: T?) {
-  if let right = right {
-    left = right
-  }
-}
-
 final class SquirrelTheme {
   static let offsetHeight: CGFloat = 5
   static let defaultFontSize: CGFloat = NSFont.systemFontSize
