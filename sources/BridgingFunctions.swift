@@ -8,7 +8,8 @@
 import Foundation
 
 protocol DataSizeable {
-    var data_size: Int32 { get set }
+  // swiftlint:disable:next identifier_name
+  var data_size: Int32 { get set }
 }
 
 extension RimeContext_stdbool: DataSizeable {}
@@ -30,14 +31,14 @@ extension DataSizeable {
     value.data_size = Int32(MemoryLayout<Self>.size - offset)
     return value
   }
-  
+
   mutating func setCString(_ swiftString: String, to keypath: WritableKeyPath<Self, UnsafePointer<CChar>?>) {
     swiftString.withCString { cStr in
       // Duplicate the string to create a persisting C string
       let mutableCStr = strdup(cStr)
       // Free the existing string if there is one
       if let existing = self[keyPath: keypath] {
-          free(UnsafeMutableRawPointer(mutating: existing))
+        free(UnsafeMutableRawPointer(mutating: existing))
       }
       self[keyPath: keypath] = UnsafePointer(mutableCStr)
     }
@@ -45,11 +46,13 @@ extension DataSizeable {
 }
 
 infix operator ?= : AssignmentPrecedence
+// swiftlint:disable:next operator_whitespace
 func ?=<T>(left: inout T, right: T?) {
   if let right = right {
     left = right
   }
 }
+// swiftlint:disable:next operator_whitespace
 func ?=<T>(left: inout T?, right: T?) {
   if let right = right {
     left = right

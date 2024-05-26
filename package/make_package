@@ -1,5 +1,6 @@
 #!/bin/bash
 
+DERIVED_DATA_PATH=$1
 BUNDLE_IDENTIFIER='im.rime.inputmethod.Squirrel'
 INSTALL_LOCATION='/Library/Input Methods'
 
@@ -8,7 +9,7 @@ source common.sh
 
 pkgbuild \
     --info PackageInfo \
-    --root "${PROJECT_ROOT}/build/Release" \
+    --root "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" \
     --filter '.*\.swiftmodule$' \
     --component-plist Squirrel-component.plist \
     --identifier "${BUNDLE_IDENTIFIER}" \

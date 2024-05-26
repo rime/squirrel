@@ -12,12 +12,24 @@ jobs:
         with:
           submodules: true
 
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Lint
+        run: swiftlint
+
       - name: Configure build environment
         run: |
           echo git_ref_name="$(git describe --always)" >> $GITHUB_ENV
 
       - name: Build Squirrel
         run: ./action-build.sh package
+
+      - name: Install periphery
+        run: brew install peripheryapp/periphery/periphery
+
+      - name: Check Unused Code
+        run: periphery scan --skip-build --index-store-path build/Index.noindex/DataStore
 
       - name: Upload Squirrel artifact
         uses: actions/upload-artifact@v4

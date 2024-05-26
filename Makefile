@@ -5,6 +5,7 @@ install: install-release
 
 RIME_BIN_DIR = librime/dist/bin
 RIME_LIB_DIR = librime/dist/lib
+DERIVED_DATA_PATH = build
 
 RIME_LIBRARY_FILE_NAME = librime.1.dylib
 RIME_LIBRARY = lib/$(RIME_LIBRARY_FILE_NAME)
@@ -95,13 +96,17 @@ ifdef MACOSX_DEPLOYMENT_TARGET
 BUILD_SETTINGS += MACOSX_DEPLOYMENT_TARGET="$(MACOSX_DEPLOYMENT_TARGET)"
 endif
 
+BUILD_SETTINGS += COMPILER_INDEX_STORE_ENABLE=YES
+
 release: $(DEPS_CHECK)
+	mkdir -p $(DERIVED_DATA_PATH)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Release $(BUILD_SETTINGS) build
+	xcodebuild -project Squirrel.xcodeproj -configuration Release -scheme Squirrel -derivedDataPath $(DERIVED_DATA_PATH) $(BUILD_SETTINGS) build
 
 debug: $(DEPS_CHECK)
+	mkdir -p $(DERIVED_DATA_PATH)
 	bash package/add_data_files
-	xcodebuild -project Squirrel.xcodeproj -configuration Debug $(BUILD_SETTINGS) build
+	xcodebuild -project Squirrel.xcodeproj -configuration Debug -scheme Squirrel -derivedDataPath $(DERIVED_DATA_PATH)  $(BUILD_SETTINGS) build
 
 .PHONY: sparkle copy-sparkle-framework
 
@@ -127,9 +132,9 @@ clean-sparkle:
 
 package: release
 ifdef DEV_ID
-	bash package/sign_app $(DEV_ID)
+	bash package/sign_app "$(DEV_ID)" "$(DERIVED_DATA_PATH)"
 endif
-	bash package/make_package
+	bash package/make_package "$(DERIVED_DATA_PATH)"
 ifdef DEV_ID
 	productsign --sign "Developer ID Installer: $(DEV_ID)" package/Squirrel.pkg package/Squirrel-signed.pkg
 	rm package/Squirrel.pkg
@@ -151,12 +156,12 @@ permission-check:
 
 install-debug: debug permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
-	cp -R build/Debug/Squirrel.app "$(DSTROOT)"
+	cp -R $(DERIVED_DATA_PATH)/Build/Products/Debug/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" RIME_NO_PREBUILD=1 bash scripts/postinstall
 
 install-release: release permission-check
 	rm -rf "$(SQUIRREL_APP_ROOT)"
-	cp -R build/Release/Squirrel.app "$(DSTROOT)"
+	cp -R $(DERIVED_DATA_PATH)/Build/Products/Release/Squirrel.app "$(DSTROOT)"
 	DSTROOT="$(DSTROOT)" bash scripts/postinstall
 
 .PHONY: clean clean-deps

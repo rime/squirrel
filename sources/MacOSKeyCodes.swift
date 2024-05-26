@@ -1,5 +1,5 @@
 //
-//  MacOSKeyCOdes.swift
+//  MacOSKeyCodes.swift
 //  Squirrel
 //
 //  Created by Leo Liu on 5/9/24.
@@ -9,7 +9,7 @@ import Carbon
 import AppKit
 
 struct SquirrelKeycode {
-  
+
   static func osxModifiersToRime(modifiers: NSEvent.ModifierFlags) -> UInt32 {
     var ret: UInt32 = 0
     if modifiers.contains(.capsLock) {
@@ -29,19 +29,19 @@ struct SquirrelKeycode {
     }
     return ret
   }
-  
+
   static func osxKeycodeToRime(keycode: UInt16, keychar: Character?, shift: Bool, caps: Bool) -> UInt32 {
     if let code = keycodeMappings[Int(keycode)] {
       return UInt32(code)
     }
-    
+
     if let keychar = keychar, keychar.isASCII, let codeValue = keychar.unicodeScalars.first?.value {
       // NOTE: IBus/Rime use different keycodes for uppercase/lowercase letters.
       if keychar.isLowercase && (shift || caps) {
         // lowercase -> Uppercase
         return keychar.uppercased().unicodeScalars.first!.value
       }
-      
+
       switch codeValue {
       case 0x20...0x7e:
         return codeValue
@@ -57,11 +57,11 @@ struct SquirrelKeycode {
         break
       }
     }
-    
+
     return UInt32(XK_VoidSymbol)
   }
-  
-  private static let keycodeMappings: Dictionary<Int, Int32> = [
+
+  private static let keycodeMappings: [Int: Int32] = [
     // modifiers
     kVK_CapsLock: XK_Caps_Lock,
     kVK_Command: XK_Super_L,  // XK_Meta_L?
@@ -73,7 +73,7 @@ struct SquirrelKeycode {
     kVK_RightOption: XK_Alt_R,
     kVK_Shift: XK_Shift_L,
     kVK_RightShift: XK_Shift_R,
-    
+
     // special
     kVK_Delete: XK_BackSpace,
     kVK_Escape: XK_Escape,
@@ -82,7 +82,7 @@ struct SquirrelKeycode {
     kVK_Return: XK_Return,
     kVK_Space: XK_space,
     kVK_Tab: XK_Tab,
-    
+
     // function
     kVK_F1: XK_F1,
     kVK_F2: XK_F2,
@@ -104,7 +104,7 @@ struct SquirrelKeycode {
     kVK_F18: XK_F18,
     kVK_F19: XK_F19,
     kVK_F20: XK_F20,
-    
+
     // cursor
     kVK_UpArrow: XK_Up,
     kVK_DownArrow: XK_Down,
@@ -114,7 +114,7 @@ struct SquirrelKeycode {
     kVK_PageDown: XK_Page_Down,
     kVK_Home: XK_Home,
     kVK_End: XK_End,
-    
+
     // keypad
     kVK_ANSI_Keypad0: XK_KP_0,
     kVK_ANSI_Keypad1: XK_KP_1,
@@ -134,13 +134,13 @@ struct SquirrelKeycode {
     kVK_ANSI_KeypadPlus: XK_KP_Add,
     kVK_ANSI_KeypadDivide: XK_KP_Divide,
     kVK_ANSI_KeypadEnter: XK_KP_Enter,
-    
+
     // other
     kVK_ISO_Section: XK_section,
     kVK_JIS_Yen: XK_yen,
     kVK_JIS_Underscore: XK_underscore,
     kVK_JIS_KeypadComma: XK_comma,
     kVK_JIS_Eisu: XK_Eisu_Shift,
-    kVK_JIS_Kana: XK_Kana_Shift,
+    kVK_JIS_Kana: XK_Kana_Shift
   ]
 }

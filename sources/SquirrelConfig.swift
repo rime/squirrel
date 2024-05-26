@@ -10,28 +10,26 @@ import AppKit
 final class SquirrelConfig {
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private(set) var isOpen = false
-  var schemaID: String = ""
-  
-  private var cache: Dictionary<String, Any> = [:]
+
+  private var cache: [String: Any] = [:]
   private var config: RimeConfig = .init()
   private var baseConfig: SquirrelConfig?
-  
+
   func openBaseConfig() -> Bool {
     close()
     isOpen = rimeAPI.config_open("squirrel", &config)
     return isOpen
   }
-  
+
   func open(schemaID: String, baseConfig: SquirrelConfig?) -> Bool {
     close()
     isOpen = rimeAPI.schema_open(schemaID, &config)
     if isOpen {
-      self.schemaID = schemaID
       self.baseConfig = baseConfig
     }
     return isOpen
   }
-  
+
   func close() {
     if isOpen {
       _ = rimeAPI.config_close(&config)
@@ -39,11 +37,11 @@ final class SquirrelConfig {
       isOpen = false
     }
   }
-  
+
   deinit {
     close()
   }
-  
+
   func has(section: String) -> Bool {
     if isOpen {
       var iterator: RimeConfigIterator = .init()
@@ -54,7 +52,7 @@ final class SquirrelConfig {
     }
     return false
   }
-  
+
   func getBool(_ option: String) -> Bool? {
     if let cachedValue = cachedValue(of: Bool.self, forKey: option) {
       return cachedValue
@@ -66,19 +64,7 @@ final class SquirrelConfig {
     }
     return baseConfig?.getBool(option)
   }
-  
-  func getInt(_ option: String) -> Int? {
-    if let cachedValue = cachedValue(of: Int.self, forKey: option) {
-      return cachedValue
-    }
-    var value: Int32 = 0
-    if isOpen && rimeAPI.config_get_int(&config, option, &value) {
-      cache[option] = value
-      return Int(value)
-    }
-    return baseConfig?.getInt(option)
-  }
-  
+
   func getDouble(_ option: String) -> CGFloat? {
     if let cachedValue = cachedValue(of: Double.self, forKey: option) {
       return cachedValue
@@ -90,7 +76,7 @@ final class SquirrelConfig {
     }
     return baseConfig?.getDouble(option)
   }
-  
+
   func getString(_ option: String) -> String? {
     if let cachedValue = cachedValue(of: String.self, forKey: option) {
       return cachedValue
@@ -101,7 +87,7 @@ final class SquirrelConfig {
     }
     return baseConfig?.getString(option)
   }
-  
+
   func getColor(_ option: String, inSpace colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor? {
     if let cachedValue = cachedValue(of: NSColor.self, forKey: option) {
       return cachedValue
@@ -112,10 +98,10 @@ final class SquirrelConfig {
     }
     return baseConfig?.getColor(option, inSpace: colorSpace)
   }
-  
-  func getAppOptions(_ appName: String) -> Dictionary<String, Bool> {
+
+  func getAppOptions(_ appName: String) -> [String: Bool] {
     let rootKey = "app_options/\(appName)"
-    var appOptions = [String : Bool]()
+    var appOptions = [String: Bool]()
     var iterator = RimeConfigIterator()
     _ = rimeAPI.config_begin_map(&iterator, &config, rootKey)
     while rimeAPI.config_next(&iterator) {
@@ -127,7 +113,7 @@ final class SquirrelConfig {
     rimeAPI.config_end(&iterator)
     return appOptions
   }
-  
+
   // isLinear
   func updateCandidateListLayout(prefix: String) -> Bool {
     let candidateListLayout = getString("\(prefix)/candidate_list_layout")
@@ -141,10 +127,10 @@ final class SquirrelConfig {
       return getBool("\(prefix)/horizontal") ?? false
     }
   }
-  
+
   // isVertical
   func updateTextOrientation(prefix: String) -> Bool {
-  let textOrientation = getString("\(prefix)/text_orientation")
+    let textOrientation = getString("\(prefix)/text_orientation")
     switch textOrientation {
     case "horizontal":
       return false
@@ -161,19 +147,19 @@ private extension SquirrelConfig {
   func cachedValue<T>(of: T.Type, forKey key: String) -> T? {
     return cache[key] as? T
   }
-  
+
   func color(from colorStr: String, inSpace colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor? {
     if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
-      let (_, a, b, g, r) = matched.output
-      return color(alpha: Int(a, radix: 16)!, red: Int(r, radix: 16)!, green: Int(g, radix: 16)!, blue: Int(b, radix: 16)!, colorSpace: colorSpace)
+      let (_, alpha, blue, green, red) = matched.output
+      return color(alpha: Int(alpha, radix: 16)!, red: Int(red, radix: 16)!, green: Int(green, radix: 16)!, blue: Int(blue, radix: 16)!, colorSpace: colorSpace)
     } else if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
-      let (_, b, g, r) = matched.output
-      return color(alpha: 255, red: Int(r, radix: 16)!, green: Int(g, radix: 16)!, blue: Int(b, radix: 16)!, colorSpace: colorSpace)
+      let (_, blue, green, red) = matched.output
+      return color(alpha: 255, red: Int(red, radix: 16)!, green: Int(green, radix: 16)!, blue: Int(blue, radix: 16)!, colorSpace: colorSpace)
     } else {
       return nil
     }
   }
-  
+
   func color(alpha: Int, red: Int, green: Int, blue: Int, colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor {
     switch colorSpace {
     case .displayP3:

@@ -1,9 +1,11 @@
 #! /bin/bash
 # enconding: utf-8
 
-appDir="build/Release/Squirrel.app"
+DEV_ID=$1
+DERIVED_DATA_PATH=$2
+appDir="${DERIVED_DATA_PATH}/Build/Products/Release/Squirrel.app"
 entitlement="resources/Squirrel.entitlements"
 
-codesign --deep --force --options runtime --timestamp --sign "Developer ID Application: $1" --entitlements "$entitlement" --verbose "$appDir";
+codesign --deep --force --options runtime --timestamp --sign "Developer ID Application: ${DEV_ID}" --entitlements "$entitlement" --verbose "$appDir";
 
 spctl -a -vv "$appDir";
