@@ -20,7 +20,7 @@ final class SquirrelPanel: NSPanel {
   private var statusTimer: Timer?
 
   private var preedit: String = ""
-  private var selRange: NSRange = .init(location: NSNotFound, length: 0)
+  private var selRange: NSRange = .empty
   private var caretPos: Int = 0
   private var candidates: [String] = .init()
   private var comments: [String] = .init()
@@ -171,32 +171,26 @@ final class SquirrelPanel: NSPanel {
     currentScreen()
 
     let text = NSMutableAttributedString()
-    var preeditRange = NSRange(location: NSNotFound, length: 0)
-    var highlightedPreeditRange = NSRange(location: NSNotFound, length: 0)
+    let preeditRange: NSRange
+    let highlightedPreeditRange: NSRange
 
     // preedit
     if !preedit.isEmpty {
-      let line = NSMutableAttributedString()
-      let startIndex = String.Index(utf16Offset: selRange.location, in: preedit)
-      let endIndex = String.Index(utf16Offset: selRange.upperBound, in: preedit)
-      if selRange.location > 0 {
-        line.append(NSAttributedString(string: String(preedit[..<startIndex]), attributes: theme.preeditAttrs))
-      }
-      if selRange.length > 0 {
-        let highlightedPreeditStart = line.length
-        line.append(NSAttributedString(string: String(preedit[startIndex..<endIndex]), attributes: theme.preeditHighlightedAttrs))
-        highlightedPreeditRange = NSRange(location: highlightedPreeditStart, length: line.length - highlightedPreeditStart)
-      }
-      if selRange.upperBound < preedit.utf16.count {
-        line.append(NSAttributedString(string: String(preedit[endIndex...]), attributes: theme.preeditAttrs))
-      }
+      preeditRange = NSRange(location: 0, length: preedit.utf16.count)
+      highlightedPreeditRange = selRange
+
+      let line = NSMutableAttributedString(string: preedit)
+      line.addAttributes(theme.preeditAttrs, range: preeditRange)
+      line.addAttributes(theme.preeditHighlightedAttrs, range: selRange)
       text.append(line)
 
       text.addAttribute(.paragraphStyle, value: theme.preeditParagraphStyle, range: NSRange(location: 0, length: text.length))
-      preeditRange = NSRange(location: 0, length: text.length)
       if !candidates.isEmpty {
         text.append(NSAttributedString(string: "\n", attributes: theme.preeditAttrs))
       }
+    } else {
+      preeditRange = .empty
+      highlightedPreeditRange = .empty
     }
 
     // candidates
@@ -441,7 +435,7 @@ private extension SquirrelPanel {
     view.textContentStorage.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: [NSRange(location: 0, length: text.length)], hilightedIndex: -1,
-                  preeditRange: NSRange(location: NSNotFound, length: 0), highlightedPreeditRange: NSRange(location: NSNotFound, length: 0))
+                  preeditRange: .empty, highlightedPreeditRange: .empty)
     show()
 
     statusTimer?.invalidate()

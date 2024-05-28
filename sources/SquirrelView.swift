@@ -28,8 +28,8 @@ final class SquirrelView: NSView {
   private let squirrelLayoutDelegate: SquirrelLayoutDelegate
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
-  var preeditRange = NSRange(location: NSNotFound, length: 0)
-  var highlightedPreeditRange = NSRange(location: NSNotFound, length: 0)
+  var preeditRange: NSRange = .empty
+  var highlightedPreeditRange: NSRange = .empty
   var separatorWidth: CGFloat = 0
   var shape = CAShapeLayer()
 
@@ -72,7 +72,7 @@ final class SquirrelView: NSView {
   }
 
   func convert(range: NSRange) -> NSTextRange? {
-    guard range.location != NSNotFound else { return nil }
+    guard range != .empty else { return nil }
     guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nil }
     guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nil }
     return NSTextRange(location: startLocation, end: endLocation)
@@ -668,7 +668,7 @@ private extension SquirrelView {
         if highlightedRange.upperBound == (textView.string as NSString).length {
           highlightedRect.size.height += theme.edgeInset.height - halfLinespace
         }
-        if highlightedRange.location - ((preeditRange.location == NSNotFound ? 0 : preeditRange.location) + preeditRange.length) <= 1 {
+        if highlightedRange.location - (preeditRange == .empty ? 0 : preeditRange.upperBound) <= 1 {
           if preeditRange.length == 0 {
             highlightedRect.size.height += theme.edgeInset.height - halfLinespace
             highlightedRect.origin.y -= theme.edgeInset.height - halfLinespace

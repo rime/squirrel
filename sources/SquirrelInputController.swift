@@ -13,7 +13,7 @@ final class SquirrelInputController: IMKInputController {
   private var client: IMKTextInput?
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private var preedit: String = ""
-  private var selRange: NSRange = NSRange(location: NSNotFound, length: 0)
+  private var selRange: NSRange = .empty
   private var caretPos: Int = 0
   private var lastModifiers: NSEvent.ModifierFlags = .init()
   private var session: RimeSessionId = 0
@@ -411,8 +411,8 @@ private extension SquirrelInputController {
     if rimeAPI.get_commit(session, &commitText) {
       if let text = commitText.text {
         commit(string: String(cString: text))
-        _ = rimeAPI.free_commit(&commitText)
       }
+      _ = rimeAPI.free_commit(&commitText)
     }
   }
 
@@ -512,7 +512,7 @@ private extension SquirrelInputController {
   func commit(string: String) {
     guard let client = client else { return }
     // print("[DEBUG] commitString: \(string)")
-    client.insertText(string, replacementRange: NSRange(location: NSNotFound, length: 0))
+    client.insertText(string, replacementRange: .empty)
     preedit = ""
     hidePalettes()
   }
@@ -538,7 +538,7 @@ private extension SquirrelInputController {
     let remainingRange = NSRange(location: start, length: preedit.utf16.count - start)
     let attrs = mark(forStyle: kTSMHiliteSelectedRawText, at: remainingRange)! as! [NSAttributedString.Key: Any]
     attrString.setAttributes(attrs, range: remainingRange)
-    client.setMarkedText(attrString, selectionRange: NSRange(location: caretPos, length: 0), replacementRange: NSRange(location: NSNotFound, length: 0))
+    client.setMarkedText(attrString, selectionRange: NSRange(location: caretPos, length: 0), replacementRange: .empty)
   }
 
   // swiftlint:disable:next function_parameter_count

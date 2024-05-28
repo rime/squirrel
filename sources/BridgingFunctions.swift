@@ -58,3 +58,7 @@ func ?=<T>(left: inout T?, right: T?) {
     left = right
   }
 }
+
+extension NSRange {
+  static let empty = NSRange(location: NSNotFound, length: 0)
+}

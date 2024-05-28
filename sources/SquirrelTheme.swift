@@ -271,21 +271,16 @@ private extension SquirrelTheme {
     var fonts = [NSFont]()
     for string in fontStrings {
       let trimedString = string.trimmingCharacters(in: .whitespaces)
-      if let fontFamilyName = trimedString.split(separator: "-").first.map({String($0)}) {
-        if seenFontFamilies.contains(fontFamilyName) {
-          continue
-        } else {
-          seenFontFamilies.insert(fontFamilyName)
-        }
+      let familyName = if let firstPart = trimedString.split(separator: "-").first {
+        String(firstPart)
       } else {
-        if seenFontFamilies.contains(trimedString) {
-          continue
-        } else {
-          seenFontFamilies.insert(trimedString)
-        }
+        trimedString
       }
-      if let validFont = NSFont(name: String(trimedString), size: size ?? Self.defaultFontSize) {
-        fonts.append(validFont)
+      if !seenFontFamilies.contains(familyName) {
+        seenFontFamilies.insert(familyName)
+        if let validFont = NSFont(name: trimedString, size: size ?? Self.defaultFontSize) {
+          fonts.append(validFont)
+        }
       }
     }
     return fonts
