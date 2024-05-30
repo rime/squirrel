@@ -173,6 +173,12 @@ To clean up **dependencies**, including librime, librime plugins, plum and spark
 make clean-deps
 ```
 
-If you want to clean both, do both.
+To clean up **packages**, run:
+
+``` sh
+make clean-package
+```
+
+If you want to clean all above, do all.
 
 That's it, a verbal journal. Thanks for riming with Squirrel.

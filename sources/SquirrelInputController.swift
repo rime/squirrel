@@ -10,7 +10,7 @@ import InputMethodKit
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
 
-  private var client: IMKTextInput?
+  private weak var client: IMKTextInput?
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private var preedit: String = ""
   private var selRange: NSRange = .empty

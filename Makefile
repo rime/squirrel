@@ -22,6 +22,8 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
 SPARKLE_FRAMEWORK = Frameworks/Sparkle.framework
+SPARKLE_SIGN = package/sign_update
+PACKAGE = package/Squirrel.pkg
 DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
 OPENCC_DATA_OUTPUT = librime/share/opencc/*.*
@@ -116,13 +118,15 @@ $(SPARKLE_FRAMEWORK):
 
 sparkle:
 	xcodebuild -project Sparkle/Sparkle.xcodeproj -configuration Release $(BUILD_SETTINGS) build
-	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme sign_update -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
 	$(MAKE) copy-sparkle-framework
+
+$(SPARKLE_SIGN):
+	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme sign_update -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
+	cp Sparkle/build/Build/Products/Release/sign_update package/
 
 copy-sparkle-framework:
 	mkdir -p Frameworks
 	cp -RP Sparkle/build/Release/Sparkle.framework Frameworks/
-	cp Sparkle/build/Build/Products/Release/sign_update package/
 
 clean-sparkle:
 	rm -rf Frameworks/* > /dev/null 2>&1 || true
@@ -130,7 +134,7 @@ clean-sparkle:
 
 .PHONY: package archive
 
-package: release
+$(PACKAGE):
 ifdef DEV_ID
 	bash package/sign_app "$(DEV_ID)" "$(DERIVED_DATA_PATH)"
 endif
@@ -143,7 +147,9 @@ ifdef DEV_ID
 	xcrun stapler staple package/Squirrel.pkg
 endif
 
-archive: package
+package: release $(PACKAGE)
+
+archive: package $(SPARKLE_SIGN)
 	bash package/make_archive
 
 DSTROOT = /Library/Input Methods
@@ -174,6 +180,11 @@ clean:
 	rm lib/rime-plugins/* > /dev/null 2>&1 || true
 	rm data/plum/* > /dev/null 2>&1 || true
 	rm data/opencc/* > /dev/null 2>&1 || true
+
+clean-package:
+	rm -rf package/*appcast.xml > /dev/null 2>&1 || true
+	rm -rf package/*.pkg > /dev/null 2>&1 || true
+	rm -rf package/sign_update > /dev/null 2>&1 || true
 
 clean-deps:
 	$(MAKE) -C plum clean
