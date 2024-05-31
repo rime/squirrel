@@ -113,34 +113,6 @@ final class SquirrelConfig {
     rimeAPI.config_end(&iterator)
     return appOptions
   }
-
-  // isLinear
-  func updateCandidateListLayout(prefix: String) -> Bool {
-    let candidateListLayout = getString("\(prefix)/candidate_list_layout")
-    switch candidateListLayout {
-    case "stacked":
-      return false
-    case "linear":
-      return true
-    default:
-      // Deprecated. Not to be confused with text_orientation: horizontal
-      return getBool("\(prefix)/horizontal") ?? false
-    }
-  }
-
-  // isVertical
-  func updateTextOrientation(prefix: String) -> Bool {
-    let textOrientation = getString("\(prefix)/text_orientation")
-    switch textOrientation {
-    case "horizontal":
-      return false
-    case "vertical":
-      return true
-    default:
-      // Deprecated.
-      return getBool("\(prefix)/vertical") ?? false
-    }
-  }
 }
 
 private extension SquirrelConfig {

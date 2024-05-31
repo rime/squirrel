@@ -166,8 +166,8 @@ final class SquirrelTheme {
   }
 
   func load(config: SquirrelConfig, dark: Bool) {
-    linear = config.updateCandidateListLayout(prefix: "style")
-    vertical = config.updateTextOrientation(prefix: "style")
+    linear ?= config.getString("style/candidate_list_layout").map { $0 == "linear" }
+    vertical ?= config.getString("style/text_orientation").map { $0 == "vertical" }
     inlinePreedit ?= config.getBool("style/inline_preedit")
     inlineCandidate ?= config.getBool("style/inline_candidate")
     translucency ?= config.getBool("style/translucency")
@@ -219,6 +219,8 @@ final class SquirrelTheme {
       // the following per-color-scheme configurations, if exist, will
       // override configurations with the same name under the global 'style'
       // section
+      linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
+      vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
       inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")
       inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
       translucency ?= config.getBool("\(prefix)/translucency")
