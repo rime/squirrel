@@ -47,23 +47,23 @@ final class SquirrelTheme {
   private var commentTextColor: NSColor? = .tertiaryLabelColor
   private var highlightedCommentTextColor: NSColor?
 
-  var cornerRadius: CGFloat = 0
-  var hilitedCornerRadius: CGFloat = 0
-  var surroundingExtraExpansion: CGFloat = 0
-  var shadowSize: CGFloat = 0
-  var borderWidth: CGFloat = 0
-  var borderHeight: CGFloat = 0
-  var linespace: CGFloat = 0
-  var preeditLinespace: CGFloat = 0
-  var baseOffset: CGFloat = 0
-  var alpha: CGFloat = 1
+  private(set) var cornerRadius: CGFloat = 0
+  private(set) var hilitedCornerRadius: CGFloat = 0
+  private(set) var surroundingExtraExpansion: CGFloat = 0
+  private(set) var shadowSize: CGFloat = 0
+  private(set) var borderWidth: CGFloat = 0
+  private(set) var borderHeight: CGFloat = 0
+  private(set) var linespace: CGFloat = 0
+  private(set) var preeditLinespace: CGFloat = 0
+  private(set) var baseOffset: CGFloat = 0
+  private(set) var alpha: CGFloat = 1
 
-  var translucency = false
-  var mutualExclusive = false
-  var linear = false
-  var vertical = false
-  var inlinePreedit = false
-  var inlineCandidate = false
+  private(set) var translucency = false
+  private(set) var mutualExclusive = false
+  private(set) var linear = false
+  private(set) var vertical = false
+  private(set) var inlinePreedit = false
+  private(set) var inlineCandidate = false
 
   private var fonts = [NSFont]()
   private var labelFonts = [NSFont]()
@@ -72,8 +72,8 @@ final class SquirrelTheme {
   private var labelFontSize: CGFloat?
   private var commentFontSize: CGFloat?
 
-  private var candidateTemplate = "[label]. [candidate] [comment]"
-  var statusMessageType: StatusMessageType = .mix
+  private var _candidateFormat = "[label]. [candidate] [comment]"
+  private(set) var statusMessageType: StatusMessageType = .mix
 
   private var defaultFont: NSFont {
     if let size = fontSize {
@@ -83,10 +83,8 @@ final class SquirrelTheme {
     }
   }
 
-  var font: NSFont {
-    return combineFonts(fonts, size: fontSize) ?? defaultFont
-  }
-  var labelFont: NSFont {
+  private(set) lazy var font: NSFont = combineFonts(fonts, size: fontSize) ?? defaultFont
+  private(set) lazy var labelFont: NSFont = {
     if let font = combineFonts(labelFonts, size: labelFontSize ?? fontSize) {
       return font
     } else if let size = labelFontSize {
@@ -94,8 +92,8 @@ final class SquirrelTheme {
     } else {
       return self.font
     }
-  }
-  var commentFont: NSFont {
+  }()
+  private(set) lazy var commentFont: NSFont = {
     if let font = combineFonts(commentFonts, size: commentFontSize ?? fontSize) {
       return font
     } else if let size = commentFontSize {
@@ -103,79 +101,75 @@ final class SquirrelTheme {
     } else {
       return self.font
     }
-  }
-  var attrs: [NSAttributedString.Key: Any] {
-    [.foregroundColor: candidateTextColor,
-     .font: font,
-     .baselineOffset: baseOffset]
-  }
-  var highlightedAttrs: [NSAttributedString.Key: Any] {
-    [.foregroundColor: highlightedCandidateTextColor,
-     .font: font,
-     .baselineOffset: baseOffset]
-  }
-  var labelAttrs: [NSAttributedString.Key: Any] {
-    return [.foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
-            .font: labelFont,
-            .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)]
-  }
-  var labelHighlightedAttrs: [NSAttributedString.Key: Any] {
-    return [.foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
-            .font: labelFont,
-            .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)]
-  }
-  var commentAttrs: [NSAttributedString.Key: Any] {
-    return [.foregroundColor: commentTextColor ?? candidateTextColor,
-            .font: commentFont,
-            .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)]
-  }
-  var commentHighlightedAttrs: [NSAttributedString.Key: Any] {
-    return [.foregroundColor: highlightedCommentTextColor ?? highlightedCandidateTextColor,
-            .font: commentFont,
-            .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)]
-  }
-  var preeditAttrs: [NSAttributedString.Key: Any] {
-    [.foregroundColor: textColor,
-     .font: font,
-     .baselineOffset: baseOffset]
-  }
-  var preeditHighlightedAttrs: [NSAttributedString.Key: Any] {
-    [.foregroundColor: highlightedTextColor,
-     .font: font,
-     .baselineOffset: baseOffset]
-  }
+  }()
+  private(set) lazy var attrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: candidateTextColor,
+    .font: font,
+    .baselineOffset: baseOffset
+  ]
+  private(set) lazy var highlightedAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: highlightedCandidateTextColor,
+    .font: font,
+    .baselineOffset: baseOffset
+  ]
+  private(set) lazy var labelAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
+    .font: labelFont,
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)
+  ]
+  private(set) lazy var labelHighlightedAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
+    .font: labelFont,
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)
+  ]
+  private(set) lazy var commentAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: commentTextColor ?? candidateTextColor,
+    .font: commentFont,
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)
+  ]
+  private(set) lazy var commentHighlightedAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: highlightedCommentTextColor ?? highlightedCandidateTextColor,
+    .font: commentFont,
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)
+  ]
+  private(set) lazy var preeditAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: textColor,
+    .font: font,
+    .baselineOffset: baseOffset
+  ]
+  private(set) lazy var preeditHighlightedAttrs: [NSAttributedString.Key: Any] = [
+    .foregroundColor: highlightedTextColor,
+    .font: font,
+    .baselineOffset: baseOffset
+  ]
 
-  var firstParagraphStyle: NSParagraphStyle {
+  private(set) lazy var firstParagraphStyle: NSParagraphStyle = {
     let style = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
     style.paragraphSpacing = linespace / 2
     style.paragraphSpacingBefore = preeditLinespace / 2 + hilitedCornerRadius / 2
     return style as NSParagraphStyle
-  }
-  var paragraphStyle: NSParagraphStyle {
+  }()
+  private(set) lazy var paragraphStyle: NSParagraphStyle = {
     let style = NSParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
     style.paragraphSpacing = linespace / 2
     style.paragraphSpacingBefore = linespace / 2
     return style as NSParagraphStyle
-  }
-  var preeditParagraphStyle: NSParagraphStyle {
+  }()
+  private(set) lazy var preeditParagraphStyle: NSParagraphStyle = {
     let style = NSMutableParagraphStyle.default.mutableCopy() as! NSMutableParagraphStyle
     style.paragraphSpacing = preeditLinespace / 2 + hilitedCornerRadius / 2
     style.lineSpacing = linespace
     return style as NSParagraphStyle
+  }()
+  private(set) lazy var edgeInset: NSSize = if self.vertical {
+    NSSize(width: borderHeight + cornerRadius, height: borderWidth + cornerRadius)
+  } else {
+    NSSize(width: borderWidth + cornerRadius, height: borderHeight + cornerRadius)
   }
-  var edgeInset: NSSize {
-    if self.vertical {
-      return NSSize(width: borderHeight + cornerRadius, height: borderWidth + cornerRadius)
-    } else {
-      return NSSize(width: borderWidth + cornerRadius, height: borderHeight + cornerRadius)
-    }
-  }
-  var borderLineWidth: CGFloat {
-    return min(borderHeight, borderWidth)
-  }
-  var candidateFormat: String {
+  private(set) lazy var borderLineWidth: CGFloat = min(borderHeight, borderWidth)
+  private(set) var candidateFormat: String {
     get {
-      candidateTemplate
+      _candidateFormat
     } set {
       var newTemplate = newValue
       if newTemplate.contains(/%@/) {
@@ -184,7 +178,7 @@ final class SquirrelTheme {
       if newTemplate.contains(/%c/) {
         newTemplate.replace(/%c/, with: "[label]")
       }
-      candidateTemplate = newTemplate
+      _candidateFormat = newTemplate
     }
   }
 
