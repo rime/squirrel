@@ -1,5 +1,24 @@
+<a name="1.0.1"></a>
+## 1.0.1 (2024-06-01)
+
+#### 其它更新內容
+* bug 修復
+  * 不再注冊爲拉丁輸入法，修復 Caps Lock 切換輸入法時不能切換至西文的問題
+  * 修復配色中的 candidate_list_layout, text_orientation 不生效問題
+  * 修復字體名無法解析時，字號不生效問題
+* 不再支持 `style/horizontal` 和 `style/vertical`
+
+#### Other Updates
+* Bug fixes:
+  * Remove Latn repertoire so that switching IME by Caps Lock can toggle Squirrel and Latin input
+  * Fix: candidate_list_layout, text_orientation do not take effect when put in color scheme
+  * Fix: font point is ignored when font face is invalid
+* Drop support for `style/horizontal` and `style/vertical`
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/1.0.0...1.0.1
+
 <a name="1.0.0"></a>
-## 1.0.0 (2024-06-01)
+## 1.0.0 (2024-05-30)
 
 #### 主要功能更新
 * 純 Swift 重寫，代碼更易維護，更易讀，貢獻代碼的門檻更低。今天就來看看源代碼，嘗試動手吧！
