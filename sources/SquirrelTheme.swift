@@ -116,22 +116,22 @@ final class SquirrelTheme {
   private(set) lazy var labelAttrs: [NSAttributedString.Key: Any] = [
     .foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
     .font: labelFont,
-    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2.5 : 0)
   ]
   private(set) lazy var labelHighlightedAttrs: [NSAttributedString.Key: Any] = [
     .foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
     .font: labelFont,
-    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2 : 0)
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2.5 : 0)
   ]
   private(set) lazy var commentAttrs: [NSAttributedString.Key: Any] = [
     .foregroundColor: commentTextColor ?? candidateTextColor,
     .font: commentFont,
-    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2.5 : 0)
   ]
   private(set) lazy var commentHighlightedAttrs: [NSAttributedString.Key: Any] = [
     .foregroundColor: highlightedCommentTextColor ?? highlightedCandidateTextColor,
     .font: commentFont,
-    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2 : 0)
+    .baselineOffset: baseOffset + (!vertical ? (font.pointSize - commentFont.pointSize) / 2.5 : 0)
   ]
   private(set) lazy var preeditAttrs: [NSAttributedString.Key: Any] = [
     .foregroundColor: textColor,
