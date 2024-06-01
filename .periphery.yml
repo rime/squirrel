@@ -3,3 +3,4 @@ schemes:
 - Squirrel
 targets:
 - Squirrel
+format: github-actions
