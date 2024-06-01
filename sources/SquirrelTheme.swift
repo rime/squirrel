@@ -27,8 +27,9 @@ final class SquirrelTheme {
     }
   }
 
-  var native = true
-  var memorizeSize = true
+  private(set) var available = true
+  private(set) var native = true
+  private(set) var memorizeSize = true
   private var colorSpace: RimeColorSpace = .sRGB
 
   var backgroundColor: NSColor = .windowBackgroundColor
@@ -213,55 +214,57 @@ final class SquirrelTheme {
     var commentFontSize = config.getDouble("style/comment_font_point")
 
     let colorSchemeOption = dark ? "style/color_scheme_dark" : "style/color_scheme"
-    if let colorScheme = config.getString(colorSchemeOption), colorScheme != "native" {
-      native = false
-      let prefix = "preset_color_schemes/\(colorScheme)"
-      colorSpace = .from(name: config.getString("\(prefix)/color_space") ?? "")
-      backgroundColor ?= config.getColor("\(prefix)/back_color", inSpace: colorSpace)
-      highlightedPreeditColor = config.getColor("\(prefix)/hilited_back_color", inSpace: colorSpace)
-      highlightedBackColor = config.getColor("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
-      preeditBackgroundColor = config.getColor("\(prefix)/preedit_back_color", inSpace: colorSpace)
-      candidateBackColor = config.getColor("\(prefix)/candidate_back_color", inSpace: colorSpace)
-      borderColor = config.getColor("\(prefix)/border_color", inSpace: colorSpace)
+    if let colorScheme = config.getString(colorSchemeOption) {
+      if colorScheme != "native" {
+        native = false
+        let prefix = "preset_color_schemes/\(colorScheme)"
+        colorSpace = .from(name: config.getString("\(prefix)/color_space") ?? "")
+        backgroundColor ?= config.getColor("\(prefix)/back_color", inSpace: colorSpace)
+        highlightedPreeditColor = config.getColor("\(prefix)/hilited_back_color", inSpace: colorSpace)
+        highlightedBackColor = config.getColor("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
+        preeditBackgroundColor = config.getColor("\(prefix)/preedit_back_color", inSpace: colorSpace)
+        candidateBackColor = config.getColor("\(prefix)/candidate_back_color", inSpace: colorSpace)
+        borderColor = config.getColor("\(prefix)/border_color", inSpace: colorSpace)
 
-      textColor ?= config.getColor("\(prefix)/text_color", inSpace: colorSpace)
-      highlightedTextColor = config.getColor("\(prefix)/hilited_text_color", inSpace: colorSpace) ?? textColor
-      candidateTextColor = config.getColor("\(prefix)/candidate_text_color", inSpace: colorSpace) ?? textColor
-      highlightedCandidateTextColor = config.getColor("\(prefix)/hilited_candidate_text_color", inSpace: colorSpace) ?? highlightedTextColor
-      candidateLabelColor = config.getColor("\(prefix)/label_color", inSpace: colorSpace)
-      highlightedCandidateLabelColor = config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
-      commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
-      highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
+        textColor ?= config.getColor("\(prefix)/text_color", inSpace: colorSpace)
+        highlightedTextColor = config.getColor("\(prefix)/hilited_text_color", inSpace: colorSpace) ?? textColor
+        candidateTextColor = config.getColor("\(prefix)/candidate_text_color", inSpace: colorSpace) ?? textColor
+        highlightedCandidateTextColor = config.getColor("\(prefix)/hilited_candidate_text_color", inSpace: colorSpace) ?? highlightedTextColor
+        candidateLabelColor = config.getColor("\(prefix)/label_color", inSpace: colorSpace)
+        highlightedCandidateLabelColor = config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
+        commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
+        highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
 
-      // the following per-color-scheme configurations, if exist, will
-      // override configurations with the same name under the global 'style'
-      // section
-      linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
-      vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
-      inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")
-      inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
-      translucency ?= config.getBool("\(prefix)/translucency")
-      mutualExclusive ?= config.getBool("\(prefix)/mutual_exclusive")
-      candidateFormat ?= config.getString("\(prefix)/candidate_format")
-      fontName ?= config.getString("\(prefix)/font_face")
-      fontSize ?= config.getDouble("\(prefix)/font_point")
-      labelFontName ?= config.getString("\(prefix)/label_font_face")
-      labelFontSize ?= config.getDouble("\(prefix)/label_font_point")
-      commentFontName ?= config.getString("\(prefix)/comment_font_face")
-      commentFontSize ?= config.getDouble("\(prefix)/comment_font_point")
+        // the following per-color-scheme configurations, if exist, will
+        // override configurations with the same name under the global 'style'
+        // section
+        linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
+        vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
+        inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")
+        inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
+        translucency ?= config.getBool("\(prefix)/translucency")
+        mutualExclusive ?= config.getBool("\(prefix)/mutual_exclusive")
+        candidateFormat ?= config.getString("\(prefix)/candidate_format")
+        fontName ?= config.getString("\(prefix)/font_face")
+        fontSize ?= config.getDouble("\(prefix)/font_point")
+        labelFontName ?= config.getString("\(prefix)/label_font_face")
+        labelFontSize ?= config.getDouble("\(prefix)/label_font_point")
+        commentFontName ?= config.getString("\(prefix)/comment_font_face")
+        commentFontSize ?= config.getDouble("\(prefix)/comment_font_point")
 
-      alpha ?= config.getDouble("\(prefix)/alpha").map { max(0, min(1, $0)) }
-      cornerRadius ?= config.getDouble("\(prefix)/corner_radius")
-      hilitedCornerRadius ?= config.getDouble("\(prefix)/hilited_corner_radius")
-      surroundingExtraExpansion ?= config.getDouble("\(prefix)/surrounding_extra_expansion")
-      borderHeight ?= config.getDouble("\(prefix)/border_height")
-      borderWidth ?= config.getDouble("\(prefix)/border_width")
-      linespace ?= config.getDouble("\(prefix)/line_spacing")
-      preeditLinespace ?= config.getDouble("\(prefix)/spacing")
-      baseOffset ?= config.getDouble("\(prefix)/base_offset")
-      shadowSize ?= config.getDouble("\(prefix)/shadow_size").map { max(0, $0) }
+        alpha ?= config.getDouble("\(prefix)/alpha").map { max(0, min(1, $0)) }
+        cornerRadius ?= config.getDouble("\(prefix)/corner_radius")
+        hilitedCornerRadius ?= config.getDouble("\(prefix)/hilited_corner_radius")
+        surroundingExtraExpansion ?= config.getDouble("\(prefix)/surrounding_extra_expansion")
+        borderHeight ?= config.getDouble("\(prefix)/border_height")
+        borderWidth ?= config.getDouble("\(prefix)/border_width")
+        linespace ?= config.getDouble("\(prefix)/line_spacing")
+        preeditLinespace ?= config.getDouble("\(prefix)/spacing")
+        baseOffset ?= config.getDouble("\(prefix)/base_offset")
+        shadowSize ?= config.getDouble("\(prefix)/shadow_size").map { max(0, $0) }
+      }
     } else {
-      native = true
+      available = false
     }
 
     fonts = decodeFonts(from: fontName)

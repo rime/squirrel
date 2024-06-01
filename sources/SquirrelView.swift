@@ -36,7 +36,7 @@ final class SquirrelView: NSView {
   var lightTheme = SquirrelTheme()
   var darkTheme = SquirrelTheme()
   var currentTheme: SquirrelTheme {
-    isDark ? darkTheme : lightTheme
+    if isDark && darkTheme.available { darkTheme } else { lightTheme }
   }
   var textLayoutManager: NSTextLayoutManager {
     textView.textLayoutManager!

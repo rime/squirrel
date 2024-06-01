@@ -335,9 +335,8 @@ private extension SquirrelPanel {
   func show() {
     currentScreen()
     let theme = view.currentTheme
-    let requestedAppearance: NSAppearance? = theme.native ? nil : NSAppearance(named: .aqua)
-    if self.appearance != requestedAppearance {
-      self.appearance = requestedAppearance
+    if !view.darkTheme.available {
+      self.appearance = NSAppearance(named: .aqua)
     }
 
     // Break line if the text is too long, based on screen size.
