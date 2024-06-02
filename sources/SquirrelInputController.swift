@@ -97,7 +97,9 @@ final class SquirrelInputController: IMKInputController {
 
       let keyCode = event.keyCode
       var keyChars = event.charactersIgnoringModifiers
-      if let code = keyChars?.first, !code.isLetter {
+      let capitalModifiers = modifiers.isSubset(of: [.shift, .capsLock])
+      if let code = keyChars?.first,
+         (capitalModifiers && !code.isLetter) || (!capitalModifiers && !code.isASCII) {
         keyChars = event.characters
       }
       // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
