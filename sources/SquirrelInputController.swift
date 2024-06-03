@@ -432,8 +432,8 @@ private extension SquirrelInputController {
         NSApp.squirrelAppDelegate.loadSettings(for: schemaId)
         // inline preedit
         if let panel = NSApp.squirrelAppDelegate.panel {
-          inlinePreedit = panel.inlinePreedit && (!rimeAPI.get_option(session, "no_inline") || rimeAPI.get_option(session, "inline"))
-          inlineCandidate = panel.inlineCandidate && (!rimeAPI.get_option(session, "no_inline") || rimeAPI.get_option(session, "inline"))
+          inlinePreedit = (panel.inlinePreedit && !rimeAPI.get_option(session, "no_inline")) || rimeAPI.get_option(session, "inline")
+          inlineCandidate = panel.inlineCandidate && !rimeAPI.get_option(session, "no_inline")
           // if not inline, embed soft cursor in preedit string
           rimeAPI.set_option(session, "soft_cursor", !inlinePreedit)
         }
