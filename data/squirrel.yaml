@@ -385,6 +385,9 @@ app_options:
   com.google.Chrome:
     # 規避 https://github.com/rime/squirrel/issues/435
     inline: true
+  com.microsoft.edgemac:
+    # 規避 https://github.com/rime/squirrel/issues/906
+    inline: true
   ru.keepcoder.Telegram:
     # 規避 https://github.com/rime/squirrel/issues/475
     inline: true
