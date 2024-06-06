@@ -77,8 +77,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   }
 
   func openLogFolder() {
-    let logDir = FileManager.default.temporaryDirectory
-    NSWorkspace.shared.open(logDir)
+    NSWorkspace.shared.open(SquirrelApp.logDir)
   }
 
   func openRimeFolder() {
@@ -124,15 +123,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   }
 
   func setupRime() {
-    let userDataDir = SquirrelApp.userDir
-    let fileManager = FileManager.default
-    if !fileManager.fileExists(atPath: userDataDir.path()) {
-      do {
-        try fileManager.createDirectory(at: userDataDir, withIntermediateDirectories: true)
-      } catch {
-        print("Error creating user data directory: \(userDataDir.path())")
-      }
-    }
+    createDirIfNotExist(path: SquirrelApp.userDir)
+    createDirIfNotExist(path: SquirrelApp.logDir)
     // swiftlint:disable identifier_name
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
     let context_object = Unmanaged.passUnretained(self).toOpaque()
@@ -141,7 +133,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
     var squirrelTraits = RimeTraits.rimeStructInit()
     squirrelTraits.setCString(Bundle.main.sharedSupportPath!, to: \.shared_data_dir)
-    squirrelTraits.setCString(userDataDir.path(), to: \.user_data_dir)
+    squirrelTraits.setCString(SquirrelApp.userDir.path(), to: \.user_data_dir)
+    squirrelTraits.setCString(SquirrelApp.logDir.path(), to: \.log_dir)
     squirrelTraits.setCString("Squirrel", to: \.distribution_code_name)
     squirrelTraits.setCString("鼠鬚管", to: \.distribution_name)
     squirrelTraits.setCString(Bundle.main.object(forInfoDictionaryKey: kCFBundleVersionKey as String) as! String, to: \.distribution_version)
@@ -312,6 +305,17 @@ private extension SquirrelApplicationDelegate {
   func rimeNeedsSync(_: Notification) {
     print("Sync rime on demand.")
     self.syncUserData()
+  }
+
+  func createDirIfNotExist(path: URL) {
+    let fileManager = FileManager.default
+    if !fileManager.fileExists(atPath: path.path()) {
+      do {
+        try fileManager.createDirectory(at: path, withIntermediateDirectories: true)
+      } catch {
+        print("Error creating user data directory: \(path.path())")
+      }
+    }
   }
 }
 
