@@ -56,11 +56,11 @@ style:
   # adjust the base line of text
   #base_offset: 0
   font_face: 'Avenir'
-  #font_point: 15
+  font_point: 16
   #label_font_face: 'Avenir'
   #label_font_point: 12
   #comment_font_face: 'Avenir'
-  #comment_font_point: 15
+  #comment_font_point: 16
 
 preset_color_schemes:
   native:
