@@ -1,3 +1,28 @@
+<a name="1.0.2"></a>
+## 1.0.2 (2024-06-07)
+
+#### 其它更新內容
+* bug 修復
+  * 未設定暗色主題時，配色不生效
+  * 橫排時序號偏高
+  * 帶 Alt 的快捷鍵不生效
+  * App 特定設置 inline 不生效
+  * `good_old_caps_lock` 關閉，且 Caps Lock 啓用時，Shift 無法輸入大寫字母
+* Edge 瀏覧器默認行內編輯 (修 #906)
+* 日誌置於 $TMPDIR/rime.squirrel 內，以便查找
+
+#### Other Updates
+* Bug fixes:
+  * `color_scheme` doesn't apply in dark mode when `color_scheme_dark` is not set
+  * Label baseline too high in horizontal orientation
+  * Shortcut with Alt doesn't work
+  * inline option in app specific setting doesn't work
+  * when `good_old_caps_lock` turned to false, and Caps Lock is on, Shift cannot product upper case letter
+* Edge defaults to inline mode (fix #906)
+* Logs dir is now $TMPDIR/rime.squirrel for clarity
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/1.0.1...1.0.2
+
 <a name="1.0.1"></a>
 ## 1.0.1 (2024-06-01)
 
