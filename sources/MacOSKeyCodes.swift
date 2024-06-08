@@ -58,6 +58,10 @@ struct SquirrelKeycode {
       }
     }
 
+    if let code = additionalCodeMappings[Int(keycode)] {
+      return UInt32(code)
+    }
+
     return UInt32(XK_VoidSymbol)
   }
 
@@ -142,5 +146,63 @@ struct SquirrelKeycode {
     kVK_JIS_KeypadComma: XK_comma,
     kVK_JIS_Eisu: XK_Eisu_Shift,
     kVK_JIS_Kana: XK_Kana_Shift
+  ]
+
+  private static let additionalCodeMappings: [Int: Int32] = [
+    // numbers
+    kVK_ANSI_0: XK_0,
+    kVK_ANSI_1: XK_1,
+    kVK_ANSI_2: XK_2,
+    kVK_ANSI_3: XK_3,
+    kVK_ANSI_4: XK_4,
+    kVK_ANSI_5: XK_5,
+    kVK_ANSI_6: XK_6,
+    kVK_ANSI_7: XK_7,
+    kVK_ANSI_8: XK_8,
+    kVK_ANSI_9: XK_9,
+
+    // pubct
+    kVK_ANSI_RightBracket: XK_bracketright,
+    kVK_ANSI_LeftBracket: XK_bracketleft,
+    kVK_ANSI_Comma: XK_comma,
+    kVK_ANSI_Grave: XK_grave,
+    kVK_ANSI_Period: XK_period,
+    // kVK_VolumeUp:
+    // kVK_VolumeDown:
+    // kVK_Mute:
+    kVK_ANSI_Semicolon: XK_semicolon,
+    kVK_ANSI_Quote: XK_apostrophe,
+    kVK_ANSI_Backslash: XK_backslash,
+    kVK_ANSI_Minus: XK_minus,
+    kVK_ANSI_Slash: XK_slash,
+    kVK_ANSI_Equal: XK_equal,
+
+    // letters
+    kVK_ANSI_A: XK_a,
+    kVK_ANSI_B: XK_b,
+    kVK_ANSI_C: XK_c,
+    kVK_ANSI_D: XK_d,
+    kVK_ANSI_E: XK_e,
+    kVK_ANSI_F: XK_f,
+    kVK_ANSI_G: XK_g,
+    kVK_ANSI_H: XK_h,
+    kVK_ANSI_I: XK_i,
+    kVK_ANSI_J: XK_j,
+    kVK_ANSI_K: XK_k,
+    kVK_ANSI_L: XK_l,
+    kVK_ANSI_M: XK_m,
+    kVK_ANSI_N: XK_n,
+    kVK_ANSI_O: XK_o,
+    kVK_ANSI_P: XK_p,
+    kVK_ANSI_Q: XK_q,
+    kVK_ANSI_R: XK_r,
+    kVK_ANSI_S: XK_s,
+    kVK_ANSI_T: XK_t,
+    kVK_ANSI_U: XK_u,
+    kVK_ANSI_V: XK_v,
+    kVK_ANSI_W: XK_w,
+    kVK_ANSI_X: XK_x,
+    kVK_ANSI_Y: XK_y,
+    kVK_ANSI_Z: XK_z
   ]
 }
