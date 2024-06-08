@@ -1,14 +1,14 @@
 ---
 name: Bug 報告
 about: 我覺得這是個 Bug
-title: "[Bug]"
+title: "[Bug] 我其實沒有遇到Bug"
 labels: ''
 assignees: ''
 
 ---
 
 **簡要描述 Bug：**
-（簡單地描述你遇到的 Bug）
+~~我其實沒有遇到Bug~~
 
 **預期行爲：**
 

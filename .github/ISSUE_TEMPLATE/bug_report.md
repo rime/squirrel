@@ -1,14 +1,14 @@
 ---
 name: Bug report
 about: Is this a bug?
-title: "[Bug]"
+title: "[Bug] What have I done?"
 labels: ''
 assignees: ''
 
 ---
 
 **Describe the bug:**
-(A clear and concise description of the bug.)
+~~Actually it's not a bug after all
 
 **Expected behavior:**
 
