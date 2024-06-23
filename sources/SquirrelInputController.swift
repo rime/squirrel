@@ -555,7 +555,8 @@ private extension SquirrelInputController {
     if let panel = NSApp.squirrelAppDelegate.panel {
       panel.position = inputPos
       panel.inputController = self
-      panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels, highlighted: highlighted, page: page, lastPage: lastPage, update: true)
+      panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
+                   highlighted: highlighted, page: page, lastPage: lastPage, update: true)
     }
   }
 }

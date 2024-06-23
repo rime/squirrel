@@ -116,6 +116,7 @@ final class SquirrelView: NSView {
   }
 
   // Will triger - (void)drawRect:(NSRect)dirtyRect
+  // swiftlint:disable:next function_parameter_count
   func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
     self.candidateRanges = candidateRanges
     self.hilightedIndex = hilightedIndex
@@ -350,21 +351,12 @@ final class SquirrelView: NSView {
 
 private extension SquirrelView {
   // A tweaked sign function, to winddown corner radius when the size is small
-  func sign(_ number: CGFloat) -> CGFloat {
-    if number >= 2 {
-      return 1
-    } else if number <= -2 {
-      return -1
+  func sign(_ number: NSPoint) -> NSPoint {
+    if number.length >= 2 {
+      return number / number.length
     } else {
       return number / 2
     }
-  }
-
-  func scale(_ value: CGFloat, multiplier: CGFloat, divider: CGFloat) -> CGFloat {
-    if abs(value / divider) < 1e-3 {
-      return multiplier / divider
-    }
-    return sign(value / divider) * multiplier / value
   }
 
   // Bezier cubic curve, which has continuous roundness
@@ -380,17 +372,9 @@ private extension SquirrelView {
     var control1: NSPoint
     var control2: NSPoint
     var target = previousPoint
-    var diff = NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y)
-    var scaleFactor: CGFloat = 1
+    var diff = point - previousPoint
     if straightCorner.isEmpty || !straightCorner.contains(vertex.count-1) {
-      if vertex.count > 3 {
-        target.x += sign(diff.x / beta) * beta
-        target.y += sign(diff.y / beta) * beta
-      } else { // triangle
-        scaleFactor = min(scale(diff.x, multiplier: beta, divider: beta), scale(diff.y, multiplier: beta, divider: beta))
-        target.x += scaleFactor * diff.x
-        target.y += scaleFactor * diff.y
-      }
+      target += sign(diff / beta) * beta
     }
     path.move(to: target)
     for i in 0..<vertex.count {
@@ -402,40 +386,18 @@ private extension SquirrelView {
         path.addLine(to: target)
       } else {
         control1 = point
-        diff = NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y)
+        diff = point - previousPoint
 
-        if vertex.count > 3 {
-          target.x -= sign(diff.x / beta) * beta
-          target.y -= sign(diff.y / beta) * beta
-          control1.x -= sign(diff.x / beta) * alpha
-          control1.y -= sign(diff.y / beta) * alpha
-        } else { // triangle
-          scaleFactor = min(scale(diff.x, multiplier: beta, divider: beta), scale(diff.y, multiplier: beta, divider: beta))
-          target.x -= scaleFactor * diff.x
-          target.y -= scaleFactor * diff.y
-          scaleFactor = min(scale(diff.x, multiplier: alpha, divider: beta), scale(diff.y, multiplier: alpha, divider: beta))
-          control1.x -= scaleFactor * diff.x
-          control1.y -= scaleFactor * diff.y
-        }
+        target -= sign(diff / beta) * beta
+        control1 -= sign(diff / beta) * alpha
 
         path.addLine(to: target)
         target = point
         control2 = point
-        diff = NSPoint(x: nextPoint.x - point.x, y: nextPoint.y - point.y)
+        diff = nextPoint - point
 
-        if vertex.count > 3 {
-          target.x += sign(diff.x / beta) * beta
-          target.y += sign(diff.y / beta) * beta
-          control2.x += sign(diff.x / beta) * alpha
-          control2.y += sign(diff.y / beta) * alpha
-        } else {
-          scaleFactor = min(scale(diff.x, multiplier: beta, divider: beta), scale(diff.y, multiplier: beta, divider: beta))
-          target.x += scaleFactor * diff.x
-          target.y += scaleFactor * diff.y
-          scaleFactor = min(scale(diff.x, multiplier: alpha, divider: beta), scale(diff.y, multiplier: beta, divider: beta))
-          control2.x += scaleFactor * diff.x
-          control2.y += scaleFactor * diff.y
-        }
+        target += sign(diff / beta) * beta
+        control2 += sign(diff / beta) * alpha
 
         path.addCurve(to: target, control1: control1, control2: control2)
       }
@@ -611,10 +573,10 @@ private extension SquirrelView {
         point = vertex[i]
         nextPoint = vertex[(i+1) % vertex.count]
         newPoint = point
-        displacement = direction(diff: NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y))
+        displacement = direction(diff: point - previousPoint)
         newPoint.x += by * displacement.x
         newPoint.y += by * displacement.y
-        displacement = direction(diff: NSPoint(x: nextPoint.x - point.x, y: nextPoint.y - point.y))
+        displacement = direction(diff: nextPoint - point)
         newPoint.x += by * displacement.x
         newPoint.y += by * displacement.y
         results[i] = newPoint
@@ -651,6 +613,7 @@ private extension SquirrelView {
     }
   }
 
+  // swiftlint:disable:next large_tuple
   func linearMultilineFor(body: NSRect, leading: NSRect, trailing: NSRect) -> (Array<NSPoint>, Array<NSPoint>, Set<Int>, Set<Int>) {
     let highlightedPoints, highlightedPoints2: [NSPoint]
     let rightCorners, rightCorners2: Set<Int>
@@ -777,9 +740,11 @@ private extension SquirrelView {
     let preeditHeight = max(0, preeditRect.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 - theme.edgeInset.height) + theme.edgeInset.height - theme.linespace / 2
     height += theme.linespace
     let radius = min(0.5 * theme.pagingOffset, 2 * height / 9)
-    let effectiveRadius = min(theme.cornerRadius, 0.4 * radius)
-    guard let trianglePath = drawSmoothLines(triangle(center: NSPoint(x: 0, y: 0), radius: radius),
-                                         straightCorner: [], alpha: 0.3 * effectiveRadius, beta: 1.4 * effectiveRadius) else {
+    let effectiveRadius = min(theme.cornerRadius, 0.6 * radius)
+    guard let trianglePath = drawSmoothLines(
+      triangle(center: NSPoint(x: 0, y: 0), radius: radius),
+      straightCorner: [], alpha: 0.3 * effectiveRadius, beta: 1.4 * effectiveRadius
+    ) else {
       return (layer, nil, nil)
     }
     var downPath: CGPath?
