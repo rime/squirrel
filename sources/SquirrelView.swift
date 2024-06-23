@@ -742,7 +742,7 @@ private extension SquirrelView {
     let radius = min(0.5 * theme.pagingOffset, 2 * height / 9)
     let effectiveRadius = min(theme.cornerRadius, 0.6 * radius)
     guard let trianglePath = drawSmoothLines(
-      triangle(center: NSPoint(x: 0, y: 0), radius: radius),
+      triangle(center: .zero, radius: radius),
       straightCorner: [], alpha: 0.3 * effectiveRadius, beta: 1.4 * effectiveRadius
     ) else {
       return (layer, nil, nil)
