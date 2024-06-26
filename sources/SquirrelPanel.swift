@@ -119,7 +119,7 @@ final class SquirrelPanel: NSPanel {
         if abs(scrollDirection.dx) > abs(scrollDirection.dy) && abs(scrollDirection.dx) > 10 {
           _ = inputController?.page(up: (scrollDirection.dx < 0) == vertical)
         } else if abs(scrollDirection.dx) < abs(scrollDirection.dy) && abs(scrollDirection.dy) > 10 {
-          _ = inputController?.page(up: scrollDirection.dx > 0)
+          _ = inputController?.page(up: scrollDirection.dy > 0)
         }
         scrollDirection = .zero
         // Mouse scroll wheel
