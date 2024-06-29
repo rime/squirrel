@@ -65,6 +65,7 @@ final class SquirrelTheme {
   private(set) var vertical = false
   private(set) var inlinePreedit = false
   private(set) var inlineCandidate = false
+  private(set) var showPaging = false
 
   private var fonts = [NSFont]()
   private var labelFonts = [NSFont]()
@@ -182,6 +183,13 @@ final class SquirrelTheme {
       _candidateFormat = newTemplate
     }
   }
+  var pagingOffset: CGFloat {
+    if showPaging {
+      (labelFontSize ?? fontSize ?? Self.defaultFontSize) * 1.5
+    } else {
+      0
+    }
+  }
 
   func load(config: SquirrelConfig, dark: Bool) {
     linear ?= config.getString("style/candidate_list_layout").map { $0 == "linear" }
@@ -191,6 +199,7 @@ final class SquirrelTheme {
     translucency ?= config.getBool("style/translucency")
     mutualExclusive ?= config.getBool("style/mutual_exclusive")
     memorizeSize ?= config.getBool("style/memorize_size")
+    showPaging ?= config.getBool("style/show_paging")
 
     statusMessageType ?= .init(rawValue: config.getString("style/status_message_type") ?? "")
     candidateFormat ?= config.getString("style/candidate_format")
@@ -244,6 +253,7 @@ final class SquirrelTheme {
         inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
         translucency ?= config.getBool("\(prefix)/translucency")
         mutualExclusive ?= config.getBool("\(prefix)/mutual_exclusive")
+        showPaging ?= config.getBool("\(prefix)/show_paging")
         candidateFormat ?= config.getString("\(prefix)/candidate_format")
         fontName ?= config.getString("\(prefix)/font_face")
         fontSize ?= config.getDouble("\(prefix)/font_point")

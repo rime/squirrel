@@ -29,9 +29,13 @@ final class SquirrelView: NSView {
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
   var preeditRange: NSRange = .empty
+  var canPageUp: Bool = false
+  var canPageDown: Bool = false
   var highlightedPreeditRange: NSRange = .empty
   var separatorWidth: CGFloat = 0
   var shape = CAShapeLayer()
+  private var downPath: CGPath?
+  private var upPath: CGPath?
 
   var lightTheme = SquirrelTheme()
   var darkTheme = SquirrelTheme()
@@ -112,11 +116,14 @@ final class SquirrelView: NSView {
   }
 
   // Will triger - (void)drawRect:(NSRect)dirtyRect
-  func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange) {
+  // swiftlint:disable:next function_parameter_count
+  func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
     self.candidateRanges = candidateRanges
     self.hilightedIndex = hilightedIndex
     self.preeditRange = preeditRange
     self.highlightedPreeditRange = highlightedPreeditRange
+    self.canPageUp = canPageUp
+    self.canPageDown = canPageDown
     self.needsDisplay = true
   }
 
@@ -130,8 +137,9 @@ final class SquirrelView: NSView {
     var highlightedPreeditPath: CGMutablePath?
     let theme = currentTheme
 
-    let backgroundRect = dirtyRect
     var containingRect = dirtyRect
+    containingRect.size.width -= theme.pagingOffset
+    let backgroundRect = containingRect
 
     // Draw preedit Rect
     var preeditRect = NSRect.zero
@@ -210,7 +218,6 @@ final class SquirrelView: NSView {
 
     NSBezierPath.defaultLineWidth = 0
     backgroundPath = drawSmoothLines(rectVertex(of: backgroundRect), straightCorner: Set(), alpha: 0.3 * theme.cornerRadius, beta: 1.4 * theme.cornerRadius)
-    shape.path = backgroundPath
 
     self.layer?.sublayers = nil
     let backPath = backgroundPath?.mutableCopy()
@@ -280,14 +287,39 @@ final class SquirrelView: NSView {
       }
       panelLayer.addSublayer(layer)
     }
+    panelLayer.setAffineTransform(CGAffineTransform(translationX: theme.pagingOffset, y: 0))
+    let panelPath = CGMutablePath()
+    panelPath.addPath(backgroundPath!, transform: panelLayer.affineTransform().scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height))
+
+    let (pagingLayer, downPath, upPath) = pagingLayer(theme: theme, preeditRect: preeditRect)
+    if let sublayers = pagingLayer.sublayers, !sublayers.isEmpty {
+      self.layer?.addSublayer(pagingLayer)
+    }
+    let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height)
+    if let downPath {
+      panelPath.addPath(downPath, transform: flipTransform)
+      self.downPath = downPath.copy()
+    }
+    if let upPath {
+      panelPath.addPath(upPath, transform: flipTransform)
+      self.upPath = upPath.copy()
+    }
+
+    shape.path = panelPath
   }
 
-  func click(at clickPoint: NSPoint) -> (Int?, Int?) {
+  func click(at clickPoint: NSPoint) -> (Int?, Int?, Bool?) {
     var index = 0
     var candidateIndex: Int?
     var preeditIndex: Int?
+    if let downPath = self.downPath, downPath.contains(clickPoint) {
+      return (nil, nil, false)
+    }
+    if let upPath = self.upPath, upPath.contains(clickPoint) {
+      return (nil, nil, true)
+    }
     if let path = shape.path, path.contains(clickPoint) {
-      var point = NSPoint(x: clickPoint.x - textView.textContainerInset.width,
+      var point = NSPoint(x: clickPoint.x - textView.textContainerInset.width - currentTheme.pagingOffset,
                           y: clickPoint.y - textView.textContainerInset.height)
       let fragment = textLayoutManager.textLayoutFragment(for: point)
       if let fragment = fragment {
@@ -313,17 +345,15 @@ final class SquirrelView: NSView {
         }
       }
     }
-    return (candidateIndex, preeditIndex)
+    return (candidateIndex, preeditIndex, nil)
   }
 }
 
 private extension SquirrelView {
   // A tweaked sign function, to winddown corner radius when the size is small
-  func sign(_ number: CGFloat) -> CGFloat {
-    if number >= 2 {
-      return 1
-    } else if number <= -2 {
-      return -1
+  func sign(_ number: NSPoint) -> NSPoint {
+    if number.length >= 2 {
+      return number / number.length
     } else {
       return number / 2
     }
@@ -331,7 +361,7 @@ private extension SquirrelView {
 
   // Bezier cubic curve, which has continuous roundness
   func drawSmoothLines(_ vertex: [NSPoint], straightCorner: Set<Int>, alpha: CGFloat, beta rawBeta: CGFloat) -> CGPath? {
-    guard vertex.count >= 4 else {
+    guard vertex.count >= 3 else {
       return nil
     }
     let beta = max(0.00001, rawBeta)
@@ -342,10 +372,9 @@ private extension SquirrelView {
     var control1: NSPoint
     var control2: NSPoint
     var target = previousPoint
-    var diff = NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y)
+    var diff = point - previousPoint
     if straightCorner.isEmpty || !straightCorner.contains(vertex.count-1) {
-      target.x += sign(diff.x/beta)*beta
-      target.y += sign(diff.y/beta)*beta
+      target += sign(diff / beta) * beta
     }
     path.move(to: target)
     for i in 0..<vertex.count {
@@ -357,22 +386,18 @@ private extension SquirrelView {
         path.addLine(to: target)
       } else {
         control1 = point
-        diff = NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y)
+        diff = point - previousPoint
 
-        target.x -= sign(diff.x/beta)*beta
-        control1.x -= sign(diff.x/beta)*alpha
-        target.y -= sign(diff.y/beta)*beta
-        control1.y -= sign(diff.y/beta)*alpha
+        target -= sign(diff / beta) * beta
+        control1 -= sign(diff / beta) * alpha
 
         path.addLine(to: target)
         target = point
         control2 = point
-        diff = NSPoint(x: nextPoint.x - point.x, y: nextPoint.y - point.y)
+        diff = nextPoint - point
 
-        control2.x += sign(diff.x/beta)*alpha
-        target.x += sign(diff.x/beta)*beta
-        control2.y += sign(diff.y/beta)*alpha
-        target.y += sign(diff.y/beta)*beta
+        target += sign(diff / beta) * beta
+        control2 += sign(diff / beta) * alpha
 
         path.addCurve(to: target, control1: control1, control2: control2)
       }
@@ -548,10 +573,10 @@ private extension SquirrelView {
         point = vertex[i]
         nextPoint = vertex[(i+1) % vertex.count]
         newPoint = point
-        displacement = direction(diff: NSPoint(x: point.x - previousPoint.x, y: point.y - previousPoint.y))
+        displacement = direction(diff: point - previousPoint)
         newPoint.x += by * displacement.x
         newPoint.y += by * displacement.y
-        displacement = direction(diff: NSPoint(x: nextPoint.x - point.x, y: nextPoint.y - point.y))
+        displacement = direction(diff: nextPoint - point)
         newPoint.x += by * displacement.x
         newPoint.y += by * displacement.y
         results[i] = newPoint
@@ -588,6 +613,7 @@ private extension SquirrelView {
     }
   }
 
+  // swiftlint:disable:next large_tuple
   func linearMultilineFor(body: NSRect, leading: NSRect, trailing: NSRect) -> (Array<NSPoint>, Array<NSPoint>, Set<Int>, Set<Int>) {
     let highlightedPoints, highlightedPoints2: [NSPoint]
     let rightCorners, rightCorners2: Set<Int>
@@ -698,5 +724,45 @@ private extension SquirrelView {
     newRect.origin.x += currentTheme.hilitedCornerRadius + currentTheme.borderWidth
     newRect.origin.y += currentTheme.hilitedCornerRadius + currentTheme.borderWidth
     return newRect
+  }
+
+  func triangle(center: NSPoint, radius: CGFloat) -> [NSPoint] {
+    [NSPoint(x: center.x, y: center.y + radius),
+     NSPoint(x: center.x + 0.5 * sqrt(3) * radius, y: center.y - 0.5 * radius),
+     NSPoint(x: center.x - 0.5 * sqrt(3) * radius, y: center.y - 0.5 * radius)]
+  }
+
+  func pagingLayer(theme: SquirrelTheme, preeditRect: CGRect) -> (CAShapeLayer, CGPath?, CGPath?) {
+    let layer = CAShapeLayer()
+    guard theme.showPaging && (canPageUp || canPageDown) else { return (layer, nil, nil) }
+    guard let firstCandidate = candidateRanges.first, let range = convert(range: firstCandidate) else { return (layer, nil, nil) }
+    var height = contentRect(range: range).height
+    let preeditHeight = max(0, preeditRect.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 - theme.edgeInset.height) + theme.edgeInset.height - theme.linespace / 2
+    height += theme.linespace
+    let radius = min(0.5 * theme.pagingOffset, 2 * height / 9)
+    let effectiveRadius = min(theme.cornerRadius, 0.6 * radius)
+    guard let trianglePath = drawSmoothLines(
+      triangle(center: .zero, radius: radius),
+      straightCorner: [], alpha: 0.3 * effectiveRadius, beta: 1.4 * effectiveRadius
+    ) else {
+      return (layer, nil, nil)
+    }
+    var downPath: CGPath?
+    var upPath: CGPath?
+    if canPageDown {
+      var downTransform = CGAffineTransform(translationX: 0.5 * theme.pagingOffset, y: 2 * height / 3 + preeditHeight)
+      let downLayer = shapeFromPath(path: trianglePath.copy(using: &downTransform))
+      downLayer.fillColor = theme.backgroundColor.cgColor
+      downPath = trianglePath.copy(using: &downTransform)
+      layer.addSublayer(downLayer)
+    }
+    if canPageUp {
+      var upTransform = CGAffineTransform(rotationAngle: .pi).translatedBy(x: -0.5 * theme.pagingOffset, y: -height / 3 - preeditHeight)
+      let upLayer = shapeFromPath(path: trianglePath.copy(using: &upTransform))
+      upLayer.fillColor = theme.backgroundColor.cgColor
+      upPath = trianglePath.copy(using: &upTransform)
+      layer.addSublayer(upLayer)
+    }
+    return (layer, downPath, upPath)
   }
 }
