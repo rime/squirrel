@@ -9,6 +9,7 @@ import InputMethodKit
 
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
+  private static var unknownAppCnt: UInt = 0
 
   private weak var client: IMKTextInput?
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
@@ -332,7 +333,10 @@ private extension SquirrelInputController {
   }
 
   func createSession() {
-    guard let app = client?.bundleIdentifier() else { return }
+    let app = client?.bundleIdentifier() ?? {
+      SquirrelInputController.unknownAppCnt &+= 1
+      return "UnknownApp\(SquirrelInputController.unknownAppCnt)"
+    }()
     print("createSession: \(app)")
     currentApp = app
     session = rimeAPI.create_session()
