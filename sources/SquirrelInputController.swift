@@ -31,6 +31,7 @@ final class SquirrelInputController: IMKInputController {
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+    guard let event = event else { return false }
     let modifiers = event.modifierFlags
     let changes = lastModifiers.symmetricDifference(modifiers)
 
