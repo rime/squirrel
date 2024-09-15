@@ -119,7 +119,7 @@ struct SquirrelApp {
         try? task.run()
       } else {
         NSApp.squirrelAppDelegate.setupRime()
-        NSApp.squirrelAppDelegate.startRime(fullCheck: true)
+        NSApp.squirrelAppDelegate.startRime(fullCheck: false)
         NSApp.squirrelAppDelegate.loadSettings()
         print("Squirrel reporting!")
       }
