@@ -187,6 +187,7 @@ preset_color_schemes:
     hilited_text_color: 0xfecb96
     hilited_back_color: 0x000000
     hilited_candidate_text_color: 0x70ffaf
+    hilited_candidate_label_color: 0x40cf7f
     hilited_candidate_back_color: 0x00000000
     comment_text_color: 0x1010d0
     hilited_comment_text_color: 0x1010f0
