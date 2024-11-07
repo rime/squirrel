@@ -156,7 +156,7 @@ preset_color_schemes:
   purity_of_form:
     name: 純粹的形式／Purity of Form
     author: 雨過之後、佛振
-    text_color: 0xc2c2c2
+    text_color: 0xc2c222
     back_color: 0x444444
     candidate_text_color: 0xeeeeee
     hilited_text_color: 0xeeeeee
