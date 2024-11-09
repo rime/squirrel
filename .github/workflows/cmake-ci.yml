@@ -1,0 +1,19 @@
+name: cmake ci
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout last commit
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Configure build environment
+        run: |
+          brew install ninja rsync
+      - name: Build
+        run: |
+          make -Clibrime deps
+          bash librime/install-plugins.sh hchunhui/librime-lua lotem/librime-octagram rime/librime-predict
+          cmake -S. -Bbuild -GNinja -DCMAKE_OSX_DEPLOYMENT_TARGET=13 -DCMAKE_BUILD_TYPE=Release
+          ninja -Cbuild

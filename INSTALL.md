@@ -182,3 +182,25 @@ make clean-package
 If you want to clean all above, do all.
 
 That's it, a verbal journal. Thanks for riming with Squirrel.
+
+## Build with CMake
+
+Alternatively, Squirrel can be built with CMake.
+
+(Note that universal binaries are not supported, and Xcode command line tools are still required.)
+
+```sh
+# Prepare librime
+make -Clibrime deps
+bash librime/install-plugins.sh hchunhui/librime-lua lotem/librime-octagram rime/librime-predict  # and more...
+
+# Build squirrel
+cmake -S. -GNinja -Bbuild -DCMAKE_BUILD_TYPE=Release -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 -DDEV_ID='YourDevID'
+cd build
+ninja          # Create build/Squirrel.app
+ninja sign     # Code-sign build/Squirrel.app (*)
+ninja package  # Create package/Squirrel.pkg (*)
+ninja install  # Directly install to '/Library/Input Methods' (*)
+```
+
+(*) `sign`, `install`, and `package` require code-signing `DEV_ID` or `SIGN_KEY` to be set. `SIGN_KEY` will take precedence over `DEV_ID`.

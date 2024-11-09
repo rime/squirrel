@@ -7,9 +7,16 @@ INSTALL_LOCATION='/Library/Input Methods'
 cd "$(dirname $0)"
 source common.sh
 
+if [ -e "${PROJECT_ROOT}/build/Squirrel.app" ]; then
+    ROOT=`mktemp -d`
+    cp -a "${PROJECT_ROOT}/build/Squirrel.app" "$ROOT"
+else
+    ROOT="${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release"
+fi
+
 pkgbuild \
     --info PackageInfo \
-    --root "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" \
+    --root "$ROOT" \
     --filter '.*\.swiftmodule$' \
     --component-plist Squirrel-component.plist \
     --identifier "${BUNDLE_IDENTIFIER}" \
