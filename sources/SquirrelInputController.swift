@@ -239,6 +239,8 @@ final class SquirrelInputController: IMKInputController {
     wiki.target = self
     let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
     update.target = self
+    let lxb = NSMenuItem(title: NSLocalizedString("吕小布（开发版）", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
+    lxb.target = self
 
     let menu = NSMenu()
     menu.addItem(deploy)
@@ -247,7 +249,8 @@ final class SquirrelInputController: IMKInputController {
     menu.addItem(setting)
     menu.addItem(wiki)
     menu.addItem(update)
-
+    menu.addItem(lxb)
+    
     return menu
   }
 
