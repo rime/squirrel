@@ -129,6 +129,8 @@ final class SquirrelView: NSView {
 
   // All draws happen here
   // swiftlint:disable:next cyclomatic_complexity
+  //保存旧宽度值用于动画
+  var oldBackgroundPath : CGPath?
   override func draw(_ dirtyRect: NSRect) {
     var backgroundPath: CGPath?
     var preeditPath: CGPath?
@@ -140,6 +142,12 @@ final class SquirrelView: NSView {
     var containingRect = dirtyRect
     containingRect.size.width -= theme.pagingOffset
     let backgroundRect = containingRect
+    // 外框动画
+    let borderAnimation = CABasicAnimation(keyPath: "path")
+    borderAnimation.fromValue = oldBackgroundPath // 开始时的路径
+    borderAnimation.toValue = backgroundPath // 结束时的路径
+    borderAnimation.duration = 0.2 // 动画持续 1 秒
+    borderAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 动画时间函数
 
     // Draw preedit Rect
     var preeditRect = NSRect.zero
@@ -237,6 +245,9 @@ final class SquirrelView: NSView {
     let panelLayerMask = shapeFromPath(path: backgroundPath)
     panelLayer.mask = panelLayerMask
     self.layer?.addSublayer(panelLayer)
+    //将动画添加到图层
+    panelLayer.add(borderAnimation, forKey: "animatePath")
+    self.shape.add(borderAnimation, forKey: "animatePath")
 
     // Fill in colors
     if let color = theme.preeditBackgroundColor, let path = preeditPath {
@@ -256,6 +267,8 @@ final class SquirrelView: NSView {
       borderLayer.strokeColor = color.cgColor
       borderLayer.fillColor = nil
       panelLayer.addSublayer(borderLayer)
+      //将动画添加到图层
+      borderLayer.add(borderAnimation, forKey: "animatePath")
     }
     if let color = theme.highlightedPreeditColor, let path = highlightedPreeditPath {
       let layer = shapeFromPath(path: path)
@@ -306,6 +319,8 @@ final class SquirrelView: NSView {
     }
 
     shape.path = panelPath
+    //更新
+    oldBackgroundPath = backgroundPath
   }
 
   func click(at clickPoint: NSPoint) -> (Int?, Int?, Bool?) {
