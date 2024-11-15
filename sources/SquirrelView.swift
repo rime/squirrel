@@ -142,7 +142,7 @@ final class SquirrelView: NSView {
     var containingRect = dirtyRect
     containingRect.size.width -= theme.pagingOffset
     let backgroundRect = containingRect
-    // 外框动画
+    // 外框动画CABasic
     let borderAnimation = CABasicAnimation(keyPath: "path")
     borderAnimation.fromValue = oldBackgroundPath // 开始时的路径
     borderAnimation.toValue = backgroundPath // 结束时的路径
