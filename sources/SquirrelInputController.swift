@@ -28,6 +28,7 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  var animationOn: Bool = true
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -241,6 +242,10 @@ final class SquirrelInputController: IMKInputController {
     update.target = self
     let lxb = NSMenuItem(title: NSLocalizedString("吕小布（开发版）", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
     lxb.target = self
+    let animation = NSMenuItem(title: "动画", action: #selector(toggoleAnimation), keyEquivalent: "")
+    animation.target = self
+    animation.state = animationOn ? .on : .off
+    
 
     let menu = NSMenu()
     menu.addItem(deploy)
@@ -250,6 +255,8 @@ final class SquirrelInputController: IMKInputController {
     menu.addItem(wiki)
     menu.addItem(update)
     menu.addItem(lxb)
+    menu.addItem(animation)
+    
     
     return menu
   }
@@ -276,6 +283,12 @@ final class SquirrelInputController: IMKInputController {
 
   @objc func openWiki() {
     NSApp.squirrelAppDelegate.openWiki()
+  }
+  
+  @objc func toggoleAnimation() {
+    // 切换菜单项的状态
+    animationOn.toggle()
+    _ = menu()
   }
 
   deinit {

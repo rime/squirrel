@@ -246,8 +246,8 @@ final class SquirrelView: NSView {
     panelLayer.mask = panelLayerMask
     self.layer?.addSublayer(panelLayer)
     //将动画添加到图层
-    panelLayer.add(borderAnimation, forKey: "animatePath")
-    self.shape.add(borderAnimation, forKey: "animatePath")
+    panelLayer.add(borderAnimation, forKey: "borderAnimation")
+    self.shape.add(borderAnimation, forKey: "borderAnimation")
 
     // Fill in colors
     if let color = theme.preeditBackgroundColor, let path = preeditPath {
@@ -268,7 +268,7 @@ final class SquirrelView: NSView {
       borderLayer.fillColor = nil
       panelLayer.addSublayer(borderLayer)
       //将动画添加到图层
-      borderLayer.add(borderAnimation, forKey: "animatePath")
+      borderLayer.add(borderAnimation, forKey: "borderAnimation")
     }
     if let color = theme.highlightedPreeditColor, let path = highlightedPreeditPath {
       let layer = shapeFromPath(path: path)
