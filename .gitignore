@@ -18,3 +18,4 @@ package/*.xml
 *~
 .*.swp
 .DS_Store
+Squirrel.xcscheme
