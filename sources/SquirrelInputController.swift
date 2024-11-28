@@ -7,6 +7,9 @@
 
 import InputMethodKit
 
+//保存动画开关状态
+var isAnimationOn: Bool = true
+
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
@@ -28,7 +31,7 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
-  var animationOn: Bool = true
+  
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -244,7 +247,7 @@ final class SquirrelInputController: IMKInputController {
     lxb.target = self
     let animation = NSMenuItem(title: "动画", action: #selector(toggoleAnimation), keyEquivalent: "")
     animation.target = self
-    animation.state = animationOn ? .on : .off
+    animation.state = isAnimationOn ? .on : .off
     
 
     let menu = NSMenu()
@@ -287,7 +290,7 @@ final class SquirrelInputController: IMKInputController {
   
   @objc func toggoleAnimation() {
     // 切换菜单项的状态
-    animationOn.toggle()
+    isAnimationOn.toggle()
     _ = menu()
   }
 
