@@ -8,7 +8,7 @@
 import InputMethodKit
 
 //保存动画开关状态
-var isAnimationOn: Bool = true
+var isAnimationOn: Bool = false
 
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
