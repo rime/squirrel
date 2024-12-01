@@ -40,7 +40,7 @@ final class SquirrelInputController: IMKInputController {
   private var currentApp: String = ""
 
   // swiftlint:disable:next cyclomatic_complexity
-  public override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+  override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
     guard let event = event else { return false }
     let modifiers = event.modifierFlags
     let changes = lastModifiers.symmetricDifference(modifiers)
@@ -172,12 +172,12 @@ final class SquirrelInputController: IMKInputController {
     return true
   }
 
-  public override func recognizedEvents(_ sender: Any!) -> Int {
+  override func recognizedEvents(_ sender: Any!) -> Int {
     // print("[DEBUG] recognizedEvents:")
     return Int(NSEvent.EventTypeMask.Element(arrayLiteral: .keyDown, .flagsChanged).rawValue)
   }
 
-  public override func activateServer(_ sender: Any!) {
+  override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
     // print("[DEBUG] activateServer:")
     var keyboardLayout = GlobalContext.shared.config?.getString("keyboard_layout") ?? ""
@@ -205,14 +205,14 @@ final class SquirrelInputController: IMKInputController {
     createSession()
   }
 
-  public override func deactivateServer(_ sender: Any!) {
+  override func deactivateServer(_ sender: Any!) {
     // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
     hidePalettes()
     commitComposition(sender)
     client = nil
   }
 
-  public override func hidePalettes() {
+  override func hidePalettes() {
     GlobalContext.shared.panel.hide()
     super.hidePalettes()
   }
@@ -227,7 +227,7 @@ final class SquirrelInputController: IMKInputController {
    insertText:replacementRange:.  Additionally, this is the time
    to clean up if that is necessary.
    */
-  public override func commitComposition(_ sender: Any!) {
+  override func commitComposition(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
     // print("[DEBUG] commitComposition: \(sender ?? "nil")")
     //  commit raw input
@@ -239,7 +239,7 @@ final class SquirrelInputController: IMKInputController {
     }
   }
 
-  public override func menu() -> NSMenu! {
+  override func menu() -> NSMenu! {
     // Since the action will be called from IMKInputController.doCommandBySelector, the target will/must be self
     let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(MenuActions.deploy), keyEquivalent: "`")
     deploy.target = self
