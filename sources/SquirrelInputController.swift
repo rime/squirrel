@@ -7,6 +7,18 @@
 
 import InputMethodKit
 
+@objc protocol MenuActions {
+  @objc func syncUserData()
+  @objc func openLogFolder()
+
+
+  @objc func openRimeFolder()
+
+  @objc func checkForUpdates()
+
+  @objc func openWiki()
+}
+
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
@@ -170,7 +182,7 @@ final class SquirrelInputController: IMKInputController {
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
     // print("[DEBUG] activateServer:")
-    var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
+    var keyboardLayout = GlobalContext.shared.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
       keyboardLayout = ""
     } else if keyboardLayout == "default" {
@@ -199,7 +211,7 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func hidePalettes() {
-    NSApp.squirrelAppDelegate.panel?.hide()
+    GlobalContext.shared.panel?.hide()
     super.hidePalettes()
   }
 
@@ -229,15 +241,15 @@ final class SquirrelInputController: IMKInputController {
     let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(deploy), keyEquivalent: "`")
     deploy.target = self
     deploy.keyEquivalentModifierMask = [.control, .option]
-    let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(syncUserData), keyEquivalent: "")
+    let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(MenuActions.syncUserData), keyEquivalent: "")
     sync.target = self
-    let logDir = NSMenuItem(title: NSLocalizedString("Logs...", comment: "Menu item"), action: #selector(openLogFolder), keyEquivalent: "")
+    let logDir = NSMenuItem(title: NSLocalizedString("Logs...", comment: "Menu item"), action: #selector(MenuActions.openLogFolder), keyEquivalent: "")
     logDir.target = self
-    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(openRimeFolder), keyEquivalent: "")
+    let setting = NSMenuItem(title: NSLocalizedString("Settings...", comment: "Menu item"), action: #selector(MenuActions.openRimeFolder), keyEquivalent: "")
     setting.target = self
-    let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(openWiki), keyEquivalent: "")
+    let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(MenuActions.openWiki), keyEquivalent: "")
     wiki.target = self
-    let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
+    let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(MenuActions.checkForUpdates), keyEquivalent: "")
     update.target = self
 
     let menu = NSMenu()
@@ -252,27 +264,7 @@ final class SquirrelInputController: IMKInputController {
   }
 
   @objc func deploy() {
-    NSApp.squirrelAppDelegate.deploy()
-  }
-
-  @objc func syncUserData() {
-    NSApp.squirrelAppDelegate.syncUserData()
-  }
-
-  @objc func openLogFolder() {
-    NSApp.squirrelAppDelegate.openLogFolder()
-  }
-
-  @objc func openRimeFolder() {
-    NSApp.squirrelAppDelegate.openRimeFolder()
-  }
-
-  @objc func checkForUpdates() {
-    NSApp.squirrelAppDelegate.checkForUpdates()
-  }
-
-  @objc func openWiki() {
-    NSApp.squirrelAppDelegate.openWiki()
+    GlobalContext.shared.deploy()
   }
 
   deinit {
@@ -317,7 +309,7 @@ private extension SquirrelInputController {
       timer.invalidate()
     }
     chordDuration = 0.1
-    if let duration = NSApp.squirrelAppDelegate.config?.getDouble("chord_duration"), duration > 0 {
+    if let duration = GlobalContext.shared.config?.getDouble("chord_duration"), duration > 0 {
       chordDuration = duration
     }
     chordTimer = Timer.scheduledTimer(withTimeInterval: chordDuration, repeats: false, block: onChordTimer)
@@ -352,7 +344,7 @@ private extension SquirrelInputController {
     if currentApp == "" {
       return
     }
-    if let appOptions = NSApp.squirrelAppDelegate.config?.getAppOptions(currentApp) {
+    if let appOptions = GlobalContext.shared.config?.getAppOptions(currentApp) {
       for (key, value) in appOptions {
         print("set app option: \(key) = \(value)")
         rimeAPI.set_option(session, key, value)
@@ -373,7 +365,7 @@ private extension SquirrelInputController {
     // TODO add special key event preprocessing here
 
     // with linear candidate list, arrow keys may behave differently.
-    if let panel = NSApp.squirrelAppDelegate.panel {
+    if let panel = GlobalContext.shared.panel {
       if panel.linear != rimeAPI.get_option(session, "_linear") {
         rimeAPI.set_option(session, "_linear", panel.linear)
       }
@@ -434,9 +426,9 @@ private extension SquirrelInputController {
       // swiftlint:disable:next identifier_name
       if let schema_id = status.schema_id, schemaId == "" || schemaId != String(cString: schema_id) {
         schemaId = String(cString: schema_id)
-        NSApp.squirrelAppDelegate.loadSettings(for: schemaId)
+        GlobalContext.shared.loadSettings(for: schemaId)
         // inline preedit
-        if let panel = NSApp.squirrelAppDelegate.panel {
+        if let panel = GlobalContext.shared.panel {
           inlinePreedit = (panel.inlinePreedit && !rimeAPI.get_option(session, "no_inline")) || rimeAPI.get_option(session, "inline")
           inlineCandidate = panel.inlineCandidate && !rimeAPI.get_option(session, "no_inline")
           // if not inline, embed soft cursor in preedit string
@@ -557,7 +549,7 @@ private extension SquirrelInputController {
     guard let client = client else { return }
     var inputPos = NSRect()
     client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
-    if let panel = NSApp.squirrelAppDelegate.panel {
+    if let panel = GlobalContext.shared.panel {
       panel.position = inputPos
       panel.inputController = self
       panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
