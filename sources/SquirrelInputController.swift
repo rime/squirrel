@@ -8,15 +8,12 @@
 import InputMethodKit
 
 @objc protocol MenuActions {
-  @objc func syncUserData()
-  @objc func openLogFolder()
-
-
-  @objc func openRimeFolder()
-
-  @objc func checkForUpdates()
-
-  @objc func openWiki()
+  func deploy()
+  func syncUserData()
+  func openLogFolder()
+  func openRimeFolder()
+  func checkForUpdates()
+  func openWiki()
 }
 
 @objc(SquirrelInputController)
@@ -243,7 +240,8 @@ final class SquirrelInputController: IMKInputController {
   }
 
   public override func menu() -> NSMenu! {
-    let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(deploy), keyEquivalent: "`")
+    // Since the action will be called from IMKInputController.doCommandBySelector, the target will/must be self
+    let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(MenuActions.deploy), keyEquivalent: "`")
     deploy.target = self
     deploy.keyEquivalentModifierMask = [.control, .option]
     let sync = NSMenuItem(title: NSLocalizedString("Sync user data", comment: "Menu item"), action: #selector(MenuActions.syncUserData), keyEquivalent: "")
@@ -268,12 +266,37 @@ final class SquirrelInputController: IMKInputController {
     return menu
   }
 
-  @objc func deploy() {
-    GlobalContext.shared.deploy()
-  }
-
   deinit {
     destroySession()
+  }
+}
+
+extension SquirrelInputController: MenuActions {
+  private var handler: MenuActions? {
+    NSApplication.shared.delegate as? MenuActions
+  }
+  func deploy() {
+    handler?.deploy()
+  }
+
+  func syncUserData() {
+    handler?.syncUserData()
+  }
+
+  func openLogFolder() {
+    handler?.openLogFolder()
+  }
+
+  func openRimeFolder() {
+    handler?.openRimeFolder()
+  }
+
+  func checkForUpdates() {
+    handler?.checkForUpdates()
+  }
+
+  func openWiki() {
+    handler?.openWiki()
   }
 }
 

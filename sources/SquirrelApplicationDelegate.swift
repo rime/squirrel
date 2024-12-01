@@ -78,20 +78,24 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 }
 
 extension SquirrelApplicationDelegate: MenuActions {
-  @objc func syncUserData() {
+  func deploy() {
+    GlobalContext.shared.deploy()
+  }
+
+  func syncUserData() {
     print("Sync user data")
     _ = GlobalContext.shared.rimeAPI.sync_user_data()
   }
 
-  @objc func openLogFolder() {
+  func openLogFolder() {
     NSWorkspace.shared.open(GlobalContext.Path.logDir)
   }
 
-  @objc func openRimeFolder() {
+  func openRimeFolder() {
     NSWorkspace.shared.open(GlobalContext.Path.userDir)
   }
 
-  @objc func checkForUpdates() {
+  func checkForUpdates() {
     if updateController.updater.canCheckForUpdates {
       print("Checking for updates")
       updateController.updater.checkForUpdates()
@@ -100,8 +104,8 @@ extension SquirrelApplicationDelegate: MenuActions {
     }
   }
 
-  @objc func openWiki() {
-    NSWorkspace.shared.open(Self.rimeWikiURL)
+  func openWiki() {
+    NSWorkspace.shared.open(SquirrelApplicationDelegate.rimeWikiURL)
   }
 }
 
