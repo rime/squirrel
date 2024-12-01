@@ -8,6 +8,6 @@
 import Cocoa
 
 class ViewController: NSViewController {
-	@IBOutlet var textView: TextView!
-	
+  @IBOutlet var textView: TextView!
+
 }
