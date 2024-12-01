@@ -8,12 +8,12 @@
 import Foundation
 import UserNotifications
 
-final class GlobalContext {
-  static let shared = GlobalContext()
+public final class GlobalContext {
+  public static let shared = GlobalContext()
 
   let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   var config: SquirrelConfig?
-  var panel: SquirrelPanel?
+  lazy var panel = SquirrelPanel(position: .zero)
   var enableNotifications = false
 
   static let notificationIdentifier = "SquirrelNotification"
@@ -30,7 +30,7 @@ final class GlobalContext {
     static let logDir = FileManager.default.temporaryDirectory.appending(component: "rime.squirrel", directoryHint: .isDirectory)
   }
 
-  func setupRime() {
+  public func setupRime() {
     FileManager.default.createDirIfNotExist(path: Path.userDir)
     FileManager.default.createDirIfNotExist(path: Path.logDir)
     // swiftlint:disable identifier_name
@@ -50,7 +50,7 @@ final class GlobalContext {
     rimeAPI.setup(&squirrelTraits)
   }
 
-  func startRime(fullCheck: Bool) {
+  public func startRime(fullCheck: Bool) {
     print("Initializing la rime...")
     rimeAPI.initialize(nil)
     // check for configuration updates
@@ -63,14 +63,14 @@ final class GlobalContext {
     }
   }
 
-  func loadSettings() {
+  public func loadSettings() {
     config = SquirrelConfig()
     if !config!.openBaseConfig() {
       return
     }
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
-    if let panel = panel, let config = self.config {
+    if let config = self.config {
       panel.load(config: config, forDarkMode: false)
       panel.load(config: config, forDarkMode: true)
     }
@@ -81,7 +81,7 @@ final class GlobalContext {
       return
     }
     let schema = SquirrelConfig()
-    if let panel = panel, let config = self.config {
+    if let config = self.config {
       if schema.open(schemaID: schemaID, baseConfig: config) && schema.has(section: "style") {
         panel.load(config: schema, forDarkMode: false)
         panel.load(config: schema, forDarkMode: true)
@@ -101,7 +101,7 @@ final class GlobalContext {
   }
 
   // prevent freezing the system
-  func problematicLaunchDetected() -> Bool {
+  public func problematicLaunchDetected() -> Bool {
     var detected = false
     let logFile = FileManager.default.temporaryDirectory.appendingPathComponent("squirrel_launch.json", conformingTo: .json)
     // print("[DEBUG] archive: \(logFile)")
@@ -132,7 +132,7 @@ final class GlobalContext {
 
   func showStatusMessage(msgTextLong: String?, msgTextShort: String?) {
     if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
-      panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
+      panel.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
     }
   }
 

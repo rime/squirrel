@@ -19,6 +19,7 @@ import InputMethodKit
   @objc func openWiki()
 }
 
+@objc(SquirrelInputController)
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
@@ -42,7 +43,7 @@ final class SquirrelInputController: IMKInputController {
   private var currentApp: String = ""
 
   // swiftlint:disable:next cyclomatic_complexity
-  override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+  public override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
     guard let event = event else { return false }
     let modifiers = event.modifierFlags
     let changes = lastModifiers.symmetricDifference(modifiers)
@@ -174,12 +175,12 @@ final class SquirrelInputController: IMKInputController {
     return true
   }
 
-  override func recognizedEvents(_ sender: Any!) -> Int {
+  public override func recognizedEvents(_ sender: Any!) -> Int {
     // print("[DEBUG] recognizedEvents:")
     return Int(NSEvent.EventTypeMask.Element(arrayLiteral: .keyDown, .flagsChanged).rawValue)
   }
 
-  override func activateServer(_ sender: Any!) {
+  public override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
     // print("[DEBUG] activateServer:")
     var keyboardLayout = GlobalContext.shared.config?.getString("keyboard_layout") ?? ""
@@ -199,19 +200,23 @@ final class SquirrelInputController: IMKInputController {
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {
     self.client = client as? IMKTextInput
     // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
+#if InputMethod
     super.init(server: server, delegate: delegate, client: client)
+#else
+    super.init()
+#endif
     createSession()
   }
 
-  override func deactivateServer(_ sender: Any!) {
+  public override func deactivateServer(_ sender: Any!) {
     // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
     hidePalettes()
     commitComposition(sender)
     client = nil
   }
 
-  override func hidePalettes() {
-    GlobalContext.shared.panel?.hide()
+  public override func hidePalettes() {
+    GlobalContext.shared.panel.hide()
     super.hidePalettes()
   }
 
@@ -225,7 +230,7 @@ final class SquirrelInputController: IMKInputController {
    insertText:replacementRange:.  Additionally, this is the time
    to clean up if that is necessary.
    */
-  override func commitComposition(_ sender: Any!) {
+  public override func commitComposition(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
     // print("[DEBUG] commitComposition: \(sender ?? "nil")")
     //  commit raw input
@@ -237,7 +242,7 @@ final class SquirrelInputController: IMKInputController {
     }
   }
 
-  override func menu() -> NSMenu! {
+  public override func menu() -> NSMenu! {
     let deploy = NSMenuItem(title: NSLocalizedString("Deploy", comment: "Menu item"), action: #selector(deploy), keyEquivalent: "`")
     deploy.target = self
     deploy.keyEquivalentModifierMask = [.control, .option]
@@ -365,14 +370,13 @@ private extension SquirrelInputController {
     // TODO add special key event preprocessing here
 
     // with linear candidate list, arrow keys may behave differently.
-    if let panel = GlobalContext.shared.panel {
-      if panel.linear != rimeAPI.get_option(session, "_linear") {
-        rimeAPI.set_option(session, "_linear", panel.linear)
-      }
-      // with vertical text, arrow keys may behave differently.
-      if panel.vertical != rimeAPI.get_option(session, "_vertical") {
-        rimeAPI.set_option(session, "_vertical", panel.vertical)
-      }
+    let panel = GlobalContext.shared.panel
+    if panel.linear != rimeAPI.get_option(session, "_linear") {
+      rimeAPI.set_option(session, "_linear", panel.linear)
+    }
+    // with vertical text, arrow keys may behave differently.
+    if panel.vertical != rimeAPI.get_option(session, "_vertical") {
+      rimeAPI.set_option(session, "_vertical", panel.vertical)
     }
 
     let handled = rimeAPI.process_key(session, Int32(rimeKeycode), Int32(rimeModifiers))
@@ -428,12 +432,11 @@ private extension SquirrelInputController {
         schemaId = String(cString: schema_id)
         GlobalContext.shared.loadSettings(for: schemaId)
         // inline preedit
-        if let panel = GlobalContext.shared.panel {
-          inlinePreedit = (panel.inlinePreedit && !rimeAPI.get_option(session, "no_inline")) || rimeAPI.get_option(session, "inline")
-          inlineCandidate = panel.inlineCandidate && !rimeAPI.get_option(session, "no_inline")
-          // if not inline, embed soft cursor in preedit string
-          rimeAPI.set_option(session, "soft_cursor", !inlinePreedit)
-        }
+        let panel = GlobalContext.shared.panel
+        inlinePreedit = (panel.inlinePreedit && !rimeAPI.get_option(session, "no_inline")) || rimeAPI.get_option(session, "inline")
+        inlineCandidate = panel.inlineCandidate && !rimeAPI.get_option(session, "no_inline")
+        // if not inline, embed soft cursor in preedit string
+        rimeAPI.set_option(session, "soft_cursor", !inlinePreedit)
       }
       _ = rimeAPI.free_status(&status)
     }
@@ -549,11 +552,10 @@ private extension SquirrelInputController {
     guard let client = client else { return }
     var inputPos = NSRect()
     client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
-    if let panel = GlobalContext.shared.panel {
-      panel.position = inputPos
-      panel.inputController = self
-      panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
-                   highlighted: highlighted, page: page, lastPage: lastPage, update: true)
-    }
+    let panel = GlobalContext.shared.panel
+    panel.position = inputPos
+    panel.inputController = self
+    panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
+                 highlighted: highlighted, page: page, lastPage: lastPage, update: true)
   }
 }

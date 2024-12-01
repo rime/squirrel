@@ -48,7 +48,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   }
 
   func applicationWillFinishLaunching(_ notification: Notification) {
-    GlobalContext.shared.panel = SquirrelPanel(position: .zero)
     addObservers()
   }
 
@@ -56,7 +55,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     // swiftlint:disable:next notification_center_detachment
     NotificationCenter.default.removeObserver(self)
     DistributedNotificationCenter.default().removeObserver(self)
-    GlobalContext.shared.panel?.hide()
+    GlobalContext.shared.panel.hide()
   }
 
   // add an awakeFromNib item so that we can set the action method.  Note that
