@@ -36,6 +36,8 @@ final class SquirrelView: NSView {
   var shape = CAShapeLayer()
   private var downPath: CGPath?
   private var upPath: CGPath?
+  //候选项富文本
+  var lines:[NSMutableAttributedString] = []
 
   var lightTheme = SquirrelTheme()
   var darkTheme = SquirrelTheme()
@@ -132,200 +134,205 @@ final class SquirrelView: NSView {
   //保存旧宽度值用于动画
   var oldBackgroundPath : CGPath?
   override func draw(_ dirtyRect: NSRect) {
-    var backgroundPath: CGPath?
-    var preeditPath: CGPath?
-    var candidatePaths: CGMutablePath?
-    var highlightedPath: CGMutablePath?
-    var highlightedPreeditPath: CGMutablePath?
-    let theme = currentTheme
-
-    var containingRect = dirtyRect
-    containingRect.size.width -= theme.pagingOffset
-    let backgroundRect = containingRect
-    // 外框动画CABasic
-    let borderAnimation = CABasicAnimation(keyPath: "path")
-    borderAnimation.fromValue = oldBackgroundPath // 开始时的路径
-    borderAnimation.toValue = backgroundPath // 结束时的路径
-    borderAnimation.duration = 0.2 // 动画持续 1 秒
-    borderAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 动画时间函数
-
-    // Draw preedit Rect
-    var preeditRect = NSRect.zero
-    if preeditRange.length > 0, let preeditTextRange = convert(range: preeditRange) {
-      preeditRect = contentRect(range: preeditTextRange)
-      preeditRect.size.width = backgroundRect.size.width
-      preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2
-      preeditRect.origin = backgroundRect.origin
-      if candidateRanges.count == 0 {
-        preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace / 2 - theme.hilitedCornerRadius / 2
-      }
-      containingRect.size.height -= preeditRect.size.height
-      containingRect.origin.y += preeditRect.size.height
-      if theme.preeditBackgroundColor != nil {
-        preeditPath = drawSmoothLines(rectVertex(of: preeditRect), straightCorner: Set(), alpha: 0, beta: 0)
-      }
-    }
-
-    containingRect = carveInset(rect: containingRect)
-    // Draw candidate Rects
-    for i in 0..<candidateRanges.count {
-      let candidate = candidateRanges[i]
-      if i == hilightedIndex {
-        // Draw highlighted Rect
-        if candidate.length > 0 && theme.highlightedBackColor != nil {
-          highlightedPath = drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect, containingRect: containingRect, extraExpansion: 0)?.mutableCopy()
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
+      return
+      print("**** SquirrelView.draw() ****")
+      var backgroundPath: CGPath?
+      var preeditPath: CGPath?
+      var candidatePaths: CGMutablePath?
+      var highlightedPath: CGMutablePath?
+      var highlightedPreeditPath: CGMutablePath?
+      let theme = self.currentTheme
+      
+      var containingRect = dirtyRect
+      containingRect.size.width -= theme.pagingOffset
+      let backgroundRect = containingRect
+      // 外框动画CABasic
+      let borderAnimation = CABasicAnimation(keyPath: "path")
+      borderAnimation.fromValue = self.oldBackgroundPath // 开始时的路径
+      borderAnimation.toValue = backgroundPath // 结束时的路径
+      borderAnimation.duration = 0.2 // 动画持续 1 秒
+      borderAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 动画时间函数
+      
+      // Draw preedit Rect
+      var preeditRect = NSRect.zero
+      if self.preeditRange.length > 0, let preeditTextRange = self.convert(range: self.preeditRange) {
+        preeditRect = self.contentRect(range: preeditTextRange)
+        preeditRect.size.width = backgroundRect.size.width
+        preeditRect.size.height += theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2
+        preeditRect.origin = backgroundRect.origin
+        if self.candidateRanges.count == 0 {
+          preeditRect.size.height += theme.edgeInset.height - theme.preeditLinespace / 2 - theme.hilitedCornerRadius / 2
         }
-      } else {
-        // Draw other highlighted Rect
-        if candidate.length > 0 && theme.candidateBackColor != nil {
-          let candidatePath = drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect,
-                                       containingRect: containingRect, extraExpansion: theme.surroundingExtraExpansion)
-          if candidatePaths == nil {
-            candidatePaths = CGMutablePath()
-          }
-          if let candidatePath = candidatePath {
-            candidatePaths?.addPath(candidatePath)
-          }
+        containingRect.size.height -= preeditRect.size.height
+        containingRect.origin.y += preeditRect.size.height
+        if theme.preeditBackgroundColor != nil {
+          preeditPath = self.drawSmoothLines(self.rectVertex(of: preeditRect), straightCorner: Set(), alpha: 0, beta: 0)
         }
-      }
-    }
-
-    // Draw highlighted part of preedit text
-    if (highlightedPreeditRange.length > 0) && (theme.highlightedPreeditColor != nil), let highlightedPreeditTextRange = convert(range: highlightedPreeditRange) {
-      var innerBox = preeditRect
-      innerBox.size.width -= (theme.edgeInset.width + 1) * 2
-      innerBox.origin.x += theme.edgeInset.width + 1
-      innerBox.origin.y += theme.edgeInset.height + 1
-      if candidateRanges.count == 0 {
-        innerBox.size.height -= (theme.edgeInset.height + 1) * 2
-      } else {
-        innerBox.size.height -= theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 + 2
-      }
-      var outerBox = preeditRect
-      outerBox.size.height -= max(0, theme.hilitedCornerRadius + theme.borderLineWidth)
-      outerBox.size.width -= max(0, theme.hilitedCornerRadius + theme.borderLineWidth)
-      outerBox.origin.x += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
-      outerBox.origin.y += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
-
-      let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: highlightedPreeditTextRange, extraSurounding: 0, bounds: outerBox)
-      var (highlightedPoints, highlightedPoints2, rightCorners, rightCorners2) = linearMultilineFor(body: bodyRect, leading: leadingRect, trailing: trailingRect)
-
-      containingRect = carveInset(rect: preeditRect)
-      highlightedPoints = expand(vertex: highlightedPoints, innerBorder: innerBox, outerBorder: outerBox)
-      rightCorners = removeCorner(highlightedPoints: highlightedPoints, rightCorners: rightCorners, containingRect: containingRect)
-      highlightedPreeditPath = drawSmoothLines(highlightedPoints, straightCorner: rightCorners, alpha: 0.3 * theme.hilitedCornerRadius, beta: 1.4 * theme.hilitedCornerRadius)?.mutableCopy()
-      if highlightedPoints2.count > 0 {
-        highlightedPoints2 = expand(vertex: highlightedPoints2, innerBorder: innerBox, outerBorder: outerBox)
-        rightCorners2 = removeCorner(highlightedPoints: highlightedPoints2, rightCorners: rightCorners2, containingRect: containingRect)
-        let highlightedPreeditPath2 = drawSmoothLines(highlightedPoints2, straightCorner: rightCorners2, alpha: 0.3 * theme.hilitedCornerRadius, beta: 1.4 * theme.hilitedCornerRadius)
-        if let highlightedPreeditPath2 = highlightedPreeditPath2 {
-          highlightedPreeditPath?.addPath(highlightedPreeditPath2)
-        }
-      }
-    }
-
-    NSBezierPath.defaultLineWidth = 0
-    backgroundPath = drawSmoothLines(rectVertex(of: backgroundRect), straightCorner: Set(), alpha: 0.3 * theme.cornerRadius, beta: 1.4 * theme.cornerRadius)
-
-    self.layer?.sublayers = nil
-    let backPath = backgroundPath?.mutableCopy()
-    if let path = preeditPath {
-      backPath?.addPath(path)
-    }
-    if theme.mutualExclusive {
-      if let path = highlightedPath {
-        backPath?.addPath(path)
-      }
-      if let path = candidatePaths {
-        backPath?.addPath(path)
-      }
-    }
-    let panelLayer = shapeFromPath(path: backPath)
-    panelLayer.fillColor = theme.backgroundColor.cgColor
-    let panelLayerMask = shapeFromPath(path: backgroundPath)
-    panelLayer.mask = panelLayerMask
-    self.layer?.addSublayer(panelLayer)
-    
-    if isAnimationOn{//将动画添加到图层
-      panelLayer.add(borderAnimation, forKey: "borderAnimation")
-      self.shape.add(borderAnimation, forKey: "borderAnimation")
-    }
-    
-
-    // Fill in colors
-    if let color = theme.preeditBackgroundColor, let path = preeditPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      let maskPath = backgroundPath?.mutableCopy()
-      if theme.mutualExclusive, let hilitedPath = highlightedPreeditPath {
-        maskPath?.addPath(hilitedPath)
-      }
-      let mask = shapeFromPath(path: maskPath)
-      layer.mask = mask
-      panelLayer.addSublayer(layer)
-    }
-    if theme.borderLineWidth > 0, let color = theme.borderColor {
-      let borderLayer = shapeFromPath(path: backgroundPath)
-      borderLayer.lineWidth = theme.borderLineWidth * 2
-      borderLayer.strokeColor = color.cgColor
-      borderLayer.fillColor = nil
-      panelLayer.addSublayer(borderLayer)
-      if isAnimationOn{//将动画添加到图层
-        borderLayer.add(borderAnimation, forKey: "borderAnimation")
       }
       
-    }
-    if let color = theme.highlightedPreeditColor, let path = highlightedPreeditPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      panelLayer.addSublayer(layer)
-    }
-    if let color = theme.candidateBackColor, let path = candidatePaths {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      panelLayer.addSublayer(layer)
-    }
-    if let color = theme.highlightedBackColor, let path = highlightedPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      if theme.shadowSize > 0 {
-        let shadowLayer = CAShapeLayer()
-        shadowLayer.shadowColor = NSColor.black.cgColor
-        shadowLayer.shadowOffset = NSSize(width: theme.shadowSize/2, height: (theme.vertical ? -1 : 1) * theme.shadowSize/2)
-        shadowLayer.shadowPath = highlightedPath
-        shadowLayer.shadowRadius = theme.shadowSize
-        shadowLayer.shadowOpacity = 0.2
-        let outerPath = backgroundPath?.mutableCopy()
-        outerPath?.addPath(path)
-        let shadowLayerMask = shapeFromPath(path: outerPath)
-        shadowLayer.mask = shadowLayerMask
-        layer.strokeColor = NSColor.black.withAlphaComponent(0.15).cgColor
-        layer.lineWidth = 0.5
-        layer.addSublayer(shadowLayer)
+      containingRect = self.carveInset(rect: containingRect)
+      // Draw candidate Rects
+      for i in 0..<self.candidateRanges.count {
+        let candidate = self.candidateRanges[i]
+        if i == self.hilightedIndex {
+          // Draw highlighted Rect
+          if candidate.length > 0 && theme.highlightedBackColor != nil {
+            highlightedPath = self.drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect, containingRect: containingRect, extraExpansion: 0)?.mutableCopy()
+          }
+        } else {
+          // Draw other highlighted Rect
+          if candidate.length > 0 && theme.candidateBackColor != nil {
+            let candidatePath = self.drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect,
+                                              containingRect: containingRect, extraExpansion: theme.surroundingExtraExpansion)
+            if candidatePaths == nil {
+              candidatePaths = CGMutablePath()
+            }
+            if let candidatePath = candidatePath {
+              candidatePaths?.addPath(candidatePath)
+            }
+          }
+        }
       }
-      panelLayer.addSublayer(layer)
+      
+      // Draw highlighted part of preedit text
+      if (self.highlightedPreeditRange.length > 0) && (theme.highlightedPreeditColor != nil), let highlightedPreeditTextRange = self.convert(range: self.highlightedPreeditRange) {
+        var innerBox = preeditRect
+        innerBox.size.width -= (theme.edgeInset.width + 1) * 2
+        innerBox.origin.x += theme.edgeInset.width + 1
+        innerBox.origin.y += theme.edgeInset.height + 1
+        if self.candidateRanges.count == 0 {
+          innerBox.size.height -= (theme.edgeInset.height + 1) * 2
+        } else {
+          innerBox.size.height -= theme.edgeInset.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 + 2
+        }
+        var outerBox = preeditRect
+        outerBox.size.height -= max(0, theme.hilitedCornerRadius + theme.borderLineWidth)
+        outerBox.size.width -= max(0, theme.hilitedCornerRadius + theme.borderLineWidth)
+        outerBox.origin.x += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
+        outerBox.origin.y += max(0, theme.hilitedCornerRadius + theme.borderLineWidth) / 2
+        
+        let (leadingRect, bodyRect, trailingRect) = self.multilineRects(forRange: highlightedPreeditTextRange, extraSurounding: 0, bounds: outerBox)
+        var (highlightedPoints, highlightedPoints2, rightCorners, rightCorners2) = self.linearMultilineFor(body: bodyRect, leading: leadingRect, trailing: trailingRect)
+        
+        containingRect = self.carveInset(rect: preeditRect)
+        highlightedPoints = self.expand(vertex: highlightedPoints, innerBorder: innerBox, outerBorder: outerBox)
+        rightCorners = self.removeCorner(highlightedPoints: highlightedPoints, rightCorners: rightCorners, containingRect: containingRect)
+        highlightedPreeditPath = self.drawSmoothLines(highlightedPoints, straightCorner: rightCorners, alpha: 0.3 * theme.hilitedCornerRadius, beta: 1.4 * theme.hilitedCornerRadius)?.mutableCopy()
+        if highlightedPoints2.count > 0 {
+          highlightedPoints2 = self.expand(vertex: highlightedPoints2, innerBorder: innerBox, outerBorder: outerBox)
+          rightCorners2 = self.removeCorner(highlightedPoints: highlightedPoints2, rightCorners: rightCorners2, containingRect: containingRect)
+          let highlightedPreeditPath2 = self.drawSmoothLines(highlightedPoints2, straightCorner: rightCorners2, alpha: 0.3 * theme.hilitedCornerRadius, beta: 1.4 * theme.hilitedCornerRadius)
+          if let highlightedPreeditPath2 = highlightedPreeditPath2 {
+            highlightedPreeditPath?.addPath(highlightedPreeditPath2)
+          }
+        }
+      }
+      
+      NSBezierPath.defaultLineWidth = 0
+      backgroundPath = self.drawSmoothLines(self.rectVertex(of: backgroundRect), straightCorner: Set(), alpha: 0.3 * theme.cornerRadius, beta: 1.4 * theme.cornerRadius)
+      
+      
+      self.layer?.sublayers = nil
+      let backPath = backgroundPath?.mutableCopy()
+      if let path = preeditPath {
+        backPath?.addPath(path)
+      }
+      if theme.mutualExclusive {
+        if let path = highlightedPath {
+          backPath?.addPath(path)
+        }
+        if let path = candidatePaths {
+          backPath?.addPath(path)
+        }
+      }
+      let panelLayer = self.shapeFromPath(path: backPath)
+      panelLayer.fillColor = theme.backgroundColor.cgColor
+      let panelLayerMask = self.shapeFromPath(path: backgroundPath)
+      panelLayer.mask = panelLayerMask
+      self.layer?.addSublayer(panelLayer)
+      
+      if isAnimationOn{//将动画添加到图层
+        panelLayer.add(borderAnimation, forKey: "borderAnimation")
+        self.shape.add(borderAnimation, forKey: "borderAnimation")
+      }
+      
+      
+      // Fill in colors
+      if let color = theme.preeditBackgroundColor, let path = preeditPath {
+        let layer = self.shapeFromPath(path: path)
+        layer.fillColor = color.cgColor
+        let maskPath = backgroundPath?.mutableCopy()
+        if theme.mutualExclusive, let hilitedPath = highlightedPreeditPath {
+          maskPath?.addPath(hilitedPath)
+        }
+        let mask = self.shapeFromPath(path: maskPath)
+        layer.mask = mask
+        panelLayer.addSublayer(layer)
+      }
+      if theme.borderLineWidth > 0, let color = theme.borderColor {
+        let borderLayer = self.shapeFromPath(path: backgroundPath)
+        borderLayer.lineWidth = theme.borderLineWidth * 2
+        borderLayer.strokeColor = color.cgColor
+        borderLayer.fillColor = nil
+        panelLayer.addSublayer(borderLayer)
+        if isAnimationOn{//将动画添加到图层
+          borderLayer.add(borderAnimation, forKey: "borderAnimation")
+        }
+        
+      }
+      if let color = theme.highlightedPreeditColor, let path = highlightedPreeditPath {
+        let layer = self.shapeFromPath(path: path)
+        layer.fillColor = color.cgColor
+        panelLayer.addSublayer(layer)
+      }
+      if let color = theme.candidateBackColor, let path = candidatePaths {
+        let layer = self.shapeFromPath(path: path)
+        layer.fillColor = color.cgColor
+        panelLayer.addSublayer(layer)
+      }
+      if let color = theme.highlightedBackColor, let path = highlightedPath {
+        let layer = self.shapeFromPath(path: path)
+        layer.fillColor = color.cgColor
+        if theme.shadowSize > 0 {
+          let shadowLayer = CAShapeLayer()
+          shadowLayer.shadowColor = NSColor.black.cgColor
+          shadowLayer.shadowOffset = NSSize(width: theme.shadowSize/2, height: (theme.vertical ? -1 : 1) * theme.shadowSize/2)
+          shadowLayer.shadowPath = highlightedPath
+          shadowLayer.shadowRadius = theme.shadowSize
+          shadowLayer.shadowOpacity = 0.2
+          let outerPath = backgroundPath?.mutableCopy()
+          outerPath?.addPath(path)
+          let shadowLayerMask = self.shapeFromPath(path: outerPath)
+          shadowLayer.mask = shadowLayerMask
+          layer.strokeColor = NSColor.black.withAlphaComponent(0.15).cgColor
+          layer.lineWidth = 0.5
+          layer.addSublayer(shadowLayer)
+        }
+        panelLayer.addSublayer(layer)
+      }
+      panelLayer.setAffineTransform(CGAffineTransform(translationX: theme.pagingOffset, y: 0))
+      let panelPath = CGMutablePath()
+      panelPath.addPath(backgroundPath!, transform: panelLayer.affineTransform().scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height))
+      
+      let (pagingLayer, downPath, upPath) = self.pagingLayer(theme: theme, preeditRect: preeditRect)
+      if let sublayers = pagingLayer.sublayers, !sublayers.isEmpty {
+        self.layer?.addSublayer(pagingLayer)
+      }
+      let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height)
+      if let downPath {
+        panelPath.addPath(downPath, transform: flipTransform)
+        self.downPath = downPath.copy()
+      }
+      if let upPath {
+        panelPath.addPath(upPath, transform: flipTransform)
+        self.upPath = upPath.copy()
+      }
+      self.shape.path = panelPath
+      //更新
+      self.oldBackgroundPath = backgroundPath
     }
-    panelLayer.setAffineTransform(CGAffineTransform(translationX: theme.pagingOffset, y: 0))
-    let panelPath = CGMutablePath()
-    panelPath.addPath(backgroundPath!, transform: panelLayer.affineTransform().scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height))
 
-    let (pagingLayer, downPath, upPath) = pagingLayer(theme: theme, preeditRect: preeditRect)
-    if let sublayers = pagingLayer.sublayers, !sublayers.isEmpty {
-      self.layer?.addSublayer(pagingLayer)
-    }
-    let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height)
-    if let downPath {
-      panelPath.addPath(downPath, transform: flipTransform)
-      self.downPath = downPath.copy()
-    }
-    if let upPath {
-      panelPath.addPath(upPath, transform: flipTransform)
-      self.upPath = upPath.copy()
-    }
-
-    shape.path = panelPath
-    //更新
-    oldBackgroundPath = backgroundPath
   }
 
   func click(at clickPoint: NSPoint) -> (Int?, Int?, Bool?) {

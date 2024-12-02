@@ -157,16 +157,28 @@ final class SquirrelPanel: NSPanel {
   // Main function to add attributes to text output from librime
   // swiftlint:disable:next cyclomatic_complexity function_parameter_count
   func update(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted index: Int, page: Int, lastPage: Bool, update: Bool) {
+//    print("**** update() ****")
+//    print("preedit:\(preedit)")
+//    print("selRange:\(selRange)")
+//    print("caretPos:\(caretPos)")
+//    print("candidates:\(candidates)")
+//    print("comments:\(comments)")
+//    print("labels:\(labels)")
+//    print("index:\(index)")
+//    print("page:\(page)")
+//    print("lastPage:\(lastPage)")
+//    print("update:\(update)")
+    
     if update {
       self.preedit = preedit
       self.selRange = selRange
-      self.caretPos = caretPos
-      self.candidates = candidates
-      self.comments = comments
+      self.caretPos = caretPos //光标位置
+      self.candidates = candidates //候选项
+      self.comments = comments //评论
       self.labels = labels
-      self.index = index
-      self.page = page
-      self.lastPage = lastPage
+      self.index = index //当前高亮（从0开始）
+      self.page = page //当前页
+      self.lastPage = lastPage //当前是否最后一页
     }
     cursorIndex = index
 
@@ -176,14 +188,17 @@ final class SquirrelPanel: NSPanel {
       statusTimer = nil
     } else {
       if !statusMessage.isEmpty {
+//        print("statusMessage非空")
         show(status: statusMessage)
         statusMessage = ""
       } else if statusTimer == nil {
         hide()
       }
+//      print("update()结束")
       return
     }
 
+//    print("到这里了")
     let theme = view.currentTheme
     currentScreen()
 
@@ -212,11 +227,24 @@ final class SquirrelPanel: NSPanel {
 
     // candidates
     var candidateRanges = [NSRange]()
+    //存储候选项line
+    var lines:[NSMutableAttributedString] = []
     for i in 0..<candidates.count {
+//      print("**** 开始打印candidates ****")
+//      print("theme.highlightedAttrs的类型是：\(type(of: theme.highlightedAttrs))")
+//      print("theme.highlightedAttrs:\(theme.highlightedAttrs) \n")
+//      print("theme.attrs:\(theme.attrs) \n")
+//      print("theme.labelHighlightedAttrs:\(theme.labelHighlightedAttrs) \n")
+//      print("theme.labelAttrs:\(theme.labelAttrs) \n")
+//      print("theme.commentHighlightedAttrs:\(theme.commentHighlightedAttrs)\n")
+//      print("theme.commentAttrs:\(theme.commentAttrs)\n")
+
+      //如果当前选项是被高亮的，那就用高亮主题
       let attrs = i == index ? theme.highlightedAttrs : theme.attrs
       let labelAttrs = i == index ? theme.labelHighlightedAttrs : theme.labelAttrs
       let commentAttrs = i == index ? theme.commentHighlightedAttrs : theme.commentAttrs
 
+//      print("theme.candidateFormat:\(theme.candidateFormat)\n")
       let label = if theme.candidateFormat.contains(/\[label\]/) {
         if labels.count > 1 && i < labels.count {
           labels[i]
@@ -234,6 +262,7 @@ final class SquirrelPanel: NSPanel {
       let candidate = candidates[i].precomposedStringWithCanonicalMapping
       let comment = comments[i].precomposedStringWithCanonicalMapping
 
+      //一个line就是一个候选项，内部默认由序号、候选项内容、评论组成，具体看attributes
       let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
       for range in line.string.ranges(of: /\[candidate\]/) {
         let convertedRange = convert(range: range, in: line.string)
@@ -254,6 +283,7 @@ final class SquirrelPanel: NSPanel {
         line.addAttribute(.noBreak, value: true, range: NSRange(location: 1, length: line.length-1))
       }
 
+      //纵向模式把空格换成换行符
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
       if i > 0 {
         text.append(lineSeparator)
@@ -264,8 +294,11 @@ final class SquirrelPanel: NSPanel {
       }
       view.separatorWidth = str.boundingRect(with: .zero).width
 
+//      print("theme.firstParagraphStyle:\(theme.firstParagraphStyle)")
+//      print("theme.paragraphStyle:\(theme.paragraphStyle)")
       let paragraphStyleCandidate = (i == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
       if linear {
+//        print("theme.linespace:\(theme.linespace)")
         paragraphStyleCandidate.paragraphSpacingBefore -= theme.linespace
         paragraphStyleCandidate.lineSpacing = theme.linespace
       }
@@ -278,13 +311,25 @@ final class SquirrelPanel: NSPanel {
 
       candidateRanges.append(NSRange(location: text.length, length: line.length))
       text.append(line)
+      lines.append(line)
     }
 
     // text done!
+    //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
+    view.lines = lines
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
     show()
+    ///流程解读：
+    ///按下键发送给librime后，librime会经过一段时间的计算，然后发回，
+    ///在收到librime的候选项数组后，SqruirrelPanel用update方法处理成line的集合，拼接成text，然后放进SqruirrelView.textView的textContentStorage里，
+    ///然后调用show方法，show方法会先计算一个合适的候选框位置，然后给SqruirrelView进行一些配置（感觉这些应该放在draw里），然后用orderFront(nil)
+    ///把SqruirrelView呼到前台，SqruirrelView到前台后会自动调draw方法
+    ///
+    ///思路1：在View里添加一个属性var lines:[NSMutableAttributedString] = []，用来接收lines，然后在draw方法里把lines处理成一个个GCLayer
+    ///难点：如果计算初始化的每个候选项的位置？
+    ///思路2：新建一个NSView类，就叫Line或者其他名字，用来表示每个候选项
   }
 
   func updateStatus(long longMessage: String, short shortMessage: String) {
@@ -350,6 +395,7 @@ private extension SquirrelPanel {
   // SquirrelView.drawRect
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
+    print("**** SquirrelPanel.show() ****")
     currentScreen()
     let theme = view.currentTheme
     if !view.darkTheme.available {
@@ -361,6 +407,8 @@ private extension SquirrelPanel {
     let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
     view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
 
+    
+    //从这里开始是为了计算一个对屏幕合适的候选框坐标范围，得到一个panelRect
     var panelRect = NSRect.zero
     // in vertical mode, the width and height are interchanged
     var contentRect = view.contentRect
@@ -416,8 +464,13 @@ private extension SquirrelPanel {
     if panelRect.minY < screenRect.minY {
       panelRect.origin.y = screenRect.minY
     }
+    /// panelRect为候选视图的坐标、范围，这里赋予本视图类
+    /// 实测这里display设为false也能显示候选框
     self.setFrame(panelRect, display: true)
+    print(panelRect)
 
+    //这里开始要配置NSView的属性了
+    ///这里如果vertical为真，contentView（NSPanel的一个View）会旋转90度
     // rotate the view, the core in vertical mode!
     if vertical {
       contentView!.boundsRotation = -90
@@ -445,11 +498,14 @@ private extension SquirrelPanel {
     }
     alphaValue = theme.alpha
     invalidateShadow()
+    ///  这个方法是NSWindow的（NSWindow的子类NSPanel也有），这个方法会把NSView（所有的，macOS似乎就是
+    ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
     orderFront(nil)
     // voila!
   }
 
   func show(status message: String) {
+//    print("**** show(status message: String) ****")
     let theme = view.currentTheme
     let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
     text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: text.length))
