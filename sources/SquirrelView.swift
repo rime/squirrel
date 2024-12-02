@@ -133,9 +133,12 @@ final class SquirrelView: NSView {
   // swiftlint:disable:next cyclomatic_complexity
   //保存旧宽度值用于动画
   var oldBackgroundPath : CGPath?
+  //保存每个候选项座标用于动画
+  var prePoint:[CGPoint] = []
   override func draw(_ dirtyRect: NSRect) {
+    self.textView.isHidden = false
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
-      return
+//      return
       print("**** SquirrelView.draw() ****")
       var backgroundPath: CGPath?
       var preeditPath: CGPath?
@@ -331,6 +334,54 @@ final class SquirrelView: NSView {
       self.shape.path = panelPath
       //更新
       self.oldBackgroundPath = backgroundPath
+//      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+//        self.textView.textContentStorage?.attributedString = NSMutableAttributedString()
+        self.textView.isHidden = true
+      
+      //如果prePoint为空，说明还没初始化，初始化一组座标
+      if self.prePoint.isEmpty{
+        print("进入if")
+        var xOffset: CGFloat = 0
+        for (index,line) in self.lines.enumerated() {
+          let textLayer = CATextLayer() // 创建一个CATextLayer
+          textLayer.string = line// 设置文本层的内容为NSAttributedString
+          let textSize = line.size()// 计算文本层的大小
+          textLayer.frame = CGRect(x: xOffset, y: 0, width: textSize.width, height: textSize.height)// 设置文本层的frame
+          xOffset += textSize.width// 更新xOffset以便下一个文本层可以连成一排
+          self.layer?.addSublayer(textLayer)// 将文本层添加到containerView的layer中
+          self.prePoint.append(textLayer.position)
+          print("A:老：\(self.prePoint[index]),新：\(textLayer.position)")
+        }
+        
+      }else{
+        print("进入else")
+        var xOffset: CGFloat = 0
+        for (index,line) in self.lines.enumerated() {
+          let textLayer = CATextLayer() // 创建一个CATextLayer
+          textLayer.string = line// 设置文本层的内容为NSAttributedString
+          let textSize = line.size()// 计算文本层的大小
+          textLayer.frame = CGRect(x: xOffset, y: 0, width: textSize.width, height: textSize.height)// 设置文本层的frame
+          xOffset += textSize.width// 更新xOffset以便下一个文本层可以连成一排
+          self.layer?.addSublayer(textLayer)// 将文本层添加到containerView的layer中
+          
+          //动画
+          let moveAnimation = CABasicAnimation(keyPath: "position")
+          moveAnimation.fromValue = NSValue(point: self.prePoint[index])
+          moveAnimation.toValue = NSValue(point: textLayer.position)
+          print("\(index)号候选from\(self.prePoint[index])to\(textLayer.position)")
+          moveAnimation.duration = 1
+          moveAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut) // 平滑的缓动函数
+          moveAnimation.fillMode = .forwards
+          moveAnimation.isRemovedOnCompletion = false
+          textLayer.add(moveAnimation, forKey: "moveAnimation")
+          
+          //更新座标
+          print("B:老：\(self.prePoint),新：\(textLayer.position)")
+          self.prePoint[index] = textLayer.position
+          print("C:老：\(self.prePoint),新：\(textLayer.position)")
+        }
+      }
+//      }
     }
 
   }

@@ -320,7 +320,9 @@ final class SquirrelPanel: NSPanel {
     view.lines = lines
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
-    show()
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+      show()
+//    }
     ///流程解读：
     ///按下键发送给librime后，librime会经过一段时间的计算，然后发回，
     ///在收到librime的候选项数组后，SqruirrelPanel用update方法处理成line的集合，拼接成text，然后放进SqruirrelView.textView的textContentStorage里，
@@ -396,112 +398,115 @@ private extension SquirrelPanel {
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
     print("**** SquirrelPanel.show() ****")
-    currentScreen()
-    let theme = view.currentTheme
-    if !view.darkTheme.available {
-      self.appearance = NSAppearance(named: .aqua)
-    }
-
-    // Break line if the text is too long, based on screen size.
-    let textWidth = maxTextWidth()
-    let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
-    view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
-
-    
-    //从这里开始是为了计算一个对屏幕合适的候选框坐标范围，得到一个panelRect
-    var panelRect = NSRect.zero
-    // in vertical mode, the width and height are interchanged
-    var contentRect = view.contentRect
-    if theme.memorizeSize && (vertical && position.midY / screenRect.height < 0.5) ||
-        (vertical && position.minX + max(contentRect.width, maxHeight) + theme.edgeInset.width * 2 > screenRect.maxX) {
-      if contentRect.width >= maxHeight {
-        maxHeight = contentRect.width
-      } else {
-        contentRect.size.width = maxHeight
-        view.textContainer.size = NSSize(width: maxHeight, height: maxTextHeight)
-      }
-    }
-
-    if vertical {
-      panelRect.size = NSSize(width: min(0.95 * screenRect.width, contentRect.height + theme.edgeInset.height * 2),
-                              height: min(0.95 * screenRect.height, contentRect.width + theme.edgeInset.width * 2) + theme.pagingOffset)
-
-      // To avoid jumping up and down while typing, use the lower screen when
-      // typing on upper, and vice versa
-      if position.midY / screenRect.height >= 0.5 {
-        panelRect.origin.y = position.minY - SquirrelTheme.offsetHeight - panelRect.height + theme.pagingOffset
-      } else {
-        panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight
-      }
-      // Make the first candidate fixed at the left of cursor
-      panelRect.origin.x = position.minX - panelRect.width - SquirrelTheme.offsetHeight
-      if view.preeditRange.length > 0, let preeditTextRange = view.convert(range: view.preeditRange) {
-        let preeditRect = view.contentRect(range: preeditTextRange)
-        panelRect.origin.x += preeditRect.height + theme.edgeInset.width
-      }
-    } else {
-      panelRect.size = NSSize(width: min(0.95 * screenRect.width, contentRect.width + theme.edgeInset.width * 2),
-                              height: min(0.95 * screenRect.height, contentRect.height + theme.edgeInset.height * 2))
-      panelRect.size.width += theme.pagingOffset
-      panelRect.origin = NSPoint(x: position.minX - theme.pagingOffset, y: position.minY - SquirrelTheme.offsetHeight - panelRect.height)
-    }
-    if panelRect.maxX > screenRect.maxX {
-      panelRect.origin.x = screenRect.maxX - panelRect.width
-    }
-    if panelRect.minX < screenRect.minX {
-      panelRect.origin.x = screenRect.minX
-    }
-    if panelRect.minY < screenRect.minY {
-      if vertical {
-        panelRect.origin.y = screenRect.minY
-      } else {
-        panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight
-      }
-    }
-    if panelRect.maxY > screenRect.maxY {
-      panelRect.origin.y = screenRect.maxY - panelRect.height
-    }
-    if panelRect.minY < screenRect.minY {
-      panelRect.origin.y = screenRect.minY
-    }
-    /// panelRect为候选视图的坐标、范围，这里赋予本视图类
-    /// 实测这里display设为false也能显示候选框
-    self.setFrame(panelRect, display: true)
-    print(panelRect)
-
-    //这里开始要配置NSView的属性了
-    ///这里如果vertical为真，contentView（NSPanel的一个View）会旋转90度
-    // rotate the view, the core in vertical mode!
-    if vertical {
-      contentView!.boundsRotation = -90
-      contentView!.setBoundsOrigin(NSPoint(x: 0, y: panelRect.width))
-    } else {
-      contentView!.boundsRotation = 0
-      contentView!.setBoundsOrigin(.zero)
-    }
-    view.textView.boundsRotation = 0
-    view.textView.setBoundsOrigin(.zero)
-
-    view.frame = contentView!.bounds
-    view.textView.frame = contentView!.bounds
-    view.textView.frame.size.width -= theme.pagingOffset
-    view.textView.frame.origin.x += theme.pagingOffset
-    view.textView.textContainerInset = theme.edgeInset
-
-    if theme.translucency {
-      back.frame = contentView!.bounds
-      back.frame.size.width += theme.pagingOffset
-      back.appearance = NSApp.effectiveAppearance
-      back.isHidden = false
-    } else {
-      back.isHidden = true
-    }
-    alphaValue = theme.alpha
-    invalidateShadow()
-    ///  这个方法是NSWindow的（NSWindow的子类NSPanel也有），这个方法会把NSView（所有的，macOS似乎就是
-    ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
     orderFront(nil)
-    // voila!
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) { [self] in
+      self.currentScreen()
+      let theme = self.view.currentTheme
+      if !self.view.darkTheme.available {
+        self.appearance = NSAppearance(named: .aqua)
+      }
+      
+      // Break line if the text is too long, based on screen size.
+      let textWidth = self.maxTextWidth()
+      let maxTextHeight = self.vertical ? self.screenRect.width - theme.edgeInset.width * 2 : self.screenRect.height - theme.edgeInset.height * 2
+      self.view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
+      
+      
+      //从这里开始是为了计算一个对屏幕合适的候选框坐标范围，得到一个panelRect
+      var panelRect = NSRect.zero
+      // in vertical mode, the width and height are interchanged
+      var contentRect = self.view.contentRect
+      if theme.memorizeSize && (self.vertical && self.position.midY / self.screenRect.height < 0.5) ||
+          (self.vertical && self.position.minX + max(contentRect.width, self.maxHeight) + theme.edgeInset.width * 2 > self.screenRect.maxX) {
+        if contentRect.width >= self.maxHeight {
+          self.maxHeight = contentRect.width
+        } else {
+          contentRect.size.width = self.maxHeight
+          self.view.textContainer.size = NSSize(width: self.maxHeight, height: maxTextHeight)
+        }
+      }
+      
+      if self.vertical {
+        panelRect.size = NSSize(width: min(0.95 * self.screenRect.width, contentRect.height + theme.edgeInset.height * 2),
+                                height: min(0.95 * self.screenRect.height, contentRect.width + theme.edgeInset.width * 2) + theme.pagingOffset)
+        
+        // To avoid jumping up and down while typing, use the lower screen when
+        // typing on upper, and vice versa
+        if self.position.midY / self.screenRect.height >= 0.5 {
+          panelRect.origin.y = self.position.minY - SquirrelTheme.offsetHeight - panelRect.height + theme.pagingOffset
+        } else {
+          panelRect.origin.y = self.position.maxY + SquirrelTheme.offsetHeight
+        }
+        // Make the first candidate fixed at the left of cursor
+        panelRect.origin.x = self.position.minX - panelRect.width - SquirrelTheme.offsetHeight
+        if self.view.preeditRange.length > 0, let preeditTextRange = self.view.convert(range: self.view.preeditRange) {
+          let preeditRect = self.view.contentRect(range: preeditTextRange)
+          panelRect.origin.x += preeditRect.height + theme.edgeInset.width
+        }
+      } else {
+        panelRect.size = NSSize(width: min(0.95 * self.screenRect.width, contentRect.width + theme.edgeInset.width * 2),
+                                height: min(0.95 * self.screenRect.height, contentRect.height + theme.edgeInset.height * 2))
+        panelRect.size.width += theme.pagingOffset
+        panelRect.origin = NSPoint(x: self.position.minX - theme.pagingOffset, y: self.position.minY - SquirrelTheme.offsetHeight - panelRect.height)
+      }
+      if panelRect.maxX > self.screenRect.maxX {
+        panelRect.origin.x = self.screenRect.maxX - panelRect.width
+      }
+      if panelRect.minX < self.screenRect.minX {
+        panelRect.origin.x = self.screenRect.minX
+      }
+      if panelRect.minY < self.screenRect.minY {
+        if self.vertical {
+          panelRect.origin.y = self.screenRect.minY
+        } else {
+          panelRect.origin.y = self.position.maxY + SquirrelTheme.offsetHeight
+        }
+      }
+      if panelRect.maxY > self.screenRect.maxY {
+        panelRect.origin.y = self.screenRect.maxY - panelRect.height
+      }
+      if panelRect.minY < self.screenRect.minY {
+        panelRect.origin.y = self.screenRect.minY
+      }
+      /// panelRect为候选视图的坐标、范围，这里赋予本视图类
+      /// 实测这里display设为false也能显示候选框
+      self.setFrame(panelRect, display: true)
+      print(panelRect)
+      
+      //这里开始要配置NSView的属性了
+      ///这里如果vertical为真，contentView（NSPanel的一个View）会旋转90度
+      // rotate the view, the core in vertical mode!
+      if self.vertical {
+        self.contentView!.boundsRotation = -90
+        self.contentView!.setBoundsOrigin(NSPoint(x: 0, y: panelRect.width))
+      } else {
+        self.contentView!.boundsRotation = 0
+        self.contentView!.setBoundsOrigin(.zero)
+      }
+      self.view.textView.boundsRotation = 0
+      view.textView.setBoundsOrigin(.zero)
+      
+      view.frame = contentView!.bounds
+      view.textView.frame = contentView!.bounds
+      view.textView.frame.size.width -= theme.pagingOffset
+      view.textView.frame.origin.x += theme.pagingOffset
+      view.textView.textContainerInset = theme.edgeInset
+      
+      if theme.translucency {
+        back.frame = contentView!.bounds
+        back.frame.size.width += theme.pagingOffset
+        back.appearance = NSApp.effectiveAppearance
+        back.isHidden = false
+      } else {
+        back.isHidden = true
+      }
+      alphaValue = theme.alpha
+      invalidateShadow()
+      ///  这个方法是NSWindow的（NSWindow的子类NSPanel也有），这个方法会把NSView（所有的，macOS似乎就是
+      ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
+//      orderFront(nil)
+      // voila!
+    }
   }
 
   func show(status message: String) {
