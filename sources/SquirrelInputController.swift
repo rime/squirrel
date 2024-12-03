@@ -31,7 +31,7 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
-  
+  var pageSize:Int = 0
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -519,7 +519,7 @@ private extension SquirrelInputController {
       if let select_keys = ctx.menu.select_keys {
         labels = String(cString: select_keys).map { String($0) }
       } else if let select_labels = ctx.select_labels {
-        let pageSize = Int(ctx.menu.page_size)
+        pageSize = Int(ctx.menu.page_size)
         for i in 0..<pageSize {
           labels.append(select_labels[i].map { String(cString: $0) } ?? "")
         }

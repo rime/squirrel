@@ -24,7 +24,7 @@ extension NSAttributedString.Key {
 
 final class SquirrelView: NSView {
   let textView: NSTextView
-
+  
   private let squirrelLayoutDelegate: SquirrelLayoutDelegate
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
@@ -36,9 +36,12 @@ final class SquirrelView: NSView {
   var shape = CAShapeLayer()
   private var downPath: CGPath?
   private var upPath: CGPath?
+  private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   //候选项富文本
   var lines:[NSMutableAttributedString] = []
-
+  //候选数量
+  var pageSize:Int = 0
+  
   var lightTheme = SquirrelTheme()
   var darkTheme = SquirrelTheme()
   var currentTheme: SquirrelTheme {
@@ -53,7 +56,7 @@ final class SquirrelView: NSView {
   var textContainer: NSTextContainer {
     textLayoutManager.textContainer!
   }
-
+  
   override init(frame frameRect: NSRect) {
     squirrelLayoutDelegate = SquirrelLayoutDelegate()
     textView = NSTextView(frame: frameRect)
@@ -65,25 +68,34 @@ final class SquirrelView: NSView {
     textContainer.lineFragmentPadding = 0
     self.wantsLayer = true
     self.layer?.masksToBounds = true
+    //    textView.isHidden = true
+    //初始化候选数量
+//    var ctx = RimeContext_stdbool.rimeStructInit()
+//    print("ctx.menu.page_size：\(ctx.menu.page_size)")
+//    pageSize = Int(ctx.menu.page_size)
+//    pageSize = SquirrelInputController.pageSize
+    print("init pageSize:\(pageSize)")
+    print("**** init() ****")
+    
   }
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-
+  
   override var isFlipped: Bool {
     true
   }
   var isDark: Bool {
     NSApp.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
   }
-
+  
   func convert(range: NSRange) -> NSTextRange? {
     guard range != .empty else { return nil }
     guard let startLocation = textLayoutManager.location(textLayoutManager.documentRange.location, offsetBy: range.location) else { return nil }
     guard let endLocation = textLayoutManager.location(startLocation, offsetBy: range.length) else { return nil }
     return NSTextRange(location: startLocation, end: endLocation)
   }
-
+  
   // Get the rectangle containing entire contents, expensive to calculate
   var contentRect: NSRect {
     var ranges = candidateRanges
@@ -116,7 +128,7 @@ final class SquirrelView: NSView {
     }
     return NSRect(x: x0, y: y0, width: x1-x0, height: y1-y0)
   }
-
+  
   // Will triger - (void)drawRect:(NSRect)dirtyRect
   // swiftlint:disable:next function_parameter_count
   func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
@@ -128,17 +140,19 @@ final class SquirrelView: NSView {
     self.canPageDown = canPageDown
     self.needsDisplay = true
   }
-
+  
   // All draws happen here
   // swiftlint:disable:next cyclomatic_complexity
   //保存旧宽度值用于动画
   var oldBackgroundPath : CGPath?
   //保存每个候选项座标用于动画
-  var prePoint:[CGPoint] = []
+  var preCandidatePos:[CGPoint] = []
+  //首次显示标记，用于候选动画初始化
+  var isFirstShow:Bool = true
   override func draw(_ dirtyRect: NSRect) {
-    self.textView.isHidden = false
+    //    self.textView.isHidden = false
     DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) {
-//      return
+      //      return
       print("**** SquirrelView.draw() ****")
       var backgroundPath: CGPath?
       var preeditPath: CGPath?
@@ -334,54 +348,54 @@ final class SquirrelView: NSView {
       self.shape.path = panelPath
       //更新
       self.oldBackgroundPath = backgroundPath
-//      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
-//        self.textView.textContentStorage?.attributedString = NSMutableAttributedString()
-        self.textView.isHidden = true
+      //      DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
+      //        self.textView.textContentStorage?.attributedString = NSMutableAttributedString()
+      //        self.textView.isHidden = true
       
-      //如果prePoint为空，说明还没初始化，初始化一组座标
-      if self.prePoint.isEmpty{
-        print("进入if")
-        var xOffset: CGFloat = 0
-        for (index,line) in self.lines.enumerated() {
-          let textLayer = CATextLayer() // 创建一个CATextLayer
-          textLayer.string = line// 设置文本层的内容为NSAttributedString
-          let textSize = line.size()// 计算文本层的大小
-          textLayer.frame = CGRect(x: xOffset, y: 0, width: textSize.width, height: textSize.height)// 设置文本层的frame
-          xOffset += textSize.width// 更新xOffset以便下一个文本层可以连成一排
-          self.layer?.addSublayer(textLayer)// 将文本层添加到containerView的layer中
-          self.prePoint.append(textLayer.position)
-          print("A:老：\(self.prePoint[index]),新：\(textLayer.position)")
-        }
-        
-      }else{
-        print("进入else")
-        var xOffset: CGFloat = 0
-        for (index,line) in self.lines.enumerated() {
-          let textLayer = CATextLayer() // 创建一个CATextLayer
-          textLayer.string = line// 设置文本层的内容为NSAttributedString
-          let textSize = line.size()// 计算文本层的大小
-          textLayer.frame = CGRect(x: xOffset, y: 0, width: textSize.width, height: textSize.height)// 设置文本层的frame
-          xOffset += textSize.width// 更新xOffset以便下一个文本层可以连成一排
-          self.layer?.addSublayer(textLayer)// 将文本层添加到containerView的layer中
-          
-          //动画
+      var currentCandidatePos:[CGPoint] = []
+      var candidateLayer:[CATextLayer] = []
+      currentCandidatePos = Array(repeating: CGPoint(), count: self.pageSize)
+      candidateLayer = Array(repeating: CATextLayer(), count: self.pageSize)
+      if self.isFirstShow{
+        self.preCandidatePos = Array(repeating: CGPoint(), count: self.pageSize)
+      }
+      print("self.pageSize:\(self.pageSize)")
+    }
+  }
+
+      //计算当前座标,并获得一组Layer
+      var xOffset: CGFloat = 0
+      for (i,line) in self.lines.enumerated() {
+        candidateLayer[i].string = line
+        let lineSize = line.size()
+        candidateLayer[i].frame = CGRect(x: xOffset, y: 0, width: lineSize.width, height: lineSize.height)// 设置文本层的frame
+        xOffset += lineSize.width// 更新xOffset以便下一个文本层可以连成一排
+        candidateLayer[i].contentsScale = NSScreen.main?.backingScaleFactor ?? 1.0 //清晰度适配当前屏幕
+        //          textLayer.allowsEdgeAntialiasing = true //边缘抗锯齿
+        self.layer?.addSublayer(candidateLayer[i])// 将文本层添加到containerView的layer中
+        currentCandidatePos[i] = candidateLayer[i].position
+      }
+      //动画
+      if !currentCandidatePos.isEmpty{//首次显示不添加动画
+        for (i,line) in self.lines.enumerated() {
           let moveAnimation = CABasicAnimation(keyPath: "position")
-          moveAnimation.fromValue = NSValue(point: self.prePoint[index])
-          moveAnimation.toValue = NSValue(point: textLayer.position)
-          print("\(index)号候选from\(self.prePoint[index])to\(textLayer.position)")
+          moveAnimation.fromValue = NSValue(point: self.preCandidatePos[i])//动画起点
+          moveAnimation.toValue = NSValue(point: currentCandidatePos[i])//动画终点
           moveAnimation.duration = 1
-          moveAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut) // 平滑的缓动函数
+          moveAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 平滑的缓动函数
           moveAnimation.fillMode = .forwards
           moveAnimation.isRemovedOnCompletion = false
-          textLayer.add(moveAnimation, forKey: "moveAnimation")
-          
-          //更新座标
-          print("B:老：\(self.prePoint),新：\(textLayer.position)")
-          self.prePoint[index] = textLayer.position
-          print("C:老：\(self.prePoint),新：\(textLayer.position)")
+          CATransaction.begin()
+          CATransaction.setCompletionBlock {//更新座标
+            self.preCandidatePos[i] = currentCandidatePos[i]
+          }
+          candidateLayer[i].add(moveAnimation, forKey: "moveAnimation")
+          CATransaction.commit()
+        
+
         }
+        //      }
       }
-//      }
     }
 
   }
