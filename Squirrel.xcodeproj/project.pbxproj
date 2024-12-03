@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 70;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -85,6 +85,13 @@
 		7B5488C01D2DACDF0056A1BE /* luna_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488321D2DAAD10056A1BE /* luna_pinyin.schema.yaml */; };
 		7B5488C11D2DACDF0056A1BE /* luna_quanpin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */; };
 		7B5488C91D2DACDF0056A1BE /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54883B1D2DAAD10056A1BE /* symbols.yaml */; };
+		9168C20A2CFF446200348D56 /* TextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9168C2072CFF446200348D56 /* TextView.swift */; };
+		9168C20B2CFF446200348D56 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9168C2092CFF446200348D56 /* ViewController.swift */; };
+		9168C20C2CFF446200348D56 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9168C2012CFF446200348D56 /* AppDelegate.swift */; };
+		9168C20D2CFF446200348D56 /* TextView+Unused.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9168C2082CFF446200348D56 /* TextView+Unused.swift */; };
+		9168C20E2CFF446200348D56 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 9168C2042CFF446200348D56 /* Main.storyboard */; };
+		9168C20F2CFF446200348D56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9168C2022CFF446200348D56 /* Assets.xcassets */; };
+		9168C2102CFF44DF00348D56 /* InputController.h in Headers */ = {isa = PBXBuildFile; fileRef = 9168C2002CFF445500348D56 /* InputController.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		B3216E5C2BF438F800E292D2 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B3216E5B2BF438F800E292D2 /* rime.pdf */; };
 		B35D2FE82BF00839009D156B /* BridgingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35D2FE72BF00839009D156B /* BridgingFunctions.swift */; };
 		B38E9B912BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38E9B902BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift */; };
@@ -299,6 +306,14 @@
 		7B5488331D2DAAD10056A1BE /* luna_quanpin.schema.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = luna_quanpin.schema.yaml; path = data/plum/luna_quanpin.schema.yaml; sourceTree = "<group>"; };
 		7B54883B1D2DAAD10056A1BE /* symbols.yaml */ = {isa = PBXFileReference; lastKnownFileType = text; name = symbols.yaml; path = data/plum/symbols.yaml; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = resources/Info.plist; sourceTree = "<group>"; };
+		9168C2002CFF445500348D56 /* InputController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = InputController.h; sourceTree = "<group>"; };
+		9168C2012CFF446200348D56 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9168C2022CFF446200348D56 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		9168C2032CFF446200348D56 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Main.storyboard; sourceTree = "<group>"; };
+		9168C2062CFF446200348D56 /* Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Demo.entitlements; sourceTree = "<group>"; };
+		9168C2072CFF446200348D56 /* TextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextView.swift; sourceTree = "<group>"; };
+		9168C2082CFF446200348D56 /* TextView+Unused.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TextView+Unused.swift"; sourceTree = "<group>"; };
+		9168C2092CFF446200348D56 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		A4B8E1B20F645B870094E08B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
 		B3216E5B2BF438F800E292D2 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = rime.pdf; path = resources/rime.pdf; sourceTree = "<group>"; };
 		B32B80772BE7FAA200FCF3BC /* Squirrel.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = Squirrel.entitlements; path = resources/Squirrel.entitlements; sourceTree = "<group>"; };
@@ -319,21 +334,6 @@
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		F45E005E2B8CA81C00179B75 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		0DEE70592CFBEC6C0062CC96 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			publicHeaders = (
-				InputController.h,
-			);
-			target = 0DEE704E2CFBEC6C0062CC96 /* InputController */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		0DD1CBD72CFC00ED00E6C847 /* Demo */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = Demo; sourceTree = "<group>"; };
-		0DEE70502CFBEC6C0062CC96 /* InputController */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (0DEE70592CFBEC6C0062CC96 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = InputController; sourceTree = "<group>"; };
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		0DD1CBD32CFC00ED00E6C847 /* Frameworks */ = {
@@ -385,6 +385,28 @@
 			);
 			name = Sources;
 			path = sources;
+			sourceTree = "<group>";
+		};
+		0DD1CBD72CFC00ED00E6C847 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				9168C2012CFF446200348D56 /* AppDelegate.swift */,
+				9168C2022CFF446200348D56 /* Assets.xcassets */,
+				9168C2052CFF446200348D56 /* Base.lproj */,
+				9168C2062CFF446200348D56 /* Demo.entitlements */,
+				9168C2072CFF446200348D56 /* TextView.swift */,
+				9168C2082CFF446200348D56 /* TextView+Unused.swift */,
+				9168C2092CFF446200348D56 /* ViewController.swift */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		0DEE70502CFBEC6C0062CC96 /* InputController */ = {
+			isa = PBXGroup;
+			children = (
+				9168C2002CFF445500348D56 /* InputController.h */,
+			);
+			path = InputController;
 			sourceTree = "<group>";
 		};
 		1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */ = {
@@ -551,6 +573,14 @@
 			name = plum;
 			sourceTree = "<group>";
 		};
+		9168C2052CFF446200348D56 /* Base.lproj */ = {
+			isa = PBXGroup;
+			children = (
+				9168C2042CFF446200348D56 /* Main.storyboard */,
+			);
+			path = Base.lproj;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -558,6 +588,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9168C2102CFF44DF00348D56 /* InputController.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -577,9 +608,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				0DD1CBD72CFC00ED00E6C847 /* Demo */,
 			);
 			name = Demo;
 			packageProductDependencies = (
@@ -601,9 +629,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				0DEE70502CFBEC6C0062CC96 /* InputController */,
 			);
 			name = InputController;
 			packageProductDependencies = (
@@ -649,6 +674,7 @@
 				TargetAttributes = {
 					0DD1CBD52CFC00ED00E6C847 = {
 						CreatedOnToolsVersion = 16.0;
+						LastSwiftMigration = 1600;
 					};
 					0DEE704E2CFBEC6C0062CC96 = {
 						CreatedOnToolsVersion = 16.0;
@@ -686,6 +712,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9168C20E2CFF446200348D56 /* Main.storyboard in Resources */,
+				9168C20F2CFF446200348D56 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -716,6 +744,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9168C20A2CFF446200348D56 /* TextView.swift in Sources */,
+				9168C20B2CFF446200348D56 /* ViewController.swift in Sources */,
+				9168C20C2CFF446200348D56 /* AppDelegate.swift in Sources */,
+				9168C20D2CFF446200348D56 /* TextView+Unused.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -755,6 +787,17 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		9168C2042CFF446200348D56 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				9168C2032CFF446200348D56 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		0DD1CBE32CFC00EE00E6C847 /* Debug */ = {
