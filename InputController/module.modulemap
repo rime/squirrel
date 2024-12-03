@@ -1,6 +1,0 @@
-module InputController {
-  umbrella header "InputController.h"
-
-  export *
-  module * { export * }
-}
