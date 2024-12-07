@@ -80,6 +80,7 @@ class Client: NSObject, IMKTextInput {
       return
     }
     textView.insertText(string, replacementRange: replacementRange)
+    self.replacementRange = nil
   }
 }
 
