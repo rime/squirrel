@@ -32,6 +32,9 @@ final class SquirrelPanel: NSPanel {
   private var page: Int = 0
   private var lastPage: Bool = true
   private var pagingUp: Bool?
+  
+  //候选项富文本
+  var lines:[NSMutableAttributedString] = []
 
   init(position: NSRect) {
     self.position = position
@@ -51,7 +54,20 @@ final class SquirrelPanel: NSPanel {
     contentView.addSubview(back)
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
+    //存储lines的容器
+    contentView.addSubview(view.textStack)
     self.contentView = contentView
+    view.textStack.distribution = .fillProportionally
+//    view.textStack.orientation = .horizontal
+//    view.textStack.distribution = .gravityAreas
+    view.textStack.spacing = 2 // 设置子视图之间的间隔
+    view.textStack.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      view.textStack.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor, constant: 1),
+      view.textStack.trailingAnchor.constraint(equalTo: self.contentView!.trailingAnchor, constant: -1),
+      view.textStack.topAnchor.constraint(equalTo: self.contentView!.topAnchor, constant: 1),
+      view.textStack.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor, constant: -1),
+    ])
   }
 
   var linear: Bool {
@@ -156,7 +172,9 @@ final class SquirrelPanel: NSPanel {
 
   // Main function to add attributes to text output from librime
   // swiftlint:disable:next cyclomatic_complexity function_parameter_count
-  func update(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted index: Int, page: Int, lastPage: Bool, update: Bool) {
+  func update(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], 
+              comments: [String], labels: [String], highlighted index: Int, page: Int,
+              lastPage: Bool, update: Bool) {
 //    print("**** update() ****")
 //    print("preedit:\(preedit)")
 //    print("selRange:\(selRange)")
@@ -228,7 +246,7 @@ final class SquirrelPanel: NSPanel {
     // candidates
     var candidateRanges = [NSRange]()
     //存储候选项line
-    var lines:[NSMutableAttributedString] = []
+    lines = []
     for i in 0..<candidates.count {
 //      print("**** 开始打印candidates ****")
 //      print("theme.highlightedAttrs的类型是：\(type(of: theme.highlightedAttrs))")
@@ -264,6 +282,8 @@ final class SquirrelPanel: NSPanel {
 
       //一个line就是一个候选项，内部默认由序号、候选项内容、评论组成，具体看attributes
       let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
+//      print("labelAttrs:\(labelAttrs)")
+      
       for range in line.string.ranges(of: /\[candidate\]/) {
         let convertedRange = convert(range: range, in: line.string)
         line.addAttributes(attrs, range: convertedRange)
@@ -314,15 +334,53 @@ final class SquirrelPanel: NSPanel {
       lines.append(line)
     }
 
+    orderFrontRegardless()
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
-    view.lines = lines
+//    view.lines = lines
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
-//    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) { [self] in
-      show()
+
+//    //看情况更新候选
+//    let oldNum = view.textStack.subviews.count
+//    let newNum = lines.count
+//    print("oldNum:\(oldNum),newNum:\(newNum)")
+//    if oldNum < newNum{
+//      //初始化差额的候选项视图
+//      for i in oldNum..<newNum{
+//
+//        let animateNSTextView = AnimateNSTextView()
+//        //在这里把animateNSTextView做成跟上面line一样的效果
+//        animateNSTextView.wantsLayer = true
+//        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
+//        animateNSTextView.layer?.borderWidth = 1.0
+//        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+//        
+//        view.textStack.addArrangedSubview(animateNSTextView)
+//        print("少啦，增加第\(i)个")
+//      }
+//    }else if oldNum == newNum{
+//      
+//    }else if oldNum > newNum{
+//      
+//      for i in newNum..<oldNum{
+//        let viewToRemove = view.textStack.arrangedSubviews[i]
+//        view.textStack.removeArrangedSubview(viewToRemove)
+//        viewToRemove.removeFromSuperview()
+//        print("超标啦,删除第\(i)个")
+//      }
+//    }else{
 //    }
+//    
+//    //更新文字
+//    for (i,view) in view.textStack.subviews.enumerated(){
+//      if let animateNSTextView = view as? AnimateNSTextView {
+////        animateNSTextView.string = lines[i].string
+//        animateNSTextView.textStorage?.setAttributedString(lines[i])
+//      }
+//    }
+    show()
     ///流程解读：
     ///按下键发送给librime后，librime会经过一段时间的计算，然后发回，
     ///在收到librime的候选项数组后，SqruirrelPanel用update方法处理成line的集合，拼接成text，然后放进SqruirrelView.textView的textContentStorage里，
@@ -398,8 +456,7 @@ private extension SquirrelPanel {
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
     print("**** SquirrelPanel.show() ****")
-    orderFront(nil)
-    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) { [self] in
+//    DispatchQueue.main.asyncAfter(deadline: .now() + 0.0) { [self] in
       self.currentScreen()
       let theme = self.view.currentTheme
       if !self.view.darkTheme.available {
@@ -410,7 +467,6 @@ private extension SquirrelPanel {
       let textWidth = self.maxTextWidth()
       let maxTextHeight = self.vertical ? self.screenRect.width - theme.edgeInset.width * 2 : self.screenRect.height - theme.edgeInset.height * 2
       self.view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
-      
       
       //从这里开始是为了计算一个对屏幕合适的候选框坐标范围，得到一个panelRect
       var panelRect = NSRect.zero
@@ -425,7 +481,6 @@ private extension SquirrelPanel {
           self.view.textContainer.size = NSSize(width: self.maxHeight, height: maxTextHeight)
         }
       }
-      
       if self.vertical {
         panelRect.size = NSSize(width: min(0.95 * self.screenRect.width, contentRect.height + theme.edgeInset.height * 2),
                                 height: min(0.95 * self.screenRect.height, contentRect.width + theme.edgeInset.width * 2) + theme.pagingOffset)
@@ -471,8 +526,7 @@ private extension SquirrelPanel {
       /// panelRect为候选视图的坐标、范围，这里赋予本视图类
       /// 实测这里display设为false也能显示候选框
       self.setFrame(panelRect, display: true)
-      print(panelRect)
-      
+//      print(panelRect)
       //这里开始要配置NSView的属性了
       ///这里如果vertical为真，contentView（NSPanel的一个View）会旋转90度
       // rotate the view, the core in vertical mode!
@@ -485,13 +539,12 @@ private extension SquirrelPanel {
       }
       self.view.textView.boundsRotation = 0
       view.textView.setBoundsOrigin(.zero)
-      
+
       view.frame = contentView!.bounds
       view.textView.frame = contentView!.bounds
       view.textView.frame.size.width -= theme.pagingOffset
       view.textView.frame.origin.x += theme.pagingOffset
       view.textView.textContainerInset = theme.edgeInset
-      
       if theme.translucency {
         back.frame = contentView!.bounds
         back.frame.size.width += theme.pagingOffset
@@ -506,7 +559,60 @@ private extension SquirrelPanel {
       ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
 //      orderFront(nil)
       // voila!
+      //实测下面这行也隐藏不了view.textView
+//    self.view.textView.isHidden = true
+    print("self.view.textStack.bounds:\(self.view.textStack.bounds)")
+    //看情况更新候选
+    let oldNum = view.textStack.subviews.count
+    let newNum = lines.count
+    print("oldNum:\(oldNum),newNum:\(newNum)")
+    if oldNum < newNum{
+      //初始化差额的候选项视图
+      for i in oldNum..<newNum{
+
+        let animateNSTextView = AnimateNSTextView()
+        //在这里把animateNSTextView做成跟上面line一样的效果
+        animateNSTextView.wantsLayer = true
+        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
+        animateNSTextView.layer?.borderWidth = 5.0
+        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+//        animateNSTextView.string = lines[i].string
+        //这行如何不用addArrangedSubview而用addSubView的话，就会被鼠须管原本的视图遮挡
+        view.textStack.addArrangedSubview(animateNSTextView)
+        print("少啦，增加第\(i)个")
+      }
+    }else if oldNum == newNum{
+      
+    }else if oldNum > newNum{
+      //为什么这里删除多余的后候选框会瞬间消失并且编辑中的字母会上屏？比如按bq的q的时候，会上屏q，连b都没有了
+      for i in newNum..<oldNum{
+        let viewToRemove = view.textStack.arrangedSubviews[i]
+        view.textStack.removeArrangedSubview(viewToRemove)
+        viewToRemove.removeFromSuperview()
+        print("超标啦,删除第\(i)个")
+      }
+    }else{
     }
+    
+    //更新文字
+    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
+      if let animateNSTextView = view as? AnimateNSTextView {
+        //        animateNSTextView.string = lines[i].string
+//        animateNSTextView.textStorage?.setAttributedString(lines[i])
+                animateNSTextView.string = lines[i].string
+      }
+    }
+//    for i in 0..<view.textStack.subviews.count{
+//      if let textView = view.textStack.arrangedSubviews[i] as? NSTextView {
+//          textView.textStorage?.setAttributedString(lines[i])
+//      }
+//    }
+    //为什么打印出来第一项会这么宽?panel宽282的时候，第一项就宽265
+    print("现在开始打开第一个",view.textStack.arrangedSubviews[0].frame)
+    print("现在开始打开第二个",view.textStack.arrangedSubviews[1].frame)
+    print("现在开始打开第三个",view.textStack.arrangedSubviews[2].frame)
+    print("panelRect:\(panelRect)")
+//    }
   }
 
   func show(status message: String) {
