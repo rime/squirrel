@@ -584,27 +584,23 @@ private extension SquirrelPanel {
         animateNSTextView.layer?.borderWidth = 1.0
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
         //下面这三行是把NSTextView设成不换行的，实践证明换行不是导致1-0-0问题的原因
-//        animateNSTextView.textContainer?.lineBreakMode = .byClipping // 或者使用.byTruncatingTail
-//        animateNSTextView.textContainer?.maximumNumberOfLines = 1
-//        animateNSTextView.textContainer?.widthTracksTextView = true // 确保文本容器的宽度始终与文本视图的宽度相同
-
-//        animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段
-//        animateNSTextView.isVerticallyResizable = true //在需要的时候扩展自己，试试能不能解决问题
+        //        animateNSTextView.textContainer?.lineBreakMode = .byClipping // 或者使用.byTruncatingTail
+        //        animateNSTextView.textContainer?.maximumNumberOfLines = 1
+        //        animateNSTextView.textContainer?.widthTracksTextView = true // 确保文本容器的宽度始终与文本视图的宽度相同
+        
+        //        animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段
+        //        animateNSTextView.isVerticallyResizable = true //在需要的时候扩展自己，试试能不能解决问题
         if i == 0{
           animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
         }
-        
-//        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
         //经测下面这行对于解决两个候选宽度为0问题没吊用
-//        animateNSTextView.textContainer?.widthTracksTextView = true
-//        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
+        //        animateNSTextView.textContainer?.widthTracksTextView = true
+        //        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
         //经测下面这行对于解决两个候选宽度为0问题没吊用
-//        view.textStack.addArrangedSubview(animateNSTextView)
+        //        view.textStack.addArrangedSubview(animateNSTextView)
         //实测这个也没解决1-0-0问题
-//        view.textStack.addView(animateNSTextView, in: .leading)
-//        view.textStack.addArrangedSubview(animateNSTextView)
-        //实测这个也没解决1-0-0问题
-//        view.textStack.addView(animateNSTextView, in: .leading)
+        //        view.textStack.addView(animateNSTextView, in: .leading)
+        view.textStack.addArrangedSubview(animateNSTextView)
         print("现在开始打开第\(i)个",view.textStack.arrangedSubviews[i].frame)
         print("少啦，增加第\(i)个")
       }
@@ -618,6 +614,7 @@ private extension SquirrelPanel {
         viewToRemove.removeFromSuperview()
         print("超标啦,删除第\(i)个")
       }
+    }
 //    //更新文字
 //    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
 //      if let animateNSTextView = view as? AnimateNSTextView {
@@ -626,11 +623,12 @@ private extension SquirrelPanel {
 //      }
 //    }
 //                animateNSTextView.string = lines[i].string
-    for i in 0..<3{
-      if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
-        view.stringValue = lines[i].string
-    for i in 0..<3{
-      if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
+      //更新文字
+      for i in 0..<3{
+        if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
+          view.stringValue = lines[i].string
+        }
+      }
     self.layoutIfNeeded()
     view.layoutSubtreeIfNeeded()
     orderFrontRegardless()
