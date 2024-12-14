@@ -54,13 +54,18 @@ final class SquirrelPanel: NSPanel {
     contentView.addSubview(back)
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
+    contentView.addSubview(view.textStack)
     self.contentView = contentView
     //存储lines的容器
-    contentView.addSubview(view.textStack)
-    view.textStack.distribution = .fillProportionally
+    
+//    view.textStack.distribution = .fillProportionally
+    view.textStack.distribution = .equalSpacing
 //    view.textStack.orientation = .horizontal
 //    view.textStack.distribution = .gravityAreas
     view.textStack.spacing = 2 // 设置子视图之间的间隔
+    ///SquirrelView的translatesAutoresizingMaskIntoConstraints打印得知确实是true，但是改成false后并没有解决1-0-0问题
+    ///说明父视图的这个属性是不会覆盖子视图的
+//    view.translatesAutoresizingMaskIntoConstraints = false
     view.textStack.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
       view.textStack.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor, constant: 1),
@@ -578,9 +583,13 @@ private extension SquirrelPanel {
         animateNSTextView.layer?.borderWidth = 5.0
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
         animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        //尝试设置抵抗拉伸等级（实测还是没解决1-0-0问题
+        animateNSTextView.setContentHuggingPriority(.required, for: .horizontal)
 //        animateNSTextView.string = lines[i].string
         //这行如何不用addArrangedSubview而用addSubView的话，就会被鼠须管原本的视图遮挡
-        view.textStack.addArrangedSubview(animateNSTextView)
+//        view.textStack.addArrangedSubview(animateNSTextView)
+        //实测这个也没解决1-0-0问题
+//        view.textStack.addView(animateNSTextView, in: .leading)
         print("现在开始打开第\(i)个",view.textStack.arrangedSubviews[i].frame)
         print("少啦，增加第\(i)个")
       }
@@ -615,6 +624,35 @@ private extension SquirrelPanel {
     print("现在开始打开第二个",view.textStack.arrangedSubviews[1].frame)
     print("现在开始打开第三个",view.textStack.arrangedSubviews[2].frame)
     print("panelRect:\(panelRect)")
+    //打印首选项的属性
+    print("NSTextView Frame: \(view.textStack.arrangedSubviews[0].frame)")
+    print("NSTextView IntrinsicContentSize: \(view.textStack.arrangedSubviews[0].intrinsicContentSize)")
+    print("NSTextView ContentHuggingPriority: \(view.textStack.arrangedSubviews[0].contentHuggingPriority(for: .horizontal))")
+    print("NSTextView ContentCompressionResistancePriority: \(view.textStack.arrangedSubviews[0].contentCompressionResistancePriority(for: .horizontal))")
+    //打印父视图的属性
+    print("Parent View Frame: \(view.frame)")
+    print("Parent View Bounds: \(view.bounds)")
+    print("Parent View Constraints:")
+    for constraint in view.constraints {
+        print("- \(constraint)")
+    }
+    print("Parent View Content Hugging Priority: \(view.contentHuggingPriority(for: .horizontal))")
+    print("Parent View Content Compression Resistance Priority: \(view.contentCompressionResistancePriority(for: .horizontal))")
+    print("Parent View TranslatesAutoresizingMaskIntoConstraints: \(view.translatesAutoresizingMaskIntoConstraints)")
+    print("Parent View Subviews: \(view.subviews)")
+
+    ///打印Stack的参数基本可以证明1-0-0问题跟NSStackView的属性无关
+//    print("NSStackView Orientation: \(view.textStack.orientation.rawValue)")
+//    print("NSStackView Alignment: \(view.textStack.alignment.rawValue)")
+//    print("NSStackView Distribution: \(view.textStack.distribution.rawValue)")
+//    print("NSStackView Spacing: \(view.textStack.spacing)")
+//    print("NSStackView EdgeInsets: \(view.textStack.edgeInsets)")
+//    print("NSStackView ArrangedSubviews Count: \(view.textStack.arrangedSubviews.count)")
+//    print("NSStackView View Constraints: \(view.textStack.constraints)")
+//    print("NSStackView TranslatesAutoresizingMaskIntoConstraints: \(view.textStack.translatesAutoresizingMaskIntoConstraints)")
+//    print("NSStackView Hidden Ornaments: \(view.textStack.isHidden)")
+//    print("NSStackView View Frame: \(view.textStack.frame)")
+//    print("NSStackView View Bounds: \(view.textStack.bounds)")
 //    }
   }
 
