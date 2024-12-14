@@ -54,9 +54,9 @@ final class SquirrelPanel: NSPanel {
     contentView.addSubview(back)
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
+    self.contentView = contentView
     //存储lines的容器
     contentView.addSubview(view.textStack)
-    self.contentView = contentView
     view.textStack.distribution = .fillProportionally
 //    view.textStack.orientation = .horizontal
 //    view.textStack.distribution = .gravityAreas
@@ -68,6 +68,7 @@ final class SquirrelPanel: NSPanel {
       view.textStack.topAnchor.constraint(equalTo: self.contentView!.topAnchor, constant: 1),
       view.textStack.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor, constant: -1),
     ])
+//    self.contentView?.addSubview(view.textStack)
   }
 
   var linear: Bool {
@@ -576,9 +577,11 @@ private extension SquirrelPanel {
         animateNSTextView.font = NSFont.systemFont(ofSize: 20)
         animateNSTextView.layer?.borderWidth = 5.0
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+        animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
 //        animateNSTextView.string = lines[i].string
         //这行如何不用addArrangedSubview而用addSubView的话，就会被鼠须管原本的视图遮挡
         view.textStack.addArrangedSubview(animateNSTextView)
+        print("现在开始打开第\(i)个",view.textStack.arrangedSubviews[i].frame)
         print("少啦，增加第\(i)个")
       }
     }else if oldNum == newNum{
