@@ -54,24 +54,26 @@ final class SquirrelPanel: NSPanel {
     contentView.addSubview(back)
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
-    contentView.addSubview(view.textStack)
+    //显示原本TextView的边界方便调试
+    view.textView.wantsLayer = true // 确保textView使用layer进行绘制
+    view.textView.layer?.borderWidth = 2.0 // 设置边框宽度
+    view.textView.layer?.borderColor = NSColor.orange.cgColor // 设置边框颜色为橙色
+
     self.contentView = contentView
     //存储lines的容器
-    
+    contentView.addSubview(view.textStack)
 //    view.textStack.distribution = .fillProportionally
-    view.textStack.distribution = .equalSpacing
-//    view.textStack.orientation = .horizontal
-//    view.textStack.distribution = .gravityAreas
-    view.textStack.spacing = 2 // 设置子视图之间的间隔
-    ///SquirrelView的translatesAutoresizingMaskIntoConstraints打印得知确实是true，但是改成false后并没有解决1-0-0问题
-    ///说明父视图的这个属性是不会覆盖子视图的
-//    view.translatesAutoresizingMaskIntoConstraints = false
+    view.textStack.alignment =  .firstBaseline
+    view.textStack.orientation = .horizontal //水平
+//    view.textStack.orientation = .vertical //垂直
+    view.textStack.distribution = .gravityAreas
+    view.textStack.spacing = 0 // 设置子视图之间的间隔
     view.textStack.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
-      view.textStack.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor, constant: 1),
-      view.textStack.trailingAnchor.constraint(equalTo: self.contentView!.trailingAnchor, constant: -1),
-      view.textStack.topAnchor.constraint(equalTo: self.contentView!.topAnchor, constant: 1),
-      view.textStack.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor, constant: -1),
+      view.textStack.leadingAnchor.constraint(equalTo: self.contentView!.leadingAnchor),
+      view.textStack.trailingAnchor.constraint(equalTo: self.contentView!.trailingAnchor),
+      view.textStack.topAnchor.constraint(equalTo: self.contentView!.topAnchor),
+      view.textStack.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor),
     ])
 //    self.contentView?.addSubview(view.textStack)
   }
@@ -340,7 +342,6 @@ final class SquirrelPanel: NSPanel {
       lines.append(line)
     }
 
-    orderFrontRegardless()
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
@@ -572,21 +573,35 @@ private extension SquirrelPanel {
     let oldNum = view.textStack.subviews.count
     let newNum = lines.count
     print("oldNum:\(oldNum),newNum:\(newNum)")
+    
     if oldNum < newNum{
       //初始化差额的候选项视图
       for i in oldNum..<newNum{
-
         let animateNSTextView = AnimateNSTextView()
         //在这里把animateNSTextView做成跟上面line一样的效果
         animateNSTextView.wantsLayer = true
         animateNSTextView.font = NSFont.systemFont(ofSize: 20)
-        animateNSTextView.layer?.borderWidth = 5.0
+        animateNSTextView.layer?.borderWidth = 1.0
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
-        animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
-        //尝试设置抵抗拉伸等级（实测还是没解决1-0-0问题
-        animateNSTextView.setContentHuggingPriority(.required, for: .horizontal)
-//        animateNSTextView.string = lines[i].string
-        //这行如何不用addArrangedSubview而用addSubView的话，就会被鼠须管原本的视图遮挡
+        //下面这三行是把NSTextView设成不换行的，实践证明换行不是导致1-0-0问题的原因
+//        animateNSTextView.textContainer?.lineBreakMode = .byClipping // 或者使用.byTruncatingTail
+//        animateNSTextView.textContainer?.maximumNumberOfLines = 1
+//        animateNSTextView.textContainer?.widthTracksTextView = true // 确保文本容器的宽度始终与文本视图的宽度相同
+
+//        animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段
+//        animateNSTextView.isVerticallyResizable = true //在需要的时候扩展自己，试试能不能解决问题
+        if i == 0{
+          animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        }
+        
+//        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
+        //经测下面这行对于解决两个候选宽度为0问题没吊用
+//        animateNSTextView.textContainer?.widthTracksTextView = true
+//        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
+        //经测下面这行对于解决两个候选宽度为0问题没吊用
+//        view.textStack.addArrangedSubview(animateNSTextView)
+        //实测这个也没解决1-0-0问题
+//        view.textStack.addView(animateNSTextView, in: .leading)
 //        view.textStack.addArrangedSubview(animateNSTextView)
         //实测这个也没解决1-0-0问题
 //        view.textStack.addView(animateNSTextView, in: .leading)
@@ -603,26 +618,41 @@ private extension SquirrelPanel {
         viewToRemove.removeFromSuperview()
         print("超标啦,删除第\(i)个")
       }
-    }else{
-    }
-    
-    //更新文字
-    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
-      if let animateNSTextView = view as? AnimateNSTextView {
-        //        animateNSTextView.string = lines[i].string
-//        animateNSTextView.textStorage?.setAttributedString(lines[i])
-                animateNSTextView.string = lines[i].string
-      }
-    }
+//    //更新文字
+//    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
+//      if let animateNSTextView = view as? AnimateNSTextView {
+////        animateNSTextView.textStorage?.setAttributedString(lines[i])
+//                animateNSTextView.string = lines[i].string
+//      }
+//    }
+//                animateNSTextView.string = lines[i].string
+    for i in 0..<3{
+      if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
+        view.stringValue = lines[i].string
+    for i in 0..<3{
+      if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
+    self.layoutIfNeeded()
+    view.layoutSubtreeIfNeeded()
+    orderFrontRegardless()
+
+    view.layoutSubtreeIfNeeded()
+    orderFrontRegardless()
+
 //    for i in 0..<view.textStack.subviews.count{
 //      if let textView = view.textStack.arrangedSubviews[i] as? NSTextView {
 //          textView.textStorage?.setAttributedString(lines[i])
 //      }
 //    }
     //为什么打印出来第一项会这么宽?panel宽282的时候，第一项就宽265
-    print("现在开始打开第一个",view.textStack.arrangedSubviews[0].frame)
-    print("现在开始打开第二个",view.textStack.arrangedSubviews[1].frame)
-    print("现在开始打开第三个",view.textStack.arrangedSubviews[2].frame)
+//    ///打印父视图，结果是NSStackView（父）NSView（祖）NSNextStepFrame（曾祖）边框都是((0.0, 0.0, 272.0, 48.0))
+//    print("panelRect:\(panelRect)")
+//    print("view.textStack.frame:",view.textStack.frame)
+//    print("animationView的父视图",view.textStack.arrangedSubviews[0].superview)
+//    print("animationView的祖视图",view.textStack.arrangedSubviews[0].superview?.superview)
+//    print("animationView的曾祖视图",view.textStack.arrangedSubviews[0].superview?.superview?.superview)
+//    print("animationView的父视图的frame",view.textStack.arrangedSubviews[0].superview?.frame)
+//    print("animationView的祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.frame)
+//    print("animationView的曾祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.superview?.frame)
     print("panelRect:\(panelRect)")
     //打印首选项的属性
     print("NSTextView Frame: \(view.textStack.arrangedSubviews[0].frame)")
@@ -654,6 +684,9 @@ private extension SquirrelPanel {
 //    print("NSStackView View Frame: \(view.textStack.frame)")
 //    print("NSStackView View Bounds: \(view.textStack.bounds)")
 //    }
+//    print("animationView的父视图的frame",view.textStack.arrangedSubviews[0].superview?.frame)
+//    print("animationView的祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.frame)
+//    print("animationView的曾祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.superview?.frame)
   }
 
   func show(status message: String) {
