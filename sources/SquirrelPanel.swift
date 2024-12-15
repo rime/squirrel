@@ -66,6 +66,7 @@ final class SquirrelPanel: NSPanel {
     //存储lines的容器
     contentView.addSubview(view.textStack)
     view.textStack.alignment =  .firstBaseline
+//    view.textStack.alignment =  .leading //竖排的时候用这个向左对齐
 //    view.textStack.orientation = .horizontal //水平
 //    view.textStack.orientation = .vertical //垂直
 //    view.textStack.distribution = .gravityAreas

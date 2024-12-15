@@ -155,10 +155,10 @@ final class SquirrelView: NSView {
   var isFirstShow:Bool = true
   override func draw(_ dirtyRect: NSRect) {
     //    self.textView.isHidden = false
-    if true{
-      print("**** SquirrelView.draw() **** 从第一行return，跳过方法")
-      return
-    }
+//    if true{
+//      print("**** SquirrelView.draw() **** 从第一行return，跳过方法")
+//      return
+//    }
     var backgroundPath: CGPath?
     var preeditPath: CGPath?
     var candidatePaths: CGMutablePath?
@@ -173,7 +173,7 @@ final class SquirrelView: NSView {
     let borderAnimation = CABasicAnimation(keyPath: "path")
     borderAnimation.fromValue = self.oldBackgroundPath // 开始时的路径
     borderAnimation.toValue = backgroundPath // 结束时的路径
-    borderAnimation.duration = 0.2 // 动画持续 1 秒
+    borderAnimation.duration = 1 // 动画持续 1 秒
     borderAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 动画时间函数
     
     // Draw preedit Rect
