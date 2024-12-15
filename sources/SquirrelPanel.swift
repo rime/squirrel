@@ -343,7 +343,14 @@ final class SquirrelPanel: NSPanel {
       text.append(line)
       lines.append(line)
     }
-
+    
+    //手动加空格,加在非首选项的前面
+    for i in 0..<lines.count {
+      if i > 0{
+        lines[i].insert(NSAttributedString(string: "  "), at: 0)
+        print(lines[i].string)
+      }
+    }
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
@@ -583,35 +590,12 @@ private extension SquirrelPanel {
         //在这里把animateNSTextView做成跟上面line一样的效果
         animateNSTextView.wantsLayer = true
         animateNSTextView.font = NSFont.systemFont(ofSize: 20)
-        animateNSTextView.layer?.borderWidth = 1.0
         animateNSTextView.isEditable = false //导致1-0-0问题的罪魁祸首
-        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
-        animateNSTextView.setContentHuggingPriority(.required, for: .horizontal) //高抗拉伸
-        animateNSTextView.setContentCompressionResistancePriority(.required, for: .horizontal) //高抗压缩
-        //实测下面两行对新的1-0-0问题无效
-//        animateNSTextView.isHorizontallyResizable = true
-//        animateNSTextView.isVerticallyResizable = true
-//        print("本身所需的尺寸",animateNSTextView.intrinsicContentSize)
-
-        //下面这三行是把NSTextView设成不换行的，实践证明换行不是导致1-0-0问题的原因
-        //        animateNSTextView.textContainer?.lineBreakMode = .byClipping // 或者使用.byTruncatingTail
-        //        animateNSTextView.textContainer?.maximumNumberOfLines = 1
-        //        animateNSTextView.textContainer?.widthTracksTextView = true // 确保文本容器的宽度始终与文本视图的宽度相同
-        
-        //        animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段
-        //        animateNSTextView.isVerticallyResizable = true //在需要的时候扩展自己，试试能不能解决问题
-        if i == 0{
-          animateNSTextView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
-        }
-        //经测下面这行对于解决两个候选宽度为0问题没吊用
-        //        animateNSTextView.textContainer?.widthTracksTextView = true
-        //        animateNSTextView.widthAnchor.constraint(lessThanOrEqualToConstant: 100).isActive = true
-        //经测下面这行对于解决两个候选宽度为0问题没吊用
-        //        view.textStack.addArrangedSubview(animateNSTextView)
-        //实测这个也没解决1-0-0问题
-        //        view.textStack.addView(animateNSTextView, in: .leading)
+//        animateNSTextView.layer?.borderWidth = 3.0
+//        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+        animateNSTextView.isBordered = false //这项不设的话背景还是不透明(仅限NSTextFeild)
+        animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段(仅限NSTextFeild)
         view.textStack.addArrangedSubview(animateNSTextView)
-        print("现在开始打开第\(i)个",view.textStack.arrangedSubviews[i].frame)
         print("少啦，增加第\(i)个")
       }
     }else if oldNum == newNum{
@@ -628,14 +612,8 @@ private extension SquirrelPanel {
     //更新文字
     for (i,view) in view.textStack.arrangedSubviews.enumerated(){
       if let animateNSTextView = view as? AnimateNSTextView {
-        print("animateNSTextView.isEditable",animateNSTextView.isEditable)
-        print("添加文字之前的本征尺寸：",animateNSTextView.intrinsicContentSize)
-//        animateNSTextView.string = lines[i].string
-//        animateNSTextView.textStorage?.setAttributedString(lines[i])
-        animateNSTextView.attributedStringValue = lines[i]
-//        animateNSTextView.layoutManager?.ensureLayout(for: animateNSTextView.textContainer)
-        view.layoutSubtreeIfNeeded()
-        print("本征尺寸：",animateNSTextView.intrinsicContentSize)
+//        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
+        animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
       }
     }
     
