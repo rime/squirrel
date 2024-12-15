@@ -60,15 +60,15 @@ final class SquirrelPanel: NSPanel {
     view.textView.wantsLayer = true // 确保textView使用layer进行绘制
     view.textView.layer?.borderWidth = 2.0 // 设置边框宽度
     view.textView.layer?.borderColor = NSColor.orange.cgColor // 设置边框颜色为橙色
+    view.textView.isHidden = true
 
     self.contentView = contentView
     //存储lines的容器
     contentView.addSubview(view.textStack)
-//    view.textStack.distribution = .fillProportionally
     view.textStack.alignment =  .firstBaseline
-    view.textStack.orientation = .horizontal //水平
+//    view.textStack.orientation = .horizontal //水平
 //    view.textStack.orientation = .vertical //垂直
-    view.textStack.distribution = .gravityAreas
+//    view.textStack.distribution = .gravityAreas
     view.textStack.spacing = 0 // 设置子视图之间的间隔
     view.textStack.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
@@ -354,48 +354,9 @@ final class SquirrelPanel: NSPanel {
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
-//    view.lines = lines
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
 
-//    //看情况更新候选
-//    let oldNum = view.textStack.subviews.count
-//    let newNum = lines.count
-//    print("oldNum:\(oldNum),newNum:\(newNum)")
-//    if oldNum < newNum{
-//      //初始化差额的候选项视图
-//      for i in oldNum..<newNum{
-//
-//        let animateNSTextView = AnimateNSTextView()
-//        //在这里把animateNSTextView做成跟上面line一样的效果
-//        animateNSTextView.wantsLayer = true
-//        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
-//        animateNSTextView.layer?.borderWidth = 1.0
-//        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
-//        
-//        view.textStack.addArrangedSubview(animateNSTextView)
-//        print("少啦，增加第\(i)个")
-//      }
-//    }else if oldNum == newNum{
-//      
-//    }else if oldNum > newNum{
-//      
-//      for i in newNum..<oldNum{
-//        let viewToRemove = view.textStack.arrangedSubviews[i]
-//        view.textStack.removeArrangedSubview(viewToRemove)
-//        viewToRemove.removeFromSuperview()
-//        print("超标啦,删除第\(i)个")
-//      }
-//    }else{
-//    }
-//    
-//    //更新文字
-//    for (i,view) in view.textStack.subviews.enumerated(){
-//      if let animateNSTextView = view as? AnimateNSTextView {
-////        animateNSTextView.string = lines[i].string
-//        animateNSTextView.textStorage?.setAttributedString(lines[i])
-//      }
-//    }
     show()
     ///流程解读：
     ///按下键发送给librime后，librime会经过一段时间的计算，然后发回，
@@ -616,73 +577,8 @@ private extension SquirrelPanel {
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
       }
     }
-    
-//      //更新文字
-//      for i in 0..<3{
-//        if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
-//          view.stringValue = lines[i].string
-//          //实验证明下面两行不能解决固有尺寸为-1在填入文本后依然不更新问题，不能解决1-0-0问题
-////          view.needsLayout = true
-////          view.layoutSubtreeIfNeeded()
-//          print("本身所需的尺寸",view.intrinsicContentSize)
-//        }
-//      }
-    self.layoutIfNeeded()
-    view.layoutSubtreeIfNeeded()
+    //请求前台显示，并且不强求成为活动窗口
     orderFrontRegardless()
-
-    view.layoutSubtreeIfNeeded()
-    orderFrontRegardless()
-
-//    for i in 0..<view.textStack.subviews.count{
-//      if let textView = view.textStack.arrangedSubviews[i] as? NSTextView {
-//          textView.textStorage?.setAttributedString(lines[i])
-//      }
-//    }
-    //为什么打印出来第一项会这么宽?panel宽282的时候，第一项就宽265
-//    ///打印父视图，结果是NSStackView（父）NSView（祖）NSNextStepFrame（曾祖）边框都是((0.0, 0.0, 272.0, 48.0))
-//    print("panelRect:\(panelRect)")
-//    print("view.textStack.frame:",view.textStack.frame)
-//    print("animationView的父视图",view.textStack.arrangedSubviews[0].superview)
-//    print("animationView的祖视图",view.textStack.arrangedSubviews[0].superview?.superview)
-//    print("animationView的曾祖视图",view.textStack.arrangedSubviews[0].superview?.superview?.superview)
-//    print("animationView的父视图的frame",view.textStack.arrangedSubviews[0].superview?.frame)
-//    print("animationView的祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.frame)
-//    print("animationView的曾祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.superview?.frame)
-    print("panelRect:\(panelRect)")
-    //打印首选项的属性
-    print("NSTextView Frame: \(view.textStack.arrangedSubviews[0].frame)")
-    print("NSTextView IntrinsicContentSize: \(view.textStack.arrangedSubviews[0].intrinsicContentSize)")
-    print("NSTextView ContentHuggingPriority: \(view.textStack.arrangedSubviews[0].contentHuggingPriority(for: .horizontal))")
-    print("NSTextView ContentCompressionResistancePriority: \(view.textStack.arrangedSubviews[0].contentCompressionResistancePriority(for: .horizontal))")
-    //打印父视图的属性
-    print("Parent View Frame: \(view.frame)")
-    print("Parent View Bounds: \(view.bounds)")
-    print("Parent View Constraints:")
-    for constraint in view.constraints {
-        print("- \(constraint)")
-    }
-    print("Parent View Content Hugging Priority: \(view.contentHuggingPriority(for: .horizontal))")
-    print("Parent View Content Compression Resistance Priority: \(view.contentCompressionResistancePriority(for: .horizontal))")
-    print("Parent View TranslatesAutoresizingMaskIntoConstraints: \(view.translatesAutoresizingMaskIntoConstraints)")
-    print("Parent View Subviews: \(view.subviews)")
-
-    ///打印Stack的参数基本可以证明1-0-0问题跟NSStackView的属性无关
-//    print("NSStackView Orientation: \(view.textStack.orientation.rawValue)")
-//    print("NSStackView Alignment: \(view.textStack.alignment.rawValue)")
-//    print("NSStackView Distribution: \(view.textStack.distribution.rawValue)")
-//    print("NSStackView Spacing: \(view.textStack.spacing)")
-//    print("NSStackView EdgeInsets: \(view.textStack.edgeInsets)")
-//    print("NSStackView ArrangedSubviews Count: \(view.textStack.arrangedSubviews.count)")
-//    print("NSStackView View Constraints: \(view.textStack.constraints)")
-//    print("NSStackView TranslatesAutoresizingMaskIntoConstraints: \(view.textStack.translatesAutoresizingMaskIntoConstraints)")
-//    print("NSStackView Hidden Ornaments: \(view.textStack.isHidden)")
-//    print("NSStackView View Frame: \(view.textStack.frame)")
-//    print("NSStackView View Bounds: \(view.textStack.bounds)")
-//    }
-//    print("animationView的父视图的frame",view.textStack.arrangedSubviews[0].superview?.frame)
-//    print("animationView的祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.frame)
-//    print("animationView的曾祖视图的frame",view.textStack.arrangedSubviews[0].superview?.superview?.superview?.frame)
   }
 
   func show(status message: String) {
