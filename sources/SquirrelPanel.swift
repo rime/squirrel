@@ -582,7 +582,12 @@ private extension SquirrelPanel {
         animateNSTextView.wantsLayer = true
         animateNSTextView.font = NSFont.systemFont(ofSize: 20)
         animateNSTextView.layer?.borderWidth = 1.0
+        animateNSTextView.isEditable = false
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+        animateNSTextView.setContentHuggingPriority(.required, for: .horizontal) //高抗拉伸
+        animateNSTextView.setContentCompressionResistancePriority(.required, for: .horizontal) //高抗压缩
+//        print("本身所需的尺寸",animateNSTextView.intrinsicContentSize)
+
         //下面这三行是把NSTextView设成不换行的，实践证明换行不是导致1-0-0问题的原因
         //        animateNSTextView.textContainer?.lineBreakMode = .byClipping // 或者使用.byTruncatingTail
         //        animateNSTextView.textContainer?.maximumNumberOfLines = 1
@@ -627,6 +632,10 @@ private extension SquirrelPanel {
       for i in 0..<3{
         if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
           view.stringValue = lines[i].string
+          //实验证明下面两行不能解决固有尺寸为-1在填入文本后依然不更新问题，不能解决1-0-0问题
+//          view.needsLayout = true
+//          view.layoutSubtreeIfNeeded()
+          print("本身所需的尺寸",view.intrinsicContentSize)
         }
       }
     self.layoutIfNeeded()

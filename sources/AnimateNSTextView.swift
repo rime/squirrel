@@ -104,6 +104,42 @@ class AnimateNSTextView: NSTextField {
           // 结束动画组
           NSAnimationContext.endGrouping()
       }
+//  private var placeholderWidth: CGFloat? = 0
+//  /// Field editor inset; experimental value
+//  private let rightMargin: CGFloat = 5
+//
+//  private var lastSize: NSSize?
+//  private var isEditing = false
+//  override var intrinsicContentSize: NSSize {
+//      var minSize: NSSize {
+//          var size = super.intrinsicContentSize
+//          size.width = self.placeholderWidth ?? 0
+//          return size
+//      }
+//
+//      // Use cached value when not editing
+//      guard isEditing,
+//          let fieldEditor = self.window?.fieldEditor(false, for: self) as? NSTextView
+//          else { return self.lastSize ?? minSize }
+//
+//      // Make room for the placeholder when the text field is empty
+//      guard !fieldEditor.string.isEmpty else {
+//          self.lastSize = minSize
+//          return minSize
+//      }
+//
+//      // Use the field editor's computed width when possible
+//      guard let container = fieldEditor.textContainer,
+//          let newWidth = container.layoutManager?.usedRect(for: container).width
+//          else { return self.lastSize ?? minSize }
+//
+//      var newSize = super.intrinsicContentSize
+//      newSize.width = newWidth + rightMargin
+//
+//      self.lastSize = newSize
+//
+//      return newSize
+//  }
   
 }
 
