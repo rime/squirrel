@@ -35,6 +35,8 @@ final class SquirrelPanel: NSPanel {
   
   //候选项富文本
   var lines:[NSMutableAttributedString] = []
+  //实测改成NSAttributedString也不能解决新的1-0-0问题
+//  var lines:[NSAttributedString] = []
 
   init(position: NSRect) {
     self.position = position
@@ -582,10 +584,13 @@ private extension SquirrelPanel {
         animateNSTextView.wantsLayer = true
         animateNSTextView.font = NSFont.systemFont(ofSize: 20)
         animateNSTextView.layer?.borderWidth = 1.0
-        animateNSTextView.isEditable = false
+        animateNSTextView.isEditable = false //导致1-0-0问题的罪魁祸首
         animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
         animateNSTextView.setContentHuggingPriority(.required, for: .horizontal) //高抗拉伸
         animateNSTextView.setContentCompressionResistancePriority(.required, for: .horizontal) //高抗压缩
+        //实测下面两行对新的1-0-0问题无效
+//        animateNSTextView.isHorizontallyResizable = true
+//        animateNSTextView.isVerticallyResizable = true
 //        print("本身所需的尺寸",animateNSTextView.intrinsicContentSize)
 
         //下面这三行是把NSTextView设成不换行的，实践证明换行不是导致1-0-0问题的原因
@@ -620,24 +625,30 @@ private extension SquirrelPanel {
         print("超标啦,删除第\(i)个")
       }
     }
-//    //更新文字
-//    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
-//      if let animateNSTextView = view as? AnimateNSTextView {
-////        animateNSTextView.textStorage?.setAttributedString(lines[i])
-//                animateNSTextView.string = lines[i].string
-//      }
-//    }
-//                animateNSTextView.string = lines[i].string
-      //更新文字
-      for i in 0..<3{
-        if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
-          view.stringValue = lines[i].string
-          //实验证明下面两行不能解决固有尺寸为-1在填入文本后依然不更新问题，不能解决1-0-0问题
-//          view.needsLayout = true
-//          view.layoutSubtreeIfNeeded()
-          print("本身所需的尺寸",view.intrinsicContentSize)
-        }
+    //更新文字
+    for (i,view) in view.textStack.arrangedSubviews.enumerated(){
+      if let animateNSTextView = view as? AnimateNSTextView {
+        print("animateNSTextView.isEditable",animateNSTextView.isEditable)
+        print("添加文字之前的本征尺寸：",animateNSTextView.intrinsicContentSize)
+//        animateNSTextView.string = lines[i].string
+//        animateNSTextView.textStorage?.setAttributedString(lines[i])
+        animateNSTextView.attributedStringValue = lines[i]
+//        animateNSTextView.layoutManager?.ensureLayout(for: animateNSTextView.textContainer)
+        view.layoutSubtreeIfNeeded()
+        print("本征尺寸：",animateNSTextView.intrinsicContentSize)
       }
+    }
+    
+//      //更新文字
+//      for i in 0..<3{
+//        if let view = view.textStack.arrangedSubviews[i] as? AnimateNSTextView{
+//          view.stringValue = lines[i].string
+//          //实验证明下面两行不能解决固有尺寸为-1在填入文本后依然不更新问题，不能解决1-0-0问题
+////          view.needsLayout = true
+////          view.layoutSubtreeIfNeeded()
+//          print("本身所需的尺寸",view.intrinsicContentSize)
+//        }
+//      }
     self.layoutIfNeeded()
     view.layoutSubtreeIfNeeded()
     orderFrontRegardless()
