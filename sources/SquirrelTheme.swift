@@ -66,6 +66,10 @@ final class SquirrelTheme {
   private(set) var inlinePreedit = false
   private(set) var inlineCandidate = false
   private(set) var showPaging = false
+  
+  //动画相关
+  private(set) var aTestSwitch = false
+  private(set) var isAnimationOn = false
 
   private var fonts = [NSFont]()
   private var labelFonts = [NSFont]()
@@ -221,7 +225,11 @@ final class SquirrelTheme {
     var labelFontSize = config.getDouble("style/label_font_point")
     var commentFontName = config.getString("style/comment_font_face")
     var commentFontSize = config.getDouble("style/comment_font_point")
-
+    
+    //动画
+    aTestSwitch ?= config.getBool("style/a_test_switch")
+    
+    
     let colorSchemeOption = dark ? "style/color_scheme_dark" : "style/color_scheme"
     if let colorScheme = config.getString(colorSchemeOption) {
       if colorScheme != "native" {
@@ -244,9 +252,9 @@ final class SquirrelTheme {
         commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
         highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
 
-        // the following per-color-scheme configurations, if exist, will
-        // override configurations with the same name under the global 'style'
-        // section
+        /// the following per-color-scheme configurations, if exist, will
+        /// override configurations with the same name under the global 'style'
+        /// section
         linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
         vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
         inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")

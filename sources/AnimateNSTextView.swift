@@ -32,8 +32,8 @@ class AnimateNSTextView: NSTextField {
         let animation = CABasicAnimation(keyPath: "position")
         animation.fromValue = self.layer?.presentation()?.position ?? NSValue(point: CGPoint(x: oldFrame.origin.x, y: oldFrame.origin.y))
         animation.toValue = NSValue(point: CGPoint(x: frame.origin.x, y: frame.origin.y))
-        animation.duration = 0.8 // 动画持续时间
-        animation.timingFunction = CAMediaTimingFunction(name: .default) // 动画缓动函数
+        animation.duration = 0.2 // 动画持续时间
+        animation.timingFunction = CAMediaTimingFunction(name: .easeOut) // 动画缓动函数
         
         // 如果当前有动画在运行，从当前动画位置开始新的动画
         if let currentAnimation = self.layer?.animation(forKey: animationKey) {

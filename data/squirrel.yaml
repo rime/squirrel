@@ -63,6 +63,9 @@ style:
   #label_font_point: 12
   #comment_font_face: 'Avenir'
   #comment_font_point: 16
+  
+  #下面是动画有关
+  a_test_switch: "未读到本地配置"
 
 preset_color_schemes:
   native:
