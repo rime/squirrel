@@ -47,8 +47,8 @@ final class SquirrelInstaller {
       // Already registered.
       return
     }
-    TISRegisterInputSource(SquirrelApp.appDir as CFURL)
-    print("Registered input source from \(SquirrelApp.appDir)")
+    TISRegisterInputSource(GlobalContext.Path.appDir as CFURL)
+    print("Registered input source from \(GlobalContext.Path.appDir)")
   }
 
   func enable(modes: [InputMode] = []) {

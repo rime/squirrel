@@ -10,15 +10,6 @@ import InputMethodKit
 
 @main
 struct SquirrelApp {
-  static let userDir = if let pwuid = getpwuid(getuid()) {
-    URL(fileURLWithFileSystemRepresentation: pwuid.pointee.pw_dir, isDirectory: true, relativeTo: nil).appending(components: "Library", "Rime")
-  } else {
-    try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: false).appendingPathComponent("Rime", isDirectory: true)
-  }
-  static let appDir = "/Library/Input Library/Squirrel.app".withCString { dir in
-    URL(fileURLWithFileSystemRepresentation: dir, isDirectory: false, relativeTo: nil)
-  }
-  static let logDir = FileManager.default.temporaryDirectory.appending(component: "rime.squirrel", directoryHint: .isDirectory)
 
   // swiftlint:disable:next cyclomatic_complexity
   static func main() {
@@ -69,7 +60,7 @@ struct SquirrelApp {
           return true
         case "--build":
           // Notification
-          SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
+          showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
           // Build all schemas in current directory
           var builderTraits = RimeTraits.rimeStructInit()
           builderTraits.setCString("rime.squirrel-builder", to: \.app_name)
@@ -108,7 +99,7 @@ struct SquirrelApp {
       // opencc will be configured with relative dictionary paths
       FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
 
-      if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
+      if GlobalContext.shared.problematicLaunchDetected() {
         print("Problematic launch detected!")
         let args = ["Problematic launch detected! Squirrel may be suffering a crash due to improper configuration. Revert previous modifications to see if the problem recurs."]
         let task = Process()
@@ -118,9 +109,9 @@ struct SquirrelApp {
         task.arguments = args
         try? task.run()
       } else {
-        NSApp.squirrelAppDelegate.setupRime()
-        NSApp.squirrelAppDelegate.startRime(fullCheck: false)
-        NSApp.squirrelAppDelegate.loadSettings()
+        GlobalContext.shared.setupRime()
+        GlobalContext.shared.startRime(fullCheck: false)
+        GlobalContext.shared.loadSettings()
         print("Squirrel reporting!")
       }
 
