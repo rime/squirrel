@@ -539,10 +539,8 @@ private extension SquirrelPanel {
     ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
     //      orderFront(nil)
     // voila!
-    //实测下面这行也隐藏不了view.textView
-    //    self.view.textView.isHidden = true
-    print("self.view.textStack.bounds:\(self.view.textStack.bounds)")
-    //看情况更新候选
+    
+    //带动画的候选项
     let oldNum = view.textStack.subviews.count
     let newNum = lines.count
     print("oldNum:\(oldNum),newNum:\(newNum)")
@@ -576,6 +574,10 @@ private extension SquirrelPanel {
     //更新文字
     for (i,view) in view.textStack.arrangedSubviews.enumerated(){
       if let animateNSTextView = view as? AnimateNSTextView {
+        //更新动画参数（这样写其实有点屎山，但是为了防止重新部署后不同步，所以每次update都更新得了）
+        animateNSTextView.animationOn = theme.candidateAnimationOn
+        animateNSTextView.animationTypeStr = theme.candidateAnimationType
+        animateNSTextView.animationDuration = theme.candidateAnimationDuration
         //        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
       }

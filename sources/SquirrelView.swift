@@ -173,8 +173,22 @@ final class SquirrelView: NSView {
     let borderAnimation = CABasicAnimation(keyPath: "path")
     borderAnimation.fromValue = self.oldBackgroundPath // 开始时的路径
     borderAnimation.toValue = backgroundPath // 结束时的路径
-    borderAnimation.duration = 1 // 动画持续 1 秒
+    borderAnimation.duration = theme.frameAnimationDuration // 动画持续 1 秒
     borderAnimation.timingFunction = CAMediaTimingFunction(name: .default) // 动画时间函数
+    let timingFunctionMap: [String: CAMediaTimingFunctionName] = [
+        "default": .default,
+        "linear": .linear,
+        "easeIn": .easeIn,
+        "easeOut": .easeOut,
+        "easeInEaseOut": .easeInEaseOut,
+    ]
+    // 根据theme.frameType的值来设置动画的timingFunction
+    if let timingFunctionName = timingFunctionMap[theme.frameAnimationType] {
+        borderAnimation.timingFunction = CAMediaTimingFunction(name: timingFunctionName)
+    } else {
+        // 如果没有匹配的值，可以设置一个默认值或者处理错误
+        borderAnimation.timingFunction = CAMediaTimingFunction(name: .default)
+    }
     
     // Draw preedit Rect
     var preeditRect = NSRect.zero
@@ -275,7 +289,7 @@ final class SquirrelView: NSView {
     panelLayer.mask = panelLayerMask
     self.layer?.addSublayer(panelLayer)
     
-    if isAnimationOn{//将动画添加到图层
+    if theme.frameAnimationOn{//将动画添加到图层
       panelLayer.add(borderAnimation, forKey: "borderAnimation")
       self.shape.add(borderAnimation, forKey: "borderAnimation")
     }
@@ -299,7 +313,7 @@ final class SquirrelView: NSView {
       borderLayer.strokeColor = color.cgColor
       borderLayer.fillColor = nil
       panelLayer.addSublayer(borderLayer)
-      if isAnimationOn{//将动画添加到图层
+      if theme.frameAnimationOn{//将动画添加到图层
         borderLayer.add(borderAnimation, forKey: "borderAnimation")
       }
       

@@ -66,6 +66,16 @@ style:
   
   #下面是动画有关
   a_test_switch: "未读到本地配置"
+  candidate_animation_on: true
+  candidate_animation_type: "easeOut" #default, easeIn,easeOut, easeInEaseOut, linear
+  candidate_animation_duration: 0.2
+  frame_animation_on: true
+  frame_animation_type: "easeOut" #default, easeIn,easeOut, easeInEaseOut, linear
+  frame_animation_duration: 0.2
+  frame_animation_break_type: "smooth" #smooth, break
+  highlight_animation_on: true
+  highlight_animation_type: "easeOut" #default, easeIn,easeOut, easeInEaseOut, linear
+  highlight_animation_duration: 0.2
 
 preset_color_schemes:
   native:

@@ -69,7 +69,15 @@ final class SquirrelTheme {
   
   //动画相关
   private(set) var aTestSwitch = false
-  private(set) var isAnimationOn = false
+  private(set) var candidateAnimationOn = true
+  private(set) var candidateAnimationType = "easeOut"
+  private(set) var candidateAnimationDuration: CGFloat = 0.2
+  private(set) var frameAnimationOn = true
+  private(set) var frameAnimationType = "easeOut"
+  private(set) var frameAnimationDuration: CGFloat = 0.2
+  private(set) var highlightAnimationOn = true
+  private(set) var highlightAnimationType = "easeOut"
+  private(set) var highlightAnimationDuration: CGFloat = 0.2
 
   private var fonts = [NSFont]()
   private var labelFonts = [NSFont]()
@@ -228,6 +236,15 @@ final class SquirrelTheme {
     
     //动画
     aTestSwitch ?= config.getBool("style/a_test_switch")
+    candidateAnimationOn ?= config.getBool("style/candidate_animation_on")
+    candidateAnimationType ?= config.getString("style/candidate_animation_type")
+    candidateAnimationDuration ?= config.getDouble("style/candidate_animation_duration")
+    frameAnimationOn ?= config.getBool("style/frame_animation_on")
+    frameAnimationType ?= config.getString("style/frame_animation_type")
+    frameAnimationDuration ?= config.getDouble("style/frame_animation_duration")
+    highlightAnimationOn ?= config.getBool("style/highlight_animation_on")
+    highlightAnimationType ?= config.getString("style/highlight_animation_type")
+    highlightAnimationDuration ?= config.getDouble("style/highlight_animation_duration")
     
     
     let colorSchemeOption = dark ? "style/color_scheme_dark" : "style/color_scheme"

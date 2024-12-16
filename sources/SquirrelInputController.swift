@@ -8,7 +8,7 @@
 import InputMethodKit
 
 //保存动画开关状态
-var isAnimationOn: Bool = false
+//var isAnimationOn: Bool = false
 
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
@@ -245,9 +245,9 @@ final class SquirrelInputController: IMKInputController {
     update.target = self
     let lxb = NSMenuItem(title: NSLocalizedString("吕小布（开发版）", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
     lxb.target = self
-    let animation = NSMenuItem(title: "动画", action: #selector(toggoleAnimation), keyEquivalent: "")
-    animation.target = self
-    animation.state = isAnimationOn ? .on : .off
+//    let animation = NSMenuItem(title: "动画", action: #selector(toggoleAnimation), keyEquivalent: "")
+//    animation.target = self
+//    animation.state = isAnimationOn ? .on : .off
     
 
     let menu = NSMenu()
@@ -258,7 +258,7 @@ final class SquirrelInputController: IMKInputController {
     menu.addItem(wiki)
     menu.addItem(update)
     menu.addItem(lxb)
-    menu.addItem(animation)
+//    menu.addItem(animation)
     
     
     return menu
@@ -288,11 +288,11 @@ final class SquirrelInputController: IMKInputController {
     NSApp.squirrelAppDelegate.openWiki()
   }
   
-  @objc func toggoleAnimation() {
-    // 切换菜单项的状态
-    isAnimationOn.toggle()
-    _ = menu()
-  }
+//  @objc func toggoleAnimation() {
+//    // 切换菜单项的状态
+//    isAnimationOn.toggle()
+//    _ = menu()
+//  }
 
   deinit {
     destroySession()
