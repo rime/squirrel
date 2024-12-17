@@ -60,7 +60,7 @@ final class SquirrelPanel: NSPanel {
     view.textView.wantsLayer = true // 确保textView使用layer进行绘制
     view.textView.layer?.borderWidth = 2.0 // 设置边框宽度
     view.textView.layer?.borderColor = NSColor.orange.cgColor // 设置边框颜色为橙色
-    view.textView.isHidden = true
+//    view.textView.isHidden = true
 
     self.contentView = contentView
     //存储lines的容器
@@ -70,6 +70,7 @@ final class SquirrelPanel: NSPanel {
 //    view.textStack.orientation = .horizontal //水平
 //    view.textStack.orientation = .vertical //垂直
 //    view.textStack.distribution = .gravityAreas
+//    view.textStack.distribution = .fillProportionally //根据每个候选项占比分配剩余空间
     view.textStack.spacing = 0 // 设置子视图之间的间隔
     view.textStack.translatesAutoresizingMaskIntoConstraints = false
     NSLayoutConstraint.activate([
@@ -316,6 +317,9 @@ final class SquirrelPanel: NSPanel {
 
       //纵向模式把空格换成换行符
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
+//      print("attrs:{\(attrs)}")
+//      print("lineSeparator:{\(lineSeparator)}")
+      print("lineSeparator.string:{\(lineSeparator.string)}")
       if i > 0 {
         text.append(lineSeparator)
       }
@@ -343,13 +347,14 @@ final class SquirrelPanel: NSPanel {
       candidateRanges.append(NSRange(location: text.length, length: line.length))
       text.append(line)
       lines.append(line)
+      print("line.string:{\(line.string)}")
+      print("text.string:{\(text.string)}")
     }
     
     //手动加空格,加在非首选项的前面
     for i in 0..<lines.count {
-      if i >= 0{
-        lines[i].insert(NSAttributedString(string: "  "), at: 0)
-      }
+      lines[i].insert(NSAttributedString(string: "   "), at: 0)
+      lines[i].append(NSAttributedString(string: " "))
     }
     // text done!
     //以下三行绘制富文本
@@ -551,8 +556,8 @@ private extension SquirrelPanel {
         animateNSTextView.wantsLayer = true
 //        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
         animateNSTextView.isEditable = false //导致1-0-0问题的罪魁祸首
-        //        animateNSTextView.layer?.borderWidth = 3.0
-        //        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
+//        animateNSTextView.layer?.borderWidth = 3.0
+//        animateNSTextView.layer?.borderColor = NSColor.blue.cgColor//开发阶段，用边框定位
         animateNSTextView.isBordered = false //这项不设的话背景还是不透明(仅限NSTextFeild)
         animateNSTextView.backgroundColor = NSColor.clear //设置透明方便看后面的鼠须管原字段(仅限NSTextFeild)
         view.textStack.addArrangedSubview(animateNSTextView)
@@ -579,6 +584,10 @@ private extension SquirrelPanel {
         animateNSTextView.animationInterruptType = theme.candidateAnimationInterruptType
         //        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
+        print("更新前lines[i]:[\(lines[i].string)]")
+        print("更新后的a.a.string：[\(animateNSTextView.attributedStringValue.string)]")
+        print("padding：",self.view.textContainer.lineFragmentPadding)
+//        print("右边距：",animateNSTextView.layer?.layoutManager.rightAnchor)
       }
     }
     //请求前台显示，并且不强求成为活动窗口

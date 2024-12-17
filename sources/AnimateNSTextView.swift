@@ -39,6 +39,9 @@ class AnimateNSTextView: NSTextField {
     didSet {
       // 仅当位置改变时触发动画
       if animationOn{
+        if oldValue == NSRect(x: 0, y: 0, width: 0, height: 0){//跳过第一次动画防止飞入效果
+          return
+        }
 //        // 确保在动画之前更新layer的position
 //        CATransaction.begin()
 //        CATransaction.setDisableActions(true)
