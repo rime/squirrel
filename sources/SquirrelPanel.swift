@@ -65,7 +65,7 @@ final class SquirrelPanel: NSPanel {
     self.contentView = contentView
     //存储lines的容器
     contentView.addSubview(view.textStack)
-    view.textStack.alignment =  .firstBaseline
+//    view.textStack.alignment =  .firstBaseline
 //    view.textStack.alignment =  .leading //竖排的时候用这个向左对齐
 //    view.textStack.orientation = .horizontal //水平
 //    view.textStack.orientation = .vertical //垂直
@@ -347,7 +347,7 @@ final class SquirrelPanel: NSPanel {
     
     //手动加空格,加在非首选项的前面
     for i in 0..<lines.count {
-      if i > 0{
+      if i >= 0{
         lines[i].insert(NSAttributedString(string: "  "), at: 0)
         print(lines[i].string)
       }
@@ -500,6 +500,7 @@ private extension SquirrelPanel {
     if panelRect.minY < self.screenRect.minY {
       panelRect.origin.y = self.screenRect.minY
     }
+//    panelRect.size.width += 50
     /// panelRect为候选视图的坐标、范围，这里赋予本视图类
     /// 实测这里display设为false也能显示候选框
     self.setFrame(panelRect, display: true)
@@ -551,7 +552,7 @@ private extension SquirrelPanel {
         let animateNSTextView = AnimateNSTextView()
         //在这里把animateNSTextView做成跟上面line一样的效果
         animateNSTextView.wantsLayer = true
-        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
+//        animateNSTextView.font = NSFont.systemFont(ofSize: 20)
         animateNSTextView.isEditable = false //导致1-0-0问题的罪魁祸首
         //        animateNSTextView.layer?.borderWidth = 3.0
         //        animateNSTextView.layer?.borderColor = NSColor.black.cgColor//开发阶段，用边框定位
@@ -580,6 +581,7 @@ private extension SquirrelPanel {
         animateNSTextView.animationDuration = theme.candidateAnimationDuration
         //        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
+        print("lines的纯文本：",lines[i].string)
       }
     }
     //请求前台显示，并且不强求成为活动窗口
