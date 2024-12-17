@@ -563,10 +563,10 @@ private extension SquirrelPanel {
     }else if oldNum > newNum{
       //为什么这里删除多余的后候选框会瞬间消失并且编辑中的字母会上屏？比如按bq的q的时候，会上屏q，连b都没有了
       for i in newNum..<oldNum{
-        let viewToRemove = view.textStack.arrangedSubviews[i]
+        let viewToRemove = view.textStack.arrangedSubviews[newNum]
         view.textStack.removeArrangedSubview(viewToRemove)
         viewToRemove.removeFromSuperview()
-        print("超标啦,删除第\(i)个")
+        print("超标啦,删除第\(newNum)个")
       }
     }
     //更新文字
