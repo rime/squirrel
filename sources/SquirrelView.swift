@@ -40,8 +40,6 @@ final class SquirrelView: NSView {
   private var upPath: CGPath?
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
 
-  //候选数量
-  var pageSize:Int = 0
   
   var lightTheme = SquirrelTheme()
   var darkTheme = SquirrelTheme()
@@ -73,13 +71,6 @@ final class SquirrelView: NSView {
     self.wantsLayer = true
     self.layer?.masksToBounds = true
     //    textView.isHidden = true
-    //初始化候选数量
-    //    var ctx = RimeContext_stdbool.rimeStructInit()
-    //    print("ctx.menu.page_size：\(ctx.menu.page_size)")
-    //    pageSize = Int(ctx.menu.page_size)
-    //    pageSize = SquirrelInputController.pageSize
-    print("init pageSize:\(pageSize)")
-    print("**** init() ****")
     
   }
   required init?(coder: NSCoder) {
@@ -154,6 +145,7 @@ final class SquirrelView: NSView {
   //首次显示标记，用于候选动画初始化
   var isFirstShow:Bool = true
   override func draw(_ dirtyRect: NSRect) {
+    print("**** Squirrel.draw() \(Date()) ****")
     //    self.textView.isHidden = false
 //    if true{
 //      print("**** SquirrelView.draw() **** 从第一行return，跳过方法")

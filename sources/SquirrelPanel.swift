@@ -349,7 +349,6 @@ final class SquirrelPanel: NSPanel {
     for i in 0..<lines.count {
       if i >= 0{
         lines[i].insert(NSAttributedString(string: "  "), at: 0)
-        print(lines[i].string)
       }
     }
     // text done!
@@ -433,7 +432,7 @@ private extension SquirrelPanel {
   // SquirrelView.drawRect
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
-    print("**** SquirrelPanel.show() ****")
+//    print("**** SquirrelPanel.show() ****")
     self.currentScreen()
     let theme = self.view.currentTheme
     if !self.view.darkTheme.available {
@@ -524,8 +523,6 @@ private extension SquirrelPanel {
     view.textView.frame.origin.x += theme.pagingOffset
     view.textView.textContainerInset = theme.edgeInset
     
-    print("测试字段：",theme.aTestSwitch)
-    
     if theme.translucency {
       back.frame = contentView!.bounds
       back.frame.size.width += theme.pagingOffset
@@ -544,7 +541,7 @@ private extension SquirrelPanel {
     //带动画的候选项
     let oldNum = view.textStack.subviews.count
     let newNum = lines.count
-    print("oldNum:\(oldNum),newNum:\(newNum)")
+//    print("oldNum:\(oldNum),newNum:\(newNum)")
     
     if oldNum < newNum{
       //初始化差额的候选项视图
@@ -579,9 +576,9 @@ private extension SquirrelPanel {
         animateNSTextView.animationOn = theme.candidateAnimationOn
         animateNSTextView.animationTypeStr = theme.candidateAnimationType
         animateNSTextView.animationDuration = theme.candidateAnimationDuration
+        animateNSTextView.animationInterruptType = theme.candidateAnimationInterruptType
         //        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
-        print("lines的纯文本：",lines[i].string)
       }
     }
     //请求前台显示，并且不强求成为活动窗口

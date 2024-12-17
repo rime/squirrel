@@ -72,6 +72,7 @@ final class SquirrelTheme {
   private(set) var candidateAnimationOn = true
   private(set) var candidateAnimationType = "easeOut"
   private(set) var candidateAnimationDuration: CGFloat = 0.2
+  private(set) var candidateAnimationInterruptType = "smooth"
   private(set) var frameAnimationOn = true
   private(set) var frameAnimationType = "easeOut"
   private(set) var frameAnimationDuration: CGFloat = 0.2
@@ -239,6 +240,7 @@ final class SquirrelTheme {
     candidateAnimationOn ?= config.getBool("style/candidate_animation_on")
     candidateAnimationType ?= config.getString("style/candidate_animation_type")
     candidateAnimationDuration ?= config.getDouble("style/candidate_animation_duration")
+    candidateAnimationInterruptType ?= config.getString("style/candidate_animation_interrupt_type")
     frameAnimationOn ?= config.getBool("style/frame_animation_on")
     frameAnimationType ?= config.getString("style/frame_animation_type")
     frameAnimationDuration ?= config.getDouble("style/frame_animation_duration")
