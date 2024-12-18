@@ -345,7 +345,7 @@ final class SquirrelPanel: NSPanel {
       candidateRanges.append(NSRange(location: text.length, length: line.length))
       text.append(line)
       lines.append(line)
-      print("text.string:{\(text.string)}")
+
 //      //添加空格
 //      var separatedLine = NSMutableAttributedString()
 //      if i == 0 {
@@ -365,18 +365,21 @@ final class SquirrelPanel: NSPanel {
     for i in 0..<lines.count {
       lines[i].insert(NSAttributedString(string: "   "), at: 0)
       lines[i].append(NSAttributedString(string: " "))
-      print("****")
-      print(lines[i])
-      print("****")
+//      print("****")
+//      print(lines[i])
+//      print("****")
     }
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
-//    view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
 
-    show()
+    if linear && !vertical {//拆分候选的动画暂时仅支持横版横排的情况
+      showWithSeparatedCandidates()
+    }else{
+      show()
+    }
     ///流程解读：
     ///按下键发送给librime后，librime会经过一段时间的计算，然后发回，
     ///在收到librime的候选项数组后，SqruirrelPanel用update方法处理成line的集合，拼接成text，然后放进SqruirrelView.textView的textContentStorage里，
@@ -386,6 +389,11 @@ final class SquirrelPanel: NSPanel {
     ///思路1：在View里添加一个属性var lines:[NSMutableAttributedString] = []，用来接收lines，然后在draw方法里把lines处理成一个个GCLayer
     ///难点：如果计算初始化的每个候选项的位置？
     ///思路2：新建一个NSView类，就叫Line或者其他名字，用来表示每个候选项
+    ///
+    ///2024年12月18日更新：
+    ///现在做出来了，思路是重写NSTextField类，让其frame在didSet的时候自动添加动画，然后把每个NSTextField作为候选项放进
+    ///NSStackView里，这样好处是全自动的，只需要手动改变候选项的文本，改变后候选项长度变了，stack会自动排列，排列的时候
+    ///改变了位置会自动添加动画
   }
 
   func updateStatus(long longMessage: String, short shortMessage: String) {
@@ -519,8 +527,7 @@ private extension SquirrelPanel {
       panelRect.origin.y = self.screenRect.minY
     }
 //    panelRect.size.width += 50
-    /// panelRect为候选视图的坐标、范围，这里赋予本视图类
-    /// 实测这里display设为false也能显示候选框
+    /// panelRect为候选视图的坐标、范围，这里赋予panel
     self.setFrame(panelRect, display: true)
     //      print(panelRect)
     //这里开始要配置NSView的属性了
@@ -556,8 +563,34 @@ private extension SquirrelPanel {
     ///  只能把一个App的所有窗口带到前台，不能单独），被带到前台的NSView会自动调自己的draw()方法
     //      orderFront(nil)
     // voila!
+  }
+
+  func show(status message: String) {
+//    print("**** show(status message: String) ****")
+    let theme = view.currentTheme
+    let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
+    text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: text.length))
+    view.textContentStorage.attributedString = text
+    view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
+    view.drawView(candidateRanges: [NSRange(location: 0, length: text.length)], hilightedIndex: -1,
+                  preeditRange: .empty, highlightedPreeditRange: .empty, canPageUp: false, canPageDown: false)
+    show()
+
+    statusTimer?.invalidate()
+    statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { _ in
+      self.hide()
+    }
+  }
+  
+  func showWithSeparatedCandidates(){
+    self.currentScreen()//获取显示器信息
+    let theme = self.view.currentTheme
+    //下面开始计算锚点
+    var panelRect = NSRect.zero
+    panelRect.origin = NSPoint(x: self.position.minX - theme.pagingOffset, y: self.position.minY - SquirrelTheme.offsetHeight - panelRect.height)
+    self.setFrame(panelRect, display: true)
     
-    //带动画的候选项
+    //下面开始添加候选项视图
     let oldNum = view.textStack.subviews.count
     let newNum = lines.count
 //    print("oldNum:\(oldNum),newNum:\(newNum)")
@@ -580,8 +613,7 @@ private extension SquirrelPanel {
     }else if oldNum == newNum{
       
     }else if oldNum > newNum{
-      //为什么这里删除多余的后候选框会瞬间消失并且编辑中的字母会上屏？比如按bq的q的时候，会上屏q，连b都没有了
-      for i in newNum..<oldNum{
+      for _ in newNum..<oldNum{
         let viewToRemove = view.textStack.arrangedSubviews[newNum]
         view.textStack.removeArrangedSubview(viewToRemove)
         viewToRemove.removeFromSuperview()
@@ -596,33 +628,17 @@ private extension SquirrelPanel {
         animateNSTextView.animationTypeStr = theme.candidateAnimationType
         animateNSTextView.animationDuration = theme.candidateAnimationDuration
         animateNSTextView.animationInterruptType = theme.candidateAnimationInterruptType
+        animateNSTextView.page = page 
         //        animateNSTextView.textContentStorage?.attributedString = lines[i] //如果是NSTextView用这个
         animateNSTextView.attributedStringValue = lines[i] //更新视图字符串
-        print("更新前lines[i]:[\(lines[i].string)]")
-        print("更新后的a.a.string：[\(animateNSTextView.attributedStringValue.string)]")
-        print("padding：",self.view.textContainer.lineFragmentPadding)
+//        print("更新前lines[i]:[\(lines[i].string)]")
+//        print("更新后的a.a.string：[\(animateNSTextView.attributedStringValue.string)]")
+//        print("padding：",self.view.textContainer.lineFragmentPadding)
 //        print("右边距：",animateNSTextView.layer?.layoutManager.rightAnchor)
       }
     }
     //请求前台显示，并且不强求成为活动窗口
     orderFrontRegardless()
-  }
-
-  func show(status message: String) {
-//    print("**** show(status message: String) ****")
-    let theme = view.currentTheme
-    let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
-    text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: text.length))
-    view.textContentStorage.attributedString = text
-    view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
-    view.drawView(candidateRanges: [NSRange(location: 0, length: text.length)], hilightedIndex: -1,
-                  preeditRange: .empty, highlightedPreeditRange: .empty, canPageUp: false, canPageDown: false)
-    show()
-
-    statusTimer?.invalidate()
-    statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { _ in
-      self.hide()
-    }
   }
 
   func convert(range: Range<String.Index>, in string: String) -> NSRange {
