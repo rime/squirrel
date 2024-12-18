@@ -79,7 +79,6 @@ final class SquirrelPanel: NSPanel {
       view.textStack.topAnchor.constraint(equalTo: self.contentView!.topAnchor),
       view.textStack.bottomAnchor.constraint(equalTo: self.contentView!.bottomAnchor),
     ])
-//    self.contentView?.addSubview(view.textStack)
   }
 
   var linear: Bool {
@@ -319,7 +318,6 @@ final class SquirrelPanel: NSPanel {
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
 //      print("attrs:{\(attrs)}")
 //      print("lineSeparator:{\(lineSeparator)}")
-      print("lineSeparator.string:{\(lineSeparator.string)}")
       if i > 0 {
         text.append(lineSeparator)
       }
@@ -347,18 +345,33 @@ final class SquirrelPanel: NSPanel {
       candidateRanges.append(NSRange(location: text.length, length: line.length))
       text.append(line)
       lines.append(line)
-      print("line.string:{\(line.string)}")
       print("text.string:{\(text.string)}")
+//      //添加空格
+//      var separatedLine = NSMutableAttributedString()
+//      if i == 0 {
+//        let separator = NSAttributedString(string: "   ")
+//        separatedLine.append(separator)
+//      }
+//      if i > 0 {
+//        let separator = NSAttributedString(string: "  ", attributes: attrs)
+//        separatedLine.append(separator)
+//      }
+//      separatedLine.append(line)
+//      lines.append(separatedLine)
     }
     
     //手动加空格,加在非首选项的前面
     for i in 0..<lines.count {
       lines[i].insert(NSAttributedString(string: "   "), at: 0)
       lines[i].append(NSAttributedString(string: " "))
+      print("****")
+      print(lines[i])
+      print("****")
     }
     // text done!
     //以下三行绘制富文本
     view.textView.textContentStorage?.attributedString = text
+//    view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
 
