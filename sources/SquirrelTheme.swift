@@ -68,7 +68,6 @@ final class SquirrelTheme {
   private(set) var showPaging = false
   
   //动画相关
-  private(set) var aTestSwitch = false
   private(set) var candidateAnimationOn = true
   private(set) var candidateAnimationType = "easeOut"
   private(set) var candidateAnimationDuration: CGFloat = 0.2
@@ -236,7 +235,6 @@ final class SquirrelTheme {
     var commentFontSize = config.getDouble("style/comment_font_point")
     
     //动画
-    aTestSwitch ?= config.getBool("style/a_test_switch")
     candidateAnimationOn ?= config.getBool("style/candidate_animation_on")
     candidateAnimationType ?= config.getString("style/candidate_animation_type")
     candidateAnimationDuration ?= config.getDouble("style/candidate_animation_duration")

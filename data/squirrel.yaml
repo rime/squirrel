@@ -65,7 +65,6 @@ style:
   #comment_font_point: 16
   
   #下面是动画有关
-  a_test_switch: "未读到本地配置"
   candidate_animation_on: true
   candidate_animation_type: "easeOut" #default, easeIn,easeOut, easeInEaseOut, linear
   candidate_animation_duration: 0.2

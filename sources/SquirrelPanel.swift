@@ -57,10 +57,10 @@ final class SquirrelPanel: NSPanel {
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
     //显示原本TextView的边界方便调试
-    view.textView.wantsLayer = true // 确保textView使用layer进行绘制
-    view.textView.layer?.borderWidth = 2.0 // 设置边框宽度
-    view.textView.layer?.borderColor = NSColor.orange.cgColor // 设置边框颜色为橙色
-//    view.textView.isHidden = true
+//    view.textView.wantsLayer = true // 确保textView使用layer进行绘制
+//    view.textView.layer?.borderWidth = 2.0 // 设置边框宽度
+//    view.textView.layer?.borderColor = NSColor.orange.cgColor // 设置边框颜色为橙色
+    view.textView.isHidden = true
 
     self.contentView = contentView
     //存储lines的容器
@@ -360,7 +360,8 @@ final class SquirrelPanel: NSPanel {
 //      lines.append(separatedLine)
     }
     
-    //手动加空格,加在非首选项的前面
+    /// 在每个候选项前面加三个默认格式的空格，后面加一个，竟意外地跟原版视图对齐了，原因未知，尝试过上面attrs格式的空格，但是反而跟原版对不齐，
+    /// 悬而未决，暂时搁置
     for i in 0..<lines.count {
       lines[i].insert(NSAttributedString(string: "   "), at: 0)
       lines[i].append(NSAttributedString(string: " "))
