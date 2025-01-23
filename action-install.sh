@@ -2,7 +2,7 @@
 
 set -e
 
-rime_version=latest
+rime_version=1.13.0
 rime_git_hash=$(curl -s https://api.github.com/repos/rime/librime/git/refs/tags/${rime_version} | jq -r '.object.sha[0:7]')
 sparkle_version=2.6.2
 
