@@ -1,3 +1,32 @@
+<a name="1.0.3"></a>
+## 1.0.3 (2025-01-23)
+
+#### 主要功能更新
+* 新增翻䈎提示，以`style/show_paging: true/false`控制
+* `librime` 更新至1.13.0：
+  * 數字後標點優化，可用`punctuator/digit_separators`調整
+  * `translator`可用多個`tag`
+  * 詳見 librime [更新紀錄](https://github.com/rime/librime/blob/master/CHANGELOG.md)，含 1.12、1.13 兩個主要版本更新
+
+#### 其它更新內容
+* bug 修復
+  * 自emoji面板切換後無法使用的問題
+  * 每次開機重新布署的問題
+
+#### Major Update
+* Added paging indicator, gated by `style/show_paging: true/false`
+* Update `librime` to 1.13.0:
+  * Optimized punctuator after digits, customizable by `punctuator/digit_separators`
+  * Allow `translator` to take multiple `tag`s
+  * See librime [change log](https://github.com/rime/librime/blob/master/CHANGELOG.md) for details, including 1.12 and 1.13 major updates
+
+#### Other Updates
+* Bug fixes:
+  * IME unavailable after using emoji-selection panel
+  * Deploy upon every start-up regardless of changes
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/1.0.2...1.0.3
+
 <a name="1.0.2"></a>
 ## 1.0.2 (2024-06-07)
 
