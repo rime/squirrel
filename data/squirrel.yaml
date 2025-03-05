@@ -347,6 +347,34 @@ preset_color_schemes:
     hilited_comment_text_color: 0x289989    #Lab 60 ,-20, 65
     hilited_text_color: 0xBE706D            #Lab 50 , 15,-45
 
+  retro_green:
+    name: 綠色熒光屏
+    author: 佛振 <chen.sst@gmail.com>
+    text_color: 0x00FF00
+    back_color: 0x000000
+    label_color: 0x00FF00
+    hilited_candidate_text_color: 0x000000
+    hilited_candidate_back_color: 0x00FF00
+    hilited_candidate_label_color: 0x000000
+    corner_radius: 16
+    border_width: 2
+    border_height: 2
+    border_color: 0x00FF00
+
+  retro_orange:
+    name: 琥珀色熒光屏
+    author: 佛振 <chen.sst@gmail.com>
+    text_color: 0x0093FF
+    back_color: 0x000000
+    label_color: 0x0093FF
+    hilited_candidate_text_color: 0x000000
+    hilited_candidate_back_color: 0x0093FF
+    hilited_candidate_label_color: 0x000000
+    corner_radius: 16
+    border_width: 2
+    border_height: 2
+    border_color: 0x0093FF
+
 app_options:
   com.apple.Spotlight:
     ascii_mode: true
