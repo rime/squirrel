@@ -10,6 +10,7 @@ import InputMethodKit
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
+  private static let USER_ASCII_MODE_KEY = "_user_global_ascii_mode"
 
   private weak var client: IMKTextInput?
   private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
@@ -369,6 +370,22 @@ private extension SquirrelInputController {
     clearChord()
   }
 
+  func updateAsciiMode(_ handled: Bool) {
+    let userAsciiMode = UserDefaults.standard.bool(forKey: SquirrelInputController.USER_ASCII_MODE_KEY)
+    let asciiMode = rimeAPI.get_option(session, "ascii_mode")
+    if(asciiMode == userAsciiMode) {
+      // ascii 模式状态一致的情况下不需要同步状态
+      return
+    }
+    if(handled) {
+      // 处理之后，以 rime 状态为主，更新用户配置
+      UserDefaults.standard.set(asciiMode, forKey: SquirrelInputController.USER_ASCII_MODE_KEY)
+    } else {
+      // 处理之前，以用户配置为主，更新 rime 状态
+      rimeAPI.set_option(session, "ascii_mode", userAsciiMode)
+    }
+  }
+
   func processKey(_ rimeKeycode: UInt32, modifiers rimeModifiers: UInt32) -> Bool {
     // TODO add special key event preprocessing here
 
@@ -383,8 +400,10 @@ private extension SquirrelInputController {
       }
     }
 
+    updateAsciiMode(false) // 按键事件处理前的 ascii 模式状态同步
     let handled = rimeAPI.process_key(session, Int32(rimeKeycode), Int32(rimeModifiers))
     // print("[DEBUG] rime_keycode: \(rimeKeycode), rime_modifiers: \(rimeModifiers), handled = \(handled)")
+    updateAsciiMode(true) // 按键事件处理后的 ascii 模式状态同步
 
     // TODO add special key event postprocessing here
 
