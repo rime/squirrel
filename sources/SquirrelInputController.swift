@@ -470,8 +470,12 @@ private extension SquirrelInputController {
           } else if end < preedit.endIndex && caretPos <= start {
             candidatePreview = String(candidatePreview[..<candidatePreview.index(candidatePreview.endIndex, offsetBy: -min(candidatePreview.count, max(0, preedit.distance(from: end, to: preedit.endIndex))))])
           }
+          
+          let selStart = candidatePreview.isEmpty ? 0 : start.utf16Offset(in: candidatePreview)
+          let selLength = candidatePreview.utf16.count - selStart
+          
           show(preedit: candidatePreview,
-               selRange: NSRange(location: start.utf16Offset(in: candidatePreview), length: candidatePreview.utf16.distance(from: start, to: candidatePreview.endIndex)),
+               selRange: NSRange(location: selStart, length: selLength),
                caretPos: candidatePreview.utf16.count)
         }
       } else {
