@@ -15,6 +15,9 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
+# whether to enable global sharing the same `ascii_mode`, default to false
+global_ascii: false
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance

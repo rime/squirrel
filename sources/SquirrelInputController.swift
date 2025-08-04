@@ -10,6 +10,7 @@ import InputMethodKit
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
+  // swiftlint:disable:next identifier_name
   private static let USER_ASCII_MODE_KEY = "_user_global_ascii_mode"
 
   private weak var client: IMKTextInput?
@@ -371,13 +372,19 @@ private extension SquirrelInputController {
   }
 
   func updateAsciiMode(_ handled: Bool) {
+    // swiftlint:disable:next identifier_name
+    let _shared_ascii_mode = NSApp.squirrelAppDelegate.config?.getBool("global_ascii") ?? false
+    if !_shared_ascii_mode {
+      return
+    }
+
     let userAsciiMode = UserDefaults.standard.bool(forKey: SquirrelInputController.USER_ASCII_MODE_KEY)
     let asciiMode = rimeAPI.get_option(session, "ascii_mode")
-    if(asciiMode == userAsciiMode) {
+    if asciiMode == userAsciiMode {
       // ascii 模式状态一致的情况下不需要同步状态
       return
     }
-    if(handled) {
+    if handled {
       // 处理之后，以 rime 状态为主，更新用户配置
       UserDefaults.standard.set(asciiMode, forKey: SquirrelInputController.USER_ASCII_MODE_KEY)
     } else {
