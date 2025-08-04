@@ -371,7 +371,7 @@ private extension SquirrelInputController {
     clearChord()
   }
 
-  func updateAsciiMode(_ handled: Bool) {
+  func updateAsciiMode(_ record: Bool) {
     // swiftlint:disable:next identifier_name
     let _shared_ascii_mode = NSApp.squirrelAppDelegate.config?.getBool("global_ascii") ?? false
     if !_shared_ascii_mode {
@@ -384,7 +384,7 @@ private extension SquirrelInputController {
       // ascii 模式状态一致的情况下不需要同步状态
       return
     }
-    if handled {
+    if record {
       // 处理之后，以 rime 状态为主，更新用户配置
       UserDefaults.standard.set(asciiMode, forKey: SquirrelInputController.USER_ASCII_MODE_KEY)
     } else {
@@ -408,9 +408,10 @@ private extension SquirrelInputController {
     }
 
     updateAsciiMode(false) // 按键事件处理前的 ascii 模式状态同步
+    defer { updateAsciiMode(true) } // 按键事件处理后的 ascii 模式状态同步
+
     let handled = rimeAPI.process_key(session, Int32(rimeKeycode), Int32(rimeModifiers))
     // print("[DEBUG] rime_keycode: \(rimeKeycode), rime_modifiers: \(rimeModifiers), handled = \(handled)")
-    updateAsciiMode(true) // 按键事件处理后的 ascii 模式状态同步
 
     // TODO add special key event postprocessing here
 
