@@ -352,7 +352,10 @@ private extension SquirrelPanel {
   func show() {
     currentScreen()
     let theme = view.currentTheme
-    if !view.darkTheme.available {
+    if theme.native || view.darkTheme.available {
+      self.appearance = NSApp.effectiveAppearance
+    } else {
+      // user configured only a light theme, set window appearance to light.
       self.appearance = NSAppearance(named: .aqua)
     }
 
