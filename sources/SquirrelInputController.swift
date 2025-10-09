@@ -515,10 +515,12 @@ private extension SquirrelInputController {
       let numCandidates = Int(ctx.menu.num_candidates)
       var candidates = [String]()
       var comments = [String]()
-      for i in 0..<numCandidates {
-        let candidate = ctx.menu.candidates[i]
-        candidates.append(candidate.text.map { String(cString: $0) } ?? "")
-        comments.append(candidate.comment.map { String(cString: $0) } ?? "")
+      if !rimeAPI.get_option(session, "_hide_candidate") {
+        for i in 0..<numCandidates {
+          let candidate = ctx.menu.candidates[i]
+          candidates.append(candidate.text.map { String(cString: $0) } ?? "")
+          comments.append(candidate.comment.map { String(cString: $0) } ?? "")
+        }
       }
       var labels = [String]()
       // swiftlint:disable identifier_name
