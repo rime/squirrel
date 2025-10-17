@@ -105,7 +105,7 @@ final class SquirrelView: NSView {
   func contentRect(range: NSTextRange) -> NSRect {
     // swiftlint:disable:next identifier_name
     var x0 = CGFloat.infinity, x1 = -CGFloat.infinity, y0 = CGFloat.infinity, y1 = -CGFloat.infinity
-    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: .rangeNotRequired) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .selection, options: [.rangeNotRequired]) { _, rect, _, _ in
       x0 = min(rect.minX, x0)
       x1 = max(rect.maxX, x1)
       y0 = min(rect.minY, y0)
@@ -422,7 +422,7 @@ private extension SquirrelView {
   func multilineRects(forRange range: NSTextRange, extraSurounding: Double, bounds: NSRect) -> (NSRect, NSRect, NSRect) {
     let edgeInset = currentTheme.edgeInset
     var lineRects = [NSRect]()
-    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: [.rangeNotRequired]) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .selection, options: [.rangeNotRequired]) { _, rect, _, _ in
       var newRect = rect
       newRect.origin.x += edgeInset.width
       newRect.origin.y += edgeInset.height
