@@ -515,22 +515,24 @@ private extension SquirrelInputController {
       let numCandidates = Int(ctx.menu.num_candidates)
       var candidates = [String]()
       var comments = [String]()
-      for i in 0..<numCandidates {
-        let candidate = ctx.menu.candidates[i]
-        candidates.append(candidate.text.map { String(cString: $0) } ?? "")
-        comments.append(candidate.comment.map { String(cString: $0) } ?? "")
-      }
       var labels = [String]()
-      // swiftlint:disable identifier_name
-      if let select_keys = ctx.menu.select_keys {
-        labels = String(cString: select_keys).map { String($0) }
-      } else if let select_labels = ctx.select_labels {
-        let pageSize = Int(ctx.menu.page_size)
-        for i in 0..<pageSize {
-          labels.append(select_labels[i].map { String(cString: $0) } ?? "")
+      if !rimeAPI.get_option(session, "_hide_candidate") {
+        for i in 0..<numCandidates {
+          let candidate = ctx.menu.candidates[i]
+          candidates.append(candidate.text.map { String(cString: $0) } ?? "")
+          comments.append(candidate.comment.map { String(cString: $0) } ?? "")
         }
+        // swiftlint:disable identifier_name
+        if let select_keys = ctx.menu.select_keys {
+          labels = String(cString: select_keys).map { String($0) }
+        } else if let select_labels = ctx.select_labels {
+          let pageSize = Int(ctx.menu.page_size)
+          for i in 0..<pageSize {
+            labels.append(select_labels[i].map { String(cString: $0) } ?? "")
+          }
+        }
+        // swiftlint:enable identifier_name
       }
-      // swiftlint:enable identifier_name
       let page = Int(ctx.menu.page_no)
       let lastPage = ctx.menu.is_last_page
 
