@@ -2,8 +2,8 @@
 
 set -e
 
-rime_version=1.13.1
-rime_git_hash="1c23358"
+rime_version=1.16.0
+rime_git_hash="a251145"
 sparkle_version=2.6.2
 
 rime_archive="rime-${rime_git_hash}-macOS-universal.tar.bz2"
