@@ -22,7 +22,6 @@ OPENCC_DATA = data/opencc/TSCharacters.ocd2 \
 	data/opencc/TSPhrases.ocd2 \
 	data/opencc/t2s.json
 SPARKLE_FRAMEWORK = Frameworks/Sparkle.framework
-SPARKLE_SIGN = package/sign_update
 PACKAGE = package/Squirrel.pkg
 DEPS_CHECK = $(RIME_LIBRARY) $(PLUM_DATA) $(OPENCC_DATA) $(SPARKLE_FRAMEWORK)
 
@@ -120,7 +119,11 @@ sparkle:
 	xcodebuild -project Sparkle/Sparkle.xcodeproj -configuration Release $(BUILD_SETTINGS) build
 	$(MAKE) copy-sparkle-framework
 
-$(SPARKLE_SIGN):
+package/generate_keys:
+	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme generate_keys -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
+	cp Sparkle/build/Build/Products/Release/generate_keys package/
+
+package/sign_update:
 	xcodebuild -project Sparkle/Sparkle.xcodeproj -scheme sign_update -configuration Release -derivedDataPath Sparkle/build $(BUILD_SETTINGS) build
 	cp Sparkle/build/Build/Products/Release/sign_update package/
 
@@ -149,7 +152,7 @@ endif
 
 package: release $(PACKAGE)
 
-archive: package $(SPARKLE_SIGN)
+archive: package package/sign_update
 	bash package/make_archive
 
 DSTROOT = /Library/Input Methods

@@ -36,7 +36,7 @@ else
     create_archive
 fi
 
-if signature=$(sign_update "${target_pkg}"); then
+if signature=$(./sign_update "${target_pkg}"); then
     echo "sign update is successful."
 else
     echo "sign_update not working, skiping signing update."
