@@ -1,0 +1,40 @@
+# cliff.toml
+[changelog]
+body = """
+<a name="{{ version }}"></a>
+## {{ version }} ({{ now() | date(format="%Y-%m-%d") }})
+
+{% for group, commits in commits | group_by(attribute="group") -%}
+### {{ group }}
+{% for commit in commits -%}
+- {{ commit.message }} ({{ commit.id | truncate(length=7, end="") }})
+{% endfor %}
+{% endfor -%}
+**Full Changelog**: https://github.com/rime/squirrel/compare/{{ previous.version }}...{{ version }}
+
+"""
+trim = false
+
+[git]
+# 解析 commit 範圍
+conventional_commits = true
+filter_unconventional = false
+split_commits = false
+filter_commits = false
+tag_pattern = "[0-9]+[.].*"
+
+# 提交分類映射
+# 根據 commit message 開頭關鍵詞自動分組
+commit_parsers = [
+  { message = "^feat", group = "主要功能更新 | Major Updates" },
+  { message = "^fix", group = "Bug 修復 | Bug Fixes" },
+  { message = "^doc", group = "文檔 | Documentation" },
+  { message = "^perf", group = "性能優化 | Performance" },
+  { message = "^refactor", group = "重構 | Refactor" },
+  { message = "^style", group = "樣式 | Style" },
+  { message = "^test", group = "測試 | Testing" },
+  { message = "^build|^ci", group = "構建 | Build" },
+  { message = "^chore", group = "雜項 | Miscellaneous" },
+  { body = ".*security", group = "安全 | Security" },
+]
+
