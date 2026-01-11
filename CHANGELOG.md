@@ -1,3 +1,26 @@
+<a name="1.1.0"></a>
+## 1.1.0 (2026-01-11)
+
+### Bug 修復 | Bug Fixes
+- boundary check to prevent crash (#1044) (1a70873)
+- no index offset to an empty string (#1045) (ab1db6c)
+- 開啓 `inline_candidate` 選項後移動光標導致崩潰 (#1047) (6137702)
+- 橫向候選詞列表末尾元素高亮區域渲染錯誤 (#1071)
+
+### 主要功能更新 | Major Updates
+- 「系統原生」風格 `native` 跟隨系統主題切換明暗色調；提高文字對比度 (2fb92e8)
+- `librime` 更新至 1.16.0：
+  - 優化音節切分算法，調整簡拼、歧義切分路徑的權重
+  - 修復糾錯候選排序權重以及與造句的策略衝突
+  - 拼寫運算增設容錯規則 `derive/X/Y/correction`
+  - 輸入方案自動引用組件默認配置 `default:/{navigator,selector}`
+
+### 構建 | Build
+- remove paths filter from release-ci for nightly builds (5232c45)
+- fix sign_update call (d9a9155)
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/1.0.3...1.1.0
+
 <a name="1.0.3"></a>
 ## 1.0.3 (2025-01-23)
 
