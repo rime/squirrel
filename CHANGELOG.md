@@ -1,3 +1,11 @@
+<a name="1.1.1"></a>
+## 1.1.1 (2026-01-11)
+
+### 構建 | Build
+- build universal binary (2154997)
+
+**Full Changelog**: https://github.com/rime/squirrel/compare/1.1.0...1.1.1
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2026-01-11)
 
