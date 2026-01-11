@@ -26,6 +26,8 @@ jobs:
         run: swiftlint
 
       - name: Build Squirrel
+        env:
+          ARCHS: 'arm64 x86_64'
         run: ./action-build.sh archive
 
       - name: Install periphery
