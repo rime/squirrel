@@ -5,12 +5,6 @@ set -e
 cd "$(dirname $0)/.."
 source package/common.sh
 
-bump="$1"
-if [[ -n "$bump" && ! "$bump" =~ 'major|minor|patch' ]]; then
-    echo "Usage: $(basename $0) major|minor|patch"
-    exit 1
-fi
-
 app_version="$(get_app_version)"
 echo "current app version: ${app_version}"
 
