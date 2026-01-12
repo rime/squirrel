@@ -8,7 +8,7 @@ jobs:
     runs-on: macos-latest
     steps:
       - name: Checkout last commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: true
 
@@ -32,7 +32,7 @@ jobs:
         run: periphery scan --relative-results --skip-build --index-store-path build/Index.noindex/DataStore
 
       - name: Upload Squirrel artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: Squirrel-${{ env.git_ref_name }}.zip
           path: package/*.pkg
