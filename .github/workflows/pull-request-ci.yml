@@ -2,7 +2,7 @@ name: pull request ci
 on: [pull_request]
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-latest
     steps:
       - name: Checkout last commit
         uses: actions/checkout@v4
