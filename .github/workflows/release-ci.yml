@@ -9,12 +9,12 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    runs-on: macos-latest
     env:
       SQUIRREL_BUNDLED_RECIPES: 'lotem/rime-octagram-data lotem/rime-octagram-data@hant'
     steps:
       - name: Checkout last commit
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           submodules: true
