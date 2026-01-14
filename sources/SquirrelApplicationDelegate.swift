@@ -225,6 +225,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     let notifCenter = DistributedNotificationCenter.default()
     notifCenter.addObserver(forName: .init("SquirrelReloadNotification"), object: nil, queue: nil, using: rimeNeedsReload)
     notifCenter.addObserver(forName: .init("SquirrelSyncNotification"), object: nil, queue: nil, using: rimeNeedsSync)
+    notifCenter.addObserver(forName: .init("SquirrelToggleASCIIModeNotification"), object: nil, queue: nil, using: rimeToggleASCIIMode)
+    notifCenter.addObserver(forName: .init("SquirrelGetASCIIModeNotification"), object: nil, queue: nil, using: rimeGetASCIIMode)
   }
 
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -305,6 +307,21 @@ private extension SquirrelApplicationDelegate {
   func rimeNeedsSync(_: Notification) {
     print("Sync rime on demand.")
     self.syncUserData()
+  }
+
+  func rimeToggleASCIIMode(_ notification: Notification) {
+    guard let mode = notification.object as? String else { return }
+    let enableASCII = mode == "ascii"
+    
+    if enableASCII {
+      NotificationCenter.default.post(name: .init("SquirrelSetASCIIModeNotification"), object: true)
+    } else {
+      NotificationCenter.default.post(name: .init("SquirrelSetASCIIModeNotification"), object: false)
+    }
+  }
+
+  func rimeGetASCIIMode(_: Notification) {
+    NotificationCenter.default.post(name: .init("SquirrelReportASCIIModeNotification"), object: nil)
   }
 
   func createDirIfNotExist(path: URL) {

@@ -189,6 +189,26 @@ final class SquirrelInputController: IMKInputController {
     // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
     super.init(server: server, delegate: delegate, client: client)
     createSession()
+    
+    // Listen for ASCII mode toggle notifications
+    NotificationCenter.default.addObserver(
+      forName: .init("SquirrelSetASCIIModeNotification"),
+      object: nil,
+      queue: nil
+    ) { [weak self] notification in
+      self?.handleASCIIModeToggle(notification)
+    }
+    
+    // Listen for ASCII mode status requests
+    NotificationCenter.default.addObserver(
+      forName: .init("SquirrelReportASCIIModeNotification"),
+      object: nil,
+      queue: nil
+    ) { [weak self] notification in
+      self?.reportASCIIMode(notification)
+    }
+    
+
   }
 
   override func deactivateServer(_ sender: Any!) {
@@ -589,4 +609,31 @@ private extension SquirrelInputController {
                    highlighted: highlighted, page: page, lastPage: lastPage, update: true)
     }
   }
+
+  private func handleASCIIModeToggle(_ notification: Notification) {
+    guard let enableASCII = notification.object as? Bool else { return }
+    guard session != 0 && rimeAPI.find_session(session) else { return }
+    
+    rimeAPI.set_option(session, "ascii_mode", enableASCII)
+    
+    // Force update the UI to reflect the mode change
+    rimeUpdate()
+  }
+  
+  private func reportASCIIMode(_: Notification) {
+    // Only active input controller should respond
+    guard let client = client else { return }
+    guard session != 0 && rimeAPI.find_session(session) else { return }
+    
+    let isASCIIMode = rimeAPI.get_option(session, "ascii_mode")
+    let status = isASCIIMode ? "ascii" : "nascii"
+    
+    // Directly respond with the status
+    DistributedNotificationCenter.default().postNotificationName(
+      .init("SquirrelASCIIModeResponse"), 
+      object: status
+    )
+  }
+
+
 }
