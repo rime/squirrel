@@ -358,6 +358,11 @@ private extension SquirrelInputController {
         rimeAPI.set_option(session, key, value)
       }
     }
+    if let reportBundleID = NSApp.squirrelAppDelegate.config?.getBool("unsafe/report_bundleid"), reportBundleID {
+      currentApp.withCString { name in
+        rimeAPI.set_property(session, "client_app", name)
+      }
+    }
   }
 
   func destroySession() {
