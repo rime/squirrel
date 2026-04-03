@@ -67,30 +67,15 @@ final class SquirrelInputController: IMKInputController {
       // keyCode defaulting to 0 (kVK_ANSI_A) instead of the actual modifier keycode,
       // causing a ghost 'a' keypress. Validate and infer the correct keycode from
       // the changed modifier flags when necessary. (#825)
-      let modifierKeycodes: Set<UInt16> = [
-        UInt16(kVK_Shift), UInt16(kVK_RightShift),
-        UInt16(kVK_CapsLock),
-        UInt16(kVK_Control), UInt16(kVK_RightControl),
-        UInt16(kVK_Option), UInt16(kVK_RightOption),
-        UInt16(kVK_Command), UInt16(kVK_RightCommand),
-        UInt16(kVK_Function)
-      ]
       var keyCode = event.keyCode
-      if !modifierKeycodes.contains(keyCode) {
-        if changes.contains(.capsLock) {
-          keyCode = UInt16(kVK_CapsLock)
-        } else if changes.contains(.shift) {
-          keyCode = UInt16(kVK_Shift)
-        } else if changes.contains(.control) {
-          keyCode = UInt16(kVK_Control)
-        } else if changes.contains(.option) {
-          keyCode = UInt16(kVK_Option)
-        } else if changes.contains(.command) {
-          keyCode = UInt16(kVK_Command)
-        } else {
+      if !SquirrelKeycode.modifierKeycodes.contains(keyCode) {
+        guard let inferred = SquirrelKeycode.inferModifierKeycode(from: changes) else {
+          lastModifiers = modifiers
+          rimeUpdate()
           handled = true
           break
         }
+        keyCode = inferred
       }
       let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: nil, shift: false, caps: false)
 
