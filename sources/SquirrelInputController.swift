@@ -6,6 +6,7 @@
 //
 
 import InputMethodKit
+import Carbon
 
 final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
@@ -117,18 +118,18 @@ final class SquirrelInputController: IMKInputController {
          (capitalModifiers && !code.isLetter) || (!capitalModifiers && !code.isASCII) {
         keyChars = event.characters
       }
-      // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
 
       // translate osx keyevents to rime keyevents
-      if let char = keyChars?.first {
-        let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
-                                                           shift: modifiers.contains(.shift),
-                                                           caps: modifiers.contains(.capsLock))
-        if rimeKeycode != 0 {
-          let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers)
-          rimeUpdate()
-        }
+      // Some applications (e.g. SecureCRT) may have Cocoa/Carbon keyboard mapping issues
+      // where event.characters returns empty. Fall back to using keyCode directly.
+      let char = keyChars?.first
+      let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
+                                                         shift: modifiers.contains(.shift),
+                                                         caps: modifiers.contains(.capsLock))
+      if rimeKeycode != 0 && rimeKeycode != UInt32(XK_VoidSymbol) {
+        let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
+        handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+        rimeUpdate()
       }
 
     default:
@@ -176,13 +177,11 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func recognizedEvents(_ sender: Any!) -> Int {
-    // print("[DEBUG] recognizedEvents:")
     return Int(NSEvent.EventTypeMask.Element(arrayLiteral: .keyDown, .flagsChanged).rawValue)
   }
 
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
-    // print("[DEBUG] activateServer:")
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
       keyboardLayout = ""
@@ -195,6 +194,35 @@ final class SquirrelInputController: IMKInputController {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
     preedit = ""
+
+    // Start Qt compatibility handler for apps that don't work with InputMethodKit
+    if let bundleId = client?.bundleIdentifier(), QtCompatHandler.isQtApp(bundleId) {
+      let handler = QtCompatHandler.shared
+      handler.rimeAPI = rimeAPI
+      handler.sessionId = session
+      handler.getTextClient = { [weak self] in self?.client }
+      handler.shouldHandle = { [weak self] in
+        guard let self = self, self.session != 0 else { return false }
+        return true
+      }
+      handler.isAsciiMode = { [weak self] in
+        guard let self = self else { return false }
+        return self.rimeAPI.get_option(self.session, "ascii_mode")
+      }
+      handler.commitText = { [weak self] text in
+        self?.commit(string: text)
+      }
+      handler.showPreedit = { [weak self] preedit, selRange, caretPos in
+        self?.show(preedit: preedit, selRange: selRange, caretPos: caretPos)
+      }
+      handler.hidePanel = { [weak self] in
+        self?.hidePalettes()
+      }
+      handler.updateCandidates = { [weak self] in
+        self?.rimeUpdate()
+      }
+      handler.start()
+    }
   }
 
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {
@@ -206,6 +234,7 @@ final class SquirrelInputController: IMKInputController {
 
   override func deactivateServer(_ sender: Any!) {
     // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
+    QtCompatHandler.shared.stop()
     hidePalettes()
     commitComposition(sender)
     client = nil
@@ -601,5 +630,410 @@ private extension SquirrelInputController {
       panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
                    highlighted: highlighted, page: page, lastPage: lastPage, update: true)
     }
+  }
+}
+
+// MARK: - Qt Compatibility Handler
+
+/// Handles keyboard events for Qt applications that don't work properly with InputMethodKit
+final class QtCompatHandler {
+  /// Known Qt-based application bundle identifiers that have IMK compatibility issues
+  static let qtAppBundleIds: Set<String> = [
+    "com.vandyke.SecureCRT",
+    "com.vandyke.SecureFX",
+    // Add other Qt apps that have similar issues
+  ]
+
+  private var eventTap: CFMachPort?
+  private var runLoopSource: CFRunLoopSource?
+  private var isActive = false
+
+  /// RIME API reference
+  var rimeAPI: RimeApi_stdbool?
+  /// RIME session ID
+  var sessionId: RimeSessionId = 0
+  /// Callback to commit text
+  var commitText: ((String) -> Void)?
+  /// Callback to show/update preedit
+  var showPreedit: ((String, NSRange, Int) -> Void)?
+  /// Callback to hide panel
+  var hidePanel: (() -> Void)?
+  /// Callback to check if should handle
+  var shouldHandle: (() -> Bool)?
+  /// Callback to check if in ascii mode
+  var isAsciiMode: (() -> Bool)?
+  /// Callback to get text client for ascii mode input
+  var getTextClient: (() -> IMKTextInput?)?
+  /// Callback when candidate selected
+  var updateCandidates: (() -> Void)?
+
+  /// Last modifier state
+  private var lastModifiers: NSEvent.ModifierFlags = []
+
+  /// Singleton instance
+  static let shared = QtCompatHandler()
+
+  private init() {}
+
+  /// Check if the given app is a known Qt app with IMK issues
+  static func isQtApp(_ bundleId: String?) -> Bool {
+    guard let bundleId = bundleId else { return false }
+    return qtAppBundleIds.contains(bundleId)
+  }
+
+  /// Start monitoring keyboard events for Qt apps
+  func start() {
+    guard !isActive else { return }
+
+    // Check if we have accessibility permissions
+    let options = [kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: false] as CFDictionary
+    let trusted = AXIsProcessTrustedWithOptions(options)
+
+    guard trusted else {
+      print("QtCompatHandler: Accessibility permission required. Please grant access in System Settings > Privacy & Security > Accessibility")
+      // Request permission with dialog
+      _ = AXIsProcessTrustedWithOptions([kAXTrustedCheckOptionPrompt.takeUnretainedValue() as String: true] as CFDictionary)
+      return
+    }
+
+    // Create event tap for keyDown and flagsChanged events
+    let eventMask = (1 << CGEventType.keyDown.rawValue) |
+                    (1 << CGEventType.keyUp.rawValue) |
+                    (1 << CGEventType.flagsChanged.rawValue)
+
+    guard let tap = CGEvent.tapCreate(
+      tap: .cgSessionEventTap,
+      place: .headInsertEventTap,
+      options: .defaultTap,
+      eventsOfInterest: CGEventMask(eventMask),
+      callback: { (proxy, type, event, refcon) -> Unmanaged<CGEvent>? in
+        let handler = Unmanaged<QtCompatHandler>.fromOpaque(refcon!).takeUnretainedValue()
+        return handler.handleEvent(type: type, event: event)
+      },
+      userInfo: Unmanaged.passUnretained(self).toOpaque()
+    ) else {
+      print("QtCompatHandler: Failed to create event tap")
+      return
+    }
+
+    eventTap = tap
+    runLoopSource = CFMachPortCreateRunLoopSource(kCFAllocatorDefault, tap, 0)
+    CFRunLoopAddSource(CFRunLoopGetCurrent(), runLoopSource, .commonModes)
+    CGEvent.tapEnable(tap: tap, enable: true)
+
+    isActive = true
+    print("QtCompatHandler: Started monitoring keyboard events")
+  }
+
+  /// Stop monitoring
+  func stop() {
+    guard isActive, let tap = eventTap else { return }
+
+    CGEvent.tapEnable(tap: tap, enable: false)
+    if let source = runLoopSource {
+      CFRunLoopRemoveSource(CFRunLoopGetCurrent(), source, .commonModes)
+    }
+
+    eventTap = nil
+    runLoopSource = nil
+    isActive = false
+    lastModifiers = []
+    print("QtCompatHandler: Stopped monitoring")
+  }
+
+  /// Handle a CGEvent
+  private func handleEvent(type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+    // Only process for Qt apps
+    guard let frontmostApp = NSWorkspace.shared.frontmostApplication?.bundleIdentifier,
+          Self.isQtApp(frontmostApp) else {
+      return Unmanaged.passRetained(event)
+    }
+
+    // Check if we should handle this event
+    guard shouldHandle?() != false,
+          sessionId != 0 else {
+      return Unmanaged.passRetained(event)
+    }
+
+    let keyCode = UInt16(event.getIntegerValueField(.keyboardEventKeycode))
+    let flags = NSEvent.ModifierFlags(rawValue: UInt(event.flags.rawValue))
+
+    switch type {
+    case .keyDown:
+      // Ignore command combinations - pass through to app
+      if flags.contains(.command) {
+        return Unmanaged.passRetained(event)
+      }
+
+      // Check if in ascii mode for special handling
+      let asciiMode = isAsciiMode?() ?? false
+
+      // In ascii mode, handle Backspace and ForwardDelete specially - pass through to app
+      if asciiMode && (keyCode == UInt16(kVK_Delete) || keyCode == UInt16(kVK_ForwardDelete)) {
+        return Unmanaged.passRetained(event)
+      }
+
+      if processKeyDown(keyCode: keyCode, modifiers: flags) {
+        // Event was handled, don't pass to app
+        return nil
+      }
+
+    case .flagsChanged:
+      if let api = rimeAPI {
+        processFlagsChanged(keyCode: keyCode, modifiers: flags, api: api)
+      }
+
+    default:
+      break
+    }
+
+    return Unmanaged.passRetained(event)
+  }
+
+  /// Process a key down event
+  private func processKeyDown(keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> Bool {
+    // Check if in ascii mode
+    let asciiMode = isAsciiMode?() ?? false
+
+    if asciiMode {
+      // In ascii mode, directly insert the character
+      return processAsciiKeyDown(keyCode: keyCode, modifiers: modifiers)
+    }
+
+    // In Chinese mode, use RIME
+    guard let api = rimeAPI else { return false }
+
+    let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(
+      keycode: keyCode,
+      keychar: nil,
+      shift: modifiers.contains(.shift),
+      caps: modifiers.contains(.capsLock)
+    )
+
+    guard rimeKeycode != 0 && rimeKeycode != UInt32(XK_VoidSymbol) else {
+      return false
+    }
+
+    let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
+    let handled = api.process_key(sessionId, Int32(rimeKeycode), Int32(rimeModifiers))
+
+    if handled {
+      updateUI(api: api)
+      return true
+    }
+
+    return false
+  }
+
+  /// Process key in ascii mode - directly insert character
+  private func processAsciiKeyDown(keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> Bool {
+    // Get character from keycode
+    guard let client = getTextClient?() else { return false }
+
+    // Map keycode to character
+    let char = keycodeToCharacter(keyCode: keyCode, modifiers: modifiers)
+    guard let charStr = char else { return false }
+
+    // Check for special keys
+    switch keyCode {
+    case UInt16(kVK_Return), UInt16(kVK_ANSI_KeypadEnter):
+      client.insertText("\n", replacementRange: .empty)
+      return true
+    case UInt16(kVK_Tab):
+      client.insertText("\t", replacementRange: .empty)
+      return true
+    case UInt16(kVK_Space):
+      client.insertText(" ", replacementRange: .empty)
+      return true
+    case UInt16(kVK_Delete):
+      // Backspace - pass through
+      return false
+    default:
+      // Regular character
+      if !charStr.isEmpty {
+        client.insertText(charStr, replacementRange: .empty)
+        return true
+      }
+      return false
+    }
+  }
+
+  /// Map keycode to character string
+  private func keycodeToCharacter(keyCode: UInt16, modifiers: NSEvent.ModifierFlags) -> String? {
+    let shift = modifiers.contains(.shift)
+    let caps = modifiers.contains(.capsLock)
+    let control = modifiers.contains(.control)
+    let option = modifiers.contains(.option)
+
+    // Control combinations
+    if control && !option {
+      switch keyCode {
+      case UInt16(kVK_ANSI_A): return "\u{01}"
+      case UInt16(kVK_ANSI_B): return "\u{02}"
+      case UInt16(kVK_ANSI_C): return "\u{03}"
+      case UInt16(kVK_ANSI_D): return "\u{04}"
+      case UInt16(kVK_ANSI_E): return "\u{05}"
+      case UInt16(kVK_ANSI_F): return "\u{06}"
+      case UInt16(kVK_ANSI_G): return "\u{07}"
+      case UInt16(kVK_ANSI_H): return "\u{08}"
+      case UInt16(kVK_ANSI_I): return "\u{09}"
+      case UInt16(kVK_ANSI_J): return "\u{0A}"
+      case UInt16(kVK_ANSI_K): return "\u{0B}"
+      case UInt16(kVK_ANSI_L): return "\u{0C}"
+      case UInt16(kVK_ANSI_M): return "\u{0D}"
+      case UInt16(kVK_ANSI_N): return "\u{0E}"
+      case UInt16(kVK_ANSI_O): return "\u{0F}"
+      case UInt16(kVK_ANSI_P): return "\u{10}"
+      case UInt16(kVK_ANSI_Q): return "\u{11}"
+      case UInt16(kVK_ANSI_R): return "\u{12}"
+      case UInt16(kVK_ANSI_S): return "\u{13}"
+      case UInt16(kVK_ANSI_T): return "\u{14}"
+      case UInt16(kVK_ANSI_U): return "\u{15}"
+      case UInt16(kVK_ANSI_V): return "\u{16}"
+      case UInt16(kVK_ANSI_W): return "\u{17}"
+      case UInt16(kVK_ANSI_X): return "\u{18}"
+      case UInt16(kVK_ANSI_Y): return "\u{19}"
+      case UInt16(kVK_ANSI_Z): return "\u{1A}"
+      case UInt16(kVK_ANSI_LeftBracket): return "\u{1B}"
+      case UInt16(kVK_ANSI_Backslash): return "\u{1C}"
+      case UInt16(kVK_ANSI_RightBracket): return "\u{1D}"
+      case UInt16(kVK_ANSI_6): return "\u{1E}" // ^^
+      case UInt16(kVK_ANSI_Minus): return "\u{1F}"
+      default: return nil
+      }
+    }
+
+    // Regular characters
+    let upperCase = shift != caps // XOR: shift OR caps toggles case
+
+    switch keyCode {
+    // Numbers
+    case UInt16(kVK_ANSI_0): return shift ? ")" : "0"
+    case UInt16(kVK_ANSI_1): return shift ? "!" : "1"
+    case UInt16(kVK_ANSI_2): return shift ? "@" : "2"
+    case UInt16(kVK_ANSI_3): return shift ? "#" : "3"
+    case UInt16(kVK_ANSI_4): return shift ? "$" : "4"
+    case UInt16(kVK_ANSI_5): return shift ? "%" : "5"
+    case UInt16(kVK_ANSI_6): return shift ? "^" : "6"
+    case UInt16(kVK_ANSI_7): return shift ? "&" : "7"
+    case UInt16(kVK_ANSI_8): return shift ? "*" : "8"
+    case UInt16(kVK_ANSI_9): return shift ? "(" : "9"
+
+    // Letters
+    case UInt16(kVK_ANSI_A): return upperCase ? "A" : "a"
+    case UInt16(kVK_ANSI_B): return upperCase ? "B" : "b"
+    case UInt16(kVK_ANSI_C): return upperCase ? "C" : "c"
+    case UInt16(kVK_ANSI_D): return upperCase ? "D" : "d"
+    case UInt16(kVK_ANSI_E): return upperCase ? "E" : "e"
+    case UInt16(kVK_ANSI_F): return upperCase ? "F" : "f"
+    case UInt16(kVK_ANSI_G): return upperCase ? "G" : "g"
+    case UInt16(kVK_ANSI_H): return upperCase ? "H" : "h"
+    case UInt16(kVK_ANSI_I): return upperCase ? "I" : "i"
+    case UInt16(kVK_ANSI_J): return upperCase ? "J" : "j"
+    case UInt16(kVK_ANSI_K): return upperCase ? "K" : "k"
+    case UInt16(kVK_ANSI_L): return upperCase ? "L" : "l"
+    case UInt16(kVK_ANSI_M): return upperCase ? "M" : "m"
+    case UInt16(kVK_ANSI_N): return upperCase ? "N" : "n"
+    case UInt16(kVK_ANSI_O): return upperCase ? "O" : "o"
+    case UInt16(kVK_ANSI_P): return upperCase ? "P" : "p"
+    case UInt16(kVK_ANSI_Q): return upperCase ? "Q" : "q"
+    case UInt16(kVK_ANSI_R): return upperCase ? "R" : "r"
+    case UInt16(kVK_ANSI_S): return upperCase ? "S" : "s"
+    case UInt16(kVK_ANSI_T): return upperCase ? "T" : "t"
+    case UInt16(kVK_ANSI_U): return upperCase ? "U" : "u"
+    case UInt16(kVK_ANSI_V): return upperCase ? "V" : "v"
+    case UInt16(kVK_ANSI_W): return upperCase ? "W" : "w"
+    case UInt16(kVK_ANSI_X): return upperCase ? "X" : "x"
+    case UInt16(kVK_ANSI_Y): return upperCase ? "Y" : "y"
+    case UInt16(kVK_ANSI_Z): return upperCase ? "Z" : "z"
+
+    // Punctuation
+    case UInt16(kVK_ANSI_Minus): return shift ? "_" : "-"
+    case UInt16(kVK_ANSI_Equal): return shift ? "+" : "="
+    case UInt16(kVK_ANSI_LeftBracket): return shift ? "{" : "["
+    case UInt16(kVK_ANSI_RightBracket): return shift ? "}" : "]"
+    case UInt16(kVK_ANSI_Quote): return shift ? "\"" : "'"
+    case UInt16(kVK_ANSI_Semicolon): return shift ? ":" : ";"
+    case UInt16(kVK_ANSI_Backslash): return shift ? "|" : "\\"
+    case UInt16(kVK_ANSI_Comma): return shift ? "<" : ","
+    case UInt16(kVK_ANSI_Period): return shift ? ">" : "."
+    case UInt16(kVK_ANSI_Slash): return shift ? "?" : "/"
+    case UInt16(kVK_ANSI_Grave): return shift ? "~" : "`"
+
+    default: return nil
+    }
+  }
+
+  /// Process flags changed (modifier keys)
+  private func processFlagsChanged(keyCode: UInt16, modifiers: NSEvent.ModifierFlags, api: RimeApi_stdbool) {
+    let changes = lastModifiers.symmetricDifference(modifiers)
+    guard !changes.isEmpty else { return }
+
+    let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
+
+    var keyCodeToUse = keyCode
+    if !SquirrelKeycode.modifierKeycodes.contains(keyCode) {
+      guard let inferred = SquirrelKeycode.inferModifierKeycode(from: changes) else {
+        lastModifiers = modifiers
+        return
+      }
+      keyCodeToUse = inferred
+    }
+
+    let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCodeToUse, keychar: nil, shift: false, caps: false)
+
+    if changes.contains(.capsLock) {
+      let modsWithLockToggle = rimeModifiers ^ kLockMask.rawValue
+      _ = api.process_key(sessionId, Int32(rimeKeycode), Int32(modsWithLockToggle))
+    }
+
+    for flag in [NSEvent.ModifierFlags.shift, .control, .option, .command] where changes.contains(flag) {
+      let mod = modifiers.contains(flag) ? rimeModifiers : rimeModifiers | kReleaseMask.rawValue
+      _ = api.process_key(sessionId, Int32(rimeKeycode), Int32(mod))
+    }
+
+    lastModifiers = modifiers
+    updateUI(api: api)
+  }
+
+  /// Update UI after key processing
+  private func updateUI(api: RimeApi_stdbool) {
+    var commitTextStruct = RimeCommit.rimeStructInit()
+    if api.get_commit(sessionId, &commitTextStruct) {
+      if let text = commitTextStruct.text {
+        let str = String(cString: text)
+        commitText?(str)
+      }
+      _ = api.free_commit(&commitTextStruct)
+    }
+
+    var ctx = RimeContext_stdbool.rimeStructInit()
+    if api.get_context(sessionId, &ctx) {
+      let preedit = ctx.composition.preedit.map { String(cString: $0) } ?? ""
+
+      if !preedit.isEmpty {
+        let start = preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_start))
+        let end = preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_end))
+        let caretPos = preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.cursor_pos))
+
+        let startIdx = String.Index(start, within: preedit) ?? preedit.startIndex
+        let endIdx = String.Index(end, within: preedit) ?? preedit.startIndex
+        let caretIdx = String.Index(caretPos, within: preedit) ?? preedit.startIndex
+
+        let selRange = NSRange(location: startIdx.utf16Offset(in: preedit),
+                               length: preedit.utf16.distance(from: startIdx, to: endIdx))
+        let caret = caretIdx.utf16Offset(in: preedit)
+
+        showPreedit?(preedit, selRange, caret)
+      } else {
+        hidePanel?()
+      }
+
+      _ = api.free_context(&ctx)
+    } else {
+      hidePanel?()
+    }
+
+    updateCandidates?()
   }
 }
