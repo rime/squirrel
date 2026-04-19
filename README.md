@@ -14,6 +14,18 @@
 [![Build Status](https://github.com/rime/squirrel/actions/workflows/commit-ci.yml/badge.svg)](https://github.com/rime/squirrel/actions/workflows)
 [![GitHub Tag](https://img.shields.io/github/tag/rime/squirrel.svg)](https://github.com/rime/squirrel)
 
+項目說明（小鶴音形改造版）
+---
+
+本倉庫基於 [Rime Squirrel](https://github.com/rime/squirrel) 及其依賴的 [librime](https://github.com/rime/librime) 開源代碼進行二次改造，目標是提供專注於小鶴音形體驗的 macOS 輸入法發行版。
+
+當前階段重點：
+
+  * 保持原有引擎核心能力與構建鏈路
+  * 在打包產物中內置小鶴音形方案配置
+  * 逐步實現快速加詞與詞庫管理能力
+  * 參考 [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) 查看本倉庫結構梳理
+
 式恕堂 版權所無
 
 授權條款：[GPL v3](https://www.gnu.org/licenses/gpl-3.0.en.html)
