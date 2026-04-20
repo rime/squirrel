@@ -8,6 +8,7 @@
 import UserNotifications
 import Sparkle
 import AppKit
+import InputMethodKit
 
 final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandardUserDriverDelegate, UNUserNotificationCenterDelegate {
   static let rimeWikiURL = URL(string: "https://github.com/rime/home/wiki")!
@@ -18,6 +19,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
   var enableNotifications = false
+  var statusItem: NSStatusItem?
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   var supportsGentleScheduledUpdateReminders: Bool {
     true
@@ -54,6 +56,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
   func applicationWillFinishLaunching(_ notification: Notification) {
     panel = SquirrelPanel(position: .zero)
+    setupStatusItem()
     addObservers()
   }
 
@@ -62,6 +65,16 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     NotificationCenter.default.removeObserver(self)
     DistributedNotificationCenter.default().removeObserver(self)
     panel?.hide()
+    if let item = statusItem {
+      NSStatusBar.system.removeStatusItem(item)
+      statusItem = nil
+    }
+  }
+
+  func updateStatusIcon(asciiMode: Bool) {
+    DispatchQueue.main.async { [weak self] in
+      self?.applyStatusIcon(asciiMode: asciiMode)
+    }
   }
 
   func deploy() {
@@ -225,6 +238,9 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     let notifCenter = DistributedNotificationCenter.default()
     notifCenter.addObserver(forName: .init("SquirrelReloadNotification"), object: nil, queue: nil, using: rimeNeedsReload)
     notifCenter.addObserver(forName: .init("SquirrelSyncNotification"), object: nil, queue: nil, using: rimeNeedsSync)
+    notifCenter.addObserver(forName: .init(kTISNotifySelectedKeyboardInputSourceChanged as String), object: nil, queue: .main) { [weak self] _ in
+      self?.updateStatusItemVisibility()
+    }
   }
 
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -253,20 +269,23 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     }
     return
   }
-  // off
-  if !delegate.enableNotifications {
-    return
-  }
 
-  if messageType == "schema", let messageValue = messageValue, let schemaName = try? /^[^\/]*\/(.*)$/.firstMatch(in: messageValue)?.output.1 {
-    delegate.showStatusMessage(msgTextLong: String(schemaName), msgTextShort: String(schemaName))
-    return
-  } else if messageType == "option" {
+  if messageType == "option" {
     let state = messageValue?.first != "!"
-    let optionName = if state {
-      messageValue
+    let optionName: String?
+    if state {
+      optionName = messageValue
+    } else if let value = messageValue {
+      optionName = String(value[value.index(after: value.startIndex)...])
     } else {
-      String(messageValue![messageValue!.index(after: messageValue!.startIndex)...])
+      optionName = nil
+    }
+    if optionName == "ascii_mode" {
+      delegate.updateStatusIcon(asciiMode: state)
+    }
+    // off
+    if !delegate.enableNotifications {
+      return
     }
     if let optionName = optionName {
       optionName.withCString { name in
@@ -277,6 +296,17 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
         delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
       }
     }
+    return
+  }
+
+  // off
+  if !delegate.enableNotifications {
+    return
+  }
+
+  if messageType == "schema", let messageValue = messageValue, let schemaName = try? /^[^\/]*\/(.*)$/.firstMatch(in: messageValue)?.output.1 {
+    delegate.showStatusMessage(msgTextLong: String(schemaName), msgTextShort: String(schemaName))
+    return
   }
 }
 
@@ -285,6 +315,28 @@ private extension SquirrelApplicationDelegate {
     if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
       panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
     }
+  }
+
+  func setupStatusItem() {
+    let item = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
+    if let button = item.button {
+      button.font = NSFont.systemFont(ofSize: NSFont.systemFontSize, weight: .semibold)
+      button.toolTip = NSLocalizedString("Squirrel", comment: "")
+    }
+    statusItem = item
+    applyStatusIcon(asciiMode: false)
+    updateStatusItemVisibility()
+  }
+
+  func updateStatusItemVisibility() {
+    guard let statusItem = statusItem else { return }
+    let id = SquirrelInstaller.currentInputSourceID() ?? ""
+    statusItem.isVisible = id.hasPrefix("im.rime.inputmethod.Squirrel")
+  }
+
+  func applyStatusIcon(asciiMode: Bool) {
+    guard let button = statusItem?.button else { return }
+    button.title = asciiMode ? "A" : "中"
   }
 
   func shutdownRime() {

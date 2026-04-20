@@ -91,6 +91,12 @@ final class SquirrelInstaller {
     }
   }
 
+  static func currentInputSourceID() -> String? {
+    let source = TISCopyCurrentKeyboardInputSource().takeRetainedValue()
+    let idRef = TISGetInputSourceProperty(source, kTISPropertyInputSourceID)
+    return unsafeBitCast(idRef, to: CFString?.self) as String?
+  }
+
   func disable(modes: [InputMode] = []) {
     let modesToDisable = modes.isEmpty ? InputMode.allCases : modes
     for (mode, inputSource) in getInputSource(modes: modesToDisable) {
