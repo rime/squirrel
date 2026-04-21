@@ -258,6 +258,18 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
 }
 
+private extension RimeStringSlice {
+  /// Bridge the slice's pointer + length to a Swift String, honoring `.length`.
+  /// librime clips `.length` to the first Unicode character for abbreviated labels
+  /// when no explicit `abbrev:` field is defined, so reading past `.length` (e.g. with
+  /// `String(cString:)`) would incorrectly return the full `states:` value.
+  var asString: String? {
+    guard let ptr = str else { return nil }
+    let data = Data(bytes: UnsafeRawPointer(ptr), count: Int(length))
+    return String(data: data, encoding: .utf8)
+  }
+}
+
 private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
 
@@ -291,8 +303,8 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
       optionName.withCString { name in
         let stateLabelLong  = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
         let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
-        let longLabel  = stateLabelLong.str .map { String(cString: $0) }
-        let shortLabel = stateLabelShort.str.map { String(cString: $0) }
+        let longLabel  = stateLabelLong.asString
+        let shortLabel = stateLabelShort.asString
         if optionName == "ascii_mode" {
           delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel)
         }
