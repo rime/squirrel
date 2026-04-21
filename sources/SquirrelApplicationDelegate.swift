@@ -20,6 +20,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   var panel: SquirrelPanel?
   var enableNotifications = false
   var showStatusIcon: Bool = true
+  var statusIconAsciiLabel: String?    // nil → use schema label, then "A"
+  var statusIconChineseLabel: String?  // nil → use schema label, then "中"
   var statusItem: NSStatusItem?
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   var supportsGentleScheduledUpdateReminders: Bool {
@@ -72,9 +74,9 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     }
   }
 
-  func updateStatusIcon(asciiMode: Bool) {
+  func updateStatusIcon(asciiMode: Bool, schemaLabel: String?) {
     DispatchQueue.main.async { [weak self] in
-      self?.applyStatusIcon(asciiMode: asciiMode)
+      self?.applyStatusIcon(asciiMode: asciiMode, schemaLabel: schemaLabel)
     }
   }
 
@@ -177,6 +179,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
     showStatusIcon = config!.getBool("show_status_icon") ?? true
+    statusIconAsciiLabel   = config!.getString("status_icon/ascii")
+    statusIconChineseLabel = config!.getString("status_icon/chinese")
     refreshStatusItem()
     if let panel = panel, let config = self.config {
       panel.load(config: config, forDarkMode: false)
@@ -283,20 +287,18 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     } else {
       optionName = nil
     }
-    if optionName == "ascii_mode" {
-      delegate.updateStatusIcon(asciiMode: state)
-    }
-    // off
-    if !delegate.enableNotifications {
-      return
-    }
     if let optionName = optionName {
       optionName.withCString { name in
-        let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
+        let stateLabelLong  = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
         let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
-        let longLabel = stateLabelLong.str.map { String(cString: $0) }
+        let longLabel  = stateLabelLong.str .map { String(cString: $0) }
         let shortLabel = stateLabelShort.str.map { String(cString: $0) }
-        delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
+        if optionName == "ascii_mode" {
+          delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel)
+        }
+        if delegate.enableNotifications {
+          delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
+        }
       }
     }
     return
@@ -338,7 +340,7 @@ private extension SquirrelApplicationDelegate {
       button.toolTip = NSLocalizedString("Squirrel", comment: "")
     }
     statusItem = item
-    applyStatusIcon(asciiMode: false)
+    applyStatusIcon(asciiMode: false, schemaLabel: nil)
     updateStatusItemVisibility()
   }
 
@@ -348,9 +350,17 @@ private extension SquirrelApplicationDelegate {
     statusItem.isVisible = id.hasPrefix("im.rime.inputmethod.Squirrel")
   }
 
-  func applyStatusIcon(asciiMode: Bool) {
+  func applyStatusIcon(asciiMode: Bool, schemaLabel: String?) {
     guard let button = statusItem?.button else { return }
-    button.title = asciiMode ? "A" : "中"
+    let override = asciiMode ? statusIconAsciiLabel : statusIconChineseLabel
+    let fallback = asciiMode ? "A" : "中"
+    if let override = override, !override.isEmpty {
+      button.title = override
+    } else if let schemaLabel = schemaLabel, !schemaLabel.isEmpty {
+      button.title = schemaLabel
+    } else {
+      button.title = fallback
+    }
   }
 
   func shutdownRime() {

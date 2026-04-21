@@ -19,6 +19,12 @@ show_notifications_when: appropriate
 # (中 for Chinese, A for ascii_mode / English). Set to false for a clean menu bar.
 show_status_icon: true
 
+# Menu-bar status-icon text. Overrides the schema's short state label for ascii_mode.
+# Useful when the schema label is too wide for the menu bar (e.g. "中文" / "西文" → "中" / "A").
+# Unset → uses the schema's short `states:` label, then falls back to "A" / "中".
+# status_icon/ascii: A     # shown when ascii_mode is on  (English input)
+# status_icon/chinese: 中  # shown when ascii_mode is off (Chinese input)
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance
