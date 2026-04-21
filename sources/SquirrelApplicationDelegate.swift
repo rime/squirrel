@@ -19,6 +19,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
   var enableNotifications = false
+  var showStatusIcon: Bool = true
   var statusItem: NSStatusItem?
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   var supportsGentleScheduledUpdateReminders: Bool {
@@ -56,7 +57,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
   func applicationWillFinishLaunching(_ notification: Notification) {
     panel = SquirrelPanel(position: .zero)
-    setupStatusItem()
+    refreshStatusItem()
     addObservers()
   }
 
@@ -175,6 +176,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     }
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
+    showStatusIcon = config!.getBool("show_status_icon") ?? true
+    refreshStatusItem()
     if let panel = panel, let config = self.config {
       panel.load(config: config, forDarkMode: false)
       panel.load(config: config, forDarkMode: true)
@@ -314,6 +317,17 @@ private extension SquirrelApplicationDelegate {
   func showStatusMessage(msgTextLong: String?, msgTextShort: String?) {
     if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
       panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
+    }
+  }
+
+  func refreshStatusItem() {
+    if showStatusIcon {
+      if statusItem == nil {
+        setupStatusItem()
+      }
+    } else if let item = statusItem {
+      NSStatusBar.system.removeStatusItem(item)
+      statusItem = nil
     }
   }
 

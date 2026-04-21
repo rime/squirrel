@@ -15,6 +15,10 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
+# whether to show a menu bar icon indicating input mode
+# (中 for Chinese, A for ascii_mode / English). Set to false for a clean menu bar.
+show_status_icon: true
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance
