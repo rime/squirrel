@@ -178,7 +178,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     }
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
-    showStatusIcon = config!.getBool("show_status_icon") ?? true
+    showStatusIcon = config!.getBool("status_icon/show") ?? true
     statusIconAsciiLabel   = config!.getString("status_icon/ascii")
     statusIconChineseLabel = config!.getString("status_icon/chinese")
     refreshStatusItem()
