@@ -35,6 +35,19 @@
   - `custom_phraseQMZ` 的 YAML 配置段与对应用户词典/码表文件；
   - 或恢复完整 `flypy.dict.yaml`（及依赖的 opencc/encoder 等配置），并确认 `translator/dictionary: flypy` 能由源码完整重建。
 
+## 4. 快速加词弹窗扩展功能（M3 后续）
+
+- **范围说明**：以下能力在 M3 基础“快速加词”可用后，再按优先级逐步补齐。
+- **扩展项清单**：
+  - “将新添加词条固项”勾选框。
+  - “剪贴板造词”勾选框。
+  - 自动读取最近输入的两个字作为“词条”默认值。
+  - 自动查询首选字词字典中对应编码作为“编码”默认值。
+  - 支持上下方向键调整自动读取字的长度。
+- **实现备注**：
+  - 默认写入目标与“固项”逻辑需要与 `flypy_user.txt` / `flypy_top.txt` 写入策略联动定义。
+  - “最近输入字串”与“默认编码推断”依赖运行时输入上下文与词典查询接口，建议单独评估可用 API 与失败兜底。
+
 ## 构建行为说明（避免误改参考目录）
 
 - 构建时使用 `scripts/stage-flypy-for-data-plum.sh`：从 `flypy-rime-config/rime` 复制到 `build/flypy-staged`，在 staging 中应用补丁后再同步到 `data/plum/`。
