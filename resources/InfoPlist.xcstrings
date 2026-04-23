@@ -48,7 +48,7 @@
         }
       }
     },
-    "im.rime.inputmethod.Squirrel" : {
+    "im.rime.inputmethod.SquirrelFlypy" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -71,13 +71,13 @@
         }
       }
     },
-    "im.rime.inputmethod.Squirrel.Hans" : {
+    "im.rime.inputmethod.SquirrelFlypy.Hans" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Squirrel - Simplified"
+            "value" : "SquirrelFlypy - Simplified"
           }
         },
         "zh-Hans" : {
@@ -94,13 +94,13 @@
         }
       }
     },
-    "im.rime.inputmethod.Squirrel.Hant" : {
+    "im.rime.inputmethod.SquirrelFlypy.Hant" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Squirrel - Traditional"
+            "value" : "SquirrelFlypy - Traditional"
           }
         },
         "zh-Hans" : {

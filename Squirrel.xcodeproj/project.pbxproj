@@ -20,7 +20,18 @@
 		441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636B22B7E90D006DCCDD /* stroke.schema.yaml */; };
 		441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */; };
 		441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */; };
-		441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* detenele.schema.yaml */; };
+441E6310322B7E96F006DCCDD /* squirrel.custom.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E6310422B7E90C006DCCDD /* squirrel.custom.yaml */; };
+441E6310122B7E96F006DCCDD /* rime.lua in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E6310222B7E90C006DCCDD /* rime.lua */; };
+441E639922B7E96F006DCCDD /* flypy_user.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E6310022B7E90C006DCCDD /* flypy_user.txt */; };
+441E639722B7E96F006DCCDD /* flypy_top.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639822B7E90C006DCCDD /* flypy_top.txt */; };
+441E639522B7E96F006DCCDD /* flypy_sys.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639622B7E90C006DCCDD /* flypy_sys.txt */; };
+441E639322B7E96F006DCCDD /* flypy_ok.txt in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639422B7E90C006DCCDD /* flypy_ok.txt */; };
+441E639122B7E96F006DCCDD /* flypy.table.bin in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639222B7E90C006DCCDD /* flypy.table.bin */; };
+441E638922B7E96F006DCCDD /* flypy.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E639022B7E90C006DCCDD /* flypy.schema.yaml */; };
+441E638722B7E96F006DCCDD /* flypy.reverse.bin in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638822B7E90C006DCCDD /* flypy.reverse.bin */; };
+441E638522B7E96F006DCCDD /* flypy.prism.bin in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638622B7E90C006DCCDD /* flypy.prism.bin */; };
+441E638322B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638422B7E90C006DCCDD /* detenele.schema.yaml */; };
+441E638122B7E96F006DCCDD /* default.custom.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* default.custom.yaml */; };
 		441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */; };
 		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
 		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -162,7 +173,19 @@
 				441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */,
 				441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
 				441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
-				441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */,
+441E6310322B7E96F006DCCDD /* squirrel.custom.yaml in Copy Shared Support Files */,
+441E6310122B7E96F006DCCDD /* rime.lua in Copy Shared Support Files */,
+441E639922B7E96F006DCCDD /* flypy_user.txt in Copy Shared Support Files */,
+441E639722B7E96F006DCCDD /* flypy_top.txt in Copy Shared Support Files */,
+441E639522B7E96F006DCCDD /* flypy_sys.txt in Copy Shared Support Files */,
+441E639322B7E96F006DCCDD /* flypy_ok.txt in Copy Shared Support Files */,
+441E639122B7E96F006DCCDD /* flypy.table.bin in Copy Shared Support Files */,
+441E638922B7E96F006DCCDD /* flypy.schema.yaml in Copy Shared Support Files */,
+441E638722B7E96F006DCCDD /* flypy.reverse.bin in Copy Shared Support Files */,
+441E638522B7E96F006DCCDD /* flypy.prism.bin in Copy Shared Support Files */,
+441E638322B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */,
+441E638122B7E96F006DCCDD /* default.custom.yaml in Copy Shared Support Files */,
+				441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */,
 				441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */,
 				44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */,
 				44AEBC7621F569FD00344375 /* punctuation.yaml in Copy Shared Support Files */,
@@ -216,8 +239,18 @@
 		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
 		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
 		441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.schema.yaml; path = data/plum/terra_pinyin.schema.yaml; sourceTree = "<group>"; };
-		441E638222B7E90C006DCCDD /* detenele.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = detenele.schema.yaml; path = data/plum/detenele.schema.yaml; sourceTree = "<group>"; };
-		441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin_12345.schema.yaml; path = data/plum/terra_pinyin_12345.schema.yaml; sourceTree = "<group>"; };
+441E6310422B7E90C006DCCDD /* squirrel.custom.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = squirrel.custom.yaml; path = data/plum/squirrel.custom.yaml; sourceTree = "<group>"; };
+441E6310222B7E90C006DCCDD /* rime.lua */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = rime.lua; path = data/plum/rime.lua; sourceTree = "<group>"; };
+441E6310022B7E90C006DCCDD /* flypy_user.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy_user.txt; path = data/plum/flypy_user.txt; sourceTree = "<group>"; };
+441E639822B7E90C006DCCDD /* flypy_top.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy_top.txt; path = data/plum/flypy_top.txt; sourceTree = "<group>"; };
+441E639622B7E90C006DCCDD /* flypy_sys.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy_sys.txt; path = data/plum/flypy_sys.txt; sourceTree = "<group>"; };
+441E639422B7E90C006DCCDD /* flypy_ok.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy_ok.txt; path = data/plum/flypy_ok.txt; sourceTree = "<group>"; };
+441E639222B7E90C006DCCDD /* flypy.table.bin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy.table.bin; path = data/plum/flypy.table.bin; sourceTree = "<group>"; };
+441E639022B7E90C006DCCDD /* flypy.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy.schema.yaml; path = data/plum/flypy.schema.yaml; sourceTree = "<group>"; };
+441E638822B7E90C006DCCDD /* flypy.reverse.bin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy.reverse.bin; path = data/plum/flypy.reverse.bin; sourceTree = "<group>"; };
+441E638622B7E90C006DCCDD /* flypy.prism.bin */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = flypy.prism.bin; path = data/plum/flypy.prism.bin; sourceTree = "<group>"; };
+441E638422B7E90C006DCCDD /* detenele.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = detenele.schema.yaml; path = data/plum/detenele.schema.yaml; sourceTree = "<group>"; };
+441E638222B7E90C006DCCDD /* default.custom.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = default.custom.yaml; path = data/plum/default.custom.yaml; sourceTree = "<group>"; };
 		441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_express.schema.yaml; path = data/plum/cangjie5_express.schema.yaml; sourceTree = "<group>"; };
 		441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_tw.schema.yaml; path = data/plum/bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
 		441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo.schema.yaml; path = data/plum/bopomofo.schema.yaml; sourceTree = "<group>"; };
@@ -225,6 +258,7 @@
 		441E636A22B7E90D006DCCDD /* cangjie5.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.dict.yaml; path = data/plum/cangjie5.dict.yaml; sourceTree = "<group>"; };
 		441E636B22B7E90D006DCCDD /* stroke.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = stroke.schema.yaml; path = data/plum/stroke.schema.yaml; sourceTree = "<group>"; };
 		441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_express.schema.yaml; path = data/plum/bopomofo_express.schema.yaml; sourceTree = "<group>"; };
+		441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin_12345.schema.yaml; path = data/plum/terra_pinyin_12345.schema.yaml; sourceTree = "<group>"; };
 		442B5B871570C37200370DEA /* squirrel.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = squirrel.yaml; path = data/squirrel.yaml; sourceTree = "<group>"; };
 		442C64901F7A404A0027EFBE /* rime-install */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; name = "rime-install"; path = "bin/rime-install"; sourceTree = "<group>"; };
 		446C01D61F767BD400A6C23E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -238,7 +272,7 @@
 		44CD640915E2633D0021234E /* librime.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = librime.1.dylib; path = lib/librime.1.dylib; sourceTree = "<group>"; };
 		44E21A8E16A653E700C2B08F /* rime_deployer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_deployer; path = bin/rime_deployer; sourceTree = "<group>"; };
 		44E21A8F16A653E700C2B08F /* rime_dict_manager */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = rime_dict_manager; path = bin/rime_dict_manager; sourceTree = "<group>"; };
-		44F1EB381431F8270015FD04 /* Squirrel.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Squirrel.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44F1EB381431F8270015FD04 /* SquirrelFlypy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SquirrelFlypy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		77AA67DC2588916300A592E2 /* HKVariants.ocd2 */ = {isa = PBXFileReference; lastKnownFileType = file; path = HKVariants.ocd2; sourceTree = "<group>"; };
 		77AA67DD2588916300A592E2 /* t2s.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2s.json; sourceTree = "<group>"; };
 		77AA67DE2588916300A592E2 /* t2tw.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = t2tw.json; sourceTree = "<group>"; };
@@ -356,7 +390,7 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				44F1EB381431F8270015FD04 /* Squirrel.app */,
+				44F1EB381431F8270015FD04 /* SquirrelFlypy.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -477,7 +511,18 @@
 				441E636B22B7E90D006DCCDD /* stroke.schema.yaml */,
 				441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */,
 				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
-				441E638222B7E90C006DCCDD /* detenele.schema.yaml */,
+441E6310422B7E90C006DCCDD /* squirrel.custom.yaml */,
+441E6310222B7E90C006DCCDD /* rime.lua */,
+441E6310022B7E90C006DCCDD /* flypy_user.txt */,
+441E639822B7E90C006DCCDD /* flypy_top.txt */,
+441E639622B7E90C006DCCDD /* flypy_sys.txt */,
+441E639422B7E90C006DCCDD /* flypy_ok.txt */,
+441E639222B7E90C006DCCDD /* flypy.table.bin */,
+441E639022B7E90C006DCCDD /* flypy.schema.yaml */,
+441E638822B7E90C006DCCDD /* flypy.reverse.bin */,
+441E638622B7E90C006DCCDD /* flypy.prism.bin */,
+441E638422B7E90C006DCCDD /* detenele.schema.yaml */,
+441E638222B7E90C006DCCDD /* default.custom.yaml */,
 				441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */,
 				7B5488211D2DAAD10056A1BE /* default.yaml */,
 				7B5488291D2DAAD10056A1BE /* essay.txt */,
@@ -519,7 +564,7 @@
 			);
 			productInstallPath = "$(HOME)/Applications";
 			productName = Squirrel;
-			productReference = 44F1EB381431F8270015FD04 /* Squirrel.app */;
+			productReference = 44F1EB381431F8270015FD04 /* SquirrelFlypy.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -621,7 +666,7 @@
 				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				INFOPLIST_FILE = resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Input Method";
+				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Flypy Input Method";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -641,8 +686,8 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.SquirrelFlypy;
+				PRODUCT_NAME = SquirrelFlypy;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "sources/Squirrel-Bridging-Header.h";
@@ -676,7 +721,7 @@
 				GCC_GENERATE_DEBUGGING_SYMBOLS = NO;
 				GCC_MODEL_TUNING = G5;
 				INFOPLIST_FILE = resources/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Input Method";
+				INFOPLIST_KEY_CFBundleDisplayName = "Squirrel Flypy Input Method";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INSTALL_PATH = "\"/Library/Input Methods\"";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -696,8 +741,8 @@
 					"$(OTHER_CPLUSPLUSFLAGS_QUOTED_FOR_TARGET_2)",
 				);
 				OTHER_LDFLAGS = "-lrime.1";
-				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.Squirrel;
-				PRODUCT_NAME = Squirrel;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.SquirrelFlypy;
+				PRODUCT_NAME = SquirrelFlypy;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "sources/Squirrel-Bridging-Header.h";

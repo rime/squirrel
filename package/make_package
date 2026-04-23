@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DERIVED_DATA_PATH=$1
-BUNDLE_IDENTIFIER='im.rime.inputmethod.Squirrel'
+BUNDLE_IDENTIFIER='im.rime.inputmethod.SquirrelFlypy'
 INSTALL_LOCATION='/Library/Input Methods'
 
 cd "$(dirname $0)"
@@ -16,4 +16,4 @@ pkgbuild \
     --version "$(get_app_version)" \
     --install-location "${INSTALL_LOCATION}" \
     --scripts "${PROJECT_ROOT}/scripts" \
-    Squirrel.pkg
+    SquirrelFlypy.pkg

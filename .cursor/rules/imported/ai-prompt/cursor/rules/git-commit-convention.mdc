@@ -1,0 +1,37 @@
+---
+description: Git commit message convention and commit hygiene
+alwaysApply: false
+---
+# Git 提交规范
+
+## 提交信息格式
+
+使用以下格式：
+
+`<type>(<scope>): <subject>`
+
+- `type` 仅允许：`feat` `fix` `refactor` `docs` `test` `chore` `build` `ci` `perf`
+- `scope` 可选，建议使用模块名或目录名（如 `ime`、`packaging`、`docs`）
+- `subject` 使用祈使句，简洁说明“这次改动做了什么”，不超过 72 个字符
+- 不使用句号结尾，不使用表情符号，不写“update stuff”这类模糊描述
+
+## 提交内容要求
+
+- 单个提交只做一件事，避免把无关修改混在同一次提交里
+- 提交前确保相关构建、测试或校验通过
+- 不提交密钥、凭证、`.env` 等敏感信息
+- 自动格式化引起的大量改动应独立成一个提交
+
+## 示例
+
+```bash
+# ✅ GOOD
+feat(ime): add optional candidate sorting strategy
+fix(packaging): include icon assets in release bundle
+docs(readme): clarify flypy dictionary build steps
+
+# ❌ BAD
+update
+fix bug
+feat: 完善很多东西并顺便改了格式和文档
+```

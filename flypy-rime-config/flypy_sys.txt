@@ -1,0 +1,8478 @@
+# coding: utf-8
+# 辅助词库
+# 快符、次选词、三码填空、emoji表情、微信表情、符号、一简词、随心
+# 编码格式：字词+Tab符+编码（词库本身有重码则还需后面+Tab符+权重，权重大者居前，权重数字随意）
+#
+#    -------- 强调一下 --------
+#
+#   词条和编码之间的不是空格，而是Tab符，
+#   如果你不知道，就复制下面编码中的空白处
+#
+#    ---------------------------
+#
+https://flypy.cc	xhgw
+http://flypy.ysepan.com	xhwp
+https://flypy.cc/help	xhrm
+https://flypy.cc/ix	oix
+😊	oi
+👌	ok
+# 快符
+：“	;q
+？	;w
+（	;e
+）	;r
+^	;t
+《	;y
+》	;u
+/	;i
+[	;o
+]	;p
+！	;a
+……	;s
+、	;d
+·	;g
+[	;h
+]	;j
+(	;k
+)	;l
+“	;z
+→	;x
+”	;c
+——	;v
+　	;b
+=	;n
+@	;m
+#次选字词
+簟	dmv
+镞	zuj
+榇	ifmm
+焰	yjhj
+解	xpdn
+湎	mmdm
+辟	biuu
+抚	fufw
+佛	furf
+汲	jidj
+沏	qidd
+骐	qimb
+钎	qmjq
+挚	vifu
+烯	xihj
+奄	yjdd
+魇	yjig
+鸨	bcb
+龅	bcv
+荜	bicu
+璧	biu
+槟	bkm
+煸	bmh
+辨	bml
+孛	bou
+粢	cid
+𬱖	diy
+箪	djv
+膻	djo
+汾	ffd
+钒	fjj
+梵	fjm
+矾	fju
+敷	fuf
+蜉	fui
+脯	fuo
+凫	fup
+俯	fur
+弗	fuv
+槁	gcm
+锆	gcj
+阁	gem
+汞	gsg
+蛄	guik
+枸	gzm
+濠	hcd
+涸	hed
+嗬	hek
+𬌗	hey
+恍	hlx
+奂	hrd
+泓	hsd
+斛	hud
+烀	huh
+烩	hvh
+骅	hxm
+焯	ich
+梣	ifm
+氅	ihx
+怅	ihxi
+浐	ijd
+蚩	iiv
+忡	isx
+蜍	iui
+巾	jbl
+矜	jbs
+蓟	jic
+奇	jid
+觊	jie
+嵇	jih
+骥	jim
+系	jip
+继	jis
+戟	jiu
+笈	jiv
+玑	jiw
+计	jiy
+荆	jkc
+靖	jkl
+腈	jko
+憬	jkx
+煎	jmb
+溅	jmd
+监	jml
+槛	jmm
+僭	jmr
+戬	jmy
+敫	jnb
+醮	jny
+诘	jpy
+疚	jqb
+苣	juc
+飓	juj
+桔	jum
+惧	jux
+遽	juz
+镓	jxj
+咯	kak
+贶	klk
+吏	lia
+荔	lic
+厘	lii
+鹂	lil
+骊	lim
+俚	lir
+蠡	liv
+璃	liw
+泠	lkd
+囹	lkk
+羚	lky
+粱	lld
+骝	lqm
+蝥	mcs
+麋	mig
+沔	mmd
+眄	mmo
+蘑	moc
+摩	mog
+苜	muc
+媒	mwn
+匏	pcd
+莆	puc
+芑	qic
+漆	qid
+棋	qim
+祈	qip
+憩	qiq
+骞	qmb
+铅	qmj
+觫	sud
+燧	svh
+遢	taz
+溏	thd
+嚏	tik
+澹	tjd
+拓	tof
+椭	tom
+桐	tsm
+厍	uei
+什	ufr
+裳	uhx
+湜	uid
+舐	uiq
+虱	uiv
+潸	ujd
+倏	uur
+拯	vgf
+筝	vgv
+汁	vid
+执	vif
+枳	vim
+祗	vip
+智	viu
+湛	vjd
+𫗴	vju
+渚	vud
+株	vum
+诬	wuy
+葳	wwc
+畏	wwt
+浠	xid
+熄	xih
+嬉	xin
+晞	xio
+奚	xip
+硒	xiu
+惺	xkx
+庠	xlg
+岘	xme
+蚬	xmi
+娴	xmn
+骁	xnm
+蟹	xpd
+谐	xpy
+谑	xty
+醺	xyy
+衙	yai
+讶	yay
+龈	ybv
+漾	yhd
+肄	yib
+漪	yid
+燚	yih
+贻	yik
+翊	yil
+伊	yir
+彝	yiv
+奕	yiw
+怡	yix
+淹	yjd
+衍	yji
+铅	yjj
+檐	yjm
+鄢	yjv
+琰	yjw
+酽	yjy
+莹	ykc
+膺	ykg
+鹦	ykk
+楹	ykm
+嬴	ykw
+沅	yrd
+鸳	yrx
+涌	ysd
+泳	ysdy
+萸	yuc
+浴	yud
+鬻	yug
+圄	yuk
+觎	yur
+鹬	yus
+谀	yuy
+纭	yys
+尢	yzu
+蚰	yzi
+渍	zid
+蕃	fjct
+麸	fuff
+蝠	fuit
+赙	fukc
+鸱	iid
+矶	jiuj
+蛎	liiw
+栎	liml
+蠃	low
+洌	lpdd
+闾	lvmk
+暝	mkob
+茉	mocm
+祇	qipu
+醛	qryw
+什	uir
+姝	uun
+蜇	vef
+躅	vuz
+嵬	wweg
+烜	xrh
+呷	xxkj
+殃	yhdy
+痍	yiby
+沂	yidj
+翳	yikx
+翌	yixl
+焱	yjhh
+阉	yjmd
+彧	yua
+淤	yudd
+咨	zidk
+骱	jpg
+燠	yuh
+乩	jil
+殳	uuj
+按键	aj
+背景	bj
+参加	cj
+从前	cq
+达到	dd
+电脑	dn
+当然	dr
+打算	ds
+等着	dv
+分别	fb
+分钟	fv
+反悔	fh
+附件	fj
+发送	fs
+分享	fx
+否则	fz
+刚刚	gg
+感觉	gj
+公司	gs
+更新	gx
+规则	gz
+跟着	gv
+回复	hf
+程度	id
+尝尝	ii
+基本	jb
+绝对	jd
+尽管	jg
+渐渐	jj
+即可	jk
+举例	jl
+极其	jq
+假如	jr
+几天	jt
+即使	ju
+极致	jv
+极为	jw
+困难	kn
+两边	lb
+链接	lj
+慢慢	mm
+面前	mq
+每天	mt
+情况	qk
+前面	qm
+恰恰	qq
+前天	qt
+歧视	qu
+确认	qr
+仍然	rr
+任务	rw
+速度	sd
+虽然	sr
+搜索	ss
+随着	sv
+推导	td
+推广	tg
+推荐	tj
+淘汰	tt
+投资	tz
+束缚	uf
+伤害	uh
+世纪	uj
+试试	uu
+食物	uw
+这次	vc
+直到	vd
+征服	vf
+只会	vh
+支持	vi
+整句	vj
+追求	vq
+只是	vu
+真正	vv
+这些	vx
+主意	vy
+正在	vz
+周围	vw
+味道	wd
+完美	wm
+未知	wv
+微信	wx
+修改	xg
+下面	xm
+小时	xu
+修正	xv
+学习	xx
+选择	xz
+一边	yb
+与其	yq
+意志	yv
+悠闲	yx
+总算	zs
+座位	zw
+总共	zg
+最终	zv
+北戴河	bdh
+帮倒忙	bdm
+百分之	bfv
+白胡椒	bhj
+半成品	bip
+笔记本	bjb
+不客气	bkq
+闭门羹	bmg
+保密性	bmx
+不满意	bmy
+不舒服	buf
+大多数	ddu
+打火机	dhj
+导火线	dhx
+打交道	djd
+都江堰	djy
+电视剧	duj
+单引号	dyh
+放射性	fux
+服务器	fwq
+关节炎	gjy
+感兴趣	gxq
+刽子手	gzu
+含金量	hjl
+花架子	hjz
+出发点	ifd
+基本功	jbg
+几百年	jbn
+记不住	jbv
+警察局	jij
+教科书	jku
+加拿大	jnd
+吉尼斯	jns
+柬埔寨	jpv
+警惕性	jtx
+记事本	jub
+局限性	jxx
+局域网	jyw
+跨时代	kud
+轮不到	lbd
+里程碑	lib
+龙卷风	ljf
+两句话	ljh
+老年人	lnr
+两只手	lvu
+老顽童	lwt
+六月份	lyf
+懒洋洋	lyy
+巧克力	qkl
+情况下	qkx
+千里眼	qly
+敲门砖	qmv
+起跑线	qpx
+情人节	qrj
+说服力	ufl
+石家庄	ujv
+势利眼	uly
+摄氏度	uud
+省政府	uvf
+受制于	uvy
+支付宝	vfb
+正方形	vfx
+主持人	vir
+直性子	vxz
+卫生间	wuj
+无外乎	wwh
+想不到	xbd
+行不行	xbx
+想了想	xlx
+叙利亚	xly
+下马威	xmw
+小蛮腰	xmy
+先天性	xtx
+洗手间	xuj
+学术性	xux
+西游记	xyj
+小意思	xys
+又不是	ybu
+一次性	ycx
+晕乎乎	yhh
+一句话	yjh
+郁金香	yjx
+艺术性	yux
+以致于	yvy
+座右铭	zym
+呼之欲出	hvy
+姗姗来迟	uul
+爱恨情仇	ahqi
+暗器	anqi
+芭蕉	bajn
+不谙世事	bauu
+本本分分	bbff
+变本加厉	bbjl
+边边角角	bbjj
+斑驳陆离	bbll
+秉笔直书	bbvu
+保镖	bcbn
+报到	bcdc
+包袱	bcfu
+包抄	bcic
+悲从中来	bcvl
+保卫	bcww
+不辞辛劳	bcxl
+包邮	bcyz
+不打不相识	bdbu
+摆放	bdfh
+拜见	bdjm
+博大精深	bdju
+不得已而为之	bdyv
+膀大腰圆	bdyy
+捕风捉影	bfvy
+毕恭毕敬	bgbj
+不吃不喝	bibh
+比肩	bijm
+鄙夷	biyi
+鼻炎	biyj
+避险	bixm
+不紧不慢	bjbm
+八九不离十	bjbu
+半岛	bjdc
+别具匠心	bjjx
+病急乱投医	bjly
+不解之谜	bjvm
+不绝于耳	bjye
+不拘一格	bjyg
+不经意间	bjyj
+并肩作战	bjzv
+禀报	bkbc
+闭口不言	bkby
+不可避免	bkbm
+不可多得	bkdd
+不可分割	bkfg
+不可方物	bkfw
+不可救药	bkjy
+不可抗拒	bkkj
+不可饶恕	bkru
+不可替代	bktd
+不可调和	bkth
+不可收拾	bkuu
+不堪重负	bkvf
+不可战胜	bkvu
+不可挽回	bkwh
+不可限量	bkxl
+不可一世	bkyu
+不可言喻	bkyy
+变来变去	blbq
+暴露无遗	blwy
+贬低	bmdi
+本末倒置	bmdv
+边距	bmju
+八面玲珑	bmll
+不明所以	bmsy
+贬值	bmvi
+拔苗助长	bmvv
+便携	bmxp
+编译	bmyi
+闭门造车	bmzi
+百年大计	bndj
+拨付	bofu
+搏击	boji
+剥离	boli
+不求上进	bquj
+毕其功于一役	bqgy
+笨手笨脚	bubj
+板上钉钉	budd
+部队	budv
+不施粉黛	bufd
+补救	bujq
+不识庐山真面目	bulm
+不胜枚举	bumj
+跋山涉水	buuu
+补习	buxi
+不是冤家不聚头	buyt
+捕鱼	buyu
+不畏艰难	bwjn
+不畏艰险	bwjx
+贝壳	bwke
+百无聊赖	bwll
+背弃	bwqi
+不外如是	bwru
+百无一用	bwyy
+报喜不报忧	bxby
+百依百顺	bybu
+比翼齐飞	byqf
+刺客	cike
+赐予	ciyu
+挫伤	couh
+错失	coui
+摧残	cvcj
+大涨	davh
+独霸一方	dbyf
+捣蛋	dcdj
+打草惊蛇	dcju
+多此一举	dcyj
+单打独斗	dddd
+得道多助	dddv
+嘀嘀咕咕	ddgg
+多多少少	dduu
+大道至简	ddvj
+独到之处	ddvi
+跌跌撞撞	ddvv
+胆大妄为	ddww
+大跌眼镜	ddyj
+多多益善	ddyu
+达官贵人	dggr
+电光石火	dguh
+担纲	djgh
+大惑不解	dhbj
+调虎离山	dhlu
+地步	dibu
+滴答	dida
+大吃大喝	didh
+大吵大闹	didn
+低端	didr
+多愁善感	diug
+独出心裁	dixc
+大吃一惊	diyj
+地狱	diyu
+淡泊	djbo
+大吉大利	djdl
+耽搁	djge
+打家劫舍	djju
+独具匠心	djjx
+点播	dmbo
+独门独户	dmdh
+垫付	dmfu
+冬暖夏凉	dnxl
+颠三倒四	dsds
+东京	dsjk
+第三季度	dsjd
+董事	dsui
+动手动脚	dudj
+独具	duju
+独善其身	duqu
+毒死	dusi
+打蛇随棍上	dusu
+滴水之恩	duve
+东施效颦	duxp
+洞烛其奸	dvqj
+地主之谊	dvvy
+砥柱中流	dvvl
+斗转星移	dvxy
+丢卒保车	dzbj
+斗笠	dzli
+恩恩怨怨	eeyy
+发愣	falg
+愤愤不平	ffbp
+反反复复	ffff
+分分合合	ffhh
+浮浮沉沉	ffii
+方方面面	ffmm
+泛泛之交	ffvj
+氛围	ffww
+沸沸扬扬	ffyy
+风靡	fgmi
+奉公守法	fguf
+凤冠霞帔	fgxp
+反戈一击	fgyj
+纺织	fhvi
+防患于未然	fhyr
+分久必合	fjbh
+反衬	fjif
+翻越	fjyt
+飞来飞去	flfq
+浮标	fubn
+肥水不流外人田	fubt
+分身乏术	fufu
+俯首称臣	fuii
+妇女	funv
+付钱	fuqm
+富饶	furc
+粉饰太平	futp
+复现	fuxm
+放手一搏	fuyb
+赋予	fuyu
+飞沙走石	fuzu
+防微杜渐	fwdj
+福无双至	fwuv
+附庸风雅	fyfy
+光彩夺目	gcdm
+光打雷不下雨	gdly
+古道热肠	gdri
+功到自然成	gdzi
+狗改不了吃屎	ggbu
+归根到底	ggdd
+公共场合	ggih
+规规矩矩	ggjj
+功高震主	ggvv
+各回各家	ghgj
+鬼话连篇	ghlp
+高居榜首	gjbu
+国际惯例	gjgl
+孤家寡人	gjgr
+故技重施	gjiu
+过街老鼠	gjlu
+敢于	gjyu
+高楼大厦	gldu
+咕噜咕噜	glgl
+告老还乡	glhx
+寡廉鲜耻	glxi
+功名利禄	gmll
+果实	goui
+宫殿	gsdm
+哥斯达黎加	gsdj
+公愤	gsff
+工夫	gsfu
+攻克	gske
+功力	gsli
+公投	gstz
+共识	gsui
+公证	gsvg
+公益	gsyi
+古董	guds
+骨骼	guge
+孤立	guli
+果实累累	gull
+高山流水	gulu
+鬼使神差	guui
+鼓掌	guvh
+更胜一筹	guyi
+孤身一人	guyr
+归集	gvji
+各执己见	gvjj
+闺蜜	gvmi
+孤掌难鸣	gvnm
+狗仗人势	gvru
+皈依	gvyi
+柜员	gvyr
+高瞻远瞩	gvyv
+改弦更张	gxgv
+狗眼看人低	gykd
+狗咬吕洞宾	gylb
+各自为战	gzwv
+何必当初	hbdi
+毫不留情	hblq
+恨不相逢未嫁时	hbxu
+耗电	hcdm
+皇帝不急太监急	hdbj
+患得患失	hdhu
+华灯初上	hdiu
+寒冬腊月	hdly
+海面	hdmm
+河东狮吼	hduh
+荒诞无稽	hdwj
+轰动一时	hdyu
+华而不实	hebu
+合资	hezi
+含含糊糊	hhhh
+悔恨交加	hhjj
+花花绿绿	hhll
+鸿鹄之志	hhvv
+环环相扣	hhxk
+花好月圆	hhyy
+合久必分	hjbf
+撼动	hjds
+换句话说	hjhu
+行家里手	hjlu
+后继有人	hjyr
+横空出世	hkiu
+画龙点睛	hldj
+晃来晃去	hlhq
+花里胡哨	hlhu
+活灵活现	hlhx
+汗流浃背	hljb
+鹤立鸡群	hljq
+汗流满面	hlmm
+花落谁家	hluj
+晃眼	hlyj
+恍如隔世	hrgu
+浑然不觉	hrbj
+缓解	hrjp
+恍若未闻	hrww
+换洗	hrxi
+浩如烟海	hryh
+好事不出门	hubm
+好事多磨	hudm
+好说歹说	hudu
+呼唤	huhr
+胡椒	hujn
+后生可畏	hukw
+欢声雷动	huld
+护理	huli
+华山论剑	hulj
+呼噜	hulu
+混世魔王	humw
+护士	huui
+含沙射影	huuy
+浑身解数	huxu
+会者不难	hvbn
+货真价实	hvju
+哗众取宠	hvqi
+晦涩	hvse
+会晤	hvwu
+话中有话	hvyh
+毫无用处	hwyi
+毫无怨言	hwyy
+横行霸道	hxbd
+滑动	hxds
+祸兮福所倚	hxfy
+活学活用	hxhy
+混淆是非	hxuf
+滑翔	hxxl
+忽隐忽现	hyhx
+慧眼如炬	hyrj
+慧眼识珠	hyuv
+红颜知己	hyvj
+好逸恶劳	hywl
+和颜悦色	hyys
+插手	iauz
+诧异	iayi
+潮湿	icui
+船到江心补漏迟	idji
+差遣	idqm
+扯上	ieuh
+春风化雨	ifhy
+超凡入圣	ifru
+超凡脱俗	ifts
+冲锋陷阵	ifxv
+城墙	igql
+春寒料峭	ihlq
+承建	igjm
+出乖露丑	igli
+橙汁	igvi
+承销	igxn
+冲冠一怒为红颜	igyy
+晨昏颠倒	ihdd
+长话短说	ihdu
+春华秋实	ihqu
+春花秋月	ihqy
+常识	ihui
+尝鲜	ihxm
+彻彻底底	iidd
+垂垂老矣	iily
+蟾蜍	ijiu
+臭名远扬	imyy
+臭棋篓子	iqlz
+船舶	irbo
+怅然若失	irru
+喘气	irqi
+重逢	isfg
+冲剂	isji
+崇敬	isjk
+重置	isvi
+处事不惊	iubj
+长盛不衰	iubu
+成双成对	iuid
+处罚	iufa
+畜生	iuug
+除夕	iuxi
+重拾信心	iuxx
+乘胜追击	iuvj
+察言观色	iygs
+丑化	izhx
+姹紫嫣红	izyh
+见不得人	jbdr
+禁锢	jbgu
+久别重逢	jbif
+紧紧	jbjb
+机不可失	jbku
+坚壁清野	jbqy
+间不容发	jbrf
+金榜题名	jbtm
+举步维艰	jbwj
+进修	jbxq
+敬而远之	jeyv
+家常便饭	jibf
+嫉妒	jidu
+绝处逢生	jifu
+籍贯	jigr
+忌讳	jihv
+鸡精	jijk
+饥肠辘辘	jill
+纪念	jinm
+鸡肉	jirz
+缉私	jisi
+精诚所至	jisv
+精诚团结	jitj
+既成事实	jiuu
+机智	jivi
+挤占	jivj
+畸形	jixk
+积压	jiya
+觊觎	jiyu
+加减乘除	jjii
+句句属实	jjuu
+景点	jkdm
+惊艳	jkyj
+警官	jkgr
+荆棘	jkji
+经理	jkli
+几可乱真	jklv
+静谧	jkmi
+景气	jkqi
+静止	jkvi
+艰苦卓绝	jkvj
+敬重	jkvs
+警卫	jkww
+景象	jkxl
+竞选	jkxr
+晶莹	jkyk
+剪裁	jmcd
+剪刀	jmdc
+鉴定	jmdk
+坚固	jmgu
+监察	jmia
+见解	jmjp
+艰巨	jmju
+假模假样	jmjy
+贱人	jmrf
+肩上	jmuh
+监视	jmui
+近墨者黑	jmvh
+艰辛	jmxb
+奸细	jmxi
+监狱	jmyu
+交汇	jnhv
+较劲	jnjb
+搅和	jnho
+焦急	jnji
+矫健	jnjm
+交界	jnjp
+矫情	jnqk
+教室	jnui
+教主	jnvu
+倦鸟知还	jnvh
+叫嚣	jnxn
+解毒	jpdu
+解除	jpiu
+解禁	jpjb
+洁净	jpjk
+节俭	jpjm
+阶梯	jpti
+结实	jpui
+戒指	jpvi
+旧瓶装新酒	jpvj
+结息	jpxi
+举棋不定	jqbd
+九点	jqdm
+救救	jqjq
+驾轻就熟	jqju
+久远	jqyr
+迥然不同	jrbt
+尽人皆知	jrjv
+见势不妙	jubm
+井水不犯河水	jubu
+精神抖擞	juds
+旧事重提	juit
+尽善尽美	jujm
+举手投足	jutz
+江山社稷	juuj
+计上心来	juxl
+假手于人	juyr
+据为己有	jwjy
+坚信不疑	jxby
+即兴发挥	jxfh
+嫁祸	jxho
+居心何在	jxhz
+尽心尽力	jxjl
+加剧	jxju
+将信将疑	jxjy
+假惺惺	jxxk
+假象	jxxl
+甲乙	jxyi
+节衣缩食	jysu
+郡主	jyvu
+军衔	jyxm
+锦衣夜行	jyyx
+苦不堪言	kbky
+开刀	kddc
+苦大仇深	kdiu
+开战	kdvj
+砍价	kjjx
+磕磕巴巴	kkbb
+坑坑洼洼	kkww
+颗粒无收	klwu
+口诛笔伐	kvbf
+开枝散叶	kvsy
+枯燥乏味	kzfw
+聊表寸心	lbcx
+连本带利	lbdl
+拉帮结派	lbjp
+两败俱伤	lbju
+老花	lchx
+郎才女貌	lcnm
+落地生根	ldug
+立竿见影	lgjy
+利国利民	lglm
+锣鼓喧天	lgxt
+论功行赏	lgxu
+利害得失	lhdu
+乐呵乐呵	lhlh
+灵魂出窍	lhiq
+理睬	licd
+历朝历代	lild
+立秋	liqq
+冷嘲热讽	lirf
+荔枝	livi
+例行	lixk
+离家出走	ljiz
+浪迹江湖	ljjh
+羚羊	lkyh
+搂搂抱抱	llbb
+恋恋不舍	llbu
+唠唠叨叨	lldd
+亮点	lldm
+来来回回	llhh
+绫罗绸缎	llid
+泪流满面	llmm
+来龙去脉	llqm
+冷冷清清	llqq
+啰啰嗦嗦	llss
+玲珑剔透	lltt
+沦落至此	llvc
+利令智昏	llvh
+寥寥无几	llwj
+碌碌无为	llww
+陆陆续续	llxx
+流落异乡	llyx
+连蒙带猜	lmdc
+两面三刀	lmsd
+螺蛳	losi
+琉璃	lqli
+两全其美	lqqm
+离群索居	lqsj
+流逝	lqui
+利人不利己	lrbj
+令人齿冷	lril
+令人胆寒	lrdh
+令人感动	lrgd
+理所当然	lsdr
+牢骚满腹	lsmf
+掠过	ltgo
+路途遥远	ltyy
+劳师动众	ludv
+乐善好施	luhu
+绿水青山	luqu
+料事如神	luru
+卤汁	luvi
+良师益友	luyy
+列支敦士登	lvdd
+力争上游	lvuy
+略知一二	lvye
+累积	lwji
+立于不败之地	lybd
+络绎不绝	lybj
+龙吟虎啸	lyhx
+伶牙俐齿	lyli
+洛阳纸贵	lyvg
+燎原之势	lyvu
+临渊羡鱼	lyxy
+没安好心	mahx
+面不改色	mbgs
+名不正言不顺	mbvu
+默不作声	mbzu
+茅草	mccc
+满腹经纶	mfjl
+每分每秒	mfmm
+马革裹尸	mggu
+目光如炬	mgrj
+蒙受	mguz
+卖官鬻爵	mgyj
+盟友	mgyz
+糜烂	milj
+猫哭老鼠	mklu
+门可罗雀	mklq
+眉开眼笑	mkyx
+名落孙山	mlsu
+懵懵懂懂	mmdd
+满面春风	mmif
+满目疮痍	mmiy
+忙忙碌碌	mmll
+莫名其妙	mmqm
+勉勉强强	mmqq
+茫茫人海	mmrh
+名门世家	mmuj
+冒冒失失	mmuu
+明眸善睐	mmul
+茉莉	moli
+弥天大谎	mtdh
+募集	muji
+幕僚	muln
+每时每刻	mumk
+牧师	muui
+没事找事	muvu
+莫衷一是	mvyu
+美化	mwhx
+面无人色	mwrs
+美貌	mwmc
+梅雨	mwyu
+名言警句	myjj
+鸟尽弓藏	njgc
+南海	njhd
+难堪	njkj
+扭扭捏捏	nnnn
+能省则省	nuzu
+能征惯战	nvgv
+能者为师	nvwu
+爬升	paug
+屁大点事	pddu
+屁颠屁颠	pdpd
+普度众生	pdvu
+披肝沥胆	pgld
+飘忽不定	phbd
+疲乏	pifa
+排除异己	piyj
+叛逃	pjtc
+攀折	pjve
+破口大骂	pkdm
+拍马难及	pmnj
+破位	poww
+岂不快哉	qbkz
+曲不离口	qblk
+禽兽	qbuz
+取长补短	qibd
+千疮百孔	qibk
+七点	qidm
+奇耻大辱	qidr
+气愤	qiff
+起伏	qifu
+牵肠挂肚	qigd
+企划	qihx
+契机	qiji
+气量	qill
+骑马	qima
+旗袍	qipc
+歧途	qitu
+千差万别	qiwb
+栖息	qixi
+气喘吁吁	qixx
+欺压	qiya
+起义	qiyi
+契约	qiyt
+棋子	qizi
+轻敌	qkdi
+清淡	qkdj
+旗开得胜	qkdu
+轻浮	qkfu
+清除	qkiu
+青椒	qkjn
+情节	qkjp
+穷困潦倒	qkld
+轻灵	qklk
+蜻蜓	qktk
+情商	qkuh
+轻视	qkui
+轻信	qkxb
+清洗	qkxi
+庆幸	qkxk
+清香	qkxl
+襁褓	qlbc
+黔驴技穷	qljq
+巧立名目	qlmm
+勤劳致富	qlvf
+奇门遁甲	qmdj
+虔诚	qmig
+青面獠牙	qmly
+前年	qmnm
+牵手	qmuz
+千兆	qmvc
+牵着	qmve
+潜质	qmvi
+亲密无间	qmwj
+牵线	qmxm
+前言	qmyj
+欠揍	qmzz
+窍门	qnmf
+清清白白	qqbb
+清清淡淡	qqdd
+起起伏伏	qqff
+齐齐哈尔	qqhe
+清清爽爽	qquu
+卿卿我我	qqww
+芊芊玉手	qqyu
+求人不如求己	qrbj
+全称	qrig
+诠释	qrui
+齐头并进	qtbj
+缺失	qtui
+千挑万选	qtwx
+情投意合	qtyh
+七手八脚	qubj
+强身健体	qujt
+前世今生	quju
+青山绿水	qulu
+巧舌如簧	qurh
+敲山震虎	quvh
+气势汹汹	quxx
+趋于	quyu
+牵一发而动全身	qyfu
+轻言细语	qyxy
+人不人鬼不鬼	rbrg
+妊娠	rfuf
+日复一日	rfyr
+如诗如画	rurh
+软硬不吃	rybi
+所到之处	sdvi
+死而不僵	sebj
+私房	sifh
+死缠烂打	sild
+饲料	siln
+四季如春	sjri
+死记硬背	sjyb
+四两拨千斤	slbj
+索然无味	srww
+松紧	ssjb
+松树	ssuu
+素菜	sucd
+丧失殆尽	sudj
+似水流年	suln
+四书五经	suwj
+三月份	syf
+太原	tdyr
+天寒地冻	thdd
+谈虎色变	thsb
+同吃同住	titv
+条件反射	tjfu
+囤积居奇	tjjq
+弹琴	tjqb
+偷奸耍滑	tjuh
+恬淡	tmdj
+填空	tmks
+天马行空	tmxk
+踏破铁鞋无觅处	tpti
+同胞	tsbc
+通缉	tsji
+同志	tsvi
+同室操戈	tucg
+徒弟	tudi
+投鼠忌器	tujq
+太少了	tul
+涂脂抹粉	tvmf
+他山之石	tuvu
+铁石心肠	tuxi
+弹指一挥间	tvyj
+通宵达旦	txdd
+天造地设	tzdu
+天姿国色	tzgs
+舍不得孩子套不住狼	ubdl
+事必躬亲	ubgq
+胜败乃兵家常事	ubnu
+说曹操曹操到	uccd
+鼠肚鸡肠	udji
+首当其冲	udqi
+射箭	uejm
+设想	uexl
+尚方宝剑	ufbj
+神采	ufcd
+是非功过	ufgg
+神情	ufqk
+神色	ufse
+顺风顺水	ufuu
+深远	ufyr
+上个月	ugy
+盛会	ughv
+省长	ugvh
+尸骨未寒	ugwh
+生性	ugxk
+圣贤	ugxm
+声誉	ugyu
+神魂颠倒	uhdd
+伤痕累累	uhll
+山花烂漫	uhlm
+赏识	uhui
+实话实说	uhuu
+事后诸葛亮	uhvl
+伤亡	uhwh
+商务	uhwu
+上限	uhxm
+说长道短	uidd
+石沉大海	uidh
+师范	uifj
+师父	uifu
+时常	uiih
+失控	uiks
+势力	uili
+石榴	uilq
+食品	uipb
+失陪	uipw
+十七	uiqi
+市区	uiqu
+受宠若惊	uirj
+失散	uisj
+师出同门	uitm
+师长	uivh
+食指	uivi
+施展	uivj
+十五	uiwu
+视线	uixm
+视野	uiye
+事宜	uiyi
+试验	uiyj
+石油	uiyz
+身价百倍	ujbb
+拾金不昧	ujbm
+伤筋动骨	ujdg
+煽动	ujds
+舒筋活血	ujhx
+陕西	ujxi
+身家性命	ujxm
+十里不同俗	ulbs
+上梁不正下梁歪	ulbw
+声泪俱下	uljx
+恃强凌弱	uqlr
+拾人牙慧	uryh
+授人以渔	uryy
+身手不凡	uubf
+世世代代	uudd
+世事洞明	uudm
+审时度势	uudu
+水深火热	uuhr
+书籍	uuji
+树立	uuli
+顺顺利利	uull
+神神秘秘	uumm
+树木	uumu
+舍生取义	uuqy
+声声入耳	uure
+孰是孰非	uuuf
+省时省力	uuul
+生生世世	uuuu
+善始善终	uuuv
+杀身之祸	uuvh
+熟视无睹	uuwd
+上上下下	uuxx
+稍胜一筹	uuyi
+时势造英雄	uuzx
+胜之不武	uvbw
+身正不怕影子斜	uvbx
+失之东隅	uvdy
+首战告捷	uvgj
+失之交臂	uvjb
+实至名归	uvmg
+食之无味	uvww
+受制于人	uvyr
+少之又少	uvyu
+顺我者昌	uwvi
+双喜临门	uxlm
+蛇蝎心肠	uxxi
+顺延	uyyj
+身在曹营心在汉	uzch
+守候	uzhz
+稍纵即逝	uzju
+十字路口	uzlk
+首饰	uzui
+受伤	uzuh
+收支	uzvi
+首位	uzww
+收养	uzyh
+招摇	vcyc
+照单全收	vdqu
+掷地有声	vdyu
+周而复始	vefu
+知法犯法	vfff
+侦察	vfia
+镇静	vfjk
+照方抓药	vfvy
+指腹为婚	vfwh
+正解	vgjp
+政权	vgqr
+争执	vgvi
+中规中矩	vgvj
+至高无上	vgwu
+这个月	vgy
+正义	vgyi
+涨幅	vhfu
+追悔莫及	vhmj
+致辞	vici
+制定	vidk
+滞后	vihz
+职称	viig
+支出	viiu
+纸巾	vijb
+支架	vijx
+致敬	vijk
+争长论短	vild
+智力	vili
+知名	vimk
+智商	viuh
+纸张	vivh
+制止	vivi
+支柱	vivu
+职务	viwu
+直辖	vixx
+枝丫	viya
+质疑	viyi
+职员	viyr
+指责	vize
+针尖对麦芒	vjdm
+战士	vjui
+朝九晚五	vjww
+战友	vjyz
+直来直去	vlvq
+珍禽异兽	vqyu
+众人拾柴火焰高	vrug
+终端	vsdr
+终极	vsji
+终结	vsjp
+中指	vsvi
+终身大事	vudu
+嘱咐	vufu
+主观	vugr
+著称	vuig
+主见	vujm
+驻留	vulq
+著书立说	vulu
+著名	vumk
+仗势欺人	vuqr
+诸如	vuru
+众矢之的	vuvd
+重赏之下，必有勇夫	vuvf
+助威	vuww
+主义	vuyi
+祝愿	vuyr
+照章办事	vvbu
+战战兢兢	vvjj
+长长见识	vvju
+整整齐齐	vvqq
+蒸蒸日上	vvru
+置之死地而后生	vvsu
+知之甚少	vvuu
+真真正正	vvvv
+支支吾吾	vvww
+直系亲属	vxqu
+只要功夫深	vygu
+睁一只眼，闭一只眼	vyvy
+文本文件	wbwj
+闻道有先后	wdyh
+吻合	wfhe
+威风扫地	wfsd
+瘟疫	wfyi
+为虎作伥	whzi
+无坚不摧	wjbc
+万劫不复	wjbf
+无精打采	wjdc
+挽回	wjhv
+无计可施	wjku
+晚年	wjnm
+物竞天择	wjtz
+无拘无束	wjwu
+蜿蜒	wjyj
+无利不起早	wlbz
+无利可图	wlkt
+歪理邪说	wlxu
+为数不多	wubd
+无商不奸	wubj
+误导	wudc
+万事大吉	wudj
+蜈蚣	wugs
+无故	wugu
+为时过早	wugz
+万事俱备	wujb
+无理	wuli
+忤逆	wuni
+万水千山	wuqu
+无事生非	wuuf
+午睡	wuuv
+畏手畏脚	wuwj
+无时无刻	wuwk
+畏首畏尾	wuww
+诬陷	wuxm
+无暇	wuxx
+握手言和	wuyh
+无疑	wuyi
+勿施于人	wuyr
+巫山云雨	wuyy
+瓮中之鳖	wvvb
+文无第一	wwdy
+物我两忘	wwlw
+卫冕	wwmm
+歪歪扭扭	wwnn
+围棋	wwqi
+弯弯曲曲	wwqq
+玩物丧志	wwsv
+完完整整	wwvv
+唯物主义	wwvy
+呜呜呜	www
+猥亵	wwxp
+万无一失	wwyu
+五味杂陈	wwzi
+妄下断语	wxdy
+惟有饮者留其名	wyym
+心急	xbji
+心理	xbli
+小不忍则乱大谋	xbrm
+心比天高	xbtg
+刑不上大夫	xbuf
+邪不胜正	xbuv
+虾兵蟹将	xbxj
+新兴	xbxk
+心仪	xbyi
+想东想西	xdxx
+相得益彰	xdyv
+星光灿烂	xgcl
+新陈代谢	xidx
+西郊	xijn
+洗礼	xili
+悉尼	xini
+吸取	xiqu
+稀释	xiui
+洗漱	xiuu
+相差甚远	xiuy
+洗手	xiuz
+相差无几	xiwj
+喜出望外	xiww
+悉心	xixb
+戏谑	xixt
+蜥蜴	xiyi
+席卷一空	xjyk
+性命	xkmk
+形势	xkui
+笑里藏刀	xlcd
+降龙伏虎	xlfh
+血流成河	xlih
+橡胶	xljn
+星罗棋布	xlqb
+镶嵌	xlqm
+血流如注	xlrv
+泄露天机	xltj
+心领神会	xluh
+想来想去	xlxq
+向下	xlxx
+笑脸相迎	xlxy
+响应	xlyk
+吓了一跳	xlyt
+显露	xmlu
+现实	xmui
+献身	xmuf
+蓄谋已久	xmyj
+心满意足	xmyz
+笑声	xnug
+嚣张	xnvh
+小鸟依人	xnyr
+血浓于水	xnyu
+懈怠	xpdd
+血盆大口	xpdk
+亵玩	xpwj
+写字	xpzi
+贤妻良母	xqlm
+小桥流水	xqlu
+心如刀绞	xrdj
+血型	xtxk
+血液	xtye
+心神不宁	xubn
+形势比人强	xubq
+心神恍惚	xuhh
+酗酒	xujq
+喜上眉梢	xumu
+修身养性	xuyx
+修修补补	xxbb
+心绪不宁	xxbn
+絮絮叨叨	xxdd
+险象环生	xxhu
+瞎扯	xxie
+新鲜出炉	xxil
+相形见绌	xxji
+稀稀拉拉	xxll
+寻寻觅觅	xxmm
+心心念念	xxnn
+潇潇洒洒	xxss
+虚虚实实	xxuu
+夏至	xxvi
+雄心壮志	xxvv
+遐想	xxxl
+下限	xxxm
+先下一城	xxyi
+心心相印	xxxy
+小心眼	xxy
+香消玉殒	xxyy
+咸鱼翻身	xyfu
+宵衣旰食	xygu
+匈牙利	xyli
+悬崖勒马	xylm
+学有所成	xysi
+心有所属	xysu
+心有余悸	xyyj
+心有余而力不足	xyyz
+雅致	yavi
+押运	yayy
+引申	ybuf
+以不变应万变	ybbb
+以备不测	ybbc
+欲罢不能	ybbn
+摇摆不定	ybbd
+引渡	ybdu
+愚不可及	ybkj
+眼波流转	yblv
+一笔抹杀	ybmu
+隐匿	ybni
+一表人才	ybrc
+用兵如神	ybru
+隐约	ybyt
+阴郁	ybyu
+有板有眼	ybyy
+一兵一卒	ybyz
+一寸光阴一寸金	ycgj
+由此及彼	ycjb
+由此可见	yckj
+耀眼	ycyj
+有得必有失	ydbu
+愿赌服输	ydfu
+有胆有识	ydyu
+衣冠不整	ygbv
+衣冠禽兽	ygqu
+有何不可	yhbk
+银河倒泻	yhdx
+一回生二回熟	yhuu
+有话直说	yhvu
+养虎为患	yhwh
+养颜	yhyj
+养育	yhyu
+一成不变	yibb
+扬长避短	yibd
+一尘不染	yibr
+阳春白雪	yibx
+以诚待人	yidr
+一锤定音	yidy
+依附	yifu
+摇唇鼓舌	yigu
+寅吃卯粮	yiml
+言传身教	yiuj
+遗嘱	yivu
+遗忘	yiwh
+羊肠小道	yixd
+阴差阳错	yiyc
+越扯越远	yiyy
+一击毙命	yjbm
+油尽灯枯	yjdk
+衣锦还乡	yjhx
+演唱	yjih
+严谨	yjjb
+眼镜	yjjk
+义结金兰	yjjl
+严苛	yjke
+冤家路窄	yjlv
+俨然	yjrj
+延伸	yjuf
+掩饰	yjui
+也就是说	yjuu
+炎症	yjvg
+一技之长	yjvi
+一己之私	yjvs
+远见卓识	yjvu
+厌恶	yjwu
+以儆效尤	yjxy
+言尽于此	yjyc
+咬紧牙关	yjyg
+有口难言	ykny
+影射	ykue
+哑口无言	ykwy
+有利无害	ylwh
+由来已久	ylyj
+榆木疙瘩	ymgd
+有模有样	ymyy
+以其人之道，还治其人之身	yqru
+于情于理	yqyl
+阴晴圆缺	yqyq
+有权有势	yqyu
+用人不疑，疑人不用	yrby
+一人得道	yrdd
+一荣俱荣	yrjr
+冤家	yrjx
+怨气	yrqi
+源泉	yrqr
+跃然纸上	yrvu
+一日为师，终生为父	yrwf
+冤枉	yrwh
+阅人无数	yrwu
+音容笑貌	yrxm
+缘由	yryz
+一人做事一人当	yrzd
+一丝不挂	ysbg
+伊斯兰教	yslj
+摇头摆尾	ytbw
+油头滑脑	ythn
+有条有理	ytyl
+怨天尤人	ytyr
+一声不吭	yubk
+愈发	yufa
+有伤风化	yufh
+迂腐	yufu
+浴缸	yugh
+与世隔绝	yugj
+引蛇出洞	yuid
+雨季	yuji
+远水解不了近渴	yujk
+一石激起千层浪	yujl
+雨露	yulu
+衣衫褴褛	yull
+预期	yuqi
+移山填海	yuth
+一身是胆	yuud
+一试身手	yuuu
+有识之士	yuvu
+衣食无忧	yuwy
+以身相许	yuxx
+摇身一变	yuyb
+寓意	yuyi
+预言	yuyj
+有生以来	yuyl
+以势压人	yuyr
+有声有色	yuys
+愉悦	yuyt
+阴盛阳衰	yuyu
+有说有笑	yuyx
+莺声燕语	yuyy
+怨声载道	yuzd
+咬舌自尽	yuzj
+言之有理	yvyl
+以战养战	yvyv
+言之有物	yvyw
+意味深长	ywui
+余味无穷	ywwq
+言为心声	ywxu
+一星半点	yxbd
+英雄不问出处	yxbi
+一心不能二用	yxby
+一线生机	yxuj
+欲仙欲死	yxys
+言笑晏晏	yxyy
+以怨报德	yybd
+一夜暴富	yybf
+油盐不进	yybj
+怏怏不乐	yybl
+有眼不识泰山	yybu
+抑扬顿挫	yydc
+一拥而上	yyeu
+因噎废食	yyfu
+晕晕乎乎	yyhh
+以眼还眼	yyhy
+晕晕沉沉	yyii
+异于常人	yyir
+一语惊醒梦中人	yyjr
+阴雨连绵	yylm
+烟雨蒙蒙	yymm
+一言难尽	yynj
+有缘千里来相会	yyqh
+咬牙切齿	yyqi
+洋洋洒洒	yyss
+应有之义	yyvy
+引以为戒	yywj
+依依惜别	yyxb
+炎炎夏日	yyxr
+牙牙学语	yyxy
+跃跃欲试	yyyu
+摇摇欲坠	yyyv
+一言一行	yyyx
+犹犹豫豫	yyyy
+优点	yzdm
+以资鼓励	yzgl
+忧愁	yziz
+右键	yzjm
+有理	yzli
+一走了之	yzlv
+优质	yzvi
+有增无减	yzwj
+优先	yzxm
+游泳	yzys
+犹豫	yzyu
+匝道	zadc
+自驾	zijx
+姿色	zise
+紫砂	ziua
+自愿	ziyr
+自成一家	ziyj
+自成一体	ziyt
+坐实	zoui
+坐失良机	zulj
+足矣	zuyi
+载誉归来	zygl
+自怨自艾	zyzy
+
+# 三码填空
+截个屏	jgp
+截个图	jgt
+风嗖嗖	fss
+火灾	hoz
+举个例	jgl
+不认识	bru
+赶快	gjk
+靠在	kcz
+扣帽子	kmz
+这段话	vdh
+三两下	slx
+阿爸	aab
+阿哥	aag
+啊哈	aah
+阿妹	aam
+阿婆	aap
+阿姨	aay
+爱不爱	aba
+熬不过	abg
+矮半截	abj
+阿波罗	abl
+熬不住	abv
+按错了	acl
+安道尔	ade
+阿尔法	aef
+阿尔及利亚	aej
+爱尔兰	ael
+阿富汗	afh
+阿凡提	aft
+安哥拉	agl
+阿根廷	agt
+爱国者	agv
+昂起	ahq
+盎然	ahr
+安徽省	ahu
+挨打	aid
+爱国	aig
+爱好	aih
+暗戳戳	aii
+按常理	ail
+爱慕	aim
+爱情	aiq
+爱人	air
+挨着	aiv
+爱心	aix
+矮子	aiz
+安静了	ajl
+氨基酸	ajs
+阿拉伯	alb
+阿拉丁	ald
+安理会	alh
+阿联酋	alq
+安乐死	als
+按理说	alu
+安乐窝	alw
+安眠药	amy
+爱面子	amz
+安插	ani
+案例	anl
+按钮	ann
+安排	anp
+暗算	ans
+暗示	anu
+安装	anv
+安慰	anw
+安心	anx
+案子	anz
+懊悔	aoh
+傲慢	aom
+傲视	aou
+澳洲	aov
+爱琴海	aqh
+安全感	aqg
+安全局	aqj
+爱情片	aqp
+安全性	aqx
+奥斯卡	ask
+奥斯陆	asl
+凹透镜	atj
+安徒生	atu
+阿诗玛	aum
+爱谁谁	auu
+安装版	avb
+奥委会	awh
+奥运会	ayh
+哎呦喂	ayw
+艾滋病	azb
+阿拉	aal
+AA制	aav
+腌臜	aaz
+阿尔巴尼亚	aeb
+埃菲尔铁塔	afe
+爱国	ahg
+盎司	ahs
+肮脏	ahz
+矮矮	aia
+哀莫大于心死	amd
+阿姆斯特丹	ams
+凹槽	aoc
+熬成	aoi
+傲气	aoq
+懊丧	aos
+埃塞俄比亚	ase
+爱之欲其生	avy
+按下葫芦起来瓢	axh
+疤痕	bah
+拔出	bai
+八日	bar
+把握	baw
+并不会	bbh
+办不成	bbi
+不包括	bbk
+并不能	bbn
+北半球	bbq
+棒棒糖	bbt
+并不是	bbu
+八宝粥	bbv
+并不想	bbx
+不必要	bby
+半辈子	bbz
+报告	bcg
+包括	bck
+保暖	bcn
+抱歉	bcq
+报送	bcs
+包退	bct
+白菜	bdc
+不单单	bdd
+白干	bdg
+不动产	bdi
+不得了	bdl
+摆平	bdp
+不打算	bds
+别当真	bdv
+巴尔干	beg
+本分	bff
+本该	bfg
+百分号	bfh
+奔驰	bfi
+本科	bfk
+本来	bfl
+奔跑	bfp
+本人	bfr
+奔腾	bft
+比方说	bfu
+本文	bfw
+不负责	bfz
+不敢当	bgd
+甭管	bgg
+崩坏	bgh
+帮个忙	bgm
+半个钟	bgv
+半个月	bgy
+不会吧	bhb
+不合格	bhg
+白花花	bhh
+绑票	bhp
+不回去	bhq
+帮助	bhv
+帮下	bhx
+绑在	bhz
+比方	bif
+比例	bil
+半仓	bjc
+半场	bji
+版块	bjk
+比基尼	bjn
+并购	bkg
+并将	bkj
+并可	bkk
+不考虑	bkl
+不可能	bkn
+病人	bkr
+病死	bks
+病痛	bkt
+病症	bkv
+不开心	bkx
+并在	bkz
+不理睬	blc
+便利店	bld
+别浪费	blf
+板蓝根	blg
+博览会	blh
+碧螺春	bli
+不了解	blj
+不离开	blk
+不聊了	bll
+爆冷门	blm
+舶来品	blp
+保龄球	blq
+病来如山倒	blr
+不利索	bls
+柏拉图	blt
+避雷针	blv
+不理想	blx
+不利于	bly
+匾额	bme
+编码	bmm
+本命年	bmn
+变态	bmt
+表达	bnd
+不耐烦	bnf
+标出	bni
+镖客	bnk
+别闹了	bnl
+表嫂	bns
+标题	bnt
+表示	bnu
+表现	bnx
+表演	bny
+婊子	bnz
+脖颈	bog
+播出	boi
+剥皮	bop
+博取	boq
+播送	bos
+波涛	bot
+别管	bpg
+不平衡	bph
+别急	bpj
+别离	bpl
+别忙	bpm
+别扭	bpn
+别怕	bpp
+别人	bpr
+别致	bpv
+别忘	bpw
+别想	bpx
+不便宜	bpy
+别再	bpz
+不确定	bqd
+不奇怪	bqg
+不清楚	bqi
+白切鸡	bqj
+冰淇淋	bql
+不求人	bqr
+包青天	bqt
+不求闻达于诸侯	bqw
+不认得	brd
+白日梦	brm
+不然呢	brn
+哺乳期	brq
+不容易	bry
+变色龙	bsl
+不算数	bsu
+波斯湾	bsw
+不死心	bsx
+不太懂	btd
+白头发	btf
+不太敢	btg
+不太好	bth
+不提倡	bti
+不推荐	btj
+半透明	btm
+扁桃体	btt
+半桶水	btu
+别太晚	btw
+不同意	bty
+不是吧	bub
+不饿	bue
+不够	bug
+办事处	bui
+不能	bun
+不算	bus
+不知道	bvd
+不战而屈人之兵	bve
+辩证法	bvf
+不折腾	bvt
+不支持	bvi
+不着急	bvj
+不知名	bvm
+不值钱	bvq
+班主任	bvr
+不只是	bvu
+标志着	bvv
+标志性	bvx
+悲哀	bwa
+不稳定	bwd
+备查	bwi
+背诵	bws
+悲痛	bwt
+备用	bwy
+不晓得	bxd
+不相符	bxf
+不习惯	bxg
+不喜欢	bxh
+别瞎扯	bxi
+步行街	bxj
+必修课	bxk
+不行了	bxl
+不行吗	bxm
+不像你	bxn
+必需品	bxp
+保修期	bxq
+不希望	bxw
+不需要	bxy
+不一般	byb
+不一定	byd
+八月份	byf
+不应该	byg
+不要紧	byj
+不用了	byl
+比翼鸟	byn
+变压器	byq
+不要说	byu
+不一致	byv
+本以为	byw
+布依族	byz
+不在乎	bzh
+不赞成	bzi
+不在家	bzj
+不早了	bzl
+不怎么	bzm
+不足取	bzq
+不自然	bzr
+不早说	bzu
+不作为	bzw
+不自在	bzz
+昄	bjo
+布尔什维克	beu
+办案	bja
+并存	bkc
+玻璃杯	blb
+表外	bnw
+拨弄	bon
+别提	bpt
+不如退而结网	brt
+比死人多口气	bsr
+白天鹅	bte
+不撞南墙不回头	bvn
+被虐	bwn
+北欧	bwo
+避孕套	byt
+不做亏心事	bzk
+擦边	cab
+擦汗	cah
+擦伤	cau
+擦药	cay
+从不曾	cbc
+猜不到	cbd
+才不会	cbh
+错不了	cbl
+才不是	cbu
+擦边球	cbq
+藏不住	cbv
+错别字	cbz
+草包	ccb
+噌噌噌	ccc
+草稿	ccg
+擦擦汗	cch
+草芥	ccj
+操劳	ccl
+残次品	ccp
+草签	ccq
+草图	cct
+操心	ccx
+草原	ccy
+操作	ccz
+财宝	cdb
+采购	cdg
+才华	cdh
+财产	cdi
+才能	cdn
+彩色	cds
+踩踏	cdt
+财政	cdv
+财务	cdw
+才行	cdx
+采用	cdy
+侧边	ceb
+册封	cef
+策划	ceh
+测量	cel
+侧面	cem
+厕所	ces
+侧头	cet
+测试	ceu
+测验	cey
+参差	cfc
+层次	cgc
+蹭到	cgd
+蹭饭	cgf
+蹭车	cgi
+踩过界	cgj
+错过了	cgl
+曾有	cgy
+苍白	chb
+沧海	chh
+仓储	chi
+催化剂	chj
+苍茫	chm
+藏匿	chn
+沧桑	chs
+藏书	chu
+苍蝇	chy
+藏在	chz
+此番	cif
+赐给	cig
+此处	cii
+刺激	cij
+此类	cil
+此乃	cin
+辞退	cit
+此外	ciw
+次选	cix
+惨败	cjb
+残存	cjc
+餐车	cji
+参考	cjk
+参评	cjp
+残缺	cjq
+残忍	cjr
+参照	cjv
+参与	cjy
+惨遭	cjz
+才可能	ckn
+才开始	cku
+从来不	clb
+擦了擦	clc
+催泪弹	cld
+策略性	clx
+藏猫猫	cmm
+催眠曲	cmq
+从明天开始	cmt
+从没有	cmy
+才能够	cng
+错爱	coa
+错过	cog
+错开	cok
+搓揉	cor
+蹉跎	cot
+错位	cow
+擦屁股	cpg
+藏起来	cql
+篡改	crg
+凑热闹	crn
+从今	csj
+从宽	csk
+从来	csl
+从前	csq
+从事	csu
+从中	csv
+从业	csy
+醋坛子	ctz
+粗放	cuf
+粗犷	cug
+粗话	cuh
+促进	cuj
+粗口	cuk
+粗鲁	cul
+粗俗	cus
+粗体	cut
+促使	cuu
+粗心	cux
+脆骨	cvg
+摧毁	cvh
+财政局	cvj
+翠绿	cvl
+脆皮	cvp
+催生	cvu
+催债	cvv
+村委会	cwh
+错误率	cwl
+磁悬浮	cxf
+才需要	cxy
+搓衣板	cyb
+猜一猜	cyc
+参与度	cyd
+存放	cyf
+存活	cyh
+存储	cyi
+存款	cyk
+存量	cyl
+曾用名	cym
+存盘	cyp
+存取	cyq
+存折	cyv
+存为	cyw
+存有	cyy
+存在	cyz
+凑到	czd
+存在感	czg
+凑近	czj
+凑巧	czq
+操作台	czt
+擦擦	cac
+擦掉	cad
+擦干	cag
+擦除	cai
+擦亮	cal
+擦破	cap
+擦着	cav
+擦洗	cax
+草拟	ccn
+草屋	ccw
+测测	cec
+侧耳	cee
+测距	cej
+测控	cek
+侧卧	cew
+册子	cez
+此风不可长	cfb
+层高	cgg
+层面	cgm
+曾任	cgr
+蹭网	cgw
+仓库	chk
+藏品	chp
+苍穹	chq
+苍天	cht
+刺耳	cie
+惨案	cja
+残年	cjn
+聪明反被聪明误	cmf
+聪明人	cmr
+错的	cod
+撮合	coh
+错码	com
+错判	cop
+挫折	cov
+搓洗	cox
+错用	coy
+窜出	cri
+篡权	crq
+窜逃	crt
+篡位	crw
+从犯	csf
+从速	css
+从头	cst
+从早	csz
+催产	cvi
+萃取	cvq
+从现在开始	cxz
+存入	cyr
+凑凑	czc
+凑合	czh
+凑数	czu
+凑足	czz
+答案	daa
+打钱	daq
+打扰	dar
+打算	das
+大王	daw
+对不对	dbd
+大部分	dbf
+打不过	dbg
+都不会	dbh
+等不及	dbj
+打不开	dbk
+大不了	dbl
+道不明	dbm
+都不能	dbn
+对不起	dbq
+倒不如	dbr
+倒不是	dbu
+对不住	dbv
+代表性	dbx
+大本营	dby
+带不走	dbz
+稻草	dcc
+导购	dcg
+倒退	dct
+到位	dcw
+导演	dcy
+代词	ddc
+电灯泡	ddp
+对得起	ddq
+代谢	ddx
+第二遍	deb
+第二次	dec
+得到	ded
+得分	def
+第二个	deg
+得了	del
+第二名	dem
+第二年	den
+得票	dep
+大而全	deq
+得胜	deu
+德文	dew
+德行	dex
+电饭煲	dfb
+大幅度	dfd
+电饭锅	dfg
+东方红	dfh
+单方面	dfm
+豆腐脑	dfn
+豆腐乳	dfr
+豆腐渣	dfv
+大范围	dfw
+地方性	dfx
+丹凤眼	dfy
+大锅饭	dgf
+顶呱呱	dgg
+胆固醇	dgi
+大规模	dgm
+打过去	dgq
+等人	dgr
+等同	dgt
+等下	dgx
+档案	dha
+𬍡	dhd
+读后感	dhg
+打哈哈	dhh
+当口	dhk
+当了	dhl
+当年	dhn
+当前	dhq
+当然	dhr
+导火索	dhs
+当作	dhz
+倒春寒	dih
+单纯	dji
+胆量	djl
+淡漠	djm
+胆囊	djn
+单位	djw
+顶层	dkc
+订购	dkg
+定会	dkh
+订票	dkp
+定期	dkq
+盯死	dks
+定下	dkx
+定做	dkz
+得了吧	dlb
+大老粗	dlc
+多伦多	dld
+第六感	dlg
+度量衡	dlh
+邓丽君	dlj
+带来了	dll
+对立面	dlm
+多了去	dlq
+代理人	dlr
+大冷天	dlt
+大理石	dlu
+顶梁柱	dlv
+独立性	dlx
+大老远	dly
+掉链子	dlz
+电池	dmi
+点开	dmk
+店面	dmm
+电脑	dmn
+点评	dmp
+独木桥	dmq
+电影	dmy
+吊诡	dng
+多年后	dnh
+调查	dni
+掉了	dnl
+刁蛮	dnm
+刁难	dnn
+调任	dnr
+掉色	dns
+掉头	dnt
+掉下	dnx
+掉在	dnz
+多半	dob
+多次	doc
+多好	doh
+多长	doi
+多了	dol
+多年	don
+多情	doq
+多人	dor
+多问	dow
+多余	doy
+大屏幕	dpm
+肚皮舞	dpw
+地平线	dpx
+大气层	dqc
+丢掉	dqd
+电气化	dqh
+打起来	dql
+丢弃	dqq
+丢人	dqr
+道琼斯	dqs
+丢失	dqu
+当权者	dqv
+大气压	dqy
+兜圈子	dqz
+短板	drb
+短促	drc
+断根	drg
+单人床	dri
+断开	drk
+断奶	drn
+短期	drq
+断然	drr
+短语	dry
+短暂	drz
+第三个	dsg
+懂了	dsl
+第三年	dsn
+冻死	dss
+动员	dsy
+动作	dsz
+洞庭湖	dth
+大提琴	dtq
+断头台	dtt
+大体上	dtu
+打头阵	dtv
+独特性	dtx
+等同于	dty
+堵塞	dus
+读完	duw
+读写	dux
+对岸	dva
+对此	dvc
+都知道	dvd
+对着干	dvg
+对称	dvi
+对抗	dvk
+对了	dvl
+对面	dvm
+等着瞧	dvq
+对人	dvr
+端午节	dwj
+吊胃口	dwk
+大无畏	dww
+动物园	dwy
+都忘了	dwl
+店小二	dxe
+掉下来	dxl
+大小写	dxx
+单行道	dxd
+东西方	dxf
+胆小鬼	dxg
+都喜欢	dxh
+大小姐	dxj
+大熊猫	dxm
+单相思	dxs
+低血糖	dxt
+大学生	dxu
+定心丸	dxw
+大西洋	dxy
+东乡族	dxz
+大小便	dxb
+大学城	dxi
+第一遍	dyb
+第一次	dyc
+独一份	dyf
+第一个	dyg
+打圆场	dyi
+第一名	dym
+第一年	dyn
+代言人	dyr
+都给	dzg
+都没	dzm
+都能	dzn
+打砸抢	dzq
+陡然	dzr
+抖擞	dzs
+都是	dzu
+都行	dzx
+等于零	dyl
+大额	dae
+岛内	dcn
+得瑟	des
+得罪	dez
+灯泡	dgp
+登岸	dga
+第二	die
+定名	dkm
+大路朝天，各走一边	dli
+得了便宜还卖乖	dlp
+点算	dms
+调遣	dnq
+多爱	doa
+哆嗦	dos
+跌幅	dpf
+爹娘	dpn
+跌去	dpq
+跌至	dpv
+丢给	dqg
+丢丑	dqi
+断案	dra
+短发	drf
+东坡	dsp
+呆头鹅	dte
+对内	dvn
+对偶	dvo
+斗殴	dzo
+都在玩	dzw
+𫶇	dpe
+𬘘	djs
+饿不饿	ebe
+耳边风	ebf
+而不会	ebh
+饿扁了	ebl
+而不去	ebq
+而不用	eby
+饿不死	ebs
+而不是	ebu
+而不能	ebn
+二百五	ebw
+二次元	ecy
+二等奖	edj
+饿肚子	edz
+额度	eed
+恶搞	eeg
+恶化	eeh
+饿了	eel
+饿死	ees
+额头	eet
+遏制	eev
+阿房宫	efg
+恩格尔	ege
+二锅头	egt
+恶狠狠	ehh
+二合一	ehy
+二传手	eiu
+二季度	ejd
+二进制	ejv
+俄罗斯	els
+二郎腿	elt
+二流子	elz
+峨眉山	emu
+恩德	end
+嗯哼	enh
+恩仇	eni
+二年级	enj
+恩情	enq
+恩怨	eny
+耳旁风	epf
+而不	erb
+而非	erf
+儿歌	erg
+耳环	erh
+而成	eri
+二楼	erl
+耳目	erm
+儿女	ern
+而且	erq
+耳塞	ers
+二者	erv
+饿死了	esl
+二三十	esu
+儿童节	etj
+耳听为虚，眼见为实	etw
+二十八	eub
+二十多	eud
+二十二	eue
+二十九	euj
+二十六	eul
+二十七	euq
+二十四	eus
+二十五	euw
+二十一	euy
+二傻子	euz
+二指禅	evi
+二维码	ewm
+二选一	exy
+二月份	eyf
+恶作剧	ezj
+儿不嫌母丑，狗不嫌家贫	ebx
+儿大不由娘	edb
+恶评	eep
+恶气	eeq
+厄立特里亚	elt
+鹅卵石	elu
+恩爱	ena
+恩公	eng
+恩人	enr
+恩师	enu
+恩准	env
+恩泽	enz
+二次	erc
+儿童	ert
+饿死胆小的	esd
+二十年	eun
+二者不可得兼	evb
+儿行千里母担忧	exq
+恶向胆边生	exd
+二一添作五	eyt
+发布	fab
+发财	fac
+发呆	fad
+发放	faf
+法规	fag
+发出	fai
+发觉	faj
+罚款	fak
+发怒	fan
+发起	faq
+法庭	fat
+发作	faz
+烦不烦	fbf
+发不出	fbi
+分辨率	fbl
+分不清	fbq
+分别是	fbu
+犯不着	fbv
+放不下	fbx
+翻白眼	fby
+发错了	fcl
+梵蒂冈	fdg
+房地产	fdi
+反对派	fdp
+反倒是	fdu
+放得下	fdx
+辅导员	fdy
+防盗门	fdm
+肥嘟嘟	fdd
+富二代	fed
+凡尔赛	fes
+份额	ffe
+纷纷	fff
+分成	ffi
+愤怒	ffn
+分批	ffp
+分组	ffz
+风格	fgg
+奉陪	fgp
+风情	fgq
+风筝	fgv
+风味	fgw
+方便	fhb
+放过	fhg
+防火墙	fhq
+放心	fhx
+放在	fhz
+非常棒	fib
+非常多	fid
+肥肠粉	fif
+非常高	fig
+非常好	fih
+非常差	fii
+放长假	fij
+非常快	fik
+非常冷	fil
+非常慢	fim
+非常难	fin
+非常强	fiq
+非常热	fir
+方程式	fiu
+房产证	fiv
+放长线	fix
+翻倍	fjb
+犯规	fjg
+烦了	fjl
+烦恼	fjn
+反思	fjs
+反映	fjy
+防空洞	fkd
+放空炮	fkp
+方块字	fkz
+氟利昂	fla
+菲律宾	flb
+福利费	flf
+风凉话	flh
+分理处	fli
+法拉利	fll
+飞利浦	flp
+费力气	flq
+发牢骚	fls
+法令纹	flw
+法兰西	flx
+福利院	fly
+负离子	flz
+发霉了	fml
+敷面膜	fmm
+非卖品	fmp
+父母亲	fmq
+飞毛腿	fmt
+分泌物	fmw
+驸马爷	fmy
+服你了	fnl
+妇女节	fnj
+佛教	foj
+佛像	fox
+废品率	fpl
+发脾气	fpq
+番茄酱	fqj
+凤求凰	fqh
+放弃了	fql
+肺气肿	fqv
+缝纫机	frj
+副热带	frd
+烦死了	fsl
+烦死人	fsr
+发散性	fsx
+反贪局	ftj
+繁体字	ftz
+反政府	fvf
+法制化	fvh
+非主流	fvl
+辅助码	fvm
+发展中	fvv
+辅助性	fvx
+分之一	fvy
+俯卧撑	fwi
+肥胖	fwp
+肥肉	fwr
+沸腾	fwt
+肥皂	fwz
+风向标	fxb
+发祥地	fxd
+方向感	fxg
+抚恤金	fxj
+发现了	fxl
+方向盘	fxp
+法西斯	fxs
+烦心事	fxu
+方向性	fxx
+飞行员	fxy
+反义词	fyc
+发源地	fyd
+发一个	fyg
+复印件	fyj
+反映了	fyl
+发言权	fyq
+发言人	fyr
+腹有诗书气自华	fyu
+防御性	fyx
+否定	fzd
+负罪感	fzg
+否决	fzj
+副作用	fzy
+法案	faa
+蜂鸟	fgn
+翻案	fja
+反而	fje
+风马牛不相及	fmn
+佛法	fof
+佛光	fog
+佛龛	fok
+佛门	fom
+佛寺	fos
+佛堂	fot
+佛山	fou
+佛珠	fov
+佛爷	foy
+佛祖	foz
+夫妻店	fqd
+放之四海而皆准	fvs
+飞蛾	fwe
+风萧萧兮易水寒	fxx
+蜉蝣撼大树	fyh
+富在深山有远亲	fzu
+复杂性	fzx
+否则	fzz
+嘎嘣	gab
+公安局	gaj
+咖喱	gal
+伽马	gam
+港澳台	gat
+干巴巴	gbb
+怪不得	gbd
+够不够	gbg
+搞不好	gbh
+高不成	gbi
+赶不及	gbj
+管不了	gbl
+更不能	gbn
+过不去	gbq
+搞半天	gbt
+管不着	gbv
+鬼把戏	gbx
+个把月	gby
+光膀子	gbz
+过把瘾	gby
+高傲	gca
+搞定	gcd
+高额	gce
+高考	gck
+高人	gcr
+告退	gct
+稿子	gcz
+改革	gdg
+改换	gdh
+改成	gdi
+改了	gdl
+过得去	gdq
+改正	gdv
+改为	gdw
+改下	gdx
+鬼点子	gdz
+隔阂	geh
+歌曲	geq
+各位	gew
+各项	gex
+根本	gfb
+跟单	gfd
+根骨	gfg
+规范化	gfh
+跟车	gfi
+根据	gfj
+跟拍	gfp
+高峰期	gfq
+跟上	gfu
+规范性	gfx
+根源	gfy
+跟踪	gfz
+更不	ggb
+更烦	ggf
+更好	ggh
+更差	ggi
+更难	ggn
+更怕	ggp
+更强	ggq
+更为	ggw
+更新	ggx
+更早	ggz
+刚才	ghc
+刚吃	ghi
+钢琴	ghq
+岗位	ghw
+刚学	ghx
+刚走	ghz
+共产党	gid
+歌唱家	gij
+观察力	gil
+滚出去	giq
+工程师	giu
+过程中	giv
+广场舞	giw
+尴尬	gjg
+感情	gjq
+干扰	gjr
+怪诞	gkd
+乖乖	gkg
+高科技	gkj
+怪了	gkl
+怪癖	gkp
+公开赛	gks
+拐弯	gkw
+公开信	gkx
+怪异	gky
+怪罪	gkz
+光标	glb
+广泛	glf
+广告	glg
+光滑	glh
+广场	gli
+逛街	glj
+孤零零	gll
+光芒	glm
+光凭	glp
+过来人	glr
+过两天	glt
+光说	glu
+广州	glv
+国民党	gmd
+哥们儿	gme
+鬼门关	gmg
+根目录	gml
+冠名权	gmq
+擀面杖	gmv
+高难度	gnd
+姑奶奶	gnn
+更年期	gnq
+功能性	gnx
+过关	gog
+过年	gon
+果然	gor
+果酸	gos
+过着	gov
+过于	goy
+狗皮膏	gpg
+跟屁虫	gpi
+公平性	gpx
+顾前不顾后	gqb
+过去的	gqd
+搞清楚	gqi
+国庆节	gqj
+过去了	gql
+鬼敲门	gqm
+共青团	gqt
+过去时	gqu
+高清晰	gqx
+观察	gri
+关键	grj
+观看	grk
+观念	grn
+关切	grq
+共轭	gse
+功能	gsn
+供求	gsq
+公司	gss
+共同	gst
+共享	gsx
+改天吧	gtb
+感叹词	gtc
+共同点	gtd
+刮台风	gtf
+感叹号	gth
+共同处	gti
+改天聊	gtl
+管他呢	gtn
+古铜色	gts
+狗腿子	gtz
+股份	guf
+股票	gup
+股权	guq
+骨头	gut
+规劝	gvq
+跪下	gvx
+公文包	gwb
+购物车	gwi
+给了	gwl
+给钱	gwq
+给人	gwr
+个位数	gwu
+剐蹭	gxc
+挂断	gxd
+挂钩	gxg
+挂机	gxj
+挂着	gxv
+挂心	gxx
+高血压	gxy
+挂在	gxz
+过一段	gyd
+高压锅	gyg
+滚回	gyh
+冠亚军	gyj
+滚开	gyk
+工艺品	gyp
+公元前	gyq
+滚热	gyr
+滚烫	gyt
+过一阵	gyv
+归因于	gyy
+棍子	gyz
+够好	gzh
+构成	gzi
+够了	gzl
+狗屁	gzp
+购物	gzw
+勾选	gzx
+国内外	gnw
+嘎吱	gav
+盖房	gdf
+改日	gdr
+该死	gds
+跟风	gff
+跟随	gfs
+跟帖	gft
+更惨	ggc
+更让	ggr
+港澳	gha
+刚好	ghh
+感恩	gje
+赶跑	gjp
+怪才	gkc
+怪话	gkh
+拐卖	gkm
+怪人	gkr
+怪胎	gkt
+光彩	glc
+光速	gls
+革命尚未成功	gmu
+敢怒不敢言	gnb
+敢怒而不敢言	gne
+国内生产总值	gnu
+鬼才	gvc
+过五关斩六将	gwg
+给回	gwh
+给出	gwi
+给足	gwz
+挂出	gxi
+挂念	gxn
+寡人	gxr
+𬒔	ggu
+纮	hss
+哈喽	hal
+汉堡包	hbb
+还不错	hbc
+恨不得	hbd
+好办法	hbf
+还不够	hbg
+会不会	hbh
+环保局	hbj
+还不快	hbk
+还不能	hbn
+回不去	hbq
+好半天	hbt
+还不是	hbu
+还不止	hbv
+花不完	hbw
+还不行	hbx
+后半夜	hby
+好啊	hca
+耗费	hcf
+好感	hcg
+好难	hcn
+好评	hcp
+好奇	hcq
+好人	hcr
+好似	hcs
+好像	hcx
+好友	hcy
+好在	hcz
+好多次	hdc
+海风	hdf
+还差	hdi
+海军	hdj
+还算	hds
+还挺	hdt
+还是	hdu
+海蜇	hdv
+还行	hdx
+哈尔滨	heb
+河南	hen
+很爱	hfa
+很多	hfd
+很高	hfg
+很好	hfh
+很长	hfi
+很久	hfj
+很快	hfk
+恢复了	hfl
+很忙	hfm
+很难	hfn
+很怕	hfp
+很热	hfr
+很酸	hfs
+很痛	hft
+很少	hfu
+很重	hfv
+很晚	hfw
+很早	hfz
+花骨朵	hgd
+横幅	hgf
+横贯	hgg
+回个话	hgh
+花光了	hgl
+横盘	hgp
+昏过去	hgq
+横扫	hgs
+回过头	hgt
+合格证	hgv
+衡阳	hgy
+横在	hgz
+行规	hhg
+哈哈哈	hhh
+黑胡椒	hhj
+行列	hhl
+行情	hhq
+合伙人	hhr
+航天	hht
+好好说	hhu
+航行	hhx
+后悔药	hhy
+好孩子	hhz
+好吃的	hid
+好处费	hif
+护城河	hih
+昏沉沉	hii
+回车键	hij
+候车室	hiu
+火车站	hiv
+好几天	hjt
+捍卫	hjw
+户口本	hkb
+坏话	hkh
+怀古	hkg
+黑科技	hkj
+坏了	hkl
+怀念	hkn
+坏人	hkr
+坏事	hku
+怀中	hkv
+荒废	hlf
+火龙果	hlg
+红楼梦	hlm
+黄脸婆	hlp
+恍然	hlr
+黄色	hls
+坏毛病	hmb
+花名册	hmc
+黑名单	hmd
+很麻烦	hmf
+哈密瓜	hmg
+灰蒙蒙	hmm
+回马枪	hmq
+红霉素	hms
+很明显	hmx
+鸿门宴	hmy
+海南岛	hnd
+回娘家	hnj
+活腻了	hnl
+混凝土	hnt
+海内外	hnw
+哈尼族	hnz
+获取	hoq
+火速	hos
+火腿	hot
+或许	hox
+和平鸽	hpg
+黄浦江	hpj
+很漂亮	hpl
+海平面	hpm
+红扑扑	hpp
+好朋友	hpy
+何其多	hqd
+很奇怪	hqg
+很清楚	hqi
+回去了	hql
+黑漆漆	hqq
+换气扇	hqu
+好奇心	hqx
+换个	hrg
+缓坡	hrp
+环绕	hrr
+欢腾	hrt
+欢心	hrx
+红粉	hsf
+红娘	hsn
+哄骗	hsp
+红人	hsr
+轰炸	hsv
+宏伟	hsw
+红枣	hsz
+回头草	htc
+黑天鹅	hte
+猴头菇	htg
+皇太后	hth
+糊涂虫	hti
+回头见	htj
+回头客	htk
+回头率	htl
+核桃仁	htr
+红彤彤	htt
+火头上	htu
+横条纹	htw
+皇太子	htz
+湖北	hub
+护送	hus
+糊涂	hut
+回来	hvl
+回去	hvq
+回头	hvt
+汇总	hvz
+黑白	hwb
+黑点	hwd
+嘿嘿	hwh
+好望角	hwj
+黑马	hwm
+哈瓦那	hwn
+黑人	hwr
+黑色	hws
+黑桃	hwt
+黑手	hwu
+黑着	hwv
+黑雾	hww
+画外音	hwy
+还行吧	hxb
+花儿	hxe
+候选窗	hxi
+花瓶	hxp
+划算	hxs
+话题	hxt
+话说	hxu
+花招	hxv
+花样	hxy
+花在	hxz
+昏暗	hya
+很一般	hyb
+会议费	hyf
+缓一缓	hyh
+昏沉	hyi
+婚介	hyj
+昏聩	hyk
+回忆录	hyl
+魂魄	hyp
+黑眼圈	hyq
+浑然	hyr
+混同	hyt
+后遗症	hyv
+混杂	hyz
+厚道	hzd
+厚恩	hze
+后方	hzf
+洪泽湖	hzh
+后来	hzl
+后年	hzn
+厚望	hzw
+后院	hzy
+好几年	hjn
+哈达	had
+哈佛	haf
+哈哈	hah
+蛤蟆	ham
+哈欠	haq
+好饿	hce
+海岸	hda
+害怕	hdp
+很惨	hfc
+很烦	hff
+何海峰	hhf
+寒酸	hjs
+海阔凭鱼跃	hkp
+坏死	hks
+横眉冷对千夫指	hml
+好马配好鞍	hmp
+海内存知己	hnc
+火鸟	hon
+货物	how
+回暖	hvn
+黑暗	hwa
+黑粉	hwf
+黑车	hwi
+黑屏	hwp
+黑字	hwz
+后嗣	hzs
+𬴃	hom
+𬭎	hsj
+𬭤	hzj
+查案	iaa
+茶馆	iag
+差了	ial
+插头	iat
+查找	iav
+查问	iaw
+差不多	ibd
+吃不惯	ibg
+吃不饱	ibb
+吃不吃	ibi
+吃不开	ibk
+吃饱了	ibl
+出不去	ibq
+出版社	ibu
+撑不住	ibv
+吃不下	ibx
+超薄	icb
+超出	ici
+吵闹	icn
+钞票	icp
+超前	icq
+超人	icr
+吃错药	icy
+炒作	icz
+沉甸甸	idd
+拆分	idf
+拆毁	idh
+拆除	idi
+充电器	idq
+拆台	idt
+拆字	idz
+撤兵	ieb
+车祸	ieh
+车间	iej
+车辆	iel
+车门	iem
+车位	iew
+撤销	iex
+彻夜	iey
+车子	iez
+陈醋	ifc
+晨光	ifg
+陈旧	ifj
+吃饭了	ifl
+沉溺	ifn
+趁早	ifz
+成功	igg
+成年	ign
+承认	igr
+车管所	igs
+长发	ihf
+常规	ihg
+茶话会	ihh
+常见	ihj
+常理	ihl
+厂长	ihv
+持久	iij
+传出去	iiq
+吃素	iis
+持续	iix
+持有	iiy
+成就感	ijg
+产权	ijq
+缠绕	ijr
+长镜头	ijt
+触控板	ikb
+揣度	ikd
+喘口气	ikq
+创可贴	ikt
+揣进	ikj
+闯荡	ild
+差旅费	ilf
+窗户	ilh
+查了查	ili
+赤裸裸	ill
+处理品	ilp
+处理器	ilq
+床头	ilt
+车轮战	ilv
+窗外	ilw
+创意	ily
+创造	ilz
+崇明岛	imd
+重命名	imm
+触摸屏	imp
+触摸式	imu
+充满着	imv
+沉迷于	imy
+吹牛逼	inb
+刹那间	inj
+吃腻了	inl
+处女膜	inm
+吹牛皮	inp
+成年人	inr
+绰约	ioy
+出去了	iql
+出气筒	iqt
+重庆市	iqu
+川菜	irc
+穿过	irg
+穿好	irh
+传出	iri
+传染	irr
+传送	irs
+传说	iru
+传闻	irw
+穿越	iry
+冲动	isd
+冲茶	isi
+冲凉	isl
+充满	ism
+宠溺	isn
+重庆	isq
+重塑	iss
+冲突	ist
+充实	isu
+充裕	isy
+床头柜	itg
+出头鸟	itn
+赤条条	itt
+长筒靴	itx
+差太远	ity
+初步	iub
+储存	iuc
+出口	iuk
+处理	iul
+出纳	iun
+出去	iuq
+出头	iut
+成正比	ivb
+垂钓	ivd
+吹干	ivg
+吹了	ivl
+吹牛	ivn
+吹头	ivt
+垂直	ivv
+出主意	ivy
+吹奏	ivz
+吃完饭	iwf
+储物柜	iwg
+常委会	iwh
+吃完了	iwl
+颤巍巍	iww
+出问题	iwt
+储物箱	iwx
+插线板	ixb
+吃闲饭	ixf
+出现了	ixl
+吃下去	ixq
+储蓄所	ixs
+畅销书	ixu
+初学者	ixv
+持续性	ixx
+程序员	ixy
+趁现在	ixz
+春光	iyg
+春花	iyh
+春秋	iyq
+蠢人	iyr
+超音速	iys
+春天	iyt
+纯属	iyu
+纯真	iyv
+常用字	iyz
+抽调	izd
+抽风	izf
+抽空	izk
+臭屁	izp
+抽签	izq
+抽身	izu
+臭味	izw
+成败在此一举	ibz
+炒菜	icc
+超额	ice
+朝外	icw
+拆散	ids
+车次	iec
+彻骨	ieg
+车内	ien
+车钱	ieq
+尘埃	ifa
+成才	igc
+常备	ihb
+嫦娥	ihe
+场所	ihs
+揣测	ikc
+长宽高	ikg
+揣摩	ikm
+辍笔	iob
+绰号	ioh
+戳记	ioj
+戳破	iop
+啜泣	ioq
+戳入	ior
+出去玩	iqw
+宠爱	isa
+重开	isk
+冲入	isr
+垂爱	iva
+垂死	ivs
+垂首	ivu
+淳朴	iyp
+筹措	izc
+丑恶	ize
+𬘭	ifs
+紧挨着	jav
+进步	jbb
+金额	jbe
+加班费	jbf
+尽头	jbt
+进行	jbx
+急匆匆	jcc
+记错了	jcl
+仅次于	jcy
+娇滴滴	jdd
+机顶盒	jdh
+基督教	jdj
+几点了	jdl
+绝对是	jdu
+就等于	jdy
+今儿个	jeg
+解放了	jfl
+解放前	jfq
+简繁体	jft
+紧肤水	jfu
+几分钟	jfv
+见分晓	jfx
+警匪片	jfp
+九宫格	jgg
+加工厂	jgi
+金刚经	jgj
+见个面	jgm
+结果呢	jgn
+几个人	jgr
+见光死	jgs
+甲骨文	jgw
+几个月	jgy
+几个字	jgz
+就好比	jhb
+脚后跟	jhg
+交汇处	jhi
+交换机	jhj
+激活码	jhm
+几乎是	jhu
+就好像	jhx
+叫花子	jhz
+经济舱	jjc
+肩胛骨	jjg
+几句话	jjh
+竞技场	jji
+借记卡	jjk
+解决了	jjl
+解解闷	jjm
+近几年	jjn
+节假日	jjr
+近几天	jjt
+旧金山	jju
+降降温	jjw
+积极性	jjx
+经过	jkg
+精华	jkh
+惊恐	jkk
+精品	jkp
+俱乐部	jlb
+降幅	jlf
+奖惩	jli
+江南	jln
+奖品	jlp
+讲台	jlt
+江西	jlx
+讲座	jlz
+键位	jmw
+纪念品	jnp
+交通	jnt
+截屏	jpp
+借钱	jpq
+节奏	jpz
+就此	jqc
+就会	jqh
+就是	jqu
+纠正	jqv
+救灾	jqz
+卷尺	jri
+眷恋	jrl
+假如说	jru
+捐助	jrv
+捐物	jrw
+兼容性	jrx
+金融业	jry
+捐赠	jrz
+计算机	jsj
+急死了	jsl
+窘迫	jsp
+计算器	jsq
+迥然	jsr
+江苏省	jsu
+迥异	jsy
+晶体管	jtg
+决裂	jtl
+寄生虫	jui
+几十年	jun
+就知道	jvd
+鸡爪疯	jvf
+价值观	jvg
+镜中花	jvh
+假正经	jvj
+急诊科	jvk
+就这么	jvm
+截止日	jvr
+脚趾头	jvt
+简直是	jvu
+居住证	jvv
+急转弯	jvw
+集装箱	jvx
+经纬度	jwd
+居委会	jwh
+鸡尾酒	jwj
+就为了	jwl
+几万年	jwn
+局外人	jwr
+家务事	jwu
+健忘症	jwv
+基围虾	jwx
+寄望于	jwy
+价格	jxg
+加快	jxk
+教学片	jxp
+加速	jxs
+家庭	jxt
+君臣	jyi
+均可	jyk
+均能	jyn
+交易所	jys
+酒糟鼻	jzb
+节奏感	jzg
+剧作家	jzj
+君子兰	jzl
+金字塔	jzt
+箭在弦上，不得不发	jzx
+就在于	jzy
+鸡蛋碰石头	jdp
+疾风扫落叶	jfs
+久旱逢甘霖	jhf
+饥寒起盗心	jhq
+监护人	jhr
+将其	jlq
+见人矮三分	jra
+眷顾	jrg
+窘相	jsx
+绝知此事要躬行	jvc
+巨无霸	jwb
+君子动口不动手	jzd
+𬳶	jsm
+卡顿	kad
+卡车	kai
+卡死	kas
+看不懂	kbd
+看不惯	kbg
+看不见	kbj
+看不看	kbk
+看不清	kbq
+看不透	kbt
+看不上	kbu
+可比性	kbx
+可不要	kby
+哭鼻子	kbz
+恐怖片	kbp
+拷贝	kcb
+考古	kcg
+考察	kci
+靠谱	kcp
+考勤	kcq
+考入	kcr
+考证	kcv
+考完	kcw
+考验	kcy
+开办	kdb
+开口	kdk
+开年	kdn
+开盘	kdp
+开往	kdw
+开在	kdz
+可爱	kea
+可怜	kel
+可能	ken
+克制	kev
+苛责	kez
+啃老	kfl
+开发商	kfu
+开放性	kfx
+口服液	kfy
+孔夫子	kfz
+克格勃	kgb
+坑爹	kgd
+看过了	kgl
+坑蒙	kgm
+铿锵	kgq
+恐高症	kgv
+客观性	kgx
+抗辩	khb
+客户端	khd
+伉俪	khl
+扛起	khq
+扛着	khv
+抗议	khy
+葵花籽	khz
+科幻片	khp
+开场白	kib
+快车道	kid
+空城计	kij
+看出来	kil
+可持续	kix
+看到	kjd
+看法	kjf
+看好	kjh
+看看	kjk
+看破	kjp
+看着	kjv
+看望	kjw
+看下	kjx
+堪忧	kjy
+看在	kjz
+快报	kkb
+快感	kkg
+快车	kki
+快捷	kkj
+快慢	kkm
+快跑	kkp
+快说	kku
+快慰	kkw
+可靠性	kkx
+快要	kky
+快走	kkz
+狂奔	klb
+狂风	klf
+狂欢	klh
+可怜虫	kli
+框架	klj
+卡路里	kll
+狂热	klr
+矿物	klw
+狂笑	klx
+狂躁	klz
+喀麦隆	kml
+开幕式	kmu
+可能吧	knb
+跨年度	knd
+看腻了	knl
+可能吗	knm
+困难户	knh
+可能是	knu
+可能性	knx
+肯尼亚	kny
+阔别	kob
+扩股	kog
+括号	koh
+扩建	koj
+扩孔	kok
+扩展	kov
+扩增	koz
+堪培拉	kpl
+看清楚	kqi
+看情况	kqk
+看起来	kql
+矿泉水	kqu
+宽带	krd
+宽幅	krf
+宽厚	krh
+宽敞	kri
+苦肉计	krj
+宽阔	krk
+看热闹	krn
+款项	krx
+宽裕	kry
+空白	ksb
+恐慌	ksh
+空间	ksj
+空空	ksk
+空了	ksl
+空门	ksm
+恐怕	ksp
+空头	kst
+空位	ksw
+可塑性	ksx
+空运	ksy
+卡塔尔	kte
+客套话	kth
+口头禅	kti
+口头上	ktu
+口头语	kty
+酷爱	kua
+口水话	kuh
+瞌睡虫	kui
+哭了	kul
+苦恼	kun
+看上去	kuq
+苦头	kut
+枯萎	kuw
+枯燥	kuz
+亏了	kvl
+扩展名	kvm
+亏损	kvs
+魁梧	kvw
+勘误表	kwb
+开胃菜	kwc
+矿务局	kwj
+科威特	kwt
+矿物质	kwv
+开玩笑	kwx
+空心菜	kxc
+挎包	kxb
+夸大	kxd
+跨行	kxh
+开小差	kxi
+科学家	kxj
+夸口	kxk
+苦行僧	kxs
+亏心事	kxu
+夸张	kxv
+可行性	kxx
+跨越	kxy
+看一遍	kyb
+快一点	kyd
+开夜车	kyi
+看一看	kyk
+可以吗	kym
+困难	kyn
+鲲鹏	kyp
+困扰	kyr
+客运站	kyv
+看一下	kyx
+看一眼	kyy
+看样子	kyz
+口袋	kzd
+口感	kzg
+口号	kzh
+扣除	kzi
+抠门	kzm
+扣钱	kzq
+口头	kzt
+口味	kzw
+扣下	kzx
+开门红	kmh
+咖啡	kaf
+卡号	kah
+卡片	kap
+卡通	kat
+卡住	kav
+快不了	kbl
+靠岸	kca
+烤鹅	kce
+考考	kck
+考题	kct
+烤箱	kcx
+慨然	kdr
+开赛	kds
+客人	ker
+肯定	kfd
+垦荒	kfh
+恳谈	kft
+坑害	kgh
+吭哧	kgi
+坑骗	kgp
+坑人	kgr
+坑洼	kgw
+口惠而实不至	khe
+慷慨	khk
+抗诉	khs
+看似	kjs
+快活	kkh
+快速	kks
+狂傲	kla
+狂草	klc
+狂怒	kln
+诓骗	klp
+看门狗	kmg
+阔佬	kol
+阔气	koq
+扩容	kor
+扩散	kos
+阔少	kou
+款额	kre
+宽了	krl
+宽屏	krp
+宽容	krr
+宽松	krs
+宽窄	krv
+宽慰	krw
+空仓	ksc
+空难	ksn
+控诉	kss
+慷他人之慨	ktr
+库房	kuf
+酷热	kur
+窥破	kvp
+溃疡	kvy
+可望而不可即	kwe
+跨排	kxp
+昆曲	kyq
+口岸	kza
+扣肉	kzr
+口算	kzs
+口子	kzz
+拉倒	lad
+拉风	laf
+拉黑	lah
+喇嘛	lam
+拉票	lap
+拉萨	las
+拉着	lav
+辣味	law
+落下	lax
+老本行	lbh
+来不及	lbj
+老板娘	lbn
+两边跑	lbp
+了不起	lbq
+留不住	lbv
+老公	lcg
+老抽	lci
+捞取	lcq
+老头	lct
+老者	lcv
+另存为	lcw
+老兄	lcx
+老早	lcz
+来回	ldh
+来得及	ldj
+离得开	ldk
+来了	ldl
+老大难	ldn
+来头	ldt
+来往	ldw
+流动性	ldx
+老掉牙	ldy
+来自	ldz
+乐见	lej
+乐园	ley
+浪费了	lfl
+两方面	lfm
+龙凤胎	lft
+两分钟	lfv
+两个半	lgb
+两个词	lgc
+驴肝肺	lgf
+泸沽湖	lgh
+理工科	lgk
+冷了	lgl
+冷暖	lgn
+冷僻	lgp
+冷清	lgq
+两个人	lgr
+冷死	lgs
+冷水	lgu
+两个钟	lgv
+两个月	lgy
+两个字	lgz
+厉害吧	lhb
+浪费	lhf
+厉害了	lhl
+老黄牛	lhn
+朗诵	lhs
+老糊涂	lht
+两回事	lhu
+兰花指	lhv
+灵活性	lhx
+浪子	lhz
+栏杆	ljg
+龙井茶	lji
+立交桥	ljq
+垃圾桶	ljt
+领班	lkb
+灵感	lkg
+灵活	lkh
+另类	lkl
+流口水	lku
+两遍	llb
+两句	llj
+两年	lln
+两瓶	llp
+理论上	llu
+两张	llv
+联防	lmf
+来没来	lml
+连年	lmn
+恋情	lmq
+两码事	lmu
+龙门阵	lmv
+连夜	lmy
+疗程	lni
+老奶奶	lnn
+聊天	lnt
+瞭望	lnw
+锣鼓	log
+裸露	lol
+落难	lon
+裸体	lot
+落下	lox
+洛阳	loy
+列表	lpb
+脸皮厚	lph
+列出	lpi
+零配件	lpj
+列宁	lpn
+老婆婆	lpp
+列入	lpr
+猎物	lpw
+列席	lpx
+老朋友	lpy
+留存	lqc
+留给	lqg
+流畅	lqi
+留空	lqk
+六千	lqq
+流入	lqr
+流通	lqt
+留着	lqv
+留言	lqy
+乱窜	lrc
+乱发	lrf
+乱搞	lrg
+乱吃	lri
+利润率	lrl
+乱码	lrm
+乱套	lrt
+乱转	lrv
+卵子	lrz
+两三次	lsc
+两三个	lsg
+两三句	lsj
+两三年	lsn
+累死人	lsr
+两三天	lst
+龙虾	lsx
+类似于	lsy
+鹿特丹	ltd
+老头儿	lte
+落汤鸡	ltj
+两条路	ltl
+老太婆	ltp
+愣头青	ltq
+立体声	ltu
+老同学	ltx
+老天爷	lty
+录取	luq
+旅馆	lvg
+绿了	lvl
+旅途	lvt
+连轴转	lvv
+雷阵雨	lvy
+类别	lwb
+遛弯儿	lwe
+泪痕	lwh
+雷池	lwi
+累了	lwl
+垒球	lwq
+累赘	lwv
+类型	lwx
+连续剧	lxj
+拉下去	lxq
+旅行团	lxt
+两小时	lxu
+老想着	lxv
+连续性	lxx
+两下子	lxz
+来一次	lyc
+另一个	lyg
+莱茵河	lyh
+另一面	lym
+论坛	lyt
+露一手	lyu
+另一种	lyv
+沦陷	lyx
+镂空	lzk
+楼盘	lzp
+漏气	lzq
+楼梯	lzt
+楼上	lzu
+楼下	lzx
+乱糟糟	lzz
+昤	lko
+拉起	laq
+腊肉	lar
+腊月	lay
+赖皮	ldp
+勒令	lel
+乐趣	leq
+勒索	les
+乐天	let
+乐子	lez
+冷傲	lga
+冷场	lgi
+老虎屁股摸不得	lhp
+烂泥	ljn
+懒人	ljr
+零分	lkf
+脸孔	lmk
+列明	lpm
+乱花	lrh
+乱说	lru
+乱用	lry
+龙床	lsi
+龙袍	lsp
+隆起	lsq
+略称	lti
+颅内	lun
+屡遭	lvz
+雷劈	lwp
+量小非君子	lxf
+漏网	lzw
+𬶟	laa
+麻痹	mab
+骂道	mad
+马虎	mah
+麻将	maj
+马路	mal
+马桶	mat
+马戏	max
+蚂蚁	may
+民办	mbb
+敏感	mbg
+民航	mbh
+民间	mbj
+闽南	mbn
+明白人	mbr
+摸不透	mbt
+明摆着	mbv
+民族	mbz
+毛病	mcb
+冒汗	mch
+冒出	mci
+毛绒	mcr
+矛头	mct
+毛衣	mcy
+帽子	mcz
+迈步	mdb
+忙得很	mdh
+面对面	mdm
+卖钱	mdq
+目的性	mdx
+明儿个	meg
+门儿清	meq
+马耳他	met
+门边	mfb
+门口	mfk
+麻烦了	mfl
+门内	mfn
+门票	mfp
+门前	mfq
+门人	mfr
+门锁	mfs
+门市	mfu
+每分钟	mfv
+马蜂窝	mfw
+没发现	mfx
+没反应	mfy
+没工夫	mgf
+蒙古	mgg
+梦幻	mgh
+懵了	mgl
+冒个泡	mgp
+每个人	mgr
+眯会儿	mhe
+芒果	mhg
+明晃晃	mhh
+盲目	mhm
+马后炮	mhp
+灭火器	mhq
+茫然	mhr
+明后天	mht
+忙着	mhv
+模糊音	mhy
+谜案	mia
+迷你	min
+米色	mis
+谜团	mit
+迷上	miu
+迷住	miv
+迷雾	miw
+没出息	mix
+满分	mjf
+孟加拉	mjl
+慢慢	mjm
+满屏	mjp
+满腔	mjq
+慢热	mjr
+瞒着	mjv
+名额	mke
+麦克风	mkf
+名贵	mkg
+名画	mkh
+命令	mkl
+没可能	mkn
+名片	mkp
+明确	mkq
+马克思	mks
+明天	mkt
+明说	mku
+名为	mkw
+名字	mkz
+没料到	mld
+茉莉花	mlh
+美联储	mli
+美利坚	mlj
+毛利率	mll
+摸了摸	mlm
+马拉松	mls
+面临着	mlv
+马拉维	mlw
+没理由	mly
+仫佬族	mlz
+没明白	mmb
+面额	mme
+免费	mmf
+绵亘	mmg
+毛毛虫	mmi
+面积	mmj
+面庞	mmp
+面前	mmq
+面容	mmr
+棉袜	mmw
+面子	mmz
+秒表	mnb
+慕尼黑	mnh
+马尼拉	mnl
+苗条	mnt
+瞄准	mnv
+描写	mnx
+木乃伊	mny
+摸出	moi
+模块	mok
+抹平	mop
+默契	moq
+默认	mor
+模特	mot
+灭顶	mpd
+灭绝	mpj
+孟婆汤	mpt
+蔑视	mpu
+灭族	mpz
+马其顿	mqd
+没去过	mqg
+没钱了	mql
+谬误	mqw
+明确性	mqx
+煤气灶	mqz
+明人不说暗话	mrb
+美人儿	mre
+美人计	mrj
+没人理	mrl
+毛茸茸	mrr
+没人性	mrx
+慢三步	msb
+忙死了	msl
+没所谓	msw
+没听懂	mtd
+没听过	mtg
+满堂红	mth
+摩托车	mti
+没听见	mtj
+摩天轮	mtl
+没听清	mtq
+木头人	mtr
+慢吞吞	mtt
+没听说	mtu
+满天星	mtx
+猫头鹰	mty
+牧场	mui
+目录	mul
+木牌	mup
+母亲	muq
+陌生人	mur
+木头	mut
+母校	mux
+模样	muy
+没准儿	mve
+民主化	mvh
+没主见	mvj
+命中率	mvl
+没这么	mvm
+免战牌	mvp
+没找着	mvv
+没指望	mvw
+毛主席	mvx
+没注意	mvy
+没法	mwf
+美钞	mwi
+魅力	mwl
+美色	mws
+没戏	mwx
+妹子	mwz
+慢性病	mxb
+没想到	mxd
+没想过	mxg
+明信片	mxp
+没兴趣	mxq
+某些人	mxr
+每小时	mxu
+明细账	mxv
+莫须有	mxy
+慢性子	mxz
+摸一摸	mym
+每一次	myc
+慢一点	myd
+每一份	myf
+每一个	myg
+梦一场	myi
+没意见	myj
+每一刻	myk
+没有了	myl
+每一年	myn
+慢一拍	myp
+没意思	mys
+每一天	myt
+名义上	myu
+每一种	myv
+每一位	myw
+每一项	myx
+慢悠悠	myy
+牡羊座	myz
+毛泽东	mzd
+满足感	mzg
+谋划	mzh
+某件	mzj
+满足了	mzl
+没怎么	mzm
+某年	mzn
+谋求	mzq
+谋杀	mzu
+某种	mzv
+马鞍	maa
+骂人	mar
+卖弄	mdn
+麦穗	mds
+墨尔本	meb
+门窗	mfi
+门庭	mft
+猛男	mgn
+莫管他人瓦上霜	mgt
+忙死	mhs
+秘传	mii
+迷人	mir
+漫步	mjb
+满口	mjk
+明暗	mka
+妙处	mni
+妙计	mnj
+苗圃	mnp
+妙趣	mnq
+喵呜	mnw
+灭虫	mpi
+灭门	mpm
+灭亡	mpw
+盲人骑瞎马	mrq
+美人鱼	mry
+满招损，谦受益	mvs
+没胃口	mwk
+每一步	myb
+某部	mzb
+某次	mzc
+谋反	mzf
+满嘴跑火车	mzp
+某天	mzt
+某位	mzw
+某些	mzx
+𬙊	mos
+那好	nah
+那么	nam
+拿起	naq
+弄不懂	nbd
+拗不过	nbg
+难不成	nbi
+那不就	nbj
+弄不清	nbq
+能不能	nbn
+南半球	nbq
+那不是	nbu
+耐不住	nbv
+牛鼻子	nbz
+脑梗	ncg
+脑海	nch
+弄错了	ncl
+闹钟	ncv
+脑电波	ndb
+奶粉	ndf
+脑袋瓜	ndg
+奈何	ndh
+奶茶	ndi
+耐久	ndj
+耐看	ndk
+拿到了	ndl
+奶糖	ndt
+耐用	ndy
+奶嘴	ndz
+嫩滑	nfh
+嫩绿	nfl
+哪方面	nfm
+嫩嫩	nfn
+尼姑庵	nga
+能动	ngd
+哪根葱	ngc
+能否	ngf
+能够	ngg
+能力	ngl
+能耐	ngn
+能说	ngu
+能用	ngy
+那个字	ngz
+拿回来	nhl
+那会儿	nhe
+黏糊糊	nhh
+囔囔	nhn
+奈何桥	nhq
+囊肿	nhv
+尼姑	nig
+你好	nih
+昵称	nii
+拿出来	nil
+你们	nim
+农产品	nip
+逆转	niv
+腻歪	niw
+南北	njb
+南方	njf
+那句话	njh
+牛角尖	njj
+凝聚力	njl
+男排	njp
+男人	njr
+南极洲	njv
+难忘	njw
+男性	njx
+男子	njz
+凝聚	nkj
+脑壳痛	nkt
+凝视	nku
+凝重	nkv
+凝望	nkw
+宁夏	nkx
+宁愿	nky
+哪来的	nld
+酿成	nli
+娘家	nlj
+年利率	nll
+娘们	nlm
+娘胎	nlt
+娘子	nlz
+年报	nmb
+那么多	nmd
+内蒙古	nmg
+年龄	nml
+年内	nmn
+年轻	nmq
+南美洲	nmv
+脑膜炎	nmy
+脑门子	nmz
+鸟巢	nni
+尿急	nnj
+鸟瞰	nnk
+努努力	nnl
+尿尿	nnn
+鸟人	nnr
+鸟语	nny
+挪动	nod
+挪威	now
+啮合	nph
+孽畜	npi
+拿破仑	npl
+牛脾气	npq
+嗫嚅	npr
+捏碎	nps
+哪怕是	npu
+牛皮癣	npx
+牛逼	nqb
+纽带	nqd
+牛股	nqg
+年轻化	nqh
+牛叉	nqi
+扭亏	nqk
+哪去了	nql
+牛皮	nqp
+牛市	nqu
+扭转	nqv
+纽约	nqy
+尼日尔	nre
+暖和	nrh
+暖流	nrl
+牛肉面	nrm
+暖融融	nrr
+暖色	nrs
+暖意	nry
+农村	nsc
+农历	nsl
+农民	nsm
+浓浓	nsn
+弄清	nsq
+浓缩	nss
+浓妆	nsv
+虐待	ntd
+那条路	ntl
+虐心	ntx
+怒火	nuh
+怒骂	num
+纳税人	nur
+鸟兽散	nus
+逆时针	nuv
+奴性	nux
+奴役	nuy
+努嘴	nuz
+女伴	nvb
+哪知道	nvd
+女儿	nve
+女工	nvg
+女孩	nvh
+女郎	nvl
+女仆	nvp
+女权	nvq
+女生	nvu
+闹着玩	nvw
+乃至于	nvy
+女子	nvz
+内退	nwt
+内部	nwb
+内地	nwd
+内功	nwg
+内涵	nwh
+内衬	nwi
+内疚	nwj
+内幕	nwm
+内聘	nwp
+内外	nww
+内心	nwx
+内衣	nwy
+内在	nwz
+脑细胞	nxb
+那些个	nxg
+纽西兰	nxl
+脑血栓	nxu
+那小子	nxz
+哪一点	nyd
+年夜饭	nyf
+哪一个	nyg
+哪一款	nyk
+年月日	nyr
+哪一种	nyv
+哪一位	nyw
+拿走了	nzl
+男子汉	nzh
+娘子军	nzj
+牛仔裤	nzk
+农作物	nzw
+苧	nkc
+拿出	nai
+拿走	naz
+脑残	ncc
+恼人	ncr
+挠痒	ncy
+脑子	ncz
+奶瓶	ndp
+男儿当自强	ned
+男儿膝下有黄金	nex
+哪吒	nev
+嫩白	nfb
+嫩草	nfc
+能耗	ngh
+能见	ngj
+哪管他人瓦上霜	ngt
+能行	ngx
+那还不错	nhb
+泥塑	nis
+男儿	nje
+南宋	njs
+凝固	nkg
+凝练	nkl
+哪凉快哪呆着去	nlk
+娘亲	nlq
+年尾	nmw
+鸟儿	nne
+鸟粪	nnf
+尿壶	nnh
+鸟鸣	nnm
+挪出	noi
+孽根	npg
+涅槃	npp
+纽埃	nqa
+牛耳	nqe
+扭头	nqt
+牛蛙	nqw
+牛仔	nqz
+暖冬	nrd
+暖风	nrf
+暖床	nri
+暖脚	nrj
+暖暖	nrn
+男人婆	nrp
+暖气	nrq
+弄个	nsg
+农家	nsj
+农田	nst
+农闲	nsx
+弄脏	nsz
+疟疾	ntj
+虐杀	ntu
+奴婢	nub
+奴才	nuc
+怒放	nuf
+怒斥	nui
+奴仆	nup
+怒视	nuu
+女厕	nvc
+女方	nvf
+女奴	nvn
+女人	nvr
+女色	nvs
+女童	nvt
+内附	nwf
+内容	nwr
+那些年	nxn
+哪一回	nyh
+脑子不好使	nzb
+𬪩	nsy
+欧共体	ogt
+嗯呐	ogn
+嗯哼	ogh
+嗯嗯	ogo
+哦豁	ooh
+欧佩克	opk
+偶然性	orx
+藕粉	ouf
+讴歌	oug
+欧盟	oum
+偶数	ouu
+嗯	ogk
+偶尔	oue
+藕片	oup
+怄气	ouq
+藕丝	ous
+𬉼	ouh
+爬到	pad
+爬虫	pai
+啪啪	pap
+爬起	paq
+趴下	pax
+怕痒	pay
+拼凑	pbc
+皮包骨	pbg
+贫寒	pbh
+品尝	pbi
+拼接	pbj
+跑不了	pbl
+怕不怕	pbp
+贫穷	pbq
+拼死	pbs
+拼图	pbt
+拼音	pby
+贫嘴	pbz
+泡菜	pcc
+跑车	pci
+跑进	pcj
+跑了	pcl
+泡沫	pcm
+跑腿	pct
+抛售	pcu
+炮制	pcv
+跑完	pcw
+泡影	pcy
+跑单帮	pdb
+排行	pdh
+排挤	pdj
+排列	pdl
+排名	pdm
+排尿	pdn
+派遣	pdq
+派头	pdt
+排水	pdu
+排位	pdw
+皮肤病	pfb
+喷发	pff
+喷火	pfh
+盆景	pfj
+平方米	pfm
+喷泉	pfq
+喷嚏	pft
+喷射	pfu
+喷雾	pfw
+喷血	pfx
+喷涌	pfy
+碰壁	pgb
+捧哏	pgg
+碰见	pgj
+蓬莱	pgl
+澎湃	pgp
+碰巧	pgq
+烹饪	pgr
+蓬松	pgs
+朋友	pgy
+泡个澡	pgz
+排行榜	phb
+胖乎乎	phh
+旁门	phm
+胖妞	phn
+旁听	pht
+旁证	phv
+破坏性	phx
+批次	pic
+屁股	pig
+癖好	pih
+批量	pil
+脾气	piq
+平常心	pix
+判官	pjg
+盘活	pjh
+判决	pjj
+破纪录	pjl
+盘算	pjs
+盼望	pjw
+盘旋	pjx
+攀岩	pjy
+平凡	pkf
+苹果	pkg
+平衡	pkh
+平常	pki
+评论	pkl
+评判	pkp
+平素	pks
+凭证	pkv
+评选	pkx
+瓶子	pkz
+漂亮话	plh
+拼了命	plm
+拍了拍	plp
+跑龙套	plt
+泼冷水	plu
+偏不	pmb
+片段	pmd
+篇幅	pmf
+偏高	pmg
+偏差	pmi
+偏见	pmj
+贫民窟	pmk
+偏离	pml
+平面图	pmt
+偏少	pmu
+偏向	pmx
+漂泊	pnb
+漂浮	pnf
+飘忽	pnh
+票据	pnj
+漂亮	pnl
+剽窃	pnq
+票数	pnu
+飘走	pnz
+破格	pog
+破坏	poh
+破产	poi
+破碎	pos
+婆媳	pox
+迫于	poy
+瞥见	ppj
+啪啪啪	ppp
+飘飘然	ppr
+爬起来	pql
+喷气式	pqu
+迫切性	pqx
+平日里	prl
+譬如说	pru
+蒲松龄	psl
+葡萄干	ptg
+普通话	pth
+葡萄酒	ptj
+泡汤了	ptl
+普通人	ptr
+葡萄糖	ptt
+普陀山	ptu
+排他性	ptx
+葡萄牙	pty
+铺盖	pug
+普查	pui
+铺平	pup
+谱曲	puq
+菩萨	pus
+朴实	puu
+普照	puv
+普适性	pux
+破折号	pvh
+怕只怕	pvp
+偏重于	pvy
+配备	pwb
+配合	pwh
+赔偿	pwi
+赔了	pwl
+赔钱	pwq
+配上	pwu
+配置	pwv
+抛物线	pwx
+赔罪	pwz
+培训班	pxb
+培训费	pxf
+拍胸脯	pxp
+平行线	pxx
+偏向于	pxy
+鄱阳湖	pyh
+拼一拼	pyp
+朋友圈	pyq
+剖面	pzm
+爬过	pag
+怕黑	pah
+怕人	par
+怕死	pas
+聘任	pbr
+泡妞	pcn
+抛洒	pcs
+抛下	pcx
+拍案	pda
+排骨	pdg
+派送	pds
+排演	pdy
+喷灌	pfg
+喷洒	pfs
+旁侧	phc
+胖胖	php
+旁人	phr
+痞子	piz
+盘存	pjc
+盘亏	pjk
+叛逆	pjn
+攀亲	pjq
+盘绕	pjr
+偏爱	pma
+片尾	pmw
+飘过	png
+飘飘	pnp
+飘然	pnr
+飘着	pnv
+票务	pnw
+破案	poa
+破财	poc
+婆娘	pon
+迫切	poq
+撇开	ppk
+撇下	ppx
+普洱	pue
+配菜	pwc
+配股	pwg
+陪陪	pwp
+偏向虎山行	pxh
+皮笑肉不笑	pxr
+便宜没好货	pym
+便宜无好货	pyw
+剖开	pzk
+剖析	pzx
+亲爱的	qa
+亲爱的	qad
+气不过	qbg
+侵害	qbh
+去不了	qbl
+钦佩	qbp
+丘比特	qbt
+却不知	qbv
+亲眼	qby
+清道夫	qdf
+千岛湖	qdh
+取得了	qdl
+气垫船	qdi
+瞧得起	qdq
+期待着	qdv
+确定性	qdx
+全封闭	qfb
+千分号	qfh
+潜伏期	qfq
+千分之	qfv
+全方位	qfw
+启发性	qfx
+穷光蛋	qgd
+气鼓鼓	qgg
+缺根筋	qgj
+奇怪了	qgl
+曲棍球	qgq
+全国性	qgx
+潜规则	qgz
+青花瓷	qhc
+秦皇岛	qhd
+气呼呼	qhh
+前后脚	qhj
+亲和力	qhl
+秋海棠	qht
+青海省	qhu
+氰化物	qhw
+前几次	qjc
+旗舰店	qjd
+全家福	qjf
+前几个	qjg
+清洁剂	qjj
+请见谅	qjl
+前几名	qjm
+前几年	qjn
+全键盘	qjp
+前几日	qjr
+前几天	qjt
+取决于	qjy
+前脚走	qjz
+前一晚	qyw
+请教下	qjx
+情况	qkk
+清明	qkm
+晴天	qkt
+清早	qkz
+强烈	qll
+强求	qlq
+强势	qlu
+牵挂	qmg
+乾坤	qmk
+前面	qmm
+前文	qmw
+敲定	qnd
+巧合	qnh
+翘课	qnk
+俏皮	qnp
+桥头	qnt
+敲诈	qnv
+切断	qpd
+切割	qpg
+俏皮话	qph
+切除	qpi
+切开	qpk
+且慢	qpm
+轻飘飘	qpp
+切碎	qps
+惬意	qpy
+茄子	qpz
+秋风	qqf
+丘陵	qql
+秋色	qqs
+求学	qqx
+球员	qqy
+拳法	qrf
+劝告	qrg
+权衡	qrh
+全屏	qrp
+全球	qrq
+圈子	qrz
+穷尽	qsj
+穷困	qsk
+气死了	qsl
+起诉书	qsu
+缺钙	qtg
+缺口	qtk
+却能	qtn
+青铜器	qtq
+确认	qtr
+缺位	qtw
+却又	qty
+确凿	qtz
+区分	quf
+去过	qug
+去死	qus
+取走	quz
+起征点	qvd
+区政府	qvf
+敲竹杠	qvg
+起重机	qvj
+青壮年	qvn
+清真寺	qvs
+穷折腾	qvt
+强制性	qvx
+求知欲	qvy
+牵着走	qvz
+区位码	qwm
+期望值	qwv
+情绪化	qxh
+取消了	qxl
+前些年	qxn
+恰恰	qxq
+恰如	qxr
+恰似	qxs
+前些天	qxt
+掐住	qxv
+晴雨表	qyb
+去一次	qyc
+前一段	qyd
+七月份	qyf
+强有力	qyl
+群名	qym
+瞧一瞧	qyq
+清一色	qys
+群体	qyt
+潜意识	qyu
+群众	qyv
+签字笔	qzb
+全自动	qzd
+起作用	qzy
+青菜萝卜各有所爱	qcl
+千叮咛万嘱咐	qdn
+巧妇难为无米之炊	qfn
+清官难断家务事	qgn
+千金散尽还复来	qjs
+青年	qkn
+千里送鹅毛	qls
+翘楚	qni
+窃案	qpa
+怯懦	qpn
+切勿	qpw
+蛐蛐儿	qqe
+求偶	qqo
+全额	qre
+穹顶	qsd
+穷人	qsr
+穷酸	qss
+穷游	qsy
+缺点	qtd
+钱塘江	qtj
+确立	qtl
+缺损	qts
+确诊	qtv
+卡子	qxz
+群殴	qyo
+擒贼先擒王	qzx
+容不得	rbd
+认不出	rbi
+人不可貌相，海水不可斗量	rbk
+饶不了	rbl
+惹不起	rbq
+热不热	rbr
+忍不住	rbv
+容不下	rbx
+绕道	rcd
+绕开	rck
+扰乱	rcl
+绕圈	rcq
+绕着	rcv
+绕行	rcx
+绕远	rcy
+热带鱼	rdy
+惹的祸	rdh
+软刀子	rdz
+热点	red
+热狗	reg
+惹祸	reh
+热诚	rei
+热烈	rel
+日耳曼	rem
+热闹	ren
+热情	req
+惹人	rer
+热土	ret
+热身	reu
+热吻	rew
+热心	rex
+惹眼	rey
+人防	rff
+人工	rfg
+人家	rfj
+人口	rfk
+人民	rfm
+认同	rft
+扔到	rgd
+扔给	rgg
+仍会	rgh
+仍旧	rgj
+仍可	rgk
+扔了	rgl
+绕个圈	rgq
+仍是	rgu
+日光浴	rgy
+让给	rhg
+让出	rhi
+热乎劲	rhj
+让路	rhl
+任何事	rhu
+日程表	rib
+入场费	rif
+日光	rig
+日后	rih
+日常	rii
+日渐	rij
+日历	ril
+入场券	riq
+日日	rir
+日晒	riu
+日照	riv
+日文	riw
+日线	rix
+日夜	riy
+日子	riz
+染病	rjb
+染发	rjf
+染缸	rjg
+燃具	rjj
+肉夹馍	rjm
+软键盘	rjp
+燃气	rjq
+染色	rjs
+燃烧	rju
+染指	rjv
+燃油	rjy
+绕口令	rkl
+热空气	rkq
+人来疯	rlf
+人流量	rll
+揉了揉	rlr
+人离乡贱	rlx
+人民币	rmb
+软绵绵	rmm
+忍耐力	rnl
+日内瓦	rnw
+弱点	rod
+弱碱	roj
+弱小	rox
+任凭风浪起	rpf
+软趴趴	rpp
+日偏食	rpu
+热气球	rqq
+日全食	rqu
+人情味	rqw
+绕圈子	rqz
+软骨	rrg
+软化	rrh
+软件	rrj
+软了	rrl
+软盘	rrp
+软弱	rrr
+热热身	rru
+柔韧性	rrx
+软硬	rry
+软座	rrz
+绒裤	rsk
+热死了	rsl
+容忍	rsr
+染色体	rst
+容身	rsu
+戎装	rsv
+荣幸	rsx
+容易	rsy
+人头马	rtm
+热腾腾	rtt
+人头税	rtu
+如不	rub
+如风	ruf
+如何	ruh
+入列	rul
+入门	rum
+如同	rut
+入手	ruu
+入围	ruw
+如下	rux
+绕指柔	rvr
+睿智	rvv
+人为刀俎，我为鱼肉	rwd
+任务栏	rwl
+人无远虑，必有近忧	rwy
+绕弯子	rwz
+人心不足蛇吞象	rxb
+人行道	rxd
+人性化	rxh
+热心人	rxr
+润笔	ryb
+润肤	ryf
+荣誉感	ryg
+润滑	ryh
+日用品	ryp
+绕一圈	ryq
+忍一忍	ryr
+日有所思，夜有所梦	rys
+日月潭	ryt
+容易忘	ryw
+闰月	ryy
+润泽	ryz
+肉包	rzb
+柔道	rzd
+柔和	rzh
+肉鸡	rzj
+蹂躏	rzl
+孺子牛	rzn
+肉片	rzp
+柔情	rzq
+柔软	rzr
+肉体	rzt
+柔顺	rzu
+揉着	rzv
+肉丸	rzw
+柔性	rzx
+肉眼	rzy
+让不让	rbr
+若不是	rbu
+肉包子打狗	rbz
+绕过	rcg
+绕场	rci
+饶人	rcr
+绕弯	rcw
+绕嘴	rcz
+热爱	rea
+热播	reb
+热键	rej
+热评	rep
+热死	res
+热衷	rev
+仁爱	rfa
+扔出	rgi
+仍能	rgn
+仍未	rgw
+扔下	rgx
+让步	rhb
+让其	rhq
+让贤	rhx
+让座	rhz
+日内	rin
+日头	rit
+然而	rje
+然则	rjz
+若不	rob
+弱化	roh
+弱旅	rol
+若再	roz
+人怕出名猪怕壮	rpi
+软蛋	rrd
+容纳	rsn
+融资	rsz
+入耳	rue
+任重而道远	rve
+锐化	rvh
+锐气	rvq
+瑞士	rvu
+瑞雪	rvx
+人往高处走，水往低处流	rwg
+润物细无声	rwx
+热心肠	rxi
+瑞雪兆丰年	rxv
+仁义礼智信	ryl
+闰年	ryn
+润湿	ryu
+揉搓	rzc
+撒谎	sah
+洒脱	sat
+撒手	sau
+三班倒	sbd
+三不管	sbg
+三把火	sbh
+所不及	sbj
+随便了	sbl
+随便你	sbn
+三部曲	sbq
+算不算	sbs
+算不上	sbu
+四不像	sbx
+腮帮子	sbz
+骚乱	scl
+骚气	scq
+扫射	scu
+扫帚	scv
+扫兴	scx
+瘙痒	scy
+赛道	sdd
+塞给	sdg
+赛场	sdi
+三等奖	sdj
+死定了	sdl
+塞满	sdm
+赛前	sdq
+三代人	sdr
+死对头	sdt
+所得税	sdu
+赛制	sdv
+塞外	sdw
+私底下	sdx
+塞子	sdz
+色狼	sel
+色素	ses
+色诱	sey
+私房菜	sfc
+司法局	sfj
+私房钱	sfq
+三伏天	sft
+三分钟	sfv
+僧道	sgd
+苏格兰	sgl
+算个屁	sgp
+桑巴	shb
+松花江	shj
+撒哈拉	shl
+嗓门	shm
+丧气	shq
+四环素	shs
+死胡同	sht
+丧钟	shv
+嗓子	shz
+私奔	sib
+四次	sic
+四个	sig
+私家菜	sjc
+三方	sjf
+三个	sjg
+三句话	sjh
+私家车	sji
+三级	sjj
+三楼	sjl
+三年	sjn
+三排	sjp
+丧家犬	sjq
+三天	sjt
+三种	sjv
+三亚	sjy
+松口气	skq
+萨克斯	sks
+思考题	skt
+算了吧	slb
+塑料袋	sld
+三连冠	slg
+三轮车	sli
+酸溜溜	sll
+斯洛克	slk
+所罗门	slm
+苏里南	sln
+算了算	sls
+司令员	sly
+撒拉族	slz
+索马里	sml
+色眯眯	smm
+三明治	smv
+扫描仪	smy
+随你吧	snb
+斯诺克	snk
+缩放	sof
+所处	soi
+所列	sol
+所能	son
+锁屏	sop
+索取	soq
+所提	sot
+所在	soz
+撕破脸	spl
+三七开	sqk
+算起来	sql
+死翘翘	sqq
+三缺一	sqy
+酸度	srd
+算了	srl
+酸奶	srn
+算算	srs
+酸痛	srt
+酸味	srw
+算作	srz
+送给	ssg
+送回	ssh
+送出	ssi
+松开	ssk
+三四岁	sss
+三四天	sst
+送往	ssw
+三条路	stl
+随他去	stq
+塞舌尔	sue
+私生活	suh
+俗称	sui
+塑料	sul
+送上门	sum
+诉求	suq
+随身听	sut
+随便	svb
+随风	svf
+碎了	svl
+虽能	svn
+碎片	svp
+随他	svt
+随着	svv
+随心	svx
+孙悟空	swk
+死亡率	swl
+四五岁	sws
+四五十	swu
+四五十	swus
+三文鱼	swy
+私下里	sxl
+三小时	sxu
+色香味	sxw
+思想性	sxx
+死心眼	sxy
+孙儿	sye
+笋干	syg
+私有化	syh
+所以呢	syn
+所以说	syu
+扫一眼	syy
+扫一扫	sys
+搜捕	szb
+搜狗	szg
+搜索	szs
+嗓子眼	szy
+撒娇	saj
+撒开	sak
+撒尿	san
+撒泼	sap
+撒气	saq
+撒网	saw
+洒下	sax
+撒野	say
+三步并作两步	sbb
+扫过	scg
+扫除	sci
+骚客	sck
+扫平	scp
+骚扰	scr
+扫尾	scw
+嫂子	scz
+腮红	sdh
+赛跑	sdp
+色彩	sec
+色鬼	seg
+色差	sei
+色情	seq
+色弱	ser
+色相	sex
+色泽	sez
+森林	sfl
+三分像人，七分像鬼	sfx
+森严	sfy
+三个半	sgb
+三个和尚没水吃	sgh
+三个臭皮匠	sgi
+僧俗	sgs
+桑蚕	shc
+桑拿	shn
+丧偶	sho
+散开	sjk
+死马当活马医	smd
+三年清知府，十万雪花银	snq
+锁骨	sog
+索然	sor
+三七二十一	sqe
+撒泡尿照照	spn
+算法	srf
+算卦	srg
+算话	srh
+算计	srj
+酸苦	srk
+算盘	srp
+酸软	srr
+送去	ssq
+送终	ssv
+斯坦福大学	stf
+岁末	svm
+虽然	svr
+死无葬身之地	swz
+岁月不饶人	syb
+所以动心忍性	syd
+搜狐	szh
+搜罗	szl
+色字头上一把刀	szt
+馊味	szw
+搜寻	szx
+太矮了	tal
+他人	tar
+踏雪	tax
+挺不错	tbc
+听不懂	tbd
+通不过	tbg
+太棒了	tbl
+听不清	tbq
+听不听	tbt
+谈不上	tbu
+听不见	tbj
+淘宝	tcb
+桃花	tch
+讨教	tcj
+听错了	tcl
+逃难	tcn
+逃跑	tcp
+淘气	tcq
+淘汰	tct
+逃生	tcu
+讨债	tcv
+太笨	tdb
+太好	tdh
+太长	tdi
+太平	tdp
+太热	tdr
+太重	tdv
+太晚	tdw
+太小	tdx
+特别	teb
+特点	ted
+特好	teh
+特长	tei
+特批	tep
+土耳其	teq
+特殊	teu
+通风管	tfg
+太费劲	tfj
+太烦了	tfl
+铁饭碗	tfw
+突发性	tfx
+太过分	tgf
+头盖骨	tgg
+腾出	tgi
+腾挪	tgn
+疼痛	tgt
+藤蔓	tgw
+提个醒	tgx
+铁观音	tgy
+天花板	thb
+搪瓷	thc
+堂皇	thh
+太好了	thl
+唐宋	ths
+躺着	thv
+提高	tig
+体会	tih
+提前	tiq
+探测	tjc
+弹出	tji
+听见了	tjl
+太极拳	tjq
+田径赛	tjs
+谈着	tjv
+挺快	tkk
+听凭	tkp
+听说	tku
+停下	tkx
+谈恋爱	tla
+吐鲁番	tlf
+挺厉害	tlh
+拖拉机	tlj
+太累了	tll
+同龄人	tlr
+托拉斯	tls
+铁了心	tlx
+叹了一口气	tly
+捅娄子	tlz
+天啊	tma
+天才	tmc
+天国	tmg
+天黑	tmh
+填充	tmi
+太慢了	tml
+天年	tmn
+天平	tmp
+天上	tmu
+天涯	tmy
+天子	tmz
+挑逗	tnd
+调和	tnh
+条件	tnj
+条码	tnm
+挑起	tnq
+突尼斯	tns
+挑剔	tnt
+跳水	tnu
+挑选	tnx
+拖把	tob
+脱产	toi
+脱离	tol
+拖欠	toq
+脱俗	tos
+妥为	tow
+铁板	tpb
+通配符	tpf
+铁杆	tpg
+贴出	tpi
+突破口	tpk
+铁路	tpl
+贴面	tpm
+铁丝	tps
+贴图	tpt
+贴身	tpu
+贴着	tpv
+突破性	tpx
+太平洋	tpy
+帖子	tpz
+跆拳道	tqd
+听清楚	tqi
+探亲假	tqj
+太强了	tql
+同情心	tqx
+听其言	tqy
+团购	trg
+甜如蜜	trm
+天然气	trq
+讨人嫌	trx
+挺容易	try
+通篇	tsp
+同文	tsw
+妥妥的	ttd
+退堂鼓	ttg
+土特产	tti
+凸透镜	ttj
+淘汰了	ttl
+通通气	ttq
+淘汰赛	tts
+提提神	ttu
+团团转	ttv
+踢踏舞	ttw
+图案	tua
+徒儿	tue
+突发	tuf
+图书馆	tug
+图片	tup
+突起	tuq
+突然	tur
+涂色	tus
+途中	tuv
+推测	tvc
+推倒	tvd
+推开	tvk
+推敲	tvq
+退让	tvr
+推送	tvs
+推脱	tvt
+通知书	tvu
+退伍	tvw
+退休	tvx
+台湾岛	twd
+题外话	twh
+体温计	twj
+太晚了	twl
+调味品	twp
+同位素	tws
+天文台	twt
+天文学	twx
+剃须刀	txd
+体现出	txi
+退休金	txj
+通讯录	txl
+同学们	txm
+通讯社	txu
+通行证	txv
+铜臭味	txw
+挑衅性	txx
+吞掉	tyd
+吞服	tyf
+同一个	tyg
+头一回	tyh
+体育场	tyi
+囤积	tyj
+吞没	tym
+太阳能	tyn
+拖油瓶	typ
+臀围	tyw
+投影仪	tyy
+同音字	tyz
+投标	tzb
+头次	tzc
+头大	tzd
+头昏	tzh
+透彻	tzi
+投机	tzj
+太早了	tzl
+透明	tzm
+头脑	tzn
+投票	tzp
+透气	tzq
+投诉	tzs
+头痛	tzt
+头上	tzu
+头尾	tzw
+踏春	tai
+踏着	tav
+掏出	tci
+胎儿	tde
+特此	tec
+特工	teg
+特例	tel
+特卖	tem
+特色	tes
+特务	tew
+挺方便	tfb
+头发长见识短	tfi
+疼爱	tga
+腾空	tgk
+天高任鸟飞	tgr
+天刚蒙蒙亮	tgm
+汤盆	thp
+贪念	tjn
+桃李满天下	tlm
+天鹅	tme
+天色	tms
+拓荒	toh
+贴合	tph
+铁皮	tpp
+铁人	tpr
+铁腕	tpw
+太弱了	trl
+团委	trw
+推拿	tvn
+台湾省	twu
+天涯若比邻	tyr
+投案	tza
+听不出	tbi
+𬯎	tve
+𬘩	tks
+傻瓜	uag
+杀害	uah
+沙滩	uat
+杀猪	uav
+少部分	ubf
+说不定	ubd
+说不好	ubh
+说不出	ubi
+社保卡	ubk
+受不了	ubl
+上半年	ubn
+说不清	ubq
+十八岁	ubs
+双胞胎	ubt
+睡不着	ubv
+说不完	ubw
+睡不醒	ubx
+上半夜	uby
+少儿	uce
+少吃	uci
+少年	ucn
+收藏品	ucp
+烧钱	ucq
+少数	ucu
+稍微	ucw
+少于	ucy
+少走	ucz
+水电费	udf
+十多个	udg
+说得好	udh
+圣诞节	udj
+筛糠	udk
+十多年	udn
+十多人	udr
+十多天	udt
+山东省	udu
+筛选	udx
+设备	ueb
+社会	ueh
+设立	uel
+十二岁	ues
+奢望	uew
+十二月	uey
+身份	uff
+身高	ufg
+身份证	ufv
+生病	ugb
+山沟沟	ugg
+声卡	ugk
+生日	ugr
+摔跟头	ugt
+剩下	ugx
+绳子	ugz
+上报	uhb
+上方	uhf
+伤感	uhg
+上级	uhj
+上课	uhk
+商量	uhl
+上面	uhm
+上年	uhn
+上屏	uhp
+耍花腔	uhq
+上演	uhy
+失色	uis
+煽情	ujq
+闪人	ujr
+时刻表	ukb
+摔倒	ukd
+衰竭	ukj
+顺口溜	ukl
+衰弱	ukr
+摔死	uks
+衰退	ukt
+摔伤	uku
+率真	ukv
+率先	ukx
+社科院	uky
+双倍	ulb
+双层	ulc
+双耳	ule
+双方	ulf
+十来个	ulg
+双重	uli
+爽快	ulk
+水灵灵	ull
+耍流氓	ulm
+双排	ulp
+双亲	ulq
+双人	ulr
+说了算	uls
+水龙头	ult
+爽直	ulv
+生理学	ulx
+双足	ulz
+神秘感	umg
+书名号	umh
+双面胶	umj
+生命力	uml
+生闷气	umq
+水蜜桃	umt
+说明书	umu
+实名制	umv
+生命线	umx
+守门员	umy
+数目字	umz
+熟能生巧	un
+少年不努力	unb
+少年宫	ung
+伤脑筋	unj
+说你胖你就喘	unp
+说过	uog
+说出	uoi
+说开	uok
+说了	uol
+说明	uom
+说情	uoq
+说着	uov
+说下	uox
+水平高	upg
+水平面	upm
+适配器	upq
+水平线	upx
+受气包	uqb
+说清楚	uqi
+失去了	uql
+数千年	uqn
+十七岁	uqs
+申请书	uqu
+双曲线	uqx
+杀人不见血	urb
+输入法	urf
+双人床	uri
+双刃剑	urj
+收容所	urs
+涮涮	uru
+拴住	urv
+十三点	usd
+手推车	uti
+伤透了	utl
+竖条纹	utw
+试探性	utx
+晒太阳	uty
+属于	uuy
+睡吧	uvb
+水草	uvc
+水产	uvi
+睡觉	uvj
+水库	uvk
+睡眠	uvm
+水泥	uvn
+手指头	uvt
+深圳市	uvu
+水位	uvw
+水灾	uvz
+商务舱	uwc
+谁敢	uwg
+谁敢	uvg
+上午好	uwh
+税务局	uwj
+失误了	uwl
+视网膜	uwm
+谁怕	uwp
+生物圈	uwq
+事务所	uws
+啥问题	uwt
+十位数	uwu
+爽歪歪	uww
+谁想	uwx
+刷单	uxd
+手续费	uxf
+说瞎话	uxh
+刷屏	uxp
+实习期	uxq
+双休日	uxr
+受限制	uxv
+上下文	uxw
+刷新	uxx
+受限于	uxy
+刷子	uxz
+顺便	uyb
+顺带	uyd
+顺耳	uye
+十月份	uyf
+上一个	uyg
+双引号	uyh
+瞬间	uyj
+啥意思	uys
+收银台	uyt
+是一种	uyv
+顺位	uyw
+试一下	uyx
+顺嘴	uyz
+收藏	uzc
+首尔	uze
+首创	uzi
+收看	uzk
+寿命	uzm
+手头	uzt
+沙发	uaf
+傻子	uaz
+烧肉	ucr
+烧汤	uct
+筛查	udi
+收到没	udm
+涉案	uea
+涉足	uez
+上岸	uha
+上颚	uhe
+帅才	ukc
+帅哥	ukg
+摔坏	ukh
+甩卖	ukm
+摔破	ukp
+十年磨一剑	unm
+十年如一日	unr
+说破	uop
+说完	uow
+山人自有妙计	urz
+沙特阿拉伯	uta
+税额	uve
+谁肯	uwk
+十万八千里	uwb
+耍弄	uxn
+扎根	vag
+炸了	val
+炸窝	vaw
+皱巴巴	vbb
+真不错	vbc
+找不到	vbd
+只不过	vbg
+准备好	vbh
+猪八戒	vbj
+睁不开	vbk
+这不是	vbu
+找不着	vbv
+装不下	vbx
+这辈子	vbz
+照顾	vcg
+找出	vci
+找虐	vcn
+朝气	vcq
+找人	vcr
+罩子	vcz
+摘除	vdi
+知道吗	vdm
+正当年	vdn
+这倒是	vdu
+这边	veb
+折合	veh
+折让	ver
+折算	ves
+这种	vev
+这位	vew
+这下	vex
+珍贵	vfg
+真能	vfn
+振作	vfz
+整个	vgg
+正好	vgh
+睁开	vgk
+证明	vgm
+狰狞	vgn
+正派	vgp
+正色	vgs
+正在	vgz
+账号	vhh
+长孙	vhs
+涨停	vht
+仗着	vhv
+张扬	vhy
+张嘴	vhz
+智能	vin
+这句话	vjh
+展开	vjk
+芝加哥	vjg
+这几年	vjn
+椎间盘	vjp
+站起	vjq
+这几天	vjt
+战争	vjv
+站在	vjz
+逐客令	vkl
+这可是	vku
+准考证	vkv
+重口味	vkw
+只可惜	vkx
+中科院	vky
+装备	vlb
+纸老虎	vlh
+撞车	vli
+状况	vlk
+着凉了	vll
+撞墙	vlq
+撞死	vls
+这两天	vlt
+装修	vlx
+装作	vlz
+这么笨	vmb
+捉迷藏	vmc
+这么多	vmd
+这么贵	vmg
+这么好	vmh
+这么长	vmi
+这么久	vmj
+这么慢	vmm
+这么难	vmn
+这么胖	vmp
+这么巧	vmq
+掌门人	vmr
+皱眉头	vmt
+这么说	vmu
+中美洲	vmv
+这么晚	vmw
+这么想	vmx
+这么远	vmy
+这么早	vmz
+执牛耳	vne
+中南海	vnh
+滞纳金	vnj
+正能量	vnl
+中年人	vnr
+这年头	vnt
+只能说	vnu
+指南针	vnv
+捉弄	von
+桌球	voq
+着重	vov
+着想	vox
+桌子	voz
+制片人	vpr
+占便宜	vpy
+正前方	vqf
+中秋节	vqj
+知其然	vqr
+知其一	vqy
+转变	vrb
+转存	vrc
+转告	vrg
+专家	vrj
+赚了	vrl
+专门	vrm
+转念	vrn
+赚钱	vrq
+转送	vrs
+主人翁	vrw
+转走	vrz
+中方	vsf
+中国	vsg
+中肯	vsk
+中年	vsn
+中期	vsq
+中途	vst
+忠诚	vsi
+涨停板	vtb
+转托管	vtg
+直通车	vti
+状态栏	vtl
+真他妈	vtm
+猪头肉	vtr
+直挺挺	vtt
+重头戏	vtx
+猪蹄子	vtz
+正准备	vvb
+转折点	vvd
+追高	vvg
+追查	vvi
+坠落	vvl
+追求	vvq
+追讨	vvt
+这种事	vvu
+追逐	vvv
+追尾	vvw
+追捧	vvp
+中文版	vwb
+中午好	vwh
+中文名	vwm
+这点	vwd
+这次	vwc
+这位	vww
+这个	vwg
+这种	vwv
+这款	vwk
+这天	vwt
+中小板	vxb
+抓到	vxd
+照相馆	vxg
+照相机	vxj
+抓狂	vxk
+执行力	vxl
+这些年	vxn
+这些天	vxt
+中学生	vxu
+抓住	vxv
+抓瞎	vxx
+只限于	vxy
+职业病	vyb
+这一次	vyc
+扎伊尔	vye
+障眼法	vyf
+找一个	vyg
+转眼间	vyj
+这一块	vyk
+注意力	vyl
+至于吗	vym
+准能	vyn
+转一圈	vyq
+准入	vyr
+这也算	vys
+这一天	vyt
+中英文	vyw
+这样子	vyz
+栀子花	vzh
+洲际	vzj
+周六	vzl
+周围	vzw
+周遭	vzz
+榨菜	vac
+炸死	vas
+渣土	vat
+准备了	vbl
+照此	vcc
+摘菜	vdc
+债款	vdk
+这儿	vee
+这期	veq
+账册	vhc
+中看不中用	vkb
+拽起	vkq
+桌布	vob
+捉虫	voi
+灼痛	vot
+知其不可而为之	vqb
+知其所以然	vqs
+转盘	vrp
+钟爱	vsa
+中俄	vse
+周天	vzt
+𬶐	vca
+挖坟	waf
+挖掘	waj
+哇塞	was
+袜子	waz
+喂不饱	wbb
+窝边草	wbc
+王八蛋	wbd
+五笔画	wbh
+完不成	wbi
+忘不了	wbl
+玩不起	wbq
+无不是	wbu
+玩不转	wbv
+误操作	wcz
+外侧	wdc
+无底洞	wdd
+歪风	wdf
+外观	wdg
+外汇	wdh
+外出	wdi
+外墙	wdq
+外孙	wds
+外套	wdt
+五大洲	wdv
+外围	wdw
+外语	wdy
+外在	wdz
+问过	wfg
+紊乱	wfl
+温暖	wfn
+温泉	wfq
+温柔	wfr
+问下	wfx
+乌干达	wgd
+温故而知新	wge
+晚高峰	wgf
+温哥华	wgh
+乌骨鸡	wgj
+玩够了	wgl
+亡国奴	wgn
+外国人	wgr
+嗡嗡	wgw
+五个月	wgy
+五个字	wgz
+忘了	whl
+往后	whh
+往年	whn
+网盘	whp
+五花肉	whr
+网速	whs
+王子	whz
+完成了	wil
+无重码	wim
+未成年	win
+无产者	wiv
+玩过	wjg
+顽抗	wjk
+完全	wjq
+万人	wjr
+乌克兰	wkl
+五颗星	wkx
+胃溃疡	wky
+忘了吧	wlb
+五六点	wld
+窝里反	wlf
+乌拉圭	wlg
+网络化	wlh
+乌龙茶	wli
+乌龙球	wlq
+往来款	wlk
+无理码	wlm
+五六年	wln
+五六岁	wls
+玩两天	wlt
+问了问	wlw
+物理学	wlx
+五粮液	wly
+雾蒙蒙	wmm
+亡命徒	wmt
+无名氏	wmu
+窝囊废	wnf
+万能键	wnj
+玩腻了	wnl
+窝囊气	wnq
+威尼斯	wns
+毋宁说	wnu
+玩弄于股掌之中	wny
+我国	wog
+窝囊	won
+握拳	woq
+窝头	wot
+斡旋	wox
+挖墙脚	wqj
+无人机	wrj
+万人迷	wrm
+污染源	wry
+外孙女	wsn
+乌托邦	wtb
+渥太华	wth
+无条件	wtj
+维他命	wtm
+委托人	wtr
+问题是	wtu
+无论	wul
+无穷	wuq
+无障碍	wva
+尾椎骨	wvg
+无政府	wvf
+无纸化	wvh
+无止境	wvj
+文绉绉	wvv
+完整性	wvx
+违规	wwg
+尾盘	wwp
+无线电	wxd
+胃下垂	wxi
+五星级	wxj
+五线谱	wxp
+危险期	wxq
+无形中	wxv
+无线网	wxw
+危险性	wxx
+外星人	wxr
+晚一步	wyb
+晚一点	wyd
+玩意儿	wye
+五月份	wyf
+无用功	wyg
+无意间	wyj
+无压力	wyl
+维也纳	wyn
+武夷山	wyu
+无意中	wyv
+文言文	wyw
+问一下	wyx
+无异于	wyy
+乌鸦嘴	wyz
+外祖父	wzf
+屋子里	wzl
+外祖母	wzm
+五子棋	wzq
+瓦罐	wag
+挖煤	wam
+娃娃	waw
+蛙泳	way
+万般皆下品	wbj
+我不入地狱谁入地狱	wbr
+外人	wdr
+沃尔玛	wem
+翁婿	wgx
+无理寸步难行	wlc
+无立锥之地	wlv
+我俩	wol
+我们	wom
+莴笋	wos
+为什么	wsm
+晚自习	wzx
+猇	xnq
+心爱	xba
+新版	xbb
+信不过	xbg
+想不开	xbk
+新闻	xbw
+下次吧	xcb
+下次见	xcj
+写错了	xcl
+小聪明	xcm
+瞎操心	xcx
+小弟弟	xdd
+小地方	xdf
+信得过	xdg
+闲得慌	xdh
+想得开	xdk
+想得美	xdm
+想当年	xdn
+想当然	xdr
+行得通	xdt
+现代文	xdw
+相对性	xdx
+相当于	xdy
+小动作	xdz
+希尔顿	xed
+小而精	xej
+小儿科	xek
+形而上	xeu
+形而下	xex
+小幅度	xfd
+媳妇儿	xfe
+悬浮窗	xfi
+兴奋剂	xfj
+消费品	xfp
+消费者	xfv
+新发现	xfx
+消防员	xfy
+修改版	xgb
+小高层	xgc
+性高潮	xgi
+习惯了	xgl
+下个月	xgy
+小哥哥	xgg
+小姑娘	xgn
+习惯性	xgx
+洗个澡	xgz
+香港岛	xgd
+膝关节	xgj
+小伙伴	xhb
+信号灯	xhd
+歇会儿	xhe
+笑呵呵	xhh
+学会了	xhl
+喜欢吗	xhm
+瞎胡闹	xhn
+向后转	xhv
+下划线	xhx
+西方	xif
+系统	xit
+现阶段	xjd
+小轿车	xji
+小姐姐	xjj
+小金库	xjk
+新加坡	xjp
+陷进去	xjq
+心绞痛	xjt
+相较于	xjy
+行啊	xka
+性别	xkb
+行动	xkd
+性格	xkg
+行骗	xkp
+形容	xkr
+形似	xks
+行为	xkw
+星座	xkz
+相爱	xla
+想念	xln
+线条	xmt
+消费	xnf
+笑容	xnr
+小偷	xnt
+邪恶	xpe
+橡皮泥	xpn
+协调	xpt
+秀才	xqc
+修复	xqf
+想清楚	xqi
+想起来	xql
+修女	xqn
+秀气	xqq
+星期天	xqt
+休息	xqx
+悬案	xra
+选购	xrg
+旋律	xrl
+选题	xrt
+旋转	xrv
+选择	xrz
+凶恶	xse
+泄私愤	xsf
+雄厚	xsh
+胸襟	xsj
+笑死了	xsl
+熊猫	xsm
+匈奴	xsn
+小算盘	xsp
+吓死人	xsr
+胸膛	xst
+学到	xtd
+学会	xth
+学成	xti
+学名	xtm
+学年	xtn
+血肉	xtr
+血色	xts
+噱头	xtt
+学生	xtu
+学者	xtv
+学位	xtw
+靴子	xtz
+序列	xul
+显示器	xuq
+虚增	xuz
+修正版	xvb
+想知道	xvd
+下周二	xve
+瞎指挥	xvh
+新专辑	xvj
+下周六	xvl
+下周末	xvm
+下周日	xvr
+下周三	xvs
+象征性	xvx
+下周一	xvy
+下午好	xwh
+下午茶	xwi
+洗碗机	xwj
+想歪了	xwl
+想问下	xwx
+夏威夷	xwy
+下巴	xxb
+谢谢你	xxn
+吓跑	xxp
+吓死	xxs
+夏天	xxt
+下一个	xyg
+寻找	xyv
+心脏病	xzb
+写字间	xzj
+写字楼	xzl
+瞎琢磨	xzm
+协奏曲	xzq
+闲杂人	xzr
+选择题	xzt
+选择性	xzx
+写作业	xzy
+秀才造反，三年不成	xcz
+媳妇熬成婆	xfa
+相逢何必曾相识	xfh
+鲜花插在牛粪上	xhi
+新疆维吾尔自治区	xjw
+销案	xna
+凶案	xsa
+凶光	xsg
+雄姿	xsz
+西藏自治区	xzz
+压根	yag
+压坏	yah
+压力	yal
+压迫	yap
+压缩	yas
+亚洲	yav
+雅兴	yax
+一部分	ybf
+也不算	ybs
+要好	ych
+原材料	ycl
+要求	ycq
+摇头	yct
+一点儿	yde
+一顿饭	ydf
+一等功	ydg
+一大串	ydi
+一等奖	ydj
+一大口	ydk
+意大利	ydl
+源代码	ydm
+雅典娜	ydn
+一大片	ydp
+一大群	ydq
+胰岛素	yds
+冤大头	ydt
+有点事	ydu
+亚丁湾	ydw
+运动鞋	ydx
+一大早	ydz
+也该	yeg
+也难	yen
+也怕	yep
+也请	yeq
+野人	yer
+也算	yes
+液态	yet
+也行	yex
+一夫当关，万夫莫开	yfd
+一分货	yfh
+一分价钱一分货	yfj
+预付款	yfk
+引发了	yfl
+一方面	yfm
+一分钱	yfq
+一分钟	yfv
+一封信	yfx
+依附于	yfy
+一份子	yfz
+一个班	ygb
+应该的	ygd
+一个词	ygc
+一公分	ygf
+一个个	ygg
+一锅烩	ygh
+一个梦	ygm
+一股脑	ygn
+荧光屏	ygp
+一个人	ygr
+应该是	ygu
+一个钟	ygv
+一个月	ygy
+一个字	ygz
+洋葱	yhc
+羊奶	yhn
+样品	yhp
+样子	yhz
+一个	yig
+延期	yjq
+婴儿	yke
+迎合	ykh
+迎接	ykj
+赢了	ykl
+影片	ykp
+樱桃	ykt
+影响	ykx
+应用	yky
+一览表	ylb
+一两次	ylc
+一两点	yld
+医疗费	ylf
+一两个	ylg
+一两回	ylh
+一连串	yli
+伊拉克	ylk
+又来了	yll
+跃龙门	ylm
+一两年	yln
+娱乐圈	ylq
+一两天	ylt
+一路上	ylu
+意料中	ylv
+一揽子	ylz
+有毛病	ymb
+油麦菜	ymc
+一面倒	ymd
+爷们儿	yme
+妖魔化	ymh
+压马路	yml
+一幕幕	ymm
+虞美人	ymr
+亚马逊	ymx
+一毛钱	ymq
+一码事	ymu
+一秒钟	ymv
+有没有	ymy
+夜猫子	ymz
+一年级	ynj
+云南省	ynu
+一屁股	ypg
+有魄力	ypl
+一平米	ypm
+一片片	ypp
+硬碰硬	ypy
+优缺点	yqd
+右前方	yqf
+邀请函	yqh
+元器件	yqj
+眼前亏	yqk
+用起来	yql
+雨凄凄	yqq
+尤其是	yqu
+与其这样	yqv
+缘故	yrg
+圆滑	yrh
+愚人节	yrj
+圆润	yrr
+原始	yru
+用餐	ysc
+以色列	ysl
+用品	ysp
+月报	ytb
+月份	ytf
+月初	yti
+一条路	ytl
+月内	ytn
+圆珠笔	yvb
+眼中钉	yvd
+一阵风	yvf
+一枝花	yvh
+一指禅	yvi
+有主见	yvj
+意志力	yvl
+验证码	yvm
+一整天	yvt
+一阵子	yvz
+一万个	ywg
+源文件	ywj
+依我看	ywk
+英文名	ywm
+一万年	ywn
+有问题	ywt
+一晚上	ywu
+意味着	ywv
+洋娃娃	yww
+业务员	ywy
+也许吧	yxb
+鱼腥草	yxc
+一想到	yxd
+右下方	yxf
+右下角	yxj
+一系列	yxl
+音形码	yxm
+预选赛	yxs
+一席谈	yxt
+一小时	yxu
+印象中	yxv
+一下午	yxw
+有效性	yxx
+亚细亚	yxy
+一下子	yxz
+优越感	yyg
+韵母	yym
+韵频	yyp
+有缘人	yyr
+摇摇头	yyt
+邮费	yzf
+原子能	yzn
+有所	yzs
+犹太	yzt
+有无	yzw
+萦绕	ykr
+羊毛出在羊身上	ymi
+有朋自远方来	ypz
+燕雀安知鸿鹄之志	yqa
+一千个	yqg
+冤案	yra
+用脑	ysn
+粤菜	ytc
+英雄难过美人关	yxn
+一座座	yzz
+咋地	zad
+咋搞	zag
+杂货	zah
+杂牌	zap
+杂碎	zas
+杂文	zaw
+咋样	zay
+做不到	zbd
+做不出	zbi
+资本家	zbj
+走不开	zbk
+做不了	zbl
+总不能	zbn
+再不然	zbr
+坐不住	zbv
+赞比亚	zby
+早年	zcn
+早盘	zcp
+早日	zcr
+糟蹋	zct
+早上	zcu
+造型	zcx
+再次	zdc
+再多	zdd
+最低分	zdf
+宰割	zdg
+在场	zdi
+再见	zdj
+做到了	zdl
+在吗	zdm
+灾难	zdn
+栽培	zdp
+灾区	zdq
+在逃	zdt
+在外	zdw
+再现	zdx
+再造	zdz
+责备	zeb
+罪恶感	zeg
+责令	zel
+责任	zer
+则是	zeu
+责问	zew
+择优	zey
+字符串	zfi
+字符集	zfj
+怎可	zfk
+怎能	zfn
+自个儿	zge
+增大	zgd
+最高分	zgf
+增高	zgg
+走过场	zgi
+足够了	zgl
+赠品	zgp
+增强	zgq
+栽跟头	zgt
+增长	zgv
+憎恶	zgw
+增援	zgy
+藏胞	zhb
+自豪感	zhg
+脏活	zhh
+组合键	zhj
+脏了	zhl
+葬送	zhs
+综合性	zhx
+藏语	zhy
+藏族	zhz
+滋味	ziw
+总觉得	zjd
+赞歌	zjg
+咱就	zjj
+暂缺	zjq
+暂时	zju
+赞扬	zjy
+钻空子	zkz
+自留地	zld
+脏乱差	zli
+紫罗兰	zll
+自来水	zlu
+坐落在	zlz
+怎么办	zmb
+怎么打	zmd
+怎么搞	zmg
+怎么会	zmh
+怎么成	zmi
+怎么就	zmj
+怎么看	zmk
+怎么了	zml
+怎么能	zmn
+怎么破	zmp
+自贸区	zmq
+自媒体	zmt
+怎么说	zmu
+怎么玩	zmw
+怎么写	zmx
+怎么样	zmy
+怎能说	znu
+灾难性	znx
+作案	zoa
+左边	zob
+左侧	zoc
+做到	zod
+做好	zoh
+作出	zoi
+作弄	zon
+作曲	zoq
+作祟	zos
+昨天	zot
+坐在	zoz
+左撇子	zpz
+左前方	zqf
+钻到	zrd
+责任感	zrg
+钻头	zrt
+钻石	zru
+自认为	zrw
+钻研	zry
+总裁	zsc
+总得	zsd
+总称	zsi
+总括	zsk
+总理	zsl
+总能	zsn
+总怕	zsp
+纵情	zsq
+总统	zst
+总务	zsw
+座谈会	zth
+糟蹋了	ztl
+遭天谴	ztq
+总体上	ztu
+座上宾	zub
+阻挡	zud
+足够	zug
+组成	zui
+阻力	zul
+祖母	zum
+阻挠	zun
+足球	zuq
+组图	zut
+租售	zuu
+暂时性	zux
+足足	zuz
+嘴巴	zvb
+罪犯	zvf
+最高	zvg
+最后	zvh
+最长	zvi
+最近	zvj
+自制力	zvl
+最能	zvn
+最怕	zvp
+自治区	zvq
+醉态	zvt
+杂志社	zvu
+最为	zvw
+最新	zvx
+最早	zvz
+走弯路	zwl
+走为上	zwu
+做文章	zwv
+紫外线	zwx
+贼眼	zwy
+贼赃	zwz
+左下方	zxf
+最喜欢	zxh
+自行车	zxi
+左下角	zxj
+坐下来	zxl
+早些年	zxn
+在校生	zxu
+自信心	zxx
+再一次	zyc
+早一点	zyd
+尊贵	zyg
+自由化	zyh
+尊称	zyi
+遵令	zyl
+在一起	zyq
+尊容	zyr
+尊重	zyv
+遵循	zyx
+尊严	zyy
+走吧	zzb
+走过	zzg
+走好	zzh
+走出	zzi
+走开	zzk
+走了	zzl
+走强	zzq
+走人	zzr
+走私	zzs
+走台	zzt
+走势	zzu
+走着	zzv
+走完	zzw
+走走	zzz
+最起码	zqm
+咋办	zab
+杂草	zac
+杂毛	zam
+杂念	zan
+杂谈	zat
+杂项	zax
+咂嘴	zaz
+糟糕	zcg
+早死	zcs
+再三	zds
+责骂	zem
+责难	zen
+择期	zeq
+怎敢	zfg
+怎会	zfh
+怎么	zfm
+增仓	zgc
+憎恨	zgh
+暂按	zja
+暂存	zjc
+暂缓	zjh
+赞颂	zjs
+怎么做	zmz
+怎么着	zmv
+钻出	zri
+钻入	zrr
+总额	zse
+总分	zsf
+阻碍	zua
+最爱	zva
+罪恶	zve
+贼胆	zwd
+贼船	zwi
+自我感觉良好	zwg
+贼人	zwr
+贼窝	zww
+做一天和尚撞一天钟	zyt
+今	jba
+竹	vug
+智能ABC	vna
+前两个	qlg
+不在线	bzx
+罪人	zvr
+总归	zsg
+咋回事	zhu
+咋了	zal
+野草	yec
+问题	wft
+帐篷	vhp
+尚在	uhz
+耐心	ndx
+空挡	ksd
+串通	irt
+猜到了	cdl
+受到	uzd
+海岸线	hax
+沃尔沃	wew
+核潜艇	hqt
+吃白饭	ibf
+
+# emoji表情
+👏	oigv
+🙏	oibt
+👍	oiql
+👎	oiro
+🫰	oibx
+🤝	oiwu
+🥱	oihq
+🌹	oimg
+😋	oimw
+🚶🐎👀🌸	oigh
+🐎🐎🐅🐅	oimh
+🐂🍺	oinb
+😂	oixk
+❤️	oixh
+🤦	oiwl
+🤣	oixd
+🔥	oiho
+😊	oixn
+🙂	oihh
+🤭	oitx
+😍	oise
+🤔	oisk
+😵	oiyy
+🤗	oiyb
+🙄	oiby
+😡	oifn
+😘	oifw
+😚	oitz
+😓	oilh
+😐	oilm
+😏	oidy
+😄	oidx
+😀	oiha
+😕	oipz
+🎉	oiqv
+🤷‍♂️	oisj
+😫	oipb
+😛	oitu
+😒	oibz
+😠	oiuq
+😢	oiku
+😕	oikh
+💀	oikl
+🍉	oiig
+😶	oiim
+😤	oiiq
+🤕	oiuu
+😴	oiuj
+😪	oiky
+😁	oicy
+😖	oivk
+😉	oivy
+😎	oimj
+😙	oiwf
+😲	oijy
+😣	oiji
+😯	oiij
+👌	oiok
+🫶	oian
+🤟	oian
+🤘🏻	oiyg
+🖕	oicc
+🤙	oidh
+😜	oitp
+😞	oiuw
+🫣	oitk
+😧	oitk
+😰	oilh
+🤬	oivm
+😊	oiwx
+😋	oihi
+😇	oitu
+😑	oiwy
+🤨	oitm
+😥	oiuw
+😤	oiam
+😌	oiax
+😷	oikv
+😟	oiyu
+😨	oikj
+😱	oijk
+😭	oidk
+🤫	oixu
+🤐	oibz
+😚	oiqq
+🤥	oiuh
+🌙	oiyl
+☀️	oity
+☹	oibm
+🙃	oidl
+😔	oiis
+🤮	oiot
+😅	oiem
+🤢	oiex
+🥺	oikq
+🤓	oiud
+🥹	oidx
+🤡	oixi
+💢	oinu
+💓	oixt
+🛩️	oifj
+🚩	oiqv
+🦀	oipx
+🚬	oiyt
+🙋	oiju
+🧋	oini
+🤩	oiib
+🥂	oivh
+🍻	oigb
+💔	oixs
+🍚	oiif
+🍵	oiia
+🐻	oixs
+🐔	oijt
+🐂	oinq
+🐦	oinn
+🐴	oimt
+🐍	oiue
+🐲	oilt
+🐟	oiyu
+🐋	oijy
+🐖	oivu
+🐑	oiyh
+🐕	oigz
+🐈	oimc
+🐉	oils
+🍺️	oipj
+🍉	oixg
+🎂	oidg
+💣	oivd
+💩	oidb
+🐶	oigt
+🐏	oiyh
+🐊	oiey
+🐧	oiqe
+🦋	oihd
+🐾	oijy
+🐌	oiwn
+🐭	oiut
+🐢	oiwg
+🐵	oiht
+🐷	oivt
+🐹	oicu
+🐮	oint
+🐡	oiht
+🐯	oiht
+🐁	oilu
+🐺	oilt
+🐛	oiqi
+🐳	oijy
+🐞	oipi
+🐬	oiht
+🐫	oilt
+🦖	oikl
+🦕	oikl
+🐨	oikl
+🐤	oixj
+🐇	oitz
+🐓	oiji
+🐼	oixm
+🐜	oimy
+🐘	oidx
+🐝	oimf
+🐱	oimt
+🐿️	oiss
+🦎	oixy
+🐸	oiqw
+🐰	oitz
+🍑	oitz
+👀	oiyj
+🌸	oihx
+🐎	oima
+🚶	oirf
+🐅	oihu
+🍜	oimm
+💰	oiqm
+❓	oiwh
+✅	oidv
+❎	oico
+🇨🇳	oigq
+☕️	oikf
+💦	oiuv
+💩	oibb
+💉	oidv
+🍀	oisy
+🎋	oivz
+🧨	oibv
+🔥	oihy
+📍	oitd
+🌈	oich
+🤖	oijq
+🍓	oicm
+🍑	oitc
+🏃	oipb
+🎋	oiqx
+🎅🏾	oiud
+🥵	oifu
+💰	oiqd
+🦐	oixx
+💯	oibf
+📢	oilb
+✨	oiul
+🎁	oilw
+🫡	oijl
+🙇	oijg
+🙂‍↕️	oidt
+🍆	oiqz
+😅	oigg
+#符号
+一	oba	111
+丨	obl	111
+丿	obp	111
+丶	obd	111
+乛	obv	111
+乀	obn	111
+鱼	oba
+冖	obb	100
+宀	obb	99
+丷	obb	98
+疒	obb	97
+勹	obb	96
+比左	obb	95
+艹	obc	100
+廾	obc	99
+冫	obd	100
+氵	obd	99
+刂	obd	98
+⺈	obd	97
+阝	obe	100
+卩	obe	99
+彐	obe	98
+山	obe	97
+见下	obe	96
+扌	obf	100
+龶	obf	99
+寿上	obf	98
+带上	obf	97
+缶	obf	96
+既左	obg	100
+艮	obg	99
+鬼	obg	98
+革	obg	96
+骨	obg	97
+灬	obh	100
+虍	obh	99
+黑	obh	98
+余下	obh	97
+彳	obi	100
+亍	obi	99
+虫	obi	98
+钅	obj	100
+金	obj	99
+龹	obj	98
+匚	obk	100
+冂	obk	99
+凵	obk	98
+囗	obk	97
+㠯	obk	96
+耂	obl	100
+立	obl	99
+龙	obl	98
+朩	obm
+⺧	obn	100
+牜	obn	99
+日	obo	100
+月	obo	99
+目	obo	98
+礻	obp	100
+衤	obp	99
+犭	obq	100
+求	obq	99
+具上	obq	98
+其上	obq	97
+亻	obr
+纟	obs	100
+厶	obs	99
+龴	obs	98
+罒	obs	97
+田	obt
+饣	obu	100
+龵	obu	99
+𠂇	obu	98
+氺	obu	97
+石	obu	96
+⺮	obv	100
+豸	obv	99
+亠	obw	100
+夂	obw	99
+攵	obw	98
+文	obw	97
+忄	obx	100
+乂	obx	99
+⺍	obx	98
+⺌	obx	97
+⺗	obx	96
+讠	oby	100
+⺷	oby	99
+⺶	oby	98
+𧘇	oby	97
+羊	oby	96
+⻊	obz	100
+廴	obz	99
+辶	obz	98
+
+标点d	ofb
+“”	ofbd	100
+（）	ofbd	99
+《》	ofbd	98
+〈〉	ofbd	97
+〔〕	ofbd	96
+‘’	ofbd	95
+「」	ofbd	94
+『』	ofbd	93
+【】	ofbd	92
+〖〗	ofbd	91
+［］	ofbd	90
+｛｝	ofbd	89
+．	ofbd	88
+。	ofbd	87
+，	ofbd	86
+、	ofbd	85
+；	ofbd	84
+：	ofbd	83
+？	ofbd	82
+！	ofbd	81
+…	ofbd	80
+—	ofbd	79
+·	ofbd	78
+ˉ	ofbd	77
+ˇ	ofbd	76
+¨	ofbd	75
+々	ofbd	74
+～	ofbd	73
+‖	ofbd	72
+∶	ofbd	71
+＂	ofbd	70
+	ofbd	69
+｀	ofbd	68
+｜	ofbd	67
+点数u	ofd	100
+⒈	ofdu	100
+⒉	ofdu	99
+⒊	ofdu	98
+⒋	ofdu	97
+⒌	ofdu	96
+⒍	ofdu	95
+⒎	ofdu	94
+⒏	ofdu	93
+⒐	ofdu	92
+⒑	ofdu	91
+⒒	ofdu	90
+⒓	ofdu	89
+⒔	ofdu	88
+⒕	ofdu	87
+⒖	ofdu	86
+⒗	ofdu	85
+⒘	ofdu	84
+⒙	ofdu	83
+⒚	ofdu	82
+⒛	ofdu	81
+单位w	ofd	99
+㎎	ofdw	100
+㎏	ofdw	99
+㎜	ofdw	98
+㎝	ofdw	97
+㎞	ofdw	96
+㎡	ofdw	95
+nm	ofdw	94
+μm	ofdw	93
+μg	ofdw	92
+㏄	ofdw	91
+㏎	ofdw	90
+㏑	ofdw	89
+㏒	ofdw	88
+㏕	ofdw	87
+俄大d	ofe	100
+А	ofed	100
+Б	ofed	99
+В	ofed	98
+Г	ofed	97
+Д	ofed	96
+Е	ofed	95
+Ж	ofed	94
+З	ofed	93
+И	ofed	92
+Й	ofed	91
+К	ofed	90
+Л	ofed	89
+М	ofed	88
+Н	ofed	87
+О	ofed	86
+П	ofed	85
+Р	ofed	84
+С	ofed	83
+Т	ofed	82
+У	ofed	81
+Ф	ofed	80
+Х	ofed	79
+Ц	ofed	78
+Ч	ofed	77
+Ш	ofed	76
+Щ	ofed	75
+Ъ	ofed	74
+Ы	ofed	73
+Ь	ofed	72
+Э	ofed	71
+Ю	ofed	70
+Я	ofed	69
+Ё	ofed	68
+俄小x	ofe	99
+а	ofex	100
+б	ofex	99
+в	ofex	98
+г	ofex	97
+д	ofex	96
+е	ofex	95
+ж	ofex	94
+з	ofex	93
+и	ofex	92
+й	ofex	91
+к	ofex	90
+л	ofex	89
+м	ofex	88
+н	ofex	87
+о	ofex	86
+п	ofex	85
+р	ofex	84
+с	ofex	83
+т	ofex	82
+у	ofex	81
+ф	ofex	80
+х	ofex	79
+ц	ofex	78
+ч	ofex	77
+ш	ofex	76
+щ	ofex	75
+ъ	ofex	74
+ы	ofex	73
+ь	ofex	72
+э	ofex	71
+ю	ofex	70
+я	ofex	69
+ё	ofex	68
+括数	ofk
+⑴	ofku	100
+⑵	ofku	99
+⑶	ofku	98
+⑷	ofku	97
+⑸	ofku	96
+⑹	ofku	95
+⑺	ofku	94
+⑻	ofku	93
+⑼	ofku	92
+⑽	ofku	91
+⑾	ofku	90
+⑿	ofku	89
+⒀	ofku	88
+⒁	ofku	87
+⒂	ofku	86
+⒃	ofku	85
+⒄	ofku	84
+⒅	ofku	83
+⒆	ofku	82
+⒇	ofku	81
+货币b	ofh
+€	ofhb	100
+$	ofhb	99
+￠	ofhb	98
+£	ofhb	97
+￡	ofhb	96
+¥	ofhb	94
+￥	ofhb	93
+฿	ofhb	92
+═	ofht	100
+║	ofht	99
+╧	ofht	98
+╪	ofht	97
+╤	ofht	96
+╡	ofht	95
+╞	ofht	94
+▁	ofht	93
+╕	ofht	92
+╒	ofht	91
+╛	ofht	90
+╘	ofht	89
+日大d	ofr	100
+ァ	ofrd	100
+ア	ofrd	99
+ィ	ofrd	98
+イ	ofrd	97
+ゥ	ofrd	96
+ウ	ofrd	95
+ェ	ofrd	94
+エ	ofrd	93
+ォ	ofrd	92
+オ	ofrd	91
+カ	ofrd	90
+ガ	ofrd	89
+キ	ofrd	88
+ギ	ofrd	87
+ク	ofrd	86
+グ	ofrd	85
+ケ	ofrd	84
+ゲ	ofrd	83
+コ	ofrd	82
+ゴ	ofrd	81
+サ	ofrd	80
+ザ	ofrd	79
+シ	ofrd	78
+ジ	ofrd	77
+ス	ofrd	76
+ズ	ofrd	75
+セ	ofrd	74
+ゼ	ofrd	73
+ソ	ofrd	72
+ゾ	ofrd	71
+タ	ofrd	70
+ダ	ofrd	69
+チ	ofrd	68
+ヂ	ofrd	67
+ッ	ofrd	66
+ツ	ofrd	65
+ヅ	ofrd	64
+テ	ofrd	63
+デ	ofrd	62
+ト	ofrd	61
+ド	ofrd	60
+ナ	ofrd	59
+ニ	ofrd	58
+ヌ	ofrd	57
+ネ	ofrd	56
+ノ	ofrd	55
+ハ	ofrd	54
+バ	ofrd	53
+パ	ofrd	52
+ヒ	ofrd	51
+ビ	ofrd	50
+ピ	ofrd	49
+フ	ofrd	48
+ブ	ofrd	47
+プ	ofrd	46
+ヘ	ofrd	45
+ベ	ofrd	44
+ペ	ofrd	43
+ホ	ofrd	42
+ボ	ofrd	41
+ポ	ofrd	40
+マ	ofrd	39
+ミ	ofrd	38
+ム	ofrd	37
+メ	ofrd	36
+モ	ofrd	35
+ャ	ofrd	34
+ヤ	ofrd	33
+ュ	ofrd	32
+ユ	ofrd	31
+ョ	ofrd	30
+ヨ	ofrd	29
+ラ	ofrd	28
+リ	ofrd	27
+ル	ofrd	26
+レ	ofrd	25
+ロ	ofrd	24
+ヮ	ofrd	23
+ワ	ofrd	22
+ヰ	ofrd	21
+ヱ	ofrd	20
+ヲ	ofrd	19
+ン	ofrd	18
+ヴ	ofrd	17
+ヵ	ofrd	16
+ヶ	ofrd	15
+ー	ofrd	14
+ヽ	ofrd	13
+ヾ	ofrd	12
+箭头t	ofj
+←	ofjt	100
+→	ofjt	99
+↑	ofjt	98
+↓	ofjt	97
+↗	ofjt	96
+↙	ofjt	95
+↘	ofjt	94
+↖	ofjt	93
+↔	ofjt	92
+⇆	ofjt	91
+⇤	ofjt	90
+⇥	ofjt	89
+«	ofjt	88
+»	ofjt	87
+日小x	ofr	99
+ぁ	ofrx	100
+あ	ofrx	99
+ぃ	ofrx	98
+い	ofrx	97
+ぅ	ofrx	96
+う	ofrx	95
+ぇ	ofrx	94
+え	ofrx	93
+ぉ	ofrx	92
+お	ofrx	91
+か	ofrx	90
+が	ofrx	89
+き	ofrx	88
+ぎ	ofrx	87
+ぱ	ofrx	86
+く	ofrx	85
+ぐ	ofrx	84
+け	ofrx	83
+げ	ofrx	82
+こ	ofrx	81
+ご	ofrx	80
+さ	ofrx	79
+ざ	ofrx	78
+し	ofrx	77
+じ	ofrx	76
+す	ofrx	75
+ず	ofrx	74
+せ	ofrx	73
+ぜ	ofrx	72
+そ	ofrx	71
+ぞ	ofrx	70
+た	ofrx	69
+だ	ofrx	68
+ち	ofrx	67
+ぢ	ofrx	66
+っ	ofrx	65
+つ	ofrx	64
+づ	ofrx	63
+て	ofrx	62
+で	ofrx	61
+と	ofrx	60
+ど	ofrx	59
+な	ofrx	58
+に	ofrx	57
+ぬ	ofrx	56
+ね	ofrx	55
+の	ofrx	54
+は	ofrx	53
+ば	ofrx	52
+ひ	ofrx	51
+び	ofrx	50
+ぴ	ofrx	49
+ふ	ofrx	48
+ぶ	ofrx	47
+ぷ	ofrx	46
+へ	ofrx	45
+べ	ofrx	44
+ぺ	ofrx	43
+ほ	ofrx	42
+ぼ	ofrx	41
+ぽ	ofrx	40
+ま	ofrx	39
+み	ofrx	38
+む	ofrx	37
+め	ofrx	36
+も	ofrx	35
+ゃ	ofrx	34
+や	ofrx	33
+ゅ	ofrx	32
+ゆ	ofrx	31
+ょ	ofrx	30
+よ	ofrx	29
+ら	ofrx	28
+り	ofrx	27
+る	ofrx	26
+れ	ofrx	25
+ろ	ofrx	24
+ゎ	ofrx	23
+わ	ofrx	22
+ゐ	ofrx	21
+ゑ	ofrx	20
+を	ofrx	19
+ん	ofrx	18
+゛	ofrx	17
+゜	ofrx	16
+ゝ	ofrx	15
+ゞ	ofrx	14
+偏旁p	ofp	100
+勹	ofpp	100
+灬	ofpp	99
+冫	ofpp	98
+艹	ofpp	97
+屮	ofpp	96
+辶	ofpp	95
+刂	ofpp	94
+匚	ofpp	93
+阝	ofpp	92
+廾	ofpp	91
+丨	ofpp	90
+虍	ofpp	89
+彐	ofpp	88
+卩	ofpp	87
+钅	ofpp	86
+冂	ofpp	85
+冖	ofpp	84
+宀	ofpp	83
+疒	ofpp	82
+肀	ofpp	81
+丿	ofpp	80
+攵	ofpp	79
+凵	ofpp	78
+犭	ofpp	77
+亻	ofpp	76
+彡	ofpp	75
+饣	ofpp	74
+礻	ofpp	73
+扌	ofpp	72
+氵	ofpp	71
+纟	ofpp	70
+亠	ofpp	69
+囗	ofpp	68
+忄	ofpp	67
+讠	ofpp	66
+衤	ofpp	65
+廴	ofpp	64
+尢	ofpp	63
+夂	ofpp	62
+丶	ofpp	61
+丬	ofpp	60
+拼音y	ofp	99
+ā	ofpy	100
+á	ofpy	99
+ǎ	ofpy	98
+à	ofpy	97
+ō	ofpy	96
+ó	ofpy	95
+ǒ	ofpy	94
+ò	ofpy	93
+ê	ofpy	92
+ē	ofpy	91
+é	ofpy	90
+ě	ofpy	89
+è	ofpy	88
+ī	ofpy	87
+í	ofpy	86
+ǐ	ofpy	85
+ì	ofpy	84
+ǖ	ofpy	83
+ǘ	ofpy	82
+ǚ	ofpy	81
+ǜ	ofpy	80
+ü	ofpy	79
+ū	ofpy	78
+ú	ofpy	77
+ǔ	ofpy	76
+ù	ofpy	75
+罗大d	ofl	100
+Ⅰ	ofld	100
+Ⅱ	ofld	99
+Ⅲ	ofld	98
+Ⅳ	ofld	97
+Ⅴ	ofld	96
+Ⅵ	ofld	95
+Ⅶ	ofld	94
+Ⅷ	ofld	93
+Ⅸ	ofld	92
+Ⅹ	ofld	91
+Ⅺ	ofld	90
+Ⅻ	ofld	89
+罗小x	ofl	99
+ⅰ	oflx	100
+ⅱ	oflx	99
+ⅲ	oflx	98
+ⅳ	oflx	97
+ⅴ	oflx	96
+ⅵ	oflx	95
+ⅶ	oflx	94
+ⅷ	oflx	93
+ⅸ	oflx	92
+ⅹ	oflx	91
+特殊u	oft
+℃	oftu	100
+°	oftu	99
+‰	oftu	98
+♂	oftu	97
+♀	oftu	96
+§	oftu	95
+№	oftu	94
+☆	oftu	93
+★	oftu	92
+○	oftu	91
+●	oftu	90
+◎	oftu	89
+◇	oftu	88
+◆	oftu	87
+□	oftu	86
+■	oftu	85
+△	oftu	84
+▲	oftu	83
+※	oftu	82
+〓	oftu	81
+＃	oftu	80
+＆	oftu	79
+＠	oftu	78
+＼	oftu	77
+＾	oftu	76
+＿	oftu	75
+￣	oftu	74
+数学x	ofu
+＋	ofux	100
+－	ofux	99
+＜	ofux	98
+＝	ofux	97
+＞	ofux	96
+±	ofux	95
+×	ofux	94
+÷	ofux	93
+∈	ofux	92
+∏	ofux	91
+∑	ofux	90
+∕	ofux	89
+√	ofux	88
+∝	ofux	87
+∞	ofux	86
+∟	ofux	85
+∠	ofux	84
+∣	ofux	83
+∥	ofux	82
+∧	ofux	81
+∨	ofux	80
+∩	ofux	79
+∪	ofux	78
+∫	ofux	77
+∮	ofux	76
+∴	ofux	75
+∵	ofux	74
+∶	ofux	73
+∷	ofux	72
+∽	ofux	71
+≈	ofux	70
+≌	ofux	69
+≒	ofux	68
+≠	ofux	67
+≡	ofux	66
+≤	ofux	65
+≥	ofux	64
+≦	ofux	63
+≧	ofux	62
+≮	ofux	61
+≯	ofux	60
+⊕	ofux	59
+⊙	ofux	58
+⊥	ofux	57
+⊿	ofux	56
+中数u	ofv	100
+㈠	ofvu	100
+㈡	ofvu	99
+㈢	ofvu	98
+㈣	ofvu	97
+㈤	ofvu	96
+㈥	ofvu	95
+㈦	ofvu	94
+㈧	ofvu	93
+㈨	ofvu	92
+㈩	ofvu	91
+注音y	ofv	99
+ㄅ	ofvy	100
+ㄆ	ofvy	99
+ㄇ	ofvy	98
+ㄈ	ofvy	97
+ㄉ	ofvy	96
+ㄊ	ofvy	95
+ㄋ	ofvy	94
+ㄌ	ofvy	93
+ㄍ	ofvy	92
+ㄎ	ofvy	91
+ㄏ	ofvy	90
+ㄐ	ofvy	89
+ㄑ	ofvy	88
+ㄒ	ofvy	87
+ㄓ	ofvy	86
+ㄔ	ofvy	85
+ㄕ	ofvy	84
+ㄖ	ofvy	83
+ㄗ	ofvy	82
+ㄘ	ofvy	81
+ㄙ	ofvy	80
+ㄧ	ofvy	79
+ㄨ	ofvy	78
+ㄩ	ofvy	77
+ㄚ	ofvy	76
+ㄛ	ofvy	75
+ㄜ	ofvy	74
+ㄝ	ofvy	73
+ㄞ	ofvy	72
+ㄟ	ofvy	71
+ㄠ	ofvy	70
+ㄡ	ofvy	69
+ㄢ	ofvy	68
+ㄣ	ofvy	67
+ㄤ	ofvy	66
+ㄥ	ofvy	65
+ㄦ	ofvy	64
+西大d	ofx	100
+Α	ofxd	100
+Β	ofxd	99
+Γ	ofxd	98
+Δ	ofxd	97
+Ε	ofxd	96
+Ζ	ofxd	95
+Η	ofxd	94
+Θ	ofxd	93
+Ι	ofxd	92
+Κ	ofxd	91
+Λ	ofxd	90
+Μ	ofxd	89
+Ν	ofxd	88
+Ξ	ofxd	87
+Ο	ofxd	86
+Π	ofxd	85
+Ρ	ofxd	84
+Σ	ofxd	83
+Τ	ofxd	82
+Υ	ofxd	81
+Φ	ofxd	80
+Χ	ofxd	79
+Ψ	ofxd	78
+Ω	ofxd	77
+西小x	ofx	99
+α	ofxx	100
+β	ofxx	99
+γ	ofxx	98
+δ	ofxx	97
+ε	ofxx	96
+ζ	ofxx	95
+η	ofxx	94
+θ	ofxx	93
+ι	ofxx	92
+κ	ofxx	91
+λ	ofxx	90
+μ	ofxx	89
+ν	ofxx	88
+ξ	ofxx	87
+ο	ofxx	86
+π	ofxx	85
+ρ	ofxx	84
+σ	ofxx	83
+τ	ofxx	82
+υ	ofxx	81
+φ	ofxx	80
+χ	ofxx	79
+ψ	ofxx	78
+ω	ofxx	77
+圆数u	ofy
+①	ofyu	100
+②	ofyu	99
+③	ofyu	98
+④	ofyu	97
+⑤	ofyu	96
+⑥	ofyu	95
+⑦	ofyu	94
+⑧	ofyu	93
+⑨	ofyu	92
+⑩	ofyu	91
+制表b	ofv	99
+┌	ofvb	100
+└	ofvb	99
+┐	ofvb	98
+┘	ofvb	97
+─	ofvb	96
+│	ofvb	95
+├	ofvb	94
+┤	ofvb	93
+┬	ofvb	92
+┴	ofvb	91
+┼	ofvb	90
+上标b	ofu	99
+¹	ofub	100
+²	ofub	99
+³	ofub	98
+⁴	ofub	97
+⁵	ofub	96
+⁶	ofub	95
+⁷	ofub	94
+⁸	ofub	93
+⁹	ofub	92
+⁰	ofub	91
+⁺	ofub	90
+⁻	ofub	89
+⁼	ofub	88
+⁽	ofub	87
+⁾	ofub	86
+ⁿ	ofub	85
+ˣ	ofub	84
+下标b	ofx	99
+₁	ofxb	100
+₂	ofxb	99
+₃	ofxb	98
+₄	ofxb	97
+₅	ofxb	96
+₆	ofxb	95
+₇	ofxb	94
+₈	ofxb	93
+₉	ofxb	92
+₀	ofxb	91
+₊	ofxb	90
+₋	ofxb	89
+₌	ofxb	88
+₍	ofxb	87
+₎	ofxb	86
+ₙ	ofxb	85
+ₓ	ofxb	84
+＆	ota	100
+α	ota	99
+β	otb	99
+©	otb	98
+℃	otc
+°	otd	100
+＝	otd	99
+≠	otd	98
+≥	otd	97
+＞	otd	96
+の	ote	100
+ε	ote	99
+′	otf	100
+Φ	otf	99
+■	otf	97
+√	otg	100
+γ	otg	99
+℉	oth	100
+※	oth	99
+¤	oth	98
+×	oti	100
+÷	oti	99
+＋	otj	100
+－	otj	99
+⤴	otk	100
+␣	otk	99
+∅	otk	98
+m³	otl	100
+″	otm	100
+μ	otm	99
+﹩	otm	98
+￠	otm	97
+♂	otn	100
+♀	otn	99
+№	otn	98
+€	oto	100
+Ω	oto	99
+㎡	otp	100
+π	otp	99
+☰	otq	100
+☷	otq	99
+¥	otr	100
+∴	ots	100
+∵	ots	99
+△	ots	98
+▲	ots	97
+฿	ott	100
+℡	ott	99
+ϟ	otu	98
+囍	otu	97
+™	otu	96
+§	otv	100
+®	otv	99
+㈱	otv	98
+‱	otw	100
+∞	otw	99
+卍	otw	98
+卐	otw	97
+≤	otx	96
+＜	otx	95
+☆	otx	94
+★	otx	93
+£	oty	100
+≈	oty	98
+●	oty	96
+↑	otz	100
+↓	otz	99
+←	otz	98
+ā	opa	100
+á	opa	99
+ǎ	opas	98
+à	opas	97
+ō	opo	100
+ó	opo	99
+ǒ	opos	98
+ò	opos	97
+ē	ope	100
+é	ope	99
+ě	opes	98
+è	opes	97
+ê	ope	96
+ī	opi	100
+í	opi	99
+ǐ	opis	98
+ì	opis	97
+ū	opu	100
+ú	opu	99
+ǔ	opus	98
+ù	opus	97
+ǖ	opv	99
+ǘ	opv	98
+ü	opv	97
+ǚ	opvs	97
+ǜ	opvs	96
+ḿ	opm	100
+m̀	opm	99
+ń	opn	100
+ň	opn	99
+ǹ	opn	98
+凹	oxa
+百	oxb	100
+白	oxb	99
+八	oxb	98
+卜	oxb	97
+匕	oxb	96
+卞	oxb	95
+不	oxb	94
+巴	oxb	93
+本	oxb	92
+必	oxb	91
+丙	oxb	90
+半	oxb	89
+办	oxb	88
+寸	oxc	100
+才	oxc	99
+匆	oxc	98
+册	oxc	97
+大	oxd	100
+丁	oxd	99
+刀	oxd	98
+歹	oxd	97
+刁	oxd	96
+东	oxd	95
+丹	oxd	94
+电	oxd	93
+氐	oxd	92
+二	oxe	100
+耳	oxe	99
+儿	oxe	98
+而	oxe	97
+非	oxf	100
+方	oxf	99
+飞	oxf	98
+夫	oxf	97
+凡	oxf	96
+甫	oxf	95
+弗	oxf	94
+乏	oxf	93
+丰	oxf	92
+广	oxg	100
+弓	oxg	99
+戈	oxg	98
+工	oxg	97
+瓜	oxg	96
+干	oxg	95
+个	oxg	94
+甘	oxg	93
+丐	oxg	92
+果	oxg	91
+更	oxg	90
+夬	oxg	88
+禾	oxh	100
+户	oxh	99
+互	oxh	98
+乎	oxh	97
+火	oxh	96
+川	oxi	100
+厂	oxi	99
+车	oxi	98
+长	oxi	97
+叉	oxi	96
+尺	oxi	95
+丑	oxi	94
+臣	oxi	93
+成	oxi	92
+垂	oxi	91
+斥	oxi	90
+串	oxi	89
+产	oxi	88
+出	oxi	87
+巾	oxj	100
+几	oxj	99
+九	oxj	98
+斤	oxj	97
+久	oxj	96
+巨	oxj	95
+己	oxj	94
+井	oxj	93
+及	oxj	92
+夹	oxj	91
+甲	oxj	90
+臼	oxj	89
+韭	oxj	88
+戋	oxj	87
+柬	oxj	86
+击	oxj	85
+口	oxk	100
+开	oxk	99
+亏	oxk	98
+了	oxl	100
+力	oxl	99
+乐	oxl	98
+来	oxl	97
+良	oxl	96
+两	oxl	95
+里	oxl	94
+吏	oxl	93
+耒	oxl	92
+卵	oxl	91
+丽	oxl	90
+木	oxm	100
+毛	oxm	99
+米	oxm	98
+门	oxm	97
+马	oxm	96
+皿	oxm	95
+末	oxm	94
+灭	oxm	93
+母	oxm	92
+民	oxm	91
+么	oxm	90
+面	oxm	89
+廿	oxn	100
+女	oxn	99
+牛	oxn	98
+鸟	oxn	97
+乃	oxn	96
+内	oxn	95
+农	oxn	94
+年	oxn	93
+片	oxp	100
+平	oxp	99
+爿	oxp	98
+七	oxq	100
+千	oxq	99
+犬	oxq	98
+且	oxq	97
+丘	oxq	96
+曲	oxq	95
+气	oxq	94
+乞	oxq	93
+人	oxr	100
+入	oxr	99
+冉	oxr	98
+壬	oxr	97
+刃	oxr	96
+三	oxs	100
+巳	oxs	99
+肃	oxs	98
+土	oxt	100
+天	oxt	99
+太	oxt	98
+屯	oxt	97
+十	oxu	100
+尸	oxu	99
+士	oxu	98
+手	oxu	97
+身	oxu	96
+水	oxu	95
+上	oxu	94
+少	oxu	93
+术	oxu	92
+失	oxu	91
+生	oxu	90
+世	oxu	89
+申	oxu	88
+史	oxu	87
+升	oxu	86
+事	oxu	85
+书	oxu	84
+束	oxu	83
+勺	oxu	82
+戍	oxu	81
+豕	oxu	80
+氏	oxu	79
+矢	oxu	78
+止	oxv	100
+爪	oxv	99
+主	oxv	98
+舟	oxv	97
+之	oxv	96
+正	oxv	95
+丈	oxv	94
+中	oxv	93
+专	oxv	92
+朱	oxv	91
+州	oxv	90
+重	oxv	89
+乍	oxv	88
+王	oxw	100
+瓦	oxw	99
+五	oxw	98
+无	oxw	97
+万	oxw	96
+午	oxw	95
+亡	oxw	93
+未	oxw	92
+乌	oxw	91
+韦	oxw	90
+勿	oxw	89
+为	oxw	88
+戊	oxw	87
+我	oxw	86
+丸	oxw	85
+兀	oxw	84
+小	oxx	100
+西	oxx	99
+心	oxx	98
+血	oxx	97
+下	oxx	96
+夕	oxx	95
+乡	oxx	94
+习	oxx	93
+戌	oxx	92
+又	oxy	100
+酉	oxy	99
+已	oxy	98
+于	oxy	97
+义	oxy	96
+与	oxy	95
+夭	oxy	94
+玉	oxy	93
+牙	oxy	92
+丫	oxy	91
+永	oxy	90
+尤	oxy	89
+也	oxy	88
+业	oxy	87
+由	oxy	86
+央	oxy	85
+亚	oxy	84
+严	oxy	83
+用	oxy	82
+幺	oxy	81
+禺	oxy	80
+臾	oxy	79
+尹	oxy	78
+禹	oxy	77
+夷	oxy	76
+弋	oxy	75
+聿	oxy	74
+雨	oxy	73
+再	oxz	100
+自	oxz	99
+子	oxz	98
+①	oyy	90
+②	oye	90
+③	oys	90
+④	oyf	90
+④	oysi	90
+⑤	oyw	90
+⑥	oyl	90
+⑦	oyq	90
+⑧	oyb	90
+⑨	oyj	90
+⑩	oyu	90
+Ⅰ	oyy	30
+Ⅱ	oye	30
+Ⅲ	oys	30
+Ⅳ	oyf	30
+Ⅳ	oysi	30
+Ⅴ	oyw	30
+Ⅵ	oyl	30
+Ⅶ	oyq	30
+Ⅷ	oyb	30
+Ⅸ	oyj	30
+Ⅹ	oyu	30
+ā	opa	90
+á	opa	80
+ǎ	opa	70
+à	opa	60
+ō	opo	90
+ó	opo	80
+ǒ	opo	70
+ò	opo	60
+ē	ope	90
+é	ope	80
+ě	ope	70
+è	ope	60
+ê	ope	50
+ī	opi	90
+í	opi	80
+ǐ	opi	70
+ì	opi	60
+ū	opu	90
+ú	opu	80
+ǔ	opu	70
+ù	opu	60
+ü	opv	90
+ǖ	opv	80
+ǘ	opv	70
+ǚ	opv	60
+ǜ	opv	50
+ḿ	opm	90
+m̀	opm	80
+ń	opn	90
+ň	opn	80
+ǹ	opn	70
+# 微信表情
+[破涕为笑]	owxk
+[合十]	owbt
+[微笑]	owwx
+[撇嘴]	owpz
+[色]	owse
+[发呆]	owfd
+[得意]	owdy
+[流汗]	owlh
+[流泪]	owdk
+[坏笑]	owhx
+[害羞]	owhx
+[闭嘴]	owbz
+[睡]	owuv
+[大哭]	owll
+[鼓掌]	owgv
+[尴尬]	owgg
+[发怒]	owfn
+[偷笑]	owtx
+[调皮]	owtp
+[呲牙]	owcy
+[惊讶]	owjy
+[难过]	owng
+[囧]	owjs
+[抓狂]	owvk
+[吐]	owtu
+[晕]	owyy
+[愉快]	owyk
+[白眼]	owby
+[傲慢]	owam
+[抠鼻]	owkb
+[困]	owky
+[惊恐]	owjk
+[憨笑]	owhx
+[悠闲]	owyx
+[奋斗]	owfd
+[咒骂]	owvm
+[疑问]	owyw
+[嘘]	owxu
+[衰]	owuk
+[骷髅]	owkl
+[强]	owql
+[敲打]	owqd
+[再见]	owzj
+[擦汗]	owch
+[左哼哼]	owhh
+[右哼哼]	owhh
+[哈欠]	owhq
+[鄙视]	owbu
+[委屈]	owwq
+[快哭了]	owkk
+[阴险]	owyx
+[亲亲]	owqq
+[可怜]	owkl
+[菜刀]	owcd
+[西瓜]	owxg
+[啤酒]	owpj
+[咖啡]	owkf
+[猪头]	owvt
+[玫瑰]	owmg
+[凋谢]	owdx
+[嘴唇]	owzi
+[爱心]	owax
+[心碎]	owxs
+[蛋糕]	owdg
+[炸弹]	owvd
+[便便]	owbb
+[月亮]	owyl
+[太阳]	owty
+[拥抱]	owyb
+[弱]	owro
+[握手]	owwu
+[胜利]	owul
+[抱拳]	owbq
+[勾引]	owgy
+[拳头]	owqt
+[OK]	owok
+[跳跳]	owtt
+[发抖]	owfd
+[怄火]	owoh
+[转圈]	owvq
+[嘿哈]	owhh
+[捂脸]	owwl
+[奸笑]	owjx
+[机智]	owjv
+[皱眉]	owvm
+[耶]	owye
+[吃瓜]	owig
+[加油]	owjy
+[汗]	owhj
+[天啊]	owta
+[Emm]	owem
+[社会社会]	owuh
+[旺柴]	owwi
+[打脸]	owdl
+[加油加油]	owjy
+[哇]	owwa
+[红包]	owhb
+[發]	owfa
+[福]	owfu
+[翻白眼]	owby
+[666]	owll
+[让我看看]	owtk
+[叹气]	owtq
+[苦涩]	owks
+[裂开]	owlk
+[笑脸]	owxl
+[生病]	owub
+[脸红]	owlh
+[恐惧]	owkj
+[失望]	owuw
+[好的]	owhd
+[合十]	owhu
+[庆祝]	owqv
+[礼物]	owlw
+[烟花]	owyh
+[爆竹]	owbv
+👍	oiq
+😙	oiw
+🤢	oie
+👎	oir
+🤭	oit
+😵	oiy
+😶	oii
+👌	oio
+😕	oip
+😌	oia
+🤔	ois
+😄	oid
+😡	oif
+👏	oig
+🥱	oih
+😣	oij
+😢	oik
+😓	oil
+😂	oix
+😁	oic
+😉	oiv
+🤗	oib
+💢	oin
+😋	oim
+# 一简词
+安装	a
+比较	b
+词库	c
+大概	d
+嗯嗯	e
+复杂	f
+关系	g
+忽略	h
+重新	i
+键盘	j
+可以	k
+理解	l
+目录	m
+内容	n
+哦哦	o
+便宜	p
+其他	q
+然后	r
+所有	s
+提供	t
+时候	u
+直接	v
+位置	w
+显示	x
+有时	y
+自动	z
+# 随心   自定编码规则，零星调节重码或别扭码
+单元	dye
+回忆	hyx
+简洁	jjd
+精力	jlv
+距离	jlw
+基于	jya
+截至	jva
+记忆	jyx
+梳理	ulw
+事实	uub
+哲理	vlw
+置顶	vdd
+指示	vue
+指挥	vhf
+想想	xxm
+音形	yxk
+觉得	jdi
+刻意	kys
+智	viud
+计	jiyd
+辨	bmld
+辫	bmls
+
+# no comment
+‰	oq
+_	ow
+~	op
+&	oa
+*	os
+$	od
+^	of
+=	oh
+#	oj
+|	ol
++	oz
+-	oc
+%	ob
+<	on
+>	om

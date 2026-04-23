@@ -1,0 +1,167 @@
+# Rime schema settings
+# encoding: utf-8
+
+schema:
+  schema_id: flypy
+  name: 小鹤音形
+  version: "10.26.1"
+  author:
+    - 方案设计：何海峰 flypy.cc
+  description:
+    - 小鹤音形
+  dependencies:
+    - flypydz
+
+punctuator:
+  import_preset: default
+
+switches:
+  - name: ascii_mode
+    reset: 0
+    states: [ 中文, 英文 ]
+  - name: full_shape
+    states: [ 半角, 全角 ]
+  - name: simplification
+    states: [ 简, 繁 ]
+    reset: 0
+  - name: ascii_punct
+   # states: [ 。，, ．， ]
+    reset: 0
+
+engine:
+  processors:
+    - ascii_composer
+    - recognizer
+    - key_binder
+    - speller
+    - punctuator
+    - selector
+    - navigator
+    - express_editor
+  segmentors:
+    - ascii_segmentor
+    - matcher
+    - abc_segmentor
+    - punct_segmentor
+    - fallback_segmentor
+    - affix_segmentor@ok_mode
+  translators:
+    - punct_translator
+    - table_translator
+    - lua_translator@date_translator
+    - lua_translator@time_translator
+    - table_translator@custom_phraseVD
+    - table_translator@custom_phraseXT
+    - table_translator@custom_phraseYH
+    - table_translator@custom_phraseQMZ
+    - table_translator@custom_phraseOK
+    - reverse_lookup_translator
+    - history_translator@history
+    - lua_translator@calculator_translator
+    - table_translator@ok_mode
+  filters:
+    - simplifier
+    - simplifier@simplification
+    - uniquifier
+
+speller:
+  alphabet: "abcdefghijklmnopqrstuvwxyz;'"
+  initials: ';abcdefghijklmnopqrstuvwxyz'
+  finals: "'"
+  #delimiter: " '"
+  max_code_length: 4
+  auto_select: true   #自动上屏
+  auto_select_pattern: ^;.$|^\w{4}$
+  auto_clear: max_length #manual|auto|max_length 空码按下一键确认清屏|空码自动清|达到最长码时后码顶上清屏
+
+translator:
+  dictionary: flypy
+  enable_charset_filter: false
+  enable_sentence: false
+  enable_completion: false # 编码提示开关
+  enable_user_dict: false
+  disable_user_dict_for_patterns:
+    - "^z.*$"
+
+history:
+   input: ;f
+   size: 1 #重复前几次上屏
+   initial_quality: 1 #首选
+
+simplification:
+  opencc_config: s2tw.json
+  option_name: simplification
+  tips: all #简繁对照
+
+custom_phraseVD:
+  dictionary: ""
+  user_dict: flypy_top
+  db_class: stabledb
+  enable_sentence: false
+  enable_completion: false
+  initial_quality: 0 #用户词和系统词重码 置顶
+
+custom_phraseXT:
+  dictionary: ""
+  user_dict: flypy_sys
+  db_class: stabledb
+  enable_sentence: false
+  enable_completion: false
+  initial_quality: -1 #本表词和系统词重码居后
+
+custom_phraseYH:
+  dictionary: ""
+  user_dict: flypy_user
+  db_class: stabledb
+  enable_sentence: false
+  enable_completion: false
+  initial_quality: -1 #用户词和系统词重码居后
+
+custom_phraseOK:
+  dictionary: ""
+  user_dict: flypy_ok
+  db_class: stabledb
+  enable_sentence: false
+  enable_completion: false
+  initial_quality: -1 #和系统词重码时居后
+
+reverse_lookup:
+  dictionary: flypydz
+  comment_format:
+   # - xform/^/〔/
+   # - xform/$/〕/
+    - xform/ / /
+
+key_binder:
+  import_preset: default #方案切换相关
+  bindings:
+    - {accept: bracketleft, send: Page_Up, when: paging} # [上翻页
+    - {accept: bracketright, send: Page_Down, when: has_menu} # ]下翻页
+    - {accept: comma, send: comma, when: paging} #注销逗号翻页
+    - {accept: period, send: period, when: has_menu} #注销句号翻页
+    - {accept: semicolon, send: 2, when: has_menu} #分号次选
+  #  - {accept: Release+semicolon, send: semicolon, when: has_menu} #如启用此行，则分号引导符号功能无效
+    - {accept: Release+period, send: period, when: composing} #句号顶屏
+    - {accept: Release+comma, send: comma, when: composing} #逗号顶屏
+    - {accept: "Tab", send: Escape, when: composing}
+    - {accept: "Shift_R", send: Escape, when: composing}
+    - {accept: "Shift+space", toggle: full_shape, when: always} #切换全半角
+    - {accept: "Control+period", toggle: ascii_punct, when: always} #切换中英标点
+    - {accept: "Control+j", toggle: simplification, when: always} #切换简繁
+
+recognizer:
+  import_preset: default
+  patterns:
+    #uppercase: "[A-Z][-_+.'0-9A-Za-z]*$"
+    uppercase: "" #中文状态大写锁定直接上屏
+    reverse_lookup: "[a-z`]*`+[a-z`]*"
+    punct: ""
+    expression: "^(=.*|ok[a-z']*)$"
+
+menu:
+  page_size: 5 #候选项数
+
+style:
+  text_orientation: horizontal
+  candidate_list_layout: linear
+  horizontal: true

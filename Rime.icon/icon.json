@@ -29,8 +29,16 @@
             }
           ],
           "glass" : true,
+          "hidden" : false,
           "image-name" : "logo.svg",
-          "name" : "logo"
+          "name" : "logo",
+          "position" : {
+            "scale" : 0.83,
+            "translation-in-points" : [
+              16,
+              16
+            ]
+          }
         }
       ],
       "shadow" : {

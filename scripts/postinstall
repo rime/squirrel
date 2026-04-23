@@ -1,21 +1,39 @@
 #!/bin/bash
 set -e
 
+# Reads the current GUI login user so postinstall operations target the right account.
 login_user=`/usr/bin/stat -f%Su /dev/console`
-squirrel_app_root="${DSTROOT}/Squirrel.app"
-squirrel_executable="${squirrel_app_root}/Contents/MacOS/Squirrel"
+# Resolves the login user's home directory for user-scoped Rime data path.
+login_home=`/usr/bin/dscl . -read "/Users/${login_user}" NFSHomeDirectory | /usr/bin/awk '{print $2}'`
+# Defines app bundle and runtime paths inside the installed destination root.
+squirrel_app_root="${DSTROOT}/SquirrelFlypy.app"
+squirrel_executable="${squirrel_app_root}/Contents/MacOS/SquirrelFlypy"
 rime_package_installer="${squirrel_app_root}/Contents/MacOS/rime-install"
 rime_shared_data_path="${squirrel_app_root}/Contents/SharedSupport"
+# Bundled flypy reference config is copied from this directory.
+rime_flypy_config_path="${rime_shared_data_path}/flypy-rime-config"
+# User writable Rime config directory for Squirrel Flypy.
+rime_user_data_path="${login_home}/Library/Rime Flypy"
 
-/usr/bin/sudo -u "${login_user}" /usr/bin/killall Squirrel > /dev/null || true
+# Stops running Squirrel process before replacing files and deploying.
+/usr/bin/sudo -u "${login_user}" /usr/bin/killall SquirrelFlypy > /dev/null || true
 
+# Ensures the input source is registered after installation.
 "${squirrel_executable}" --register-input-source
 
+# Copies all bundled flypy config files into user data directory with overwrite.
+/usr/bin/sudo -u "${login_user}" /bin/mkdir -p "${rime_user_data_path}"
+if [ -d "${rime_flypy_config_path}" ]; then
+    /usr/bin/sudo -u "${login_user}" /bin/cp -Rf "${rime_flypy_config_path}/." "${rime_user_data_path}/"
+fi
+
+# Builds schemas from SharedSupport unless explicitly disabled for fast debug install.
 if [ -z "${RIME_NO_PREBUILD}" ]; then
     pushd "${rime_shared_data_path}" > /dev/null
     "${squirrel_executable}" --build
     popd > /dev/null
 fi && (
+    # Enables and switches to the installed input source for immediate availability.
     /usr/bin/sudo -u "${login_user}" "${squirrel_executable}" --enable-input-source
     /usr/bin/sudo -u "${login_user}" "${squirrel_executable}" --select-input-source
 )

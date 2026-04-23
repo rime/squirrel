@@ -136,7 +136,7 @@ make package ARCHS='arm64'
 
 Define `DEV_ID` to automatically handle code signing and [notarization](https://developer.apple.com/documentation/security/notarizing_macos_software_before_distribution) (Apple Developer ID needed)
 
-To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable. 
+To make this work, you need a `Developer ID Installer: (your name/org)` and set your name/org as `DEV_ID` env variable.
 
 To make notarization work, you also need to save your credential under the same name as above.
 
@@ -156,6 +156,32 @@ Once built, you can install and try it live on your Mac computer:
 # Squirrel as a Universal app
 make install
 ```
+
+### Development quick rebuild (without packaging)
+
+Use this helper script for fast local testing during development:
+
+``` sh
+bash scripts/dev-rebuild.sh
+```
+
+This command rebuilds and reinstalls the Debug app using `make install-debug`.
+It skips packaging and notarization steps, so the iteration loop is much faster.
+
+Optional flags:
+
+``` sh
+# rebuild + reinstall + deploy schemas in SharedSupport
+bash scripts/dev-rebuild.sh --build
+
+# rebuild + reinstall + trigger reload notification
+bash scripts/dev-rebuild.sh --reload
+
+# both options together
+bash scripts/dev-rebuild.sh --build --reload
+```
+
+Run `bash scripts/dev-rebuild.sh --help` to print usage.
 
 ## Clean Up Artifacts
 
