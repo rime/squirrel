@@ -7,6 +7,18 @@ INSTALL_LOCATION='/Library/Input Methods'
 cd "$(dirname $0)"
 source common.sh
 
+shared_support_root="${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release/SquirrelFlypy.app/Contents/SharedSupport"
+flypy_config_source="${PROJECT_ROOT}/flypy-rime-config"
+flypy_config_target="${shared_support_root}/flypy-rime-config"
+
+if [ ! -d "${flypy_config_source}" ]; then
+    echo "make_package: missing source directory ${flypy_config_source}" >&2
+    exit 1
+fi
+
+mkdir -p "${flypy_config_target}"
+cp -Rf "${flypy_config_source}/." "${flypy_config_target}/"
+
 pkgbuild \
     --info PackageInfo \
     --root "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" \

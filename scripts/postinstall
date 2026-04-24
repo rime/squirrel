@@ -6,7 +6,8 @@ login_user=`/usr/bin/stat -f%Su /dev/console`
 # Resolves the login user's home directory for user-scoped Rime data path.
 login_home=`/usr/bin/dscl . -read "/Users/${login_user}" NFSHomeDirectory | /usr/bin/awk '{print $2}'`
 # Defines app bundle and runtime paths inside the installed destination root.
-squirrel_app_root="${DSTROOT}/SquirrelFlypy.app"
+squirrel_install_location="/Library/Input Methods"
+squirrel_app_root="${squirrel_install_location}/SquirrelFlypy.app"
 squirrel_executable="${squirrel_app_root}/Contents/MacOS/SquirrelFlypy"
 rime_package_installer="${squirrel_app_root}/Contents/MacOS/rime-install"
 rime_shared_data_path="${squirrel_app_root}/Contents/SharedSupport"
@@ -25,6 +26,9 @@ rime_user_data_path="${login_home}/Library/Rime Flypy"
 /usr/bin/sudo -u "${login_user}" /bin/mkdir -p "${rime_user_data_path}"
 if [ -d "${rime_flypy_config_path}" ]; then
     /usr/bin/sudo -u "${login_user}" /bin/cp -Rf "${rime_flypy_config_path}/." "${rime_user_data_path}/"
+else
+    echo "postinstall: missing bundled flypy config directory: ${rime_flypy_config_path}" >&2
+    exit 1
 fi
 
 # Builds schemas from SharedSupport unless explicitly disabled for fast debug install.
