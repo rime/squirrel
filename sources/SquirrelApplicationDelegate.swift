@@ -9,14 +9,19 @@ import UserNotifications
 import Sparkle
 import AppKit
 
-final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandardUserDriverDelegate, UNUserNotificationCenterDelegate {
+final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUStandardUserDriverDelegate, UNUserNotificationCenterDelegate, QuickAddWordPanelDelegate {
   static let rimeWikiURL = URL(string: "https://github.com/rime/home/wiki")!
   static let updateNotificationIdentifier = "SquirrelUpdateNotification"
   static let notificationIdentifier = "SquirrelNotification"
+  static let quickAddWordNotification = "SquirrelQuickAddWordNotification"
+  static let quickAddWordNotificationObject = "/Library/Input Methods/SquirrelFlypy.app"
+  static let quickAddWordDebugLogPath = "/tmp/squirrel_quick_add_debug.log"
 
   let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
+  var quickAddWordPanel: QuickAddWordPanel?
+  private var quickAddWordActivationPolicyBeforePanel: NSApplication.ActivationPolicy?
   var enableNotifications = false
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   var supportsGentleScheduledUpdateReminders: Bool {
@@ -54,6 +59,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
   func applicationWillFinishLaunching(_ notification: Notification) {
     panel = SquirrelPanel(position: .zero)
+    quickAddWordPanel = QuickAddWordPanel()
+    quickAddWordPanel?.delegate = self
     addObservers()
   }
 
@@ -95,6 +102,54 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
   func openWiki() {
     NSWorkspace.shared.open(Self.rimeWikiURL)
+  }
+
+  /// Opens the quick-add panel and optionally pre-fills fields.
+  func showQuickAddWordPanel(prefillWord: String? = nil, prefillCode: String? = nil) {
+    appendQuickAddDebugLog("showQuickAddWordPanel requested")
+    DispatchQueue.main.async {
+      if self.quickAddWordPanel == nil {
+        self.appendQuickAddDebugLog("creating QuickAddWordPanel instance")
+        self.quickAddWordPanel = QuickAddWordPanel()
+        self.quickAddWordPanel?.delegate = self
+      }
+      self.prepareActivationPolicyForQuickAddPanel()
+      self.appendQuickAddDebugLog("calling QuickAddWordPanel.show")
+      self.quickAddWordPanel?.show(prefillWord: prefillWord, prefillCode: prefillCode)
+    }
+  }
+
+  /// Handles panel confirm callbacks by validating and persisting a phrase entry.
+  func quickAddWordPanel(_ panel: QuickAddWordPanel, didConfirmWord word: String, code: String) {
+    guard !word.isEmpty, !code.isEmpty else {
+      Self.showMessage(msgText: "快速加词失败：词条和编码不能为空")
+      return
+    }
+    guard !word.contains("\t"), !code.contains("\t"), validateQuickAddCode(code) else {
+      Self.showMessage(msgText: "快速加词失败：编码仅支持字母、数字、空格和撇号")
+      return
+    }
+    do {
+      try appendQuickAddWord(word: word, code: code)
+      panel.hide()
+      self.restoreActivationPolicyAfterQuickAddPanelIfNeeded()
+      if quickAddWordPanel === panel {
+        quickAddWordPanel = nil
+      }
+      deploy()
+      Self.showMessage(msgText: "快速加词成功")
+    } catch {
+      Self.showMessage(msgText: "快速加词失败：\(error.localizedDescription)")
+    }
+  }
+
+  /// Handles panel cancel callbacks.
+  func quickAddWordPanelDidCancel(_ panel: QuickAddWordPanel) {
+    panel.hide()
+    self.restoreActivationPolicyAfterQuickAddPanelIfNeeded()
+    if quickAddWordPanel === panel {
+      quickAddWordPanel = nil
+    }
   }
 
   static func showMessage(msgText: String?) {
@@ -225,6 +280,11 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     let notifCenter = DistributedNotificationCenter.default()
     notifCenter.addObserver(forName: .init("SquirrelReloadNotification"), object: nil, queue: nil, using: rimeNeedsReload)
     notifCenter.addObserver(forName: .init("SquirrelSyncNotification"), object: nil, queue: nil, using: rimeNeedsSync)
+    notifCenter.addObserver(self,
+                            selector: #selector(handleQuickAddWordNotification(_:)),
+                            name: .init(Self.quickAddWordNotification),
+                            object: Self.quickAddWordNotificationObject,
+                            suspensionBehavior: .deliverImmediately)
   }
 
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -281,6 +341,22 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
 }
 
 private extension SquirrelApplicationDelegate {
+  /// Caches the current `NSApp` activation policy and switches to regular when needed so the quick-add window can take focus; skips if a quick-add session already stashed a policy.
+  func prepareActivationPolicyForQuickAddPanel() {
+    if quickAddWordActivationPolicyBeforePanel != nil { return }
+    quickAddWordActivationPolicyBeforePanel = NSApp.activationPolicy()
+    if NSApp.activationPolicy() != .regular {
+      NSApp.setActivationPolicy(.regular)
+    }
+  }
+
+  /// Restores the activation policy stashed in `prepareActivationPolicyForQuickAddPanel` after the quick-add UI is dismissed.
+  func restoreActivationPolicyAfterQuickAddPanelIfNeeded() {
+    guard let previous = quickAddWordActivationPolicyBeforePanel else { return }
+    quickAddWordActivationPolicyBeforePanel = nil
+    NSApp.setActivationPolicy(previous)
+  }
+
   func showStatusMessage(msgTextLong: String?, msgTextShort: String?) {
     if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
       panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
@@ -307,6 +383,17 @@ private extension SquirrelApplicationDelegate {
     self.syncUserData()
   }
 
+  /// Responds to distributed quick-add notifications by showing the panel.
+  @objc func handleQuickAddWordNotification(_ notification: Notification) {
+    rimeNeedsQuickAddWord(notification)
+  }
+
+  func rimeNeedsQuickAddWord(_: Notification) {
+    print("Open quick add word panel on demand.")
+    appendQuickAddDebugLog("received notification \(Self.quickAddWordNotification)")
+    self.showQuickAddWordPanel()
+  }
+
   /// Ensures the target directory exists.
   func createDirIfNotExist(path: URL) {
     let fileManager = FileManager.default
@@ -318,6 +405,46 @@ private extension SquirrelApplicationDelegate {
         print("Error creating user data directory: \(decodedPath)")
       }
     }
+  }
+
+  /// Validates quick-add code characters against allowed ASCII set.
+  func validateQuickAddCode(_ code: String) -> Bool {
+    let allowed = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789' ")
+    return code.unicodeScalars.allSatisfy { allowed.contains($0) }
+  }
+
+  /// Returns the target user dictionary file path used by quick-add.
+  func quickAddUserDictURL() -> URL {
+    SquirrelApp.userDir.appendingPathComponent("flypy_user.txt", isDirectory: false)
+  }
+
+  /// Appends a new quick-add entry to the user dictionary file.
+  func appendQuickAddWord(word: String, code: String) throws {
+    let fileURL = quickAddUserDictURL()
+    let line = "\(word)\t\(code)"
+    let fileManager = FileManager.default
+    if !fileManager.fileExists(atPath: fileURL.path(percentEncoded: false)) {
+      try "# coding: utf-8\n".write(to: fileURL, atomically: true, encoding: .utf8)
+    }
+    let oldText = try String(contentsOf: fileURL, encoding: .utf8)
+    let needsNewline = oldText.isEmpty || oldText.hasSuffix("\n")
+    let merged = oldText + (needsNewline ? "" : "\n") + line + "\n"
+    try merged.write(to: fileURL, atomically: true, encoding: .utf8)
+  }
+
+  /// Appends a debug line for runtime quick-add tracing.
+  func appendQuickAddDebugLog(_ message: String) {
+    let line = "\(Date()) [AppDelegate] \(message)\n"
+    let path = Self.quickAddWordDebugLogPath
+    if FileManager.default.fileExists(atPath: path),
+       let handle = FileHandle(forWritingAtPath: path),
+       let data = line.data(using: .utf8) {
+      handle.seekToEndOfFile()
+      handle.write(data)
+      try? handle.close()
+      return
+    }
+    try? line.write(toFile: path, atomically: true, encoding: .utf8)
   }
 }
 

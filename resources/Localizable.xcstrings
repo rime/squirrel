@@ -157,6 +157,24 @@
         }
       }
     },
+    "Quick add word..." : {
+      "comment" : "Menu item",
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速加词..."
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "快速加詞..."
+          }
+        }
+      }
+    },
     "Rime Wiki..." : {
       "comment" : "Menu item",
       "localizations" : {
