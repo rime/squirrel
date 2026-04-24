@@ -19,11 +19,10 @@
 
 本倉庫基於 [Rime Squirrel](https://github.com/rime/squirrel) 及其依賴的 [librime](https://github.com/rime/librime) 開源代碼進行二次改造，目標是提供專注於小鶴音形體驗的 macOS 輸入法發行版。
 
-當前階段重點：
+下一階段需求：
 
-  * 保持原有引擎核心能力與構建鏈路
-  * 在打包產物中內置小鶴音形方案配置
-  * 逐步實現快速加詞與詞庫管理能力
+  * 完善倉庫文檔體系（結構說明、配置索引、維護流程）
+  * 建立基於 Git 的流水線發布能力（構建、打包、產物發布）
   * 參考 [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) 查看本倉庫結構梳理
   * 參考 [docs/config-files.md](docs/config-files.md) 查看配置文件索引
   * 參考 [docs/flypy-optional-features-deferred.md](docs/flypy-optional-features-deferred.md) 查看暫緩可選功能（計算器、二重簡碼、全碼字典）
