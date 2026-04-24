@@ -33,18 +33,6 @@ final class QuickAddWordPanel: NSObject, NSWindowDelegate {
 
   /// Displays the panel and optionally pre-fills form fields.
   func show(prefillWord: String?, prefillCode: String?) {
-    print("[DEBUG] QuickAddWordPanel.show called")
-    if let data = "\(Date()) [QuickAddWordPanel] show called\n".data(using: .utf8) {
-      let path = "/tmp/squirrel_quick_add_debug.log"
-      if FileManager.default.fileExists(atPath: path),
-         let handle = FileHandle(forWritingAtPath: path) {
-        handle.seekToEndOfFile()
-        handle.write(data)
-        try? handle.close()
-      } else {
-        try? String(decoding: data, as: UTF8.self).write(toFile: path, atomically: true, encoding: .utf8)
-      }
-    }
     wordField.stringValue = prefillWord ?? ""
     codeField.stringValue = prefillCode ?? ""
     panel.center()

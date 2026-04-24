@@ -15,7 +15,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   static let notificationIdentifier = "SquirrelNotification"
   static let quickAddWordNotification = "SquirrelQuickAddWordNotification"
   static let quickAddWordNotificationObject = "/Library/Input Methods/SquirrelFlypy.app"
-  static let quickAddWordDebugLogPath = "/tmp/squirrel_quick_add_debug.log"
 
   let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   var config: SquirrelConfig?
@@ -106,15 +105,12 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
   /// Opens the quick-add panel and optionally pre-fills fields.
   func showQuickAddWordPanel(prefillWord: String? = nil, prefillCode: String? = nil) {
-    appendQuickAddDebugLog("showQuickAddWordPanel requested")
     DispatchQueue.main.async {
       if self.quickAddWordPanel == nil {
-        self.appendQuickAddDebugLog("creating QuickAddWordPanel instance")
         self.quickAddWordPanel = QuickAddWordPanel()
         self.quickAddWordPanel?.delegate = self
       }
       self.prepareActivationPolicyForQuickAddPanel()
-      self.appendQuickAddDebugLog("calling QuickAddWordPanel.show")
       self.quickAddWordPanel?.show(prefillWord: prefillWord, prefillCode: prefillCode)
     }
   }
@@ -390,7 +386,6 @@ private extension SquirrelApplicationDelegate {
 
   func rimeNeedsQuickAddWord(_: Notification) {
     print("Open quick add word panel on demand.")
-    appendQuickAddDebugLog("received notification \(Self.quickAddWordNotification)")
     self.showQuickAddWordPanel()
   }
 
@@ -432,20 +427,6 @@ private extension SquirrelApplicationDelegate {
     try merged.write(to: fileURL, atomically: true, encoding: .utf8)
   }
 
-  /// Appends a debug line for runtime quick-add tracing.
-  func appendQuickAddDebugLog(_ message: String) {
-    let line = "\(Date()) [AppDelegate] \(message)\n"
-    let path = Self.quickAddWordDebugLogPath
-    if FileManager.default.fileExists(atPath: path),
-       let handle = FileHandle(forWritingAtPath: path),
-       let data = line.data(using: .utf8) {
-      handle.seekToEndOfFile()
-      handle.write(data)
-      try? handle.close()
-      return
-    }
-    try? line.write(toFile: path, atomically: true, encoding: .utf8)
-  }
 }
 
 extension NSApplication {

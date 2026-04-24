@@ -10,21 +10,6 @@ import InputMethodKit
 
 @main
 struct SquirrelApp {
-  /// Appends a debug line for quick-add command tracing.
-  static func appendQuickAddDebugLog(_ message: String) {
-    let path = "/tmp/squirrel_quick_add_debug.log"
-    let line = "\(Date()) [Main] \(message)\n"
-    if FileManager.default.fileExists(atPath: path),
-       let handle = FileHandle(forWritingAtPath: path),
-       let data = line.data(using: .utf8) {
-      handle.seekToEndOfFile()
-      handle.write(data)
-      try? handle.close()
-      return
-    }
-    try? line.write(toFile: path, atomically: true, encoding: .utf8)
-  }
-
   static let userDir = if let pwuid = getpwuid(getuid()) {
     URL(fileURLWithFileSystemRepresentation: pwuid.pointee.pw_dir, isDirectory: true, relativeTo: nil).appending(components: "Library", "Rime Flypy")
   } else {
@@ -96,13 +81,10 @@ struct SquirrelApp {
           DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
           return true
         case "--quick-add-word":
-          print("[DEBUG] Main received --quick-add-word")
-          appendQuickAddDebugLog("received --quick-add-word")
           DistributedNotificationCenter.default().postNotificationName(.init(SquirrelApplicationDelegate.quickAddWordNotification),
                                                                        object: SquirrelApplicationDelegate.quickAddWordNotificationObject,
                                                                        userInfo: nil,
                                                                        deliverImmediately: true)
-          appendQuickAddDebugLog("posted notification \(SquirrelApplicationDelegate.quickAddWordNotification)")
           return true
         case "--help":
           print(helpDoc)
