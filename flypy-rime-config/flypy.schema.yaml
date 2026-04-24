@@ -35,6 +35,7 @@ engine:
     - key_binder
     - speller
     - punctuator
+    - lua_processor@flypy_express_processor
     - selector
     - navigator
     - express_editor
@@ -50,6 +51,7 @@ engine:
     - table_translator
     - lua_translator@date_translator
     - lua_translator@time_translator
+    - lua_translator@flypy_express_translator
     - table_translator@custom_phraseVD
     - table_translator@custom_phraseXT
     - table_translator@custom_phraseYH

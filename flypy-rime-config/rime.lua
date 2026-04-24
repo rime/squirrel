@@ -1,3 +1,10 @@
+local script_dir = rime_api and rime_api.get_user_data_dir and rime_api.get_user_data_dir() or ""
+if script_dir and script_dir ~= "" then
+  dofile(script_dir .. "/lua/flypy_express.lua")
+else
+  dofile("lua/flypy_express.lua")
+end
+
 function date_translator(input, seg)
    if (input == "orq") then
       --- Candidate(type, start, end, text, comment)
@@ -13,3 +20,4 @@ function time_translator(input, seg)
       yield(cand)
    end
 end
+
