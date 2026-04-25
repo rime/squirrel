@@ -548,9 +548,19 @@ private extension SquirrelInputController {
       let lastPage = ctx.menu.is_last_page
 
       let selRange = NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end))
-      showPanel(preedit: inlinePreedit ? "" : preedit, selRange: selRange, caretPos: caretPos.utf16Offset(in: preedit),
-                candidates: candidates, comments: comments, labels: labels, highlighted: Int(ctx.menu.highlighted_candidate_index),
-                page: page, lastPage: lastPage)
+      // Defer showPanel to the next run loop iteration so the client has
+      // time to process the setMarkedText call from show(). Without this,
+      // attributes(forCharacterIndex:lineHeightRectangle:) may return an
+      // invalid position when the text view hasn't laid out yet (e.g. first
+      // focus in Chrome).
+      let panelPreedit = inlinePreedit ? "" : preedit
+      let panelCaretPos = caretPos.utf16Offset(in: preedit)
+      let panelHighlighted = Int(ctx.menu.highlighted_candidate_index)
+      DispatchQueue.main.async { [weak self] in
+        self?.showPanel(preedit: panelPreedit, selRange: selRange, caretPos: panelCaretPos,
+                        candidates: candidates, comments: comments, labels: labels, highlighted: panelHighlighted,
+                        page: page, lastPage: lastPage)
+      }
       _ = rimeAPI.free_context(&ctx)
     } else {
       hidePalettes()
@@ -594,9 +604,22 @@ private extension SquirrelInputController {
     // print("[DEBUG] showPanelWithPreedit:...:")
     guard let client = client else { return }
     var inputPos = NSRect()
-    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
+    _ = client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
+
     if let panel = NSApp.squirrelAppDelegate.panel {
-      panel.position = inputPos
+      // Validate the position: must have non-zero height and the origin must
+      // not be at the screen origin (0,0). A text cursor at the exact screen
+      // origin is virtually impossible — when the client hasn't finished
+      // layout (e.g. first focus in Chrome), it often returns a rect near
+      // (0,0) with a non-zero height.
+      if inputPos.height > 0 && (abs(inputPos.origin.x) > 1 || abs(inputPos.origin.y) > 1) {
+        panel.position = inputPos
+      } else if panel.position.height <= 0 {
+        // No valid previous position either — fall back to the mouse cursor
+        // location so the panel appears roughly where the user clicked.
+        let mouse = NSEvent.mouseLocation
+        panel.position = NSRect(x: mouse.x, y: mouse.y, width: 0, height: 20)
+      }
       panel.inputController = self
       panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
                    highlighted: highlighted, page: page, lastPage: lastPage, update: true)
