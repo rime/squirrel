@@ -72,6 +72,8 @@ style:
   #label_font_point: 12
   #comment_font_face: 'Avenir'
   #comment_font_point: 16
+  #preedit_font_face: 'Avenir'
+  #preedit_font_point: 16
 
 preset_color_schemes:
   native:
