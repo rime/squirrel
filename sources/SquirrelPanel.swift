@@ -283,6 +283,16 @@ final class SquirrelPanel: NSPanel {
     // text done!
     view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
+
+    // 強制 TextKit 2 立即同步佈局，確保後續計算窗口和高亮背景時，拿到的是折行後的真實尺寸
+    let textWidth = maxTextWidth()
+    let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
+    view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
+    view.textLayoutManager.ensureLayout(for: view.textLayoutManager.documentRange)
+
+    // 重置 NSTextView 內部視圖滾動位置，防止因爲折行超高導致自動滾動到文末（第一行溢出）
+    view.textView.scrollToBeginningOfDocument(nil)
+
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
     show()
   }
@@ -346,8 +356,6 @@ private extension SquirrelPanel {
     return maxWidth
   }
 
-  // Get the window size, the windows will be the dirtyRect in
-  // SquirrelView.drawRect
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
     currentScreen()
