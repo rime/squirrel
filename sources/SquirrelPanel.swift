@@ -369,7 +369,7 @@ private extension SquirrelPanel {
 
     view.textView.textContainerInset = theme.edgeInset
 
-    let textWidth = maxTextWidth()
+    var textWidth = maxTextWidth()
     // 高度設置爲無窮大，放開限制，讓超大文本完全測量出真實自然高度
     view.textContainer.size = NSSize(width: textWidth, height: .greatestFiniteMagnitude)
 
@@ -399,6 +399,39 @@ private extension SquirrelPanel {
 
     // 判斷是否需要觸發「全屏模式」
     let requiresFullScreen = naturalPanelSize.width > maxAllowedWidth || naturalPanelSize.height > maxAllowedHeight
+
+    if requiresFullScreen {
+      // --- 動態長寬比優化 ---
+      // 解決全屏縮放時，等比縮小導致「行長物理縮減、窗口變窄」的空間浪費問題
+      let area = contentRect.width * contentRect.height
+      let screenRatio = maxAllowedWidth / maxAllowedHeight
+
+      let optimalTextWidth: CGFloat
+      if vertical {
+        // 直排：自然寬度=高，自然高度=寬。算出完美契合螢幕比例的虛擬行長
+        optimalTextWidth = sqrt(area / screenRatio)
+      } else {
+        // 橫排：算出完美契合螢幕比例的虛擬行長
+        optimalTextWidth = sqrt(area * screenRatio)
+      }
+
+      // 如果最佳行長大於原本設定的限制，就放開限制進行第二次完美排版
+      if optimalTextWidth > textWidth {
+        textWidth = optimalTextWidth
+        view.textContainer.size = NSSize(width: textWidth, height: .greatestFiniteMagnitude)
+        view.textLayoutManager.ensureLayout(for: view.textLayoutManager.documentRange)
+
+        contentRect = view.contentRect
+
+        if vertical {
+          naturalPanelSize.width = contentRect.height + theme.edgeInset.height * 2
+          naturalPanelSize.height = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+        } else {
+          naturalPanelSize.width = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+          naturalPanelSize.height = contentRect.height + theme.edgeInset.height * 2
+        }
+      }
+    }
 
     var panelRect = NSRect.zero
 
