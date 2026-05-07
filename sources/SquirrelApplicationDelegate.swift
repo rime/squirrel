@@ -20,8 +20,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   var panel: SquirrelPanel?
   var enableNotifications = false
   var showStatusIcon: Bool = true
-  var statusIconAsciiLabel: String?    // nil → use schema label, then "A"
-  var statusIconChineseLabel: String?  // nil → use schema label, then "中"
   var statusItem: NSStatusItem?
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
   var supportsGentleScheduledUpdateReminders: Bool {
@@ -179,8 +177,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
     showStatusIcon = config!.getBool("status_icon/show") ?? true
-    statusIconAsciiLabel   = config!.getString("status_icon/ascii")
-    statusIconChineseLabel = config!.getString("status_icon/chinese")
     refreshStatusItem()
     if let panel = panel, let config = self.config {
       panel.load(config: config, forDarkMode: false)
@@ -258,18 +254,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
 }
 
-private extension RimeStringSlice {
-  /// Bridge the slice's pointer + length to a Swift String, honoring `.length`.
-  /// librime clips `.length` to the first Unicode character for abbreviated labels
-  /// when no explicit `abbrev:` field is defined, so reading past `.length` (e.g. with
-  /// `String(cString:)`) would incorrectly return the full `states:` value.
-  var asString: String? {
-    guard let ptr = str else { return nil }
-    let data = Data(bytes: UnsafeRawPointer(ptr), count: Int(length))
-    return String(data: data, encoding: .utf8)
-  }
-}
-
 private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
 
@@ -303,8 +287,8 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
       optionName.withCString { name in
         let stateLabelLong  = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
         let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
-        let longLabel  = stateLabelLong.asString
-        let shortLabel = stateLabelShort.asString
+        let longLabel  = stateLabelLong.str .map { String(cString: $0) }
+        let shortLabel = stateLabelShort.str.map { String(cString: $0) }
         if optionName == "ascii_mode" {
           delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel)
         }
@@ -364,14 +348,10 @@ private extension SquirrelApplicationDelegate {
 
   func applyStatusIcon(asciiMode: Bool, schemaLabel: String?) {
     guard let button = statusItem?.button else { return }
-    let override = asciiMode ? statusIconAsciiLabel : statusIconChineseLabel
-    let fallback = asciiMode ? "A" : "中"
-    if let override = override, !override.isEmpty {
-      button.title = override
-    } else if let schemaLabel = schemaLabel, !schemaLabel.isEmpty {
+    if let schemaLabel = schemaLabel, !schemaLabel.isEmpty {
       button.title = schemaLabel
     } else {
-      button.title = fallback
+      button.title = asciiMode ? "Ａ" : "中"
     }
   }
 

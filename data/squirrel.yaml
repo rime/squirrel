@@ -16,15 +16,13 @@ chord_duration: 0.1  # seconds
 show_notifications_when: appropriate
 
 # Menu-bar status icon.
-#   show    — whether to show the icon at all; set to false for a clean menu bar
-#   ascii   — label when ascii_mode is on  (English input)
-#   chinese — label when ascii_mode is off (Chinese input)
-# When ascii/chinese are unset, the current schema's short `states:` label is used
-# (e.g. "西文" / "中文"), falling back to "A" / "中" when the schema defines no label.
+#   show — whether to show the icon at all; set to false for a clean menu bar.
+# The icon's text is the schema's short state label for ascii_mode (via
+# get_state_label_abbreviated). Schemas declaring `abbrev: [中, Ａ]` get
+# compact glyphs; otherwise the schema's `states:` value is used as-is.
+# Falls back to "中" / "Ａ" when no `states:` is defined.
 status_icon:
   show: true
-  # ascii: A
-  # chinese: 中
 
 style:
   color_scheme: native
