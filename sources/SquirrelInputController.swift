@@ -194,6 +194,10 @@ final class SquirrelInputController: IMKInputController {
     if keyboardLayout != "" {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
+    if session != 0 {
+      rimeAPI.set_option(session, "ascii_mode", false)
+      updateAppOptions()
+    }
     preedit = ""
   }
 
