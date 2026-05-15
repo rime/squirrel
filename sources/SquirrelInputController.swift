@@ -194,6 +194,9 @@ final class SquirrelInputController: IMKInputController {
     if keyboardLayout != "" {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
+    if session != 0 {
+      updateMenuBarStatus()
+    }
     preedit = ""
   }
 
@@ -294,6 +297,18 @@ final class SquirrelInputController: IMKInputController {
 }
 
 private extension SquirrelInputController {
+
+  func updateMenuBarStatus() {
+    guard session != 0 else { return }
+    let isAsciiMode = rimeAPI.get_option(session, "ascii_mode")
+    "ascii_mode".withCString { name in
+      let label = rimeAPI.get_state_label_abbreviated(session, name, isAsciiMode, true)
+      if let str = label.str {
+        let text = String(cString: str)
+        NSApp.squirrelAppDelegate.statusBarManager.updateStatus(text: text)
+      }
+    }
+  }
 
   func onChordTimer(_: Timer) {
     // chord release triggered by timer

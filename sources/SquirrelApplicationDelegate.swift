@@ -19,6 +19,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   var panel: SquirrelPanel?
   var enableNotifications = false
   let updateController = SPUStandardUpdaterController(startingUpdater: true, updaterDelegate: nil, userDriverDelegate: nil)
+  let statusBarManager = StatusBarManager()
   var supportsGentleScheduledUpdateReminders: Bool {
     true
   }
@@ -61,6 +62,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     // swiftlint:disable:next notification_center_detachment
     NotificationCenter.default.removeObserver(self)
     DistributedNotificationCenter.default().removeObserver(self)
+    statusBarManager.teardown()
     panel?.hide()
   }
 
@@ -162,6 +164,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     }
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
+    let showStatusInMenuBar = config!.getBool("menubar_ascii_mode") ?? false
+    statusBarManager.setup(enabled: showStatusInMenuBar)
     if let panel = panel, let config = self.config {
       panel.load(config: config, forDarkMode: false)
       panel.load(config: config, forDarkMode: true)
@@ -284,6 +288,7 @@ private extension SquirrelApplicationDelegate {
   func showStatusMessage(msgTextLong: String?, msgTextShort: String?) {
     if !(msgTextLong ?? "").isEmpty || !(msgTextShort ?? "").isEmpty {
       panel?.updateStatus(long: msgTextLong ?? "", short: msgTextShort ?? "")
+      statusBarManager.updateStatus(text: msgTextShort ?? "")
     }
   }
 

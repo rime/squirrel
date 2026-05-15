@@ -15,6 +15,11 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
+# Whether to show the current ascii_mode state in the system menu bar
+# true: show "中"/"A" in menu bar
+# false: do not show (default)
+menubar_ascii_mode: false
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance
