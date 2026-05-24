@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+    <title>Squirrel-@VERSION@</title>
+    <conclusion file="conclusion.html" mime-type="text/html"/>
+    <pkg-ref id="im.rime.inputmethod.Squirrel"/>
+    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>
+    <choices-outline>
+        <line choice="default">
+            <line choice="im.rime.inputmethod.Squirrel"/>
+        </line>
+    </choices-outline>
+    <choice id="default"/>
+    <choice id="im.rime.inputmethod.Squirrel" visible="false">
+        <pkg-ref id="im.rime.inputmethod.Squirrel"/>
+    </choice>
+    <pkg-ref id="im.rime.inputmethod.Squirrel" onConclusion="RequireLogout">Squirrel-component.pkg</pkg-ref>
+</installer-gui-script>
