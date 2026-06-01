@@ -15,6 +15,15 @@ chord_duration: 0.1  # seconds
 # options: always | never | appropriate
 show_notifications_when: appropriate
 
+# Menu-bar status icon.
+#   show — whether to show the icon at all; set to false for a clean menu bar.
+# The icon's text is the schema's short state label for ascii_mode (via
+# get_state_label_abbreviated). Schemas declaring `abbrev: [中, Ａ]` get
+# compact glyphs; otherwise the schema's `states:` value is used as-is.
+# Falls back to "中" / "Ａ" when no `states:` is defined.
+status_icon:
+  show: true
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance
