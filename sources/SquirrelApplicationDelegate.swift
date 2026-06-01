@@ -297,29 +297,30 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     }
     if let optionName = optionName {
       optionName.withCString { name in
-        let stateLabelLong  = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
-        let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
-        let longLabel  = stateLabelLong.asString
-        let shortLabel = stateLabelShort.asString
+        func shortLabel() -> String? {
+          let stateLabelShort = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, true)
+          return stateLabelShort.asString
+        }
+        func longLabel() -> String? {
+          let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
+          return stateLabelLong.asString
+        }
         if optionName == "ascii_mode" {
-          delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel)
+          delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel())
         }
         if delegate.enableNotifications {
-          delegate.showStatusMessage(msgTextLong: longLabel, msgTextShort: shortLabel)
+          delegate.showStatusMessage(msgTextLong: longLabel(), msgTextShort: shortLabel())
         }
       }
     }
     return
   }
 
-  // off
-  if !delegate.enableNotifications {
-    return
-  }
-
-  if messageType == "schema", let messageValue = messageValue, let schemaName = try? /^[^\/]*\/(.*)$/.firstMatch(in: messageValue)?.output.1 {
-    delegate.showStatusMessage(msgTextLong: String(schemaName), msgTextShort: String(schemaName))
-    return
+  if delegate.enableNotifications {
+    if messageType == "schema", let messageValue = messageValue, let schemaName = try? /^[^\/]*\/(.*)$/.firstMatch(in: messageValue)?.output.1 {
+      delegate.showStatusMessage(msgTextLong: String(schemaName), msgTextShort: String(schemaName))
+      return
+    }
   }
 }
 
