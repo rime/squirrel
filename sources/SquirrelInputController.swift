@@ -195,6 +195,12 @@ final class SquirrelInputController: IMKInputController {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
     preedit = ""
+    // Update menu bar icon
+    if session != 0 {
+      let state = rimeAPI.get_option(session, "ascii_mode");
+      let label = rimeAPI.get_state_label_abbreviated(session, "ascii_mode", state, true).asString
+      NSApp.squirrelAppDelegate.updateStatusIcon(asciiMode: state, schemaLabel: label)
+    }
   }
 
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {

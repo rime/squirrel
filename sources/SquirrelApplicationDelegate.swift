@@ -254,7 +254,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
 }
 
-private extension RimeStringSlice {
+extension RimeStringSlice {
   /// Bridge the slice's pointer + length to a Swift String, honoring `.length`.
   /// librime clips `.length` to the first Unicode character for abbreviated labels
   /// when no explicit `abbrev:` field is defined, so reading past `.length` (e.g. with
