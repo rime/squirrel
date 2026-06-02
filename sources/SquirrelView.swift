@@ -99,13 +99,14 @@ final class SquirrelView: NSView {
         y1 = max(rect.maxY, y1)
       }
     }
-    return NSRect(x: x0, y: y0, width: x1-x0, height: y1-y0)
+    if x1 == -CGFloat.infinity { return .zero }
+    return NSRect(x: min(0, x0), y: min(0, y0), width: x1 - min(0, x0), height: y1 - min(0, y0))
   }
   // Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
   func contentRect(range: NSTextRange) -> NSRect {
     // swiftlint:disable:next identifier_name
     var x0 = CGFloat.infinity, x1 = -CGFloat.infinity, y0 = CGFloat.infinity, y1 = -CGFloat.infinity
-    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: .rangeNotRequired) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .selection, options: [.rangeNotRequired]) { _, rect, _, _ in
       x0 = min(rect.minX, x0)
       x1 = max(rect.maxX, x1)
       y0 = min(rect.minY, y0)
@@ -137,7 +138,7 @@ final class SquirrelView: NSView {
     var highlightedPreeditPath: CGMutablePath?
     let theme = currentTheme
 
-    var containingRect = dirtyRect
+    var containingRect = self.bounds
     containingRect.size.width -= theme.pagingOffset
     let backgroundRect = containingRect
 
@@ -289,13 +290,13 @@ final class SquirrelView: NSView {
     }
     panelLayer.setAffineTransform(CGAffineTransform(translationX: theme.pagingOffset, y: 0))
     let panelPath = CGMutablePath()
-    panelPath.addPath(backgroundPath!, transform: panelLayer.affineTransform().scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height))
+    panelPath.addPath(backgroundPath!, transform: panelLayer.affineTransform().scaledBy(x: 1, y: -1).translatedBy(x: 0, y: -self.bounds.height))
 
     let (pagingLayer, downPath, upPath) = pagingLayer(theme: theme, preeditRect: preeditRect)
     if let sublayers = pagingLayer.sublayers, !sublayers.isEmpty {
       self.layer?.addSublayer(pagingLayer)
     }
-    let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -dirtyRect.height)
+    let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -self.bounds.height)
     if let downPath {
       panelPath.addPath(downPath, transform: flipTransform)
       self.downPath = downPath.copy()
@@ -422,7 +423,7 @@ private extension SquirrelView {
   func multilineRects(forRange range: NSTextRange, extraSurounding: Double, bounds: NSRect) -> (NSRect, NSRect, NSRect) {
     let edgeInset = currentTheme.edgeInset
     var lineRects = [NSRect]()
-    textLayoutManager.enumerateTextSegments(in: range, type: .standard, options: [.rangeNotRequired]) { _, rect, _, _ in
+    textLayoutManager.enumerateTextSegments(in: range, type: .selection, options: [.rangeNotRequired]) { _, rect, _, _ in
       var newRect = rect
       newRect.origin.x += edgeInset.width
       newRect.origin.y += edgeInset.height

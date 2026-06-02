@@ -65,6 +65,30 @@ struct SquirrelKeycode {
     return UInt32(XK_VoidSymbol)
   }
 
+  static let modifierKeycodes: Set<UInt16> = [
+    UInt16(kVK_Shift), UInt16(kVK_RightShift),
+    UInt16(kVK_CapsLock),
+    UInt16(kVK_Control), UInt16(kVK_RightControl),
+    UInt16(kVK_Option), UInt16(kVK_RightOption),
+    UInt16(kVK_Command), UInt16(kVK_RightCommand),
+    UInt16(kVK_Function)
+  ]
+
+  static func inferModifierKeycode(from changes: NSEvent.ModifierFlags) -> UInt16? {
+    if changes.contains(.capsLock) {
+      return UInt16(kVK_CapsLock)
+    } else if changes.contains(.shift) {
+      return UInt16(kVK_Shift)
+    } else if changes.contains(.control) {
+      return UInt16(kVK_Control)
+    } else if changes.contains(.option) {
+      return UInt16(kVK_Option)
+    } else if changes.contains(.command) {
+      return UInt16(kVK_Command)
+    }
+    return nil
+  }
+
   private static let keycodeMappings: [Int: Int32] = [
     // modifiers
     kVK_CapsLock: XK_Caps_Lock,

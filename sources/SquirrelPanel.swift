@@ -283,6 +283,16 @@ final class SquirrelPanel: NSPanel {
     // text done!
     view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
+
+    // 強制 TextKit 2 立即同步佈局，確保後續計算窗口和高亮背景時，拿到的是折行後的真實尺寸
+    let textWidth = maxTextWidth()
+    let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
+    view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
+    view.textLayoutManager.ensureLayout(for: view.textLayoutManager.documentRange)
+
+    // 重置 NSTextView 內部視圖滾動位置，防止因爲折行超高導致自動滾動到文末（第一行溢出）
+    view.textView.scrollToBeginningOfDocument(nil)
+
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
     show()
   }
@@ -346,8 +356,6 @@ private extension SquirrelPanel {
     return maxWidth
   }
 
-  // Get the window size, the windows will be the dirtyRect in
-  // SquirrelView.drawRect
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
     currentScreen()
@@ -359,93 +367,176 @@ private extension SquirrelPanel {
       self.appearance = NSAppearance(named: .aqua)
     }
 
-    // Break line if the text is too long, based on screen size.
-    let textWidth = maxTextWidth()
-    let maxTextHeight = vertical ? screenRect.width - theme.edgeInset.width * 2 : screenRect.height - theme.edgeInset.height * 2
-    view.textContainer.size = NSSize(width: textWidth, height: maxTextHeight)
+    view.textView.textContainerInset = theme.edgeInset
+
+    var textWidth = maxTextWidth()
+    // 高度設置爲無窮大，放開限制，讓超大文本完全測量出真實自然高度
+    view.textContainer.size = NSSize(width: textWidth, height: .greatestFiniteMagnitude)
+
+    // 嚴禁 NSTextView 自動把 textContainer 縮小到當前的視圖寬度，防止死循環與文字消失
+    view.textContainer.widthTracksTextView = false
+    view.textContainer.heightTracksTextView = false
+
+    // 強制完成排版，並歸零 bounds
+    view.textLayoutManager.ensureLayout(for: view.textLayoutManager.documentRange)
+    view.textView.bounds.origin = .zero
+
+    var contentRect = view.contentRect
+
+    // 計算出「不加限制時」需要的自然面板巨型尺寸
+    var naturalPanelSize = NSSize.zero
+    if vertical {
+      naturalPanelSize.width = contentRect.height + theme.edgeInset.height * 2
+      naturalPanelSize.height = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+    } else {
+      naturalPanelSize.width = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+      naturalPanelSize.height = contentRect.height + theme.edgeInset.height * 2
+    }
+
+    // 屏幕最大可用範圍（留白 5%）
+    let maxAllowedWidth = screenRect.width * 0.95
+    let maxAllowedHeight = screenRect.height * 0.95
+
+    // 判斷是否需要觸發「全屏模式」
+    let requiresFullScreen = naturalPanelSize.width > maxAllowedWidth || naturalPanelSize.height > maxAllowedHeight
+
+    if requiresFullScreen {
+      // --- 動態長寬比優化 ---
+      // 解決全屏縮放時，等比縮小導致「行長物理縮減、窗口變窄」的空間浪費問題
+      let area = contentRect.width * contentRect.height
+      let screenRatio = maxAllowedWidth / maxAllowedHeight
+
+      let optimalTextWidth: CGFloat
+      if vertical {
+        // 直排：自然寬度=高，自然高度=寬。算出完美契合螢幕比例的虛擬行長
+        optimalTextWidth = sqrt(area / screenRatio)
+      } else {
+        // 橫排：算出完美契合螢幕比例的虛擬行長
+        optimalTextWidth = sqrt(area * screenRatio)
+      }
+
+      // 如果最佳行長大於原本設定的限制，就放開限制進行第二次完美排版
+      if optimalTextWidth > textWidth {
+        textWidth = optimalTextWidth
+        view.textContainer.size = NSSize(width: textWidth, height: .greatestFiniteMagnitude)
+        view.textLayoutManager.ensureLayout(for: view.textLayoutManager.documentRange)
+
+        contentRect = view.contentRect
+
+        if vertical {
+          naturalPanelSize.width = contentRect.height + theme.edgeInset.height * 2
+          naturalPanelSize.height = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+        } else {
+          naturalPanelSize.width = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+          naturalPanelSize.height = contentRect.height + theme.edgeInset.height * 2
+        }
+      }
+    }
 
     var panelRect = NSRect.zero
-    // in vertical mode, the width and height are interchanged
-    var contentRect = view.contentRect
-    if theme.memorizeSize && (vertical && position.midY / screenRect.height < 0.5) ||
-        (vertical && position.minX + max(contentRect.width, maxHeight) + theme.edgeInset.width * 2 > screenRect.maxX) {
-      if contentRect.width >= maxHeight {
-        maxHeight = contentRect.width
-      } else {
-        contentRect.size.width = maxHeight
-        view.textContainer.size = NSSize(width: maxHeight, height: maxTextHeight)
-      }
-    }
 
-    if vertical {
-      panelRect.size = NSSize(width: min(0.95 * screenRect.width, contentRect.height + theme.edgeInset.height * 2),
-                              height: min(0.95 * screenRect.height, contentRect.width + theme.edgeInset.width * 2) + theme.pagingOffset)
+    if requiresFullScreen {
+      // --- 全屏縮放模式 ---
+      let scaleX = maxAllowedWidth / naturalPanelSize.width
+      let scaleY = maxAllowedHeight / naturalPanelSize.height
+      let scale = min(scaleX, scaleY) // 保持等比縮小
 
-      // To avoid jumping up and down while typing, use the lower screen when
-      // typing on upper, and vice versa
-      if position.midY / screenRect.height >= 0.5 {
-        panelRect.origin.y = position.minY - SquirrelTheme.offsetHeight - panelRect.height + theme.pagingOffset
-      } else {
-        panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight
-      }
-      // Make the first candidate fixed at the left of cursor
-      panelRect.origin.x = position.minX - panelRect.width - SquirrelTheme.offsetHeight
-      if view.preeditRange.length > 0, let preeditTextRange = view.convert(range: view.preeditRange) {
-        let preeditRect = view.contentRect(range: preeditTextRange)
-        panelRect.origin.x += preeditRect.height + theme.edgeInset.width
-      }
+      // 窗口實際物理大小被縮小
+      panelRect.size = NSSize(width: naturalPanelSize.width * scale, height: naturalPanelSize.height * scale)
+
+      // 屏幕正中央對齊
+      panelRect.origin = NSPoint(
+        x: screenRect.minX + (screenRect.width - panelRect.width) / 2,
+        y: screenRect.minY + (screenRect.height - panelRect.height) / 2
+      )
+
+      maxHeight = 0 // 重置記憶尺寸緩存
     } else {
-      panelRect.size = NSSize(width: min(0.95 * screenRect.width, contentRect.width + theme.edgeInset.width * 2),
-                              height: min(0.95 * screenRect.height, contentRect.height + theme.edgeInset.height * 2))
-      panelRect.size.width += theme.pagingOffset
-      panelRect.origin = NSPoint(x: position.minX - theme.pagingOffset, y: position.minY - SquirrelTheme.offsetHeight - panelRect.height)
-    }
-    if panelRect.maxX > screenRect.maxX {
-      panelRect.origin.x = screenRect.maxX - panelRect.width
-    }
-    if panelRect.minX < screenRect.minX {
-      panelRect.origin.x = screenRect.minX
-    }
-    if panelRect.minY < screenRect.minY {
-      if vertical {
-        panelRect.origin.y = screenRect.minY
-      } else {
-        panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight
+      // --- 常規跟隨光標模式 ---
+      // Apply memorizeSize
+      if theme.memorizeSize && (vertical && position.midY / screenRect.height < 0.5) ||
+          (vertical && position.minX + max(contentRect.width, maxHeight) + theme.edgeInset.width * 2 > screenRect.maxX) {
+        if contentRect.width >= maxHeight {
+          maxHeight = contentRect.width
+        } else {
+          contentRect.size.width = maxHeight
+          // 需要根據記憶寬度更新自然尺寸
+          if vertical {
+            naturalPanelSize.height = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+          } else {
+            naturalPanelSize.width = contentRect.width + theme.edgeInset.width * 2 + theme.pagingOffset
+          }
+        }
       }
+
+      panelRect.size = naturalPanelSize
+
+      if vertical {
+        // To avoid jumping up and down while typing
+        if position.midY / screenRect.height >= 0.5 {
+          panelRect.origin.y = position.minY - SquirrelTheme.offsetHeight - panelRect.height + theme.pagingOffset
+        } else {
+          panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight
+        }
+        panelRect.origin.x = position.minX - panelRect.width - SquirrelTheme.offsetHeight
+        if view.preeditRange.length > 0, let preeditTextRange = view.convert(range: view.preeditRange) {
+          let preeditRect = view.contentRect(range: preeditTextRange)
+          panelRect.origin.x += preeditRect.height + theme.edgeInset.width
+        }
+      } else {
+        panelRect.origin = NSPoint(x: position.minX - theme.pagingOffset, y: position.minY - SquirrelTheme.offsetHeight - panelRect.height)
+      }
+
+      // 常規模式下的邊界限制
+      if panelRect.maxX > screenRect.maxX { panelRect.origin.x = screenRect.maxX - panelRect.width }
+      if panelRect.minX < screenRect.minX { panelRect.origin.x = screenRect.minX }
+      if panelRect.minY < screenRect.minY {
+        if vertical { panelRect.origin.y = screenRect.minY } else { panelRect.origin.y = position.maxY + SquirrelTheme.offsetHeight }
+      }
+      if panelRect.maxY > screenRect.maxY { panelRect.origin.y = screenRect.maxY - panelRect.height }
+      if panelRect.minY < screenRect.minY { panelRect.origin.y = screenRect.minY }
     }
-    if panelRect.maxY > screenRect.maxY {
-      panelRect.origin.y = screenRect.maxY - panelRect.height
-    }
-    if panelRect.minY < screenRect.minY {
-      panelRect.origin.y = screenRect.minY
-    }
+
     self.setFrame(panelRect, display: true)
+
+    // contentView 的 frame 決定了它在窗口上的物理大小；
+    // contentView 的 bounds 決定了它內部的投影座標系。
+    // 將 bounds 設爲 naturalPanelSize（自然尺寸），視圖內部畫的一切東西就會自動被縮小到窗口(frame)裏
+    contentView!.frame = NSRect(origin: .zero, size: panelRect.size)
+    contentView!.bounds = NSRect(origin: .zero, size: naturalPanelSize)
 
     // rotate the view, the core in vertical mode!
     if vertical {
       contentView!.boundsRotation = -90
-      contentView!.setBoundsOrigin(NSPoint(x: 0, y: panelRect.width))
+      contentView!.setBoundsOrigin(NSPoint(x: 0, y: naturalPanelSize.width))
     } else {
       contentView!.boundsRotation = 0
       contentView!.setBoundsOrigin(.zero)
     }
+
     view.textView.boundsRotation = 0
     view.textView.setBoundsOrigin(.zero)
 
-    view.frame = contentView!.bounds
-    view.textView.frame = contentView!.bounds
-    view.textView.frame.size.width -= theme.pagingOffset
-    view.textView.frame.origin.x += theme.pagingOffset
-    view.textView.textContainerInset = theme.edgeInset
+    // 下層組件必須讀取 contentView 旋轉後的真實 bounds
+    // (在 vertical 模式下，Cocoa 會自動將 bounds origin 偏移並交換長寬，確保內容在可見範圍內)
+    let subviewFrame = contentView!.bounds
+    view.frame = subviewFrame
+
+    var textFrame = subviewFrame
+    textFrame.size.width -= theme.pagingOffset
+    textFrame.origin.x += theme.pagingOffset
+    view.textView.frame = textFrame
 
     if theme.translucency {
-      back.frame = contentView!.bounds
-      back.frame.size.width += theme.pagingOffset
+      var backFrame = subviewFrame
+      backFrame.size.width += theme.pagingOffset
+      back.frame = backFrame
       back.appearance = NSApp.effectiveAppearance
       back.isHidden = false
     } else {
       back.isHidden = true
     }
+
     alphaValue = theme.alpha
     invalidateShadow()
     orderFront(nil)

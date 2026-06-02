@@ -20,6 +20,8 @@
 		441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636B22B7E90D006DCCDD /* stroke.schema.yaml */; };
 		441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */; };
 		441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */; };
+		441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* detenele.schema.yaml */; };
+		441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */; };
 		442B5B881570C37200370DEA /* squirrel.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 442B5B871570C37200370DEA /* squirrel.yaml */; };
 		442C64921F7A410A0027EFBE /* rime-install in CopyFiles */ = {isa = PBXBuildFile; fileRef = 442C64901F7A404A0027EFBE /* rime-install */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 446C01D61F767BD400A6C23E /* Assets.xcassets */; };
@@ -84,6 +86,7 @@
 		B397712F2BEECBED0093A49B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712E2BEECBED0093A49B /* Main.swift */; };
 		B39771312BEEE4540093A49B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771302BEEE4540093A49B /* InfoPlist.xcstrings */; };
 		B39771332BEEE4540093A49B /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771322BEEE4540093A49B /* Localizable.xcstrings */; };
+		B3EF08EA2F17125E00433A45 /* Rime.icon in Resources */ = {isa = PBXBuildFile; fileRef = B3EF08E92F17125E00433A45 /* Rime.icon */; };
 		D26434552706A15100857391 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D26434542706A15100857391 /* QuartzCore.framework */; };
 		E93074B70A5C264700470842 /* InputMethodKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E93074B60A5C264700470842 /* InputMethodKit.framework */; };
 		F45E005F2B8CA81C00179B75 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F45E005E2B8CA81C00179B75 /* UserNotifications.framework */; };
@@ -159,6 +162,8 @@
 				441E637E22B7E96F006DCCDD /* stroke.schema.yaml in Copy Shared Support Files */,
 				441E637F22B7E96F006DCCDD /* terra_pinyin.dict.yaml in Copy Shared Support Files */,
 				441E638022B7E96F006DCCDD /* terra_pinyin.schema.yaml in Copy Shared Support Files */,
+				441E638122B7E96F006DCCDD /* detenele.schema.yaml in Copy Shared Support Files */,
+				441E638122B7E96F006DCCDD /* terra_pinyin_12345.schema.yaml in Copy Shared Support Files */,
 				44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */,
 				44AEBC7621F569FD00344375 /* punctuation.yaml in Copy Shared Support Files */,
 				7B5488AF1D2DACDF0056A1BE /* default.yaml in Copy Shared Support Files */,
@@ -211,6 +216,8 @@
 		441E636322B7E90C006DCCDD /* cangjie5.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5.schema.yaml; path = data/plum/cangjie5.schema.yaml; sourceTree = "<group>"; };
 		441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.dict.yaml; path = data/plum/terra_pinyin.dict.yaml; sourceTree = "<group>"; };
 		441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin.schema.yaml; path = data/plum/terra_pinyin.schema.yaml; sourceTree = "<group>"; };
+		441E638222B7E90C006DCCDD /* detenele.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = detenele.schema.yaml; path = data/plum/detenele.schema.yaml; sourceTree = "<group>"; };
+		441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = terra_pinyin_12345.schema.yaml; path = data/plum/terra_pinyin_12345.schema.yaml; sourceTree = "<group>"; };
 		441E636622B7E90C006DCCDD /* cangjie5_express.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = cangjie5_express.schema.yaml; path = data/plum/cangjie5_express.schema.yaml; sourceTree = "<group>"; };
 		441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo_tw.schema.yaml; path = data/plum/bopomofo_tw.schema.yaml; sourceTree = "<group>"; };
 		441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = bopomofo.schema.yaml; path = data/plum/bopomofo.schema.yaml; sourceTree = "<group>"; };
@@ -286,6 +293,7 @@
 		B397712E2BEECBED0093A49B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Main.swift; path = sources/Main.swift; sourceTree = "<group>"; };
 		B39771302BEEE4540093A49B /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = InfoPlist.xcstrings; path = resources/InfoPlist.xcstrings; sourceTree = "<group>"; };
 		B39771322BEEE4540093A49B /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = Localizable.xcstrings; path = resources/Localizable.xcstrings; sourceTree = "<group>"; };
+		B3EF08E92F17125E00433A45 /* Rime.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = Rime.icon; sourceTree = "<group>"; };
 		D26434542706A15100857391 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		E93074B60A5C264700470842 /* InputMethodKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = InputMethodKit.framework; path = /System/Library/Frameworks/InputMethodKit.framework; sourceTree = "<absolute>"; };
 		F45E005E2B8CA81C00179B75 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
@@ -382,6 +390,7 @@
 				B32B80772BE7FAA200FCF3BC /* Squirrel.entitlements */,
 				B39771302BEEE4540093A49B /* InfoPlist.xcstrings */,
 				446C01D61F767BD400A6C23E /* Assets.xcassets */,
+				B3EF08E92F17125E00433A45 /* Rime.icon */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -468,6 +477,8 @@
 				441E636B22B7E90D006DCCDD /* stroke.schema.yaml */,
 				441E636422B7E90C006DCCDD /* terra_pinyin.dict.yaml */,
 				441E636522B7E90C006DCCDD /* terra_pinyin.schema.yaml */,
+				441E638222B7E90C006DCCDD /* detenele.schema.yaml */,
+				441E638222B7E90C006DCCDD /* terra_pinyin_12345.schema.yaml */,
 				7B5488211D2DAAD10056A1BE /* default.yaml */,
 				7B5488291D2DAAD10056A1BE /* essay.txt */,
 				7B54882E1D2DAAD10056A1BE /* luna_pinyin_fluency.schema.yaml */,
@@ -552,6 +563,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				446C01D71F767BD400A6C23E /* Assets.xcassets in Resources */,
+				B3EF08EA2F17125E00433A45 /* Rime.icon in Resources */,
 				B39771312BEEE4540093A49B /* InfoPlist.xcstrings in Resources */,
 				44986A95184B421700B3278D /* LICENSE.txt in Resources */,
 				B39771332BEEE4540093A49B /* Localizable.xcstrings in Resources */,
@@ -586,6 +598,7 @@
 		C01FCF4B08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = Rime;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_FRAMEWORKS = AppKit;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -593,7 +606,7 @@
 				CODE_SIGN_ENTITLEMENTS = resources/Squirrel.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.0.3;
+				CURRENT_PROJECT_VERSION = 1.1.2;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -642,13 +655,14 @@
 		C01FCF4C08A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = Rime;
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOL_FRAMEWORKS = AppKit;
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
 				CODE_SIGN_ENTITLEMENTS = resources/Squirrel.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1.0.3;
+				CURRENT_PROJECT_VERSION = 1.1.2;
 				DEAD_CODE_STRIPPING = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",

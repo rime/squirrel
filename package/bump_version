@@ -8,79 +8,15 @@ source package/common.sh
 app_version="$(get_app_version)"
 echo "current app version: ${app_version}"
 
-invalid_args() {
-    echo "Usage: $(basename $0) <new_version>|major|minor|patch"
-    exit 1
-}
-
-version_pattern='([0-9]+)\.([0-9]+)\.([0-9]+)'
-
-old_version=$app_version
-new_version=$1
-
-if [[ $old_version =~ $version_pattern ]]; then
-    old_major=${BASH_REMATCH[1]}
-    old_minor=${BASH_REMATCH[2]}
-    old_patch=${BASH_REMATCH[3]}
-else
-    invalid_args
-fi
-
-new_major=$old_major
-new_minor=$old_minor
-new_patch=$old_patch
-
-if [[ $new_version =~ $version_pattern ]]; then
-    new_major=${BASH_REMATCH[1]}
-    new_minor=${BASH_REMATCH[2]}
-    new_patch=${BASH_REMATCH[3]}
-elif [[ $new_version = 'major' ]]; then
-    ((++new_major))
-    new_minor=0
-    new_patch=0
-elif [[ $new_version = 'minor' ]]; then
-    ((++new_minor))
-    new_patch=0
-elif [[ $new_version = 'patch' ]]; then
-    ((++new_patch))
-else
-    invalid_args
-fi
-
-old_version="${old_major}.${old_minor}.${old_patch}"
-new_version="${new_major}.${new_minor}.${new_patch}"
-echo "updating ${old_version} => ${new_version}"
-
-# deprecated
-edit_info_plist_file() {
-    local file="$1"
-
-    if [[ $OSTYPE =~ darwin ]]; then
-        L_BOUND='[[:<:]]'
-        R_BOUND='[[:>:]]'
-    else
-        L_BOUND='\<'
-        R_BOUND='\>'
-    fi
-    SEP='\([,.]\)'
-    local version_pattern="${L_BOUND}${old_major}${SEP}${old_minor}${SEP}${old_patch}${R_BOUND}"
-    local replacement=${new_major}'\1'${new_minor}'\2'${new_patch}
-
-    sed -i '' "s/${version_pattern}/${replacement}/g" "${file}"
-}
-
-update_changelog() {
-    local version="$1"
-    clog --from-latest-tag \
-         --changelog CHANGELOG.md \
-         --repository https://github.com/rime/squirrel \
-         --setversion "${version}"
-}
+new_version="$(git-cliff --bumped-version)"
+echo "bump version: ${old_version} => ${new_version}"
 
 bump_version "${new_version}"
 
-update_changelog "${new_version}"
-${VISUAL:-${EDITOR:-vim}} CHANGELOG.md
+git-cliff --bump --unreleased --prepend CHANGELOG.md
+
+${VISUAL:-${EDITOR:-nano}} CHANGELOG.md
+
 match_line "## ${new_version} " CHANGELOG.md || (
     echo >&2 "CHANGELOG.md has no changes for version ${new_version}."
     exit 1
