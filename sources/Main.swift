@@ -80,6 +80,37 @@ struct SquirrelApp {
         case "--sync":
           DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
           return true
+        case "--ascii":
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "ascii")
+          return true
+        case "--nascii":
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "nascii")
+          return true
+        case "--getascii":
+          var responseReceived = false
+          var asciiStatus = ""
+          let observer = DistributedNotificationCenter.default().addObserver(
+            forName: .init("SquirrelASCIIModeResponse"),
+            object: nil,
+            queue: .main
+          ) { notification in
+            if let status = notification.object as? String {
+              asciiStatus = status
+              responseReceived = true
+            }
+          }
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelGetASCIIModeNotification"), object: nil)
+          let timeout = Date().addingTimeInterval(2.0)
+          while !responseReceived && Date() < timeout {
+            RunLoop.current.run(until: Date().addingTimeInterval(0.01))
+          }
+          DistributedNotificationCenter.default().removeObserver(observer)
+          if responseReceived {
+            print(asciiStatus)
+          } else {
+            print("nascii") 
+          }
+          return true
         case "--help":
           print(helpDoc)
           return true
@@ -139,6 +170,9 @@ Perform actions:
   --reload                   deploy
   --sync                     sync user data
   --build                    build all schemas in current directory
+  --ascii                    turn on ASCII mode
+  --nascii                   turn off ASCII mode
+  --getascii                 get current ASCII mode status
 Install Squirrel:
   --install, --register-input-source    register input source
   --enable-input-source [source id...]  input source list optional
