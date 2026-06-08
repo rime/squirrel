@@ -10,6 +10,7 @@ import AppKit
 final class SquirrelPanel: NSPanel {
   private let view: SquirrelView
   private let back: NSVisualEffectView
+  private var glassBack: NSView?
   var inputController: SquirrelInputController?
 
   var position: NSRect
@@ -33,6 +34,11 @@ final class SquirrelPanel: NSPanel {
   private var lastPage: Bool = true
   private var pagingUp: Bool?
 
+  private var usesLiquidGlass: Bool {
+    if #available(macOS 26.0, *) { return true }
+    return false
+  }
+
   init(position: NSRect) {
     self.position = position
     self.view = SquirrelView(frame: position)
@@ -42,16 +48,30 @@ final class SquirrelPanel: NSPanel {
     self.hasShadow = true
     self.isOpaque = false
     self.backgroundColor = .clear
-    back.blendingMode = .behindWindow
-    back.material = .hudWindow
-    back.state = .active
-    back.wantsLayer = true
-    back.layer?.mask = view.shape
-    let contentView = NSView()
-    contentView.addSubview(back)
-    contentView.addSubview(view)
-    contentView.addSubview(view.textView)
-    self.contentView = contentView
+
+    if #available(macOS 26.0, *) {
+      let glass = NSGlassEffectView()
+      glass.cornerRadius = 12
+      glass.autoresizingMask = [.width, .height]
+      let innerView = NSView()
+      innerView.autoresizingMask = [.width, .height]
+      innerView.addSubview(view)
+      innerView.addSubview(view.textView)
+      glass.contentView = innerView
+      glassBack = glass
+      self.contentView = glass
+    } else {
+      back.blendingMode = .behindWindow
+      back.material = .hudWindow
+      back.state = .active
+      back.wantsLayer = true
+      back.layer?.mask = view.shape
+      let contentView = NSView()
+      contentView.addSubview(back)
+      contentView.addSubview(view)
+      contentView.addSubview(view.textView)
+      self.contentView = contentView
+    }
   }
 
   var linear: Bool {
@@ -502,16 +522,25 @@ private extension SquirrelPanel {
     // contentView 的 frame 決定了它在窗口上的物理大小；
     // contentView 的 bounds 決定了它內部的投影座標系。
     // 將 bounds 設爲 naturalPanelSize（自然尺寸），視圖內部畫的一切東西就會自動被縮小到窗口(frame)裏
-    contentView!.frame = NSRect(origin: .zero, size: panelRect.size)
-    contentView!.bounds = NSRect(origin: .zero, size: naturalPanelSize)
+    let innerView: NSView
+    if #available(macOS 26.0, *), let glass = contentView as? NSGlassEffectView, let inner = glass.contentView {
+      glass.frame = NSRect(origin: .zero, size: panelRect.size)
+      inner.frame = NSRect(origin: .zero, size: panelRect.size)
+      inner.bounds = NSRect(origin: .zero, size: naturalPanelSize)
+      innerView = inner
+    } else {
+      contentView!.frame = NSRect(origin: .zero, size: panelRect.size)
+      contentView!.bounds = NSRect(origin: .zero, size: naturalPanelSize)
+      innerView = contentView!
+    }
 
     // rotate the view, the core in vertical mode!
     if vertical {
-      contentView!.boundsRotation = -90
-      contentView!.setBoundsOrigin(NSPoint(x: 0, y: naturalPanelSize.width))
+      innerView.boundsRotation = -90
+      innerView.setBoundsOrigin(NSPoint(x: 0, y: naturalPanelSize.width))
     } else {
-      contentView!.boundsRotation = 0
-      contentView!.setBoundsOrigin(.zero)
+      innerView.boundsRotation = 0
+      innerView.setBoundsOrigin(.zero)
     }
 
     view.textView.boundsRotation = 0
@@ -519,7 +548,7 @@ private extension SquirrelPanel {
 
     // 下層組件必須讀取 contentView 旋轉後的真實 bounds
     // (在 vertical 模式下，Cocoa 會自動將 bounds origin 偏移並交換長寬，確保內容在可見範圍內)
-    let subviewFrame = contentView!.bounds
+    let subviewFrame = innerView.bounds
     view.frame = subviewFrame
 
     var textFrame = subviewFrame
@@ -530,14 +559,20 @@ private extension SquirrelPanel {
     if theme.translucency {
       var backFrame = subviewFrame
       backFrame.size.width += theme.pagingOffset
-      back.frame = backFrame
-      back.appearance = NSApp.effectiveAppearance
-      back.isHidden = false
+      if usesLiquidGlass {
+        if #available(macOS 26.0, *), let glass = glassBack as? NSGlassEffectView {
+          glass.cornerRadius = theme.cornerRadius
+        }
+      } else {
+        back.frame = backFrame
+        back.appearance = NSApp.effectiveAppearance
+        back.isHidden = false
+      }
     } else {
       back.isHidden = true
     }
 
-    alphaValue = theme.alpha
+    alphaValue = usesLiquidGlass ? 1 : theme.alpha
     invalidateShadow()
     orderFront(nil)
     // voila!
