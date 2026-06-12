@@ -5,112 +5,111 @@ set -e
 project_file=Squirrel.xcodeproj/project.pbxproj
 test -f "${project_file}"
 
-anchor=(80 65 terra_pinyin.schema.yaml)
-anchor_lib=(9D 9A librime-lua.dylib)
+# 定義固定的錨點資訊（保持與原專案文件一致，供 sed 尋找定位）
+a_build="448363DE25BDBBED0022C7BA"
+a_ref="448363DA25BDBBBF0022C7BA"
+a_file="zhuyin.yaml"
 
-lastid=80
+a_lib_build="2C6B9F9D2BCD086700E327DF"
+a_lib_ref="2C6B9F9A2BCD086700E327DF"
+a_lib_file="librime-lua.dylib"
+
+# 函數：生成唯一且不重複的 24 位十六進制大寫 ID
+generate_uuid() {
+    while true; do
+        local uuid=$(openssl rand -hex 12 | tr '[:lower:]' '[:upper:]')
+        # 確保這個 ID 沒在 project.pbxproj 中出現過
+        if ! grep -q "$uuid" "${project_file}"; then
+            echo "$uuid"
+            return
+        fi
+    done
+}
 
 obj_entry() {
-    local id=$1
-    local ref=$2
-    local file="$3"
-    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 441E63${ref}22B7E90C006DCCDD /* ${file} */; };"
+    echo "$1 /* $3 in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = $2 /* $3 */; };"
 }
 
 copy_files_entry() {
-    local id=$1
-    local ref=$2
-    local file="$3"
-    echo "441E63${id}22B7E96F006DCCDD /* ${file} in Copy Shared Support Files */,"
+    echo "$1 /* $3 in Copy Shared Support Files */,"
 }
 
 file_ref_entry() {
-    local id=$1
-    local ref=$2
-    local file="$3"
-    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = ${file}; path = data/plum/${file}; sourceTree = \"<group>\"; };"
+    echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
 }
 
 group_entry() {
-    local id=$1
-    local ref=$2
-    local file="$3"
-    echo "441E63${ref}22B7E90C006DCCDD /* ${file} */,"
+    echo "$2 /* $3 */,"
 }
 
 lib_entry() {
-    local id=$1
-    local ref=$2
-    local lib="$3"
-    echo "2C6B9F${id}2BCD086700E327DF /* ${lib} in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = 2C6B9F${ref}2BCD086700E327DF /* ${lib} */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };"
+    echo "$1 /* $3 in Copy Rime plugins */ = {isa = PBXBuildFile; fileRef = $2 /* $3 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };"
 }
 
 lib_ref_entry() {
-    local id=$1
-    local ref=$2
-    local lib="$3"
-    echo "2C6B9F${ref}2BCD086700E327DF /* ${lib} */ = {isa = PBXFileReference; lastKnownFileType = \"compiled.mach-o.dylib\"; name = \"${lib}\"; path = \"lib/rime-plugins/${lib}\"; sourceTree = \"<group>\"; };"
+    echo "$2 /* $3 */ = {isa = PBXFileReference; lastKnownFileType = \"compiled.mach-o.dylib\"; name = \"$3\"; path = \"lib/rime-plugins/$3\"; sourceTree = \"<group>\"; };"
 }
 
 frameworks_phase_entry() {
-    local id=$1
-    local ref=$2
-    local lib="$3"
-    echo "2C6B9F${id}2BCD086700E327DF /* ${lib} in Copy Rime plugins */,"
+    echo "$1 /* $3 in Copy Rime plugins */,"
 }
 
 add_line() {
-    local search="^[[:space:]]*$(sed 's/\//\\\//g; s/\*/\\*/g' <<< "${1}")\$"
-    sed -i '' "/${search}/a\\
-${2}
-" "${project_file}"
+    # 對傳入的錨點與新行進行轉義，防止路徑中的 / 或註釋中的 * 破壞 sed 語法
+    local escaped_anchor=$(sed 's/\//\\\//g; s/\*/\\*/g' <<< "${1}")
+    local escaped_new=$(sed 's/\//\\\//g' <<< "${2}")
+
+    # 使用 s 命令替換：
+    # \1 捕獲行首的縮進（空格/Tab），\2 捕獲錨點內容
+    # 替換爲：保留原行內容 (\1\2) + 換行 + 相同的縮進 (\1) + 新行內容
+    sed -i '' "s/^\([[:space:]]*\)\(${escaped_anchor}\)$/\1\2\\
+\1${escaped_new}/" "${project_file}"
 }
 
 add_file() {
     local file="$1"
-    local new_id=$(( ++lastid ))
-    local new_refid=$(( ++lastid ))
+    # 動態生成全新且唯一的 ID
+    local new_id=$(generate_uuid)
+    local new_refid=$(generate_uuid)
     local anchor_line
     local new_line
 
-    anchor_line="$(obj_entry ${anchor[@]})"
-    new_line="$(obj_entry ${new_id} ${new_refid} "${file}")"
+    anchor_line="$(obj_entry "$a_build" "$a_ref" "$a_file")"
+    new_line="$(obj_entry "${new_id}" "${new_refid}" "${file}")"
     add_line "${anchor_line}" "${new_line}"
 
-    anchor_line="$(copy_files_entry ${anchor[@]})"
-    new_line="$(copy_files_entry ${new_id} ${new_refid} "${file}")"
+    anchor_line="$(copy_files_entry "$a_build" "$a_ref" "$a_file")"
+    new_line="$(copy_files_entry "${new_id}" "${new_refid}" "${file}")"
     add_line "${anchor_line}" "${new_line}"
 
-    anchor_line="$(file_ref_entry ${anchor[@]})"
-    new_line="$(file_ref_entry ${new_id} ${new_refid} "${file}")"
+    anchor_line="$(file_ref_entry "$a_build" "$a_ref" "$a_file")"
+    new_line="$(file_ref_entry "${new_id}" "${new_refid}" "${file}")"
     add_line "${anchor_line}" "${new_line}"
 
-    anchor_line="$(group_entry ${anchor[@]})"
-    new_line="$(group_entry ${new_id} ${new_refid} "${file}")"
+    anchor_line="$(group_entry "$a_build" "$a_ref" "$a_file")"
+    new_line="$(group_entry "${new_id}" "${new_refid}" "${file}")"
     add_line "${anchor_line}" "${new_line}"
 }
 
 add_lib() {
     local lib="$1"
-    local new_lib_id=$(( ++lastid ))
-    local new_lib_refid=$(( ++lastid ))
-    local anchor_line
-    local new_line
+    local new_lib_id=$(generate_uuid)
+    local new_lib_refid=$(generate_uuid)
+    local anchor_lib_line
+    local new_lib_line
 
-    # Assuming you have similar 'anchor' values for library entries
-    anchor_lib_line="$(lib_entry ${anchor_lib[@]})"
-    new_lib_line="$(lib_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    anchor_lib_line="$(lib_entry "$a_lib_build" "$a_lib_ref" "$a_lib_file")"
+    new_lib_line="$(lib_entry "${new_lib_id}" "${new_lib_refid}" "${lib}")"
     add_line "${anchor_lib_line}" "${new_lib_line}"
 
-    anchor_lib_line="$(lib_ref_entry ${anchor_lib[@]})"
-    new_lib_line="$(lib_ref_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    anchor_lib_line="$(lib_ref_entry "$a_lib_build" "$a_lib_ref" "$a_lib_file")"
+    new_lib_line="$(lib_ref_entry "${new_lib_id}" "${new_lib_refid}" "${lib}")"
     add_line "${anchor_lib_line}" "${new_lib_line}"
 
-    anchor_lib_line="$(frameworks_phase_entry ${anchor_lib[@]})"
-    new_lib_line="$(frameworks_phase_entry ${new_lib_id} ${new_lib_refid} "${lib}")"
+    anchor_lib_line="$(frameworks_phase_entry "$a_lib_build" "$a_lib_ref" "$a_lib_file")"
+    new_lib_line="$(frameworks_phase_entry "${new_lib_id}" "${new_lib_refid}" "${lib}")"
     add_line "${anchor_lib_line}" "${new_lib_line}"
 }
-
 
 data_files=(
     $(ls data/plum/* | xargs basename)
@@ -124,8 +123,8 @@ for file in "${data_files[@]}"
 do
     if grep -Fq " ${file} " "${project_file}"
     then
-	echo "found ${file}"
-	continue
+        echo "found ${file}"
+        continue
     fi
     echo "adding ${file} to ${project_file}"
     add_file "${file}"
