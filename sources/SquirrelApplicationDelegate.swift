@@ -245,6 +245,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     notifCenter.addObserver(forName: .init("SquirrelGetASCIIModeNotification"), object: nil, queue: nil, using: rimeGetASCIIMode)
     notifCenter.addObserver(forName: .init(kTISNotifySelectedKeyboardInputSourceChanged as String), object: nil, queue: .main) { [weak self] _ in
       self?.updateStatusItemVisibility()
+      self?.finalizeStrandedComposition()
     }
   }
 
@@ -359,6 +360,19 @@ private extension SquirrelApplicationDelegate {
     guard let statusItem = statusItem else { return }
     let id = SquirrelInstaller.currentInputSourceID() ?? ""
     statusItem.isVisible = id.hasPrefix("im.rime.inputmethod.Squirrel")
+  }
+
+  // macOS 26 does not call deactivateServer when the input source is switched
+  // away by another process via TISSelectInputSource() (e.g. macism, Input
+  // Source Pro): the pending composition is stranded and the candidate panel
+  // is left orphaned on screen (#1140). The input-source-changed notification
+  // is still delivered, so finalize the composition here as a fallback.
+  // Switching via the menu bar calls deactivateServer first, making this a
+  // no-op.
+  func finalizeStrandedComposition() {
+    let id = SquirrelInstaller.currentInputSourceID() ?? ""
+    guard !id.hasPrefix("im.rime.inputmethod.Squirrel") else { return }
+    panel?.inputController?.finalizeStrandedComposition()
   }
 
   func applyStatusIcon(asciiMode: Bool, schemaLabel: String?) {

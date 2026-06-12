@@ -237,6 +237,18 @@ final class SquirrelInputController: IMKInputController {
     client = nil
   }
 
+  /// Commit the pending composition and hide the panel, mirroring
+  /// `deactivateServer`. macOS 26 does not call `deactivateServer` when the
+  /// input source is switched away by another process via
+  /// `TISSelectInputSource()` (#1140), so this is invoked from the
+  /// input-source-changed notification as a fallback. No-op when nothing is
+  /// being composed.
+  func finalizeStrandedComposition() {
+    guard session != 0, let input = rimeAPI.get_input(session), input.pointee != 0 else { return }
+    hidePalettes()
+    commitComposition(nil)
+  }
+
   override func hidePalettes() {
     NSApp.squirrelAppDelegate.panel?.hide()
     super.hidePalettes()
