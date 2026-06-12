@@ -245,6 +245,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     notifCenter.addObserver(forName: .init("SquirrelGetASCIIModeNotification"), object: nil, queue: nil, using: rimeGetASCIIMode)
     notifCenter.addObserver(forName: .init(kTISNotifySelectedKeyboardInputSourceChanged as String), object: nil, queue: .main) { [weak self] _ in
       self?.updateStatusItemVisibility()
+      self?.finalizeStrandedComposition()
     }
   }
 
@@ -357,8 +358,23 @@ private extension SquirrelApplicationDelegate {
 
   func updateStatusItemVisibility() {
     guard let statusItem = statusItem else { return }
-    let id = SquirrelInstaller.currentInputSourceID() ?? ""
-    statusItem.isVisible = id.hasPrefix("im.rime.inputmethod.Squirrel")
+    let currentInputSourceID = SquirrelInstaller.currentInputSourceID() ?? ""
+    statusItem.isVisible = currentInputSourceID.hasPrefix("im.rime.inputmethod.Squirrel")
+  }
+
+  // macOS 26 does not call deactivateServer when the input source is switched
+  // away by another process via TISSelectInputSource() (e.g. macism, Input
+  // Source Pro): the pending composition is stranded and the candidate panel
+  // is left orphaned on screen (#1140). The input-source-changed notification
+  // is still delivered, so finalize the composition here as a fallback.
+  // Switching via the menu bar calls deactivateServer first, making this a
+  // no-op.
+  func finalizeStrandedComposition() {
+    let currentInputSourceID = SquirrelInstaller.currentInputSourceID() ?? ""
+    guard !currentInputSourceID.hasPrefix("im.rime.inputmethod.Squirrel") else { return }
+    if let inputController = panel?.inputController {
+      inputController.deactivateServer(inputController.client())
+    }
   }
 
   func applyStatusIcon(asciiMode: Bool, schemaLabel: String?) {
@@ -393,7 +409,7 @@ private extension SquirrelApplicationDelegate {
   func rimeToggleASCIIMode(_ notification: Notification) {
     guard let mode = notification.object as? String else { return }
     let enableASCII = mode == "ascii"
-    
+
     if enableASCII {
       NotificationCenter.default.post(name: .init("SquirrelSetASCIIModeNotification"), object: true)
     } else {
