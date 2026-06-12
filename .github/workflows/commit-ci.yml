@@ -7,6 +7,11 @@ jobs:
   build:
     runs-on: macos-latest
     steps:
+      - name: Set Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - name: Checkout last commit
         uses: actions/checkout@v6
         with:

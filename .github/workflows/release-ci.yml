@@ -13,6 +13,11 @@ jobs:
     env:
       SQUIRREL_BUNDLED_RECIPES: 'lotem/rime-octagram-data lotem/rime-octagram-data@hant'
     steps:
+      - name: Set Xcode version
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
       - name: Checkout last commit
         uses: actions/checkout@v6
         with:
