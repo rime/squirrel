@@ -108,7 +108,7 @@ struct SquirrelApp {
           if responseReceived {
             print(asciiStatus)
           } else {
-            print("nascii") 
+            print("nascii")
           }
           return true
         case "--help":
