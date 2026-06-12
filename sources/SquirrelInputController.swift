@@ -197,7 +197,7 @@ final class SquirrelInputController: IMKInputController {
     preedit = ""
     // Update menu bar icon
     if session != 0 {
-      let state = rimeAPI.get_option(session, "ascii_mode");
+      let state = rimeAPI.get_option(session, "ascii_mode")
       let label = rimeAPI.get_state_label_abbreviated(session, "ascii_mode", state, true).asString
       NSApp.squirrelAppDelegate.updateStatusIcon(asciiMode: state, schemaLabel: label)
     }
@@ -208,7 +208,7 @@ final class SquirrelInputController: IMKInputController {
     // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
     super.init(server: server, delegate: delegate, client: client)
     createSession()
-    
+
     // Listen for ASCII mode toggle notifications
     NotificationCenter.default.addObserver(
       forName: .init("SquirrelSetASCIIModeNotification"),
@@ -217,7 +217,7 @@ final class SquirrelInputController: IMKInputController {
     ) { [weak self] notification in
       self?.handleASCIIModeToggle(notification)
     }
-    
+
     // Listen for ASCII mode status requests
     NotificationCenter.default.addObserver(
       forName: .init("SquirrelReportASCIIModeNotification"),
@@ -226,8 +226,6 @@ final class SquirrelInputController: IMKInputController {
     ) { [weak self] notification in
       self?.reportASCIIMode(notification)
     }
-    
-
   }
 
   override func deactivateServer(_ sender: Any!) {
@@ -235,18 +233,6 @@ final class SquirrelInputController: IMKInputController {
     hidePalettes()
     commitComposition(sender)
     client = nil
-  }
-
-  /// Commit the pending composition and hide the panel, mirroring
-  /// `deactivateServer`. macOS 26 does not call `deactivateServer` when the
-  /// input source is switched away by another process via
-  /// `TISSelectInputSource()` (#1140), so this is invoked from the
-  /// input-source-changed notification as a fallback. No-op when nothing is
-  /// being composed.
-  func finalizeStrandedComposition() {
-    guard session != 0, let input = rimeAPI.get_input(session), input.pointee != 0 else { return }
-    hidePalettes()
-    commitComposition(nil)
   }
 
   override func hidePalettes() {
@@ -649,27 +635,26 @@ private extension SquirrelInputController {
   private func handleASCIIModeToggle(_ notification: Notification) {
     guard let enableASCII = notification.object as? Bool else { return }
     guard session != 0 && rimeAPI.find_session(session) else { return }
-    
+
     rimeAPI.set_option(session, "ascii_mode", enableASCII)
-    
+
     // Force update the UI to reflect the mode change
     rimeUpdate()
   }
-  
+
   private func reportASCIIMode(_: Notification) {
     // Only active input controller should respond
     guard let client = client else { return }
     guard session != 0 && rimeAPI.find_session(session) else { return }
-    
+
     let isASCIIMode = rimeAPI.get_option(session, "ascii_mode")
     let status = isASCIIMode ? "ascii" : "nascii"
-    
+
     // Directly respond with the status
     DistributedNotificationCenter.default().postNotificationName(
-      .init("SquirrelASCIIModeResponse"), 
+      .init("SquirrelASCIIModeResponse"),
       object: status
     )
   }
-
 
 }

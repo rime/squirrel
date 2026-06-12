@@ -372,7 +372,9 @@ private extension SquirrelApplicationDelegate {
   func finalizeStrandedComposition() {
     let id = SquirrelInstaller.currentInputSourceID() ?? ""
     guard !id.hasPrefix("im.rime.inputmethod.Squirrel") else { return }
-    panel?.inputController?.finalizeStrandedComposition()
+    if let inputController = panel?.inputController {
+      inputController.deactivateServer(inputController.client())
+    }
   }
 
   func applyStatusIcon(asciiMode: Bool, schemaLabel: String?) {
@@ -407,7 +409,7 @@ private extension SquirrelApplicationDelegate {
   func rimeToggleASCIIMode(_ notification: Notification) {
     guard let mode = notification.object as? String else { return }
     let enableASCII = mode == "ascii"
-    
+
     if enableASCII {
       NotificationCenter.default.post(name: .init("SquirrelSetASCIIModeNotification"), object: true)
     } else {
