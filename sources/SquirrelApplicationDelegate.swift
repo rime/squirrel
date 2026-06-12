@@ -358,8 +358,8 @@ private extension SquirrelApplicationDelegate {
 
   func updateStatusItemVisibility() {
     guard let statusItem = statusItem else { return }
-    let id = SquirrelInstaller.currentInputSourceID() ?? ""
-    statusItem.isVisible = id.hasPrefix("im.rime.inputmethod.Squirrel")
+    let currentInputSourceID = SquirrelInstaller.currentInputSourceID() ?? ""
+    statusItem.isVisible = currentInputSourceID.hasPrefix("im.rime.inputmethod.Squirrel")
   }
 
   // macOS 26 does not call deactivateServer when the input source is switched
@@ -370,8 +370,8 @@ private extension SquirrelApplicationDelegate {
   // Switching via the menu bar calls deactivateServer first, making this a
   // no-op.
   func finalizeStrandedComposition() {
-    let id = SquirrelInstaller.currentInputSourceID() ?? ""
-    guard !id.hasPrefix("im.rime.inputmethod.Squirrel") else { return }
+    let currentInputSourceID = SquirrelInstaller.currentInputSourceID() ?? ""
+    guard !currentInputSourceID.hasPrefix("im.rime.inputmethod.Squirrel") else { return }
     if let inputController = panel?.inputController {
       inputController.deactivateServer(inputController.client())
     }
