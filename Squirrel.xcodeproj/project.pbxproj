@@ -36,6 +36,9 @@
 		447765CA25C30E97002415AF /* Sparkle.framework in Copy 3rd-party Frameworks */ = {isa = PBXBuildFile; fileRef = 447765C725C30E6B002415AF /* Sparkle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		448363DD25BDBBED0022C7BA /* pinyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363D925BDBBBF0022C7BA /* pinyin.yaml */; };
 		448363DE25BDBBED0022C7BA /* zhuyin.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 448363DA25BDBBBF0022C7BA /* zhuyin.yaml */; };
+		207BACE41D4D6308E1699BB5 /* zh-hant-t-essay-bgw.gram in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = B93B1B771BA746E5EF3B229F /* zh-hant-t-essay-bgw.gram */; };
+		DF31C997BE556AC470BE6DFC /* zh-hant-t-essay-bgc.gram in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7DE20C60B65C3F0D24E29547 /* zh-hant-t-essay-bgc.gram */; };
+		91C92106F786AEFE06164570 /* grammar.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 4639481E7541071A4259FDE6 /* grammar.yaml */; };
 		44986A95184B421700B3278D /* LICENSE.txt in Resources */ = {isa = PBXBuildFile; fileRef = 44986A93184B421700B3278D /* LICENSE.txt */; };
 		44986A96184B421700B3278D /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 44986A94184B421700B3278D /* README.md */; };
 		44AEBC7521F569FD00344375 /* key_bindings.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 44AEBC7221F569CF00344375 /* key_bindings.yaml */; };
@@ -159,6 +162,9 @@
 			files = (
 				448363DD25BDBBED0022C7BA /* pinyin.yaml in Copy Shared Support Files */,
 				448363DE25BDBBED0022C7BA /* zhuyin.yaml in Copy Shared Support Files */,
+				207BACE41D4D6308E1699BB5 /* zh-hant-t-essay-bgw.gram in Copy Shared Support Files */,
+				DF31C997BE556AC470BE6DFC /* zh-hant-t-essay-bgc.gram in Copy Shared Support Files */,
+				91C92106F786AEFE06164570 /* grammar.yaml in Copy Shared Support Files */,
 				441E637722B7E96F006DCCDD /* bopomofo_express.schema.yaml in Copy Shared Support Files */,
 				441E637822B7E96F006DCCDD /* bopomofo_tw.schema.yaml in Copy Shared Support Files */,
 				441E637922B7E96F006DCCDD /* bopomofo.schema.yaml in Copy Shared Support Files */,
@@ -485,6 +491,9 @@
 			children = (
 				448363D925BDBBBF0022C7BA /* pinyin.yaml */,
 				448363DA25BDBBBF0022C7BA /* zhuyin.yaml */,
+				B93B1B771BA746E5EF3B229F /* zh-hant-t-essay-bgw.gram */,
+				7DE20C60B65C3F0D24E29547 /* zh-hant-t-essay-bgc.gram */,
+				4639481E7541071A4259FDE6 /* grammar.yaml */,
 				441E636C22B7E90D006DCCDD /* bopomofo_express.schema.yaml */,
 				441E636722B7E90D006DCCDD /* bopomofo_tw.schema.yaml */,
 				441E636822B7E90D006DCCDD /* bopomofo.schema.yaml */,
