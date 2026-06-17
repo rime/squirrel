@@ -18,6 +18,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
+  weak var activeInputController: SquirrelInputController?
   var enableNotifications = false
   var showStatusIcon: Bool = true
   var statusItem: NSStatusItem?
@@ -139,6 +140,11 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   func setupRime() {
     createDirIfNotExist(path: SquirrelApp.userDir)
     createDirIfNotExist(path: SquirrelApp.logDir)
+    // librime 不会把 log_dir 透传给插件 dylib（每个插件 dylib 各自静态
+    // 链接了一份 glog，与主进程实例互不可见，参见 rime/librime#983）。
+    // 我们在这里把日志目录通过环境变量暴露出来，让插件初始化它那一份
+    // glog 实例时可以输出到与主进程相同的目录，方便用户集中查看。
+    setenv("RIME_LOG_DIR", SquirrelApp.logDir.path(), 1)
     // swiftlint:disable identifier_name
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
     let context_object = Unmanaged.passUnretained(self).toOpaque()
@@ -274,6 +280,20 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
 
   let messageType = messageTypeC.map { String(cString: $0) }
   let messageValue = messageValueC.map { String(cString: $0) }
+  // Reserved property keys: cross-frontend protocol per rime/squirrel#1124.
+  // librime forwards every ctx->set_property() as ("property", "<key>=<value>").
+  // We honour keys with the leading "_" namespace, treating them as a
+  // contract between plugins and frontends. Unrecognized "_*" keys are
+  // silently ignored, so adding a new reserved key is backward-compatible.
+  if messageType == "property", let messageValue = messageValue,
+     let eq = messageValue.firstIndex(of: "="), messageValue.first == "_" {
+    let key = String(messageValue[..<eq])
+    let value = String(messageValue[messageValue.index(after: eq)...])
+    DispatchQueue.main.async {
+      delegate.activeInputController?.handleReservedProperty(key: key, value: value, for: sessionId)
+    }
+    return
+  }
   if messageType == "deploy" {
     switch messageValue {
     case "start":

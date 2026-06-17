@@ -18,7 +18,15 @@ struct SquirrelApp {
   static let appDir = "/Library/Input Library/Squirrel.app".withCString { dir in
     URL(fileURLWithFileSystemRepresentation: dir, isDirectory: false, relativeTo: nil)
   }
-  static let logDir = FileManager.default.temporaryDirectory.appending(component: "rime.squirrel", directoryHint: .isDirectory)
+  // Use ~/Library/Logs/Squirrel/ instead of TMPDIR so that the log files are
+  // visible from a normal user shell (the IMK sandbox redirects TMPDIR to a
+  // location that is not reachable outside the sandbox, which makes debugging
+  // very hard — see https://github.com/rime/squirrel/issues for context).
+  static let logDir = if let pwuid = getpwuid(getuid()) {
+    URL(fileURLWithFileSystemRepresentation: pwuid.pointee.pw_dir, isDirectory: true, relativeTo: nil).appending(components: "Library", "Logs", "Squirrel")
+  } else {
+    try! FileManager.default.url(for: .libraryDirectory, in: .userDomainMask, appropriateFor: nil, create: true).appendingPathComponent("Logs/Squirrel", isDirectory: true)
+  }
 
   // swiftlint:disable:next cyclomatic_complexity
   static func main() {

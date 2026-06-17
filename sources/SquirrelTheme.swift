@@ -47,6 +47,13 @@ final class SquirrelTheme {
   private var highlightedCandidateLabelColor: NSColor? = .secondaryLabelColor
   private var commentTextColor: NSColor? = .secondaryLabelColor
   private var highlightedCommentTextColor: NSColor? = .secondaryLabelColor
+  // Semantic comment colors (proposal in rime/squirrel#1124).
+  // Plugins / translators don't pick literal RGB values; instead they tag
+  // candidates by semantic role and the active color scheme owns the actual
+  // values. Both default to nil → fall back to commentTextColor at render
+  // time, so existing themes need no change.
+  private(set) var accentCommentTextColor: NSColor?
+  private(set) var warningCommentTextColor: NSColor?
 
   private(set) var cornerRadius: CGFloat = 0
   private(set) var hilitedCornerRadius: CGFloat = 0
@@ -243,6 +250,8 @@ final class SquirrelTheme {
         highlightedCandidateLabelColor = config.getColor("\(prefix)/hilited_candidate_label_color", inSpace: colorSpace)
         commentTextColor = config.getColor("\(prefix)/comment_text_color", inSpace: colorSpace)
         highlightedCommentTextColor = config.getColor("\(prefix)/hilited_comment_text_color", inSpace: colorSpace)
+        accentCommentTextColor = config.getColor("\(prefix)/accent_text_color", inSpace: colorSpace)
+        warningCommentTextColor = config.getColor("\(prefix)/warning_text_color", inSpace: colorSpace)
 
         // the following per-color-scheme configurations, if exist, will
         // override configurations with the same name under the global 'style'
