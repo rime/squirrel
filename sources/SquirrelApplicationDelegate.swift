@@ -275,6 +275,7 @@ extension RimeStringSlice {
   }
 }
 
+// swiftlint:disable:next cyclomatic_complexity
 private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
 
@@ -286,9 +287,9 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
   // contract between plugins and frontends. Unrecognized "_*" keys are
   // silently ignored, so adding a new reserved key is backward-compatible.
   if messageType == "property", let messageValue = messageValue,
-     let eq = messageValue.firstIndex(of: "="), messageValue.first == "_" {
-    let key = String(messageValue[..<eq])
-    let value = String(messageValue[messageValue.index(after: eq)...])
+     let eqIndex = messageValue.firstIndex(of: "="), messageValue.first == "_" {
+    let key = String(messageValue[..<eqIndex])
+    let value = String(messageValue[messageValue.index(after: eqIndex)...])
     DispatchQueue.main.async {
       delegate.activeInputController?.handleReservedProperty(key: key, value: value, for: sessionId)
     }

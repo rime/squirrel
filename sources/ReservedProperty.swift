@@ -112,8 +112,8 @@ struct ReservedPropertyValue {
     var out = Set<Int>()
     for part in raw.split(separator: ",") {
       let trimmed = part.trimmingCharacters(in: .whitespaces)
-      if let n = Int(trimmed), n >= 0 {
-        out.insert(n)
+      if let index = Int(trimmed), index >= 0 {
+        out.insert(index)
       }
     }
     return out

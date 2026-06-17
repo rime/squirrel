@@ -499,7 +499,6 @@ private extension SquirrelInputController {
     }
   }
 
-  // swiftlint:disable:next cyclomatic_complexity
   // `clearReservedComments` defaults to true so every state-changing update
   // (keystroke, paging, caret move, chord release, ascii toggle) drops the
   // reserved-comment indices set by the *previous* Compose(). They are only
@@ -507,6 +506,7 @@ private extension SquirrelInputController {
   // which is the pass that actually paints the indices the plugin just set.
   // Without this, stale indices from an earlier keystroke colour the wrong
   // candidates in the new list, or linger after the plugin stops highlighting.
+  // swiftlint:disable:next cyclomatic_complexity
   func rimeUpdate(clearReservedComments: Bool = true) {
     // print("[DEBUG] rimeUpdate")
     if clearReservedComments {
