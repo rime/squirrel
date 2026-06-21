@@ -324,7 +324,11 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
     let key = String(messageValue[..<eqIndex])
     let value = String(messageValue[messageValue.index(after: eqIndex)...])
     Task.detached { @MainActor in
-      try? delegate.panel?.inputController?.handleReservedProperty(key: key, value: value, for: sessionId)
+      do {
+        try delegate.panel?.inputController?.handleReservedProperty(key: key, value: value, for: sessionId)
+      } catch {
+        print("Error processing handleReservedProperty: \(error)")
+      }
     }
     return
   }
