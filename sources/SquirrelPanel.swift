@@ -241,24 +241,15 @@ final class SquirrelPanel: NSPanel {
       }
       for range in line.string.ranges(of: /\[comment\]/) {
         let convertedRange = convert(range: range, in: line.string)
-        // Apply semantic accent/warning colors only for non-highlighted rows;
-        // when the row is highlighted, the highlighted comment color wins so
-        // selection state stays unambiguous. Indices come from reserved
-        // property keys (_comment_highlight / _comment_warning) maintained
-        // on the input controller; see rime/squirrel#1124.
-        let semanticColor: NSColor? = if i == index {
-          nil
-        } else if inputController?.accentCommentIndices.contains(i) == true {
-          theme.accentCommentTextColor
-        } else if inputController?.warningCommentIndices.contains(i) == true {
-          theme.warningCommentTextColor
-        } else {
-          nil
-        }
-        if let semanticColor = semanticColor {
-          var override = commentAttrs
-          override[.foregroundColor] = semanticColor
-          line.addAttributes(override, range: convertedRange)
+        // Apply semantic accent/warning colors only for non-highlighted rows
+        if let inputController, !inputController.specialCommentIndices.isEmpty && i != index {
+          var newCommentAttrs = commentAttrs
+          if let accent = inputController.specialCommentIndices[.commentHighlight], accent.contains(i) {
+            newCommentAttrs[.foregroundColor] = theme.accentCommentTextColor
+          } else if let warning = inputController.specialCommentIndices[.commentWarning], warning.contains(i) {
+            newCommentAttrs[.foregroundColor] = theme.warningCommentTextColor
+          }
+          line.addAttributes(newCommentAttrs, range: convertedRange)
         } else {
           line.addAttributes(commentAttrs, range: convertedRange)
         }

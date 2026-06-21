@@ -182,7 +182,6 @@ final class SquirrelInputController: IMKInputController {
 
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
-    NSApp.squirrelAppDelegate.activeInputController = self
     // print("[DEBUG] activateServer:")
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
@@ -231,9 +230,6 @@ final class SquirrelInputController: IMKInputController {
 
   override func deactivateServer(_ sender: Any!) {
     // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
-    if NSApp.squirrelAppDelegate.activeInputController === self {
-      NSApp.squirrelAppDelegate.activeInputController = nil
-    }
     hidePalettes()
     commitComposition(sender)
     client = nil
@@ -316,32 +312,19 @@ final class SquirrelInputController: IMKInputController {
     NSApp.squirrelAppDelegate.openWiki()
   }
 
-  // State-type reserved property cache. Indices into the most recently
-  // rendered candidate list, populated by plugins via _comment_highlight
-  // / _comment_warning. SquirrelPanel reads them at render time to apply
-  // theme.accentCommentTextColor / warningCommentTextColor. Sticky within
-  // one composition; plugins overwrite each Compose() with the new list,
-  // an empty value clears.
-  private(set) var accentCommentIndices: Set<Int> = []
-  private(set) var warningCommentIndices: Set<Int> = []
+  // Added for special properties reserved for librime plugins
+  private(set) var specialCommentIndices: [ReservedPropertyKey: Set<Int>] = [:]
 
-  /// Dispatched on the main queue from notificationHandler when librime
-  /// forwards a reserved property key (leading underscore). The wire
-  /// format and reserved-key table are documented in ReservedProperty.swift
-  /// (rime/squirrel#1124). Unknown keys are silently ignored so the table
-  /// can grow over time without breaking older Squirrel builds.
-  func handleReservedProperty(key rawKey: String, value rawValue: String, for sessionId: RimeSessionId) {
+  func handleReservedProperty(key rawKey: String, value rawValue: String, for sessionId: RimeSessionId) throws(ReservedPropertyError) {
     guard session == sessionId, session != 0, rimeAPI.find_session(session) else { return }
-    guard let key = ReservedPropertyKey(rawValue: rawKey) else { return }
-    let parsed = ReservedPropertyValue.parse(rawValue)
+    guard let key = ReservedPropertyKey(rawValue: rawKey) else { throw .unknownInput(rawKey) }
+    let parsed = try ReservedPropertyValue.parse(rawValue)
     switch key {
     case .commentHighlight:
-      accentCommentIndices = parsed.indices()
+      specialCommentIndices[.commentHighlight] = try parsed.indices()
     case .commentWarning:
-      warningCommentIndices = parsed.indices()
+      specialCommentIndices[.commentWarning] = try parsed.indices()
     case .refreshUI:
-      // Preserve the indices just set by _comment_highlight/_comment_warning;
-      // this is the render pass that paints them.
       rimeUpdate(clearReservedComments: false)
     }
   }
@@ -499,19 +482,12 @@ private extension SquirrelInputController {
     }
   }
 
-  // `clearReservedComments` defaults to true so every state-changing update
-  // (keystroke, paging, caret move, chord release, ascii toggle) drops the
-  // reserved-comment indices set by the *previous* Compose(). They are only
-  // preserved for the `_refresh_ui`-driven render (see handleReservedProperty),
-  // which is the pass that actually paints the indices the plugin just set.
-  // Without this, stale indices from an earlier keystroke colour the wrong
-  // candidates in the new list, or linger after the plugin stops highlighting.
-  // swiftlint:disable:next cyclomatic_complexity
+  // `clearReservedComments` defaults to true to preserve previous behavior
+  // false is used when `refresh_ui` message is sent from librime
   func rimeUpdate(clearReservedComments: Bool = true) {
     // print("[DEBUG] rimeUpdate")
     if clearReservedComments {
-      accentCommentIndices = []
-      warningCommentIndices = []
+      specialCommentIndices = [:]
     }
     rimeConsumeCommittedText()
 
@@ -689,7 +665,7 @@ private extension SquirrelInputController {
 
   private func reportASCIIMode(_: Notification) {
     // Only active input controller should respond
-    guard let client = client else { return }
+    guard client != nil else { return }
     guard session != 0 && rimeAPI.find_session(session) else { return }
 
     let isASCIIMode = rimeAPI.get_option(session, "ascii_mode")

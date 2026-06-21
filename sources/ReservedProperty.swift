@@ -2,120 +2,69 @@
 //  ReservedProperty.swift
 //  Squirrel
 //
-//  Cross-frontend protocol for plugin -> frontend coordination over
-//  librime's notification_handler. See rime/squirrel#1124.
+//  Reserved librime properties for plugin -> frontend coordination.
+//  See rime/squirrel#1124.
 //
-//  ┌──────────────────────────── flow ────────────────────────────┐
-//  │ Plugin   ctx->set_property("_<key>", "<value>")              │
-//  │ librime  notification_handler(type:"property",               │
-//  │                                value:"_<key>=<value>")       │
-//  │ Squirrel ApplicationDelegate parses prefix → dispatches to   │
-//  │          the active InputController via handleReservedProperty│
-//  └──────────────────────────────────────────────────────────────┘
-//
-//  Leading-underscore keys are librime "transient properties": their
-//  lifetime is bound to the active input schema in the context and they
-//  are cleared when the schema changes (see librime context.cc). This
-//  protocol reserves a subset of that namespace for cross-frontend use.
-//  Plugin-private keys SHOULD use a "<plugin>/key" namespace instead so
-//  they will never collide with reserved keys.
-//
-//  Value encoding: URL-style query string (RFC 3986 application/x-www-
-//  form-urlencoded). Picked over JSON / YAML because:
-//    - Builtin parser is available on every target frontend
-//      (Swift URLComponents / Win HTTP / Lua / C++ Boost)
-//    - weasel previously used JSON for IPC and dropped it on
-//      performance grounds (rime/squirrel#1124, fxliang 2026-05-27)
-//    - Forward-compatible: unknown fields are preserved and ignored
-//
-//  Backward-compatible shorthand:
-//    A bare value without "=" is treated as { "value": "<value>" },
-//    so the historical "_comment_highlight=0,2" form still works.
+//  Values use URL-style query strings. Bare values are stored under
+//  "value" for compatibility with historical comma-list payloads.
 
 import Foundation
 
-/// Reserved property keys recognised by Squirrel. Plugins targeting any
-/// Rime frontend should only use keys listed here; unrecognised "_*"
-/// keys are silently ignored so the table can grow without breaking
-/// older Squirrel builds.
+/// Reserved property keys recognised by Squirrel.
 enum ReservedPropertyKey: String {
-  /// State - candidates at these indices should render their comment
-  /// with `accent_text_color` from the active color scheme.
-  /// Fields: `value` (comma-separated non-negative integers)
+  /// Candidate comment indices using `accent_text_color`.
   case commentHighlight = "_comment_highlight"
 
-  /// State - candidates at these indices should render their comment
-  /// with `warning_text_color` from the active color scheme.
-  /// Fields: `value` (comma-separated non-negative integers)
+  /// Candidate comment indices using `warning_text_color`.
   case commentWarning = "_comment_warning"
 
-  /// Action - the candidate panel should be refreshed because an async
-  /// task (network / inference / ...) has produced new candidates.
-  /// Optional fields: `source` (plugin codename), `kind` (full|partial)
+  /// Requests a candidate panel refresh.
   case refreshUI = "_refresh_ui"
-
-  /// `true` when the key represents a one-shot action that should be
-  /// applied and forgotten. `false` when it represents a piece of
-  /// composition-scoped state that sticks until the next overwrite.
-  var isAction: Bool {
-    switch self {
-    case .refreshUI:
-      return true
-    case .commentHighlight, .commentWarning:
-      return false
-    }
-  }
 }
 
-/// Parsed representation of a reserved-property value.
-///
-/// Use `fields[name]` for a single scalar (e.g. `source`, `kind`) and
-/// `indices()` for the conventional comma-separated non-negative integer
-/// list carried in the neutral `value` field.
+/// Parsed reserved-property fields.
 struct ReservedPropertyValue {
   let fields: [String: String]
 
-  /// Field name a bare (no "=") value is stored under, and the field
-  /// `indices()` reads from. Neutral so keys that aren't index lists can
-  /// reuse the same shorthand for their own scalar payload.
+  /// Field used for bare values and index lists.
   static let defaultField = "value"
 
   static let empty = ReservedPropertyValue(fields: [:])
 
-  /// Parses raw value strings written by plugins.
-  ///
-  /// Accepts two shapes:
-  ///   1. URL-style query string: `value=0,2&source=ai_predict`
-  ///   2. Bare comma list: `0,2` (normalised to `value=0,2`)
-  ///
-  /// Both shapes round-trip through the same `fields[name]` API so
-  /// callers never need to know which one the plugin used.
-  static func parse(_ raw: String) -> ReservedPropertyValue {
-    guard !raw.isEmpty else { return .empty }
+  /// Parses query strings or bare values written by plugins.
+  static func parse(_ raw: String) throws(ReservedPropertyError) -> ReservedPropertyValue {
+    guard !raw.isEmpty else { throw .emptyInput }
     if !raw.contains("=") {
       return ReservedPropertyValue(fields: [defaultField: raw])
     }
     // URLComponents needs a scheme-less URL with a leading "?".
-    guard let queryItems = URLComponents(string: "?\(raw)")?.queryItems else {
-      return .empty
+    if let queryItems = URLComponents(string: "?\(raw)")?.queryItems {
+      let pairs = queryItems.map { ($0.name, $0.value ?? "") }
+      let dict = Dictionary(pairs, uniquingKeysWith: { _, new in new })
+      return ReservedPropertyValue(fields: dict)
     }
-    let pairs = queryItems.map { ($0.name, $0.value ?? "") }
-    let dict = Dictionary(pairs, uniquingKeysWith: { _, new in new })
-    return ReservedPropertyValue(fields: dict)
+    throw .unknownInput(raw)
   }
 
-  /// Extracts a non-negative integer index list from the neutral `value`
-  /// field. Whitespace and malformed entries are skipped so stray spaces
-  /// in hand-written plugin code don't break rendering.
-  func indices() -> Set<Int> {
-    guard let raw = fields[Self.defaultField] else { return [] }
+  /// Extracts non-negative indices from the `value` field.
+  func indices() throws(ReservedPropertyError) -> Set<Int> {
+    guard let raw = fields[Self.defaultField] else { throw .missingDefaultFields }
     var out = Set<Int>()
     for part in raw.split(separator: ",") {
       let trimmed = part.trimmingCharacters(in: .whitespaces)
       if let index = Int(trimmed), index >= 0 {
         out.insert(index)
+      } else {
+        throw .invalidIndex(trimmed)
       }
     }
     return out
   }
+}
+
+enum ReservedPropertyError: Error {
+  case emptyInput
+  case unknownInput(String)
+  case missingDefaultFields
+  case invalidIndex(String)
 }

@@ -48,10 +48,6 @@ final class SquirrelTheme {
   private var commentTextColor: NSColor? = .secondaryLabelColor
   private var highlightedCommentTextColor: NSColor? = .secondaryLabelColor
   // Semantic comment colors (proposal in rime/squirrel#1124).
-  // Plugins / translators don't pick literal RGB values; instead they tag
-  // candidates by semantic role and the active color scheme owns the actual
-  // values. Both default to nil → fall back to commentTextColor at render
-  // time, so existing themes need no change.
   private(set) var accentCommentTextColor: NSColor?
   private(set) var warningCommentTextColor: NSColor?
 
