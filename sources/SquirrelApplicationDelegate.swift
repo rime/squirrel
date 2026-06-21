@@ -274,10 +274,10 @@ extension RimeStringSlice {
 // swiftlint:disable:next cyclomatic_complexity
 private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
-  
+
   let messageType = messageTypeC.map { String(cString: $0) }
   let messageValue = messageValueC.map { String(cString: $0) }
-  
+
   if messageType == "deploy" {
     switch messageValue {
     case "start":
