@@ -312,6 +312,23 @@ final class SquirrelInputController: IMKInputController {
     NSApp.squirrelAppDelegate.openWiki()
   }
 
+  // Added for special properties reserved for librime plugins
+  private(set) var specialCommentIndices: [ReservedPropertyKey: Set<Int>] = [:]
+
+  func handleReservedProperty(key rawKey: String, value rawValue: String, for sessionId: RimeSessionId) throws(ReservedPropertyError) {
+    guard session == sessionId, session != 0, rimeAPI.find_session(session) else { return }
+    guard let key = ReservedPropertyKey(rawValue: rawKey) else { throw .unknownInput(rawKey) }
+    let parsed = try ReservedPropertyValue.parse(rawValue)
+    switch key {
+    case .commentHighlight:
+      specialCommentIndices[.commentHighlight] = try parsed.indices()
+    case .commentWarning:
+      specialCommentIndices[.commentWarning] = try parsed.indices()
+    case .refreshUI:
+      rimeUpdate(clearReservedComments: false)
+    }
+  }
+
   deinit {
     destroySession()
   }
@@ -465,9 +482,13 @@ private extension SquirrelInputController {
     }
   }
 
-  // swiftlint:disable:next cyclomatic_complexity
-  func rimeUpdate() {
+  // `clearReservedComments` defaults to true to preserve previous behavior
+  // false is used when `refresh_ui` message is sent from librime
+  func rimeUpdate(clearReservedComments: Bool = true) {
     // print("[DEBUG] rimeUpdate")
+    if clearReservedComments {
+      specialCommentIndices = [:]
+    }
     rimeConsumeCommittedText()
 
     var status = RimeStatus_stdbool.rimeStructInit()
@@ -644,7 +665,7 @@ private extension SquirrelInputController {
 
   private func reportASCIIMode(_: Notification) {
     // Only active input controller should respond
-    guard let client = client else { return }
+    guard client != nil else { return }
     guard session != 0 && rimeAPI.find_session(session) else { return }
 
     let isASCIIMode = rimeAPI.get_option(session, "ascii_mode")

@@ -139,6 +139,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   func setupRime() {
     createDirIfNotExist(path: SquirrelApp.userDir)
     createDirIfNotExist(path: SquirrelApp.logDir)
+    // expose log file location to librime for librime plugins to write into
+    setenv("RIME_LOG_DIR", SquirrelApp.logDir.path(), 1)
     // swiftlint:disable identifier_name
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
     let context_object = Unmanaged.passUnretained(self).toOpaque()
@@ -269,11 +271,13 @@ extension RimeStringSlice {
   }
 }
 
+// swiftlint:disable:next cyclomatic_complexity
 private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessionId: RimeSessionId, messageTypeC: UnsafePointer<CChar>?, messageValueC: UnsafePointer<CChar>?) {
   let delegate: SquirrelApplicationDelegate = Unmanaged<SquirrelApplicationDelegate>.fromOpaque(contextObject!).takeUnretainedValue()
 
   let messageType = messageTypeC.map { String(cString: $0) }
   let messageValue = messageValueC.map { String(cString: $0) }
+
   if messageType == "deploy" {
     switch messageValue {
     case "start":
@@ -286,9 +290,7 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
       break
     }
     return
-  }
-
-  if messageType == "option" {
+  } else if messageType == "option" {
     let state = messageValue?.first != "!"
     let optionName: String?
     if state {
@@ -314,6 +316,18 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
         if delegate.enableNotifications {
           delegate.showStatusMessage(msgTextLong: longLabel(), msgTextShort: shortLabel())
         }
+      }
+    }
+    return
+  } else if messageType == "property", let messageValue = messageValue,
+            let eqIndex = messageValue.firstIndex(of: "="), messageValue.first == "_" {
+    let key = String(messageValue[..<eqIndex])
+    let value = String(messageValue[messageValue.index(after: eqIndex)...])
+    Task.detached { @MainActor in
+      do {
+        try delegate.panel?.inputController?.handleReservedProperty(key: key, value: value, for: sessionId)
+      } catch {
+        print("Error processing handleReservedProperty: \(error)")
       }
     }
     return

@@ -240,7 +240,19 @@ final class SquirrelPanel: NSPanel {
         }
       }
       for range in line.string.ranges(of: /\[comment\]/) {
-        line.addAttributes(commentAttrs, range: convert(range: range, in: line.string))
+        let convertedRange = convert(range: range, in: line.string)
+        // Apply semantic accent/warning colors only for non-highlighted rows
+        if let inputController, !inputController.specialCommentIndices.isEmpty && i != index {
+          var newCommentAttrs = commentAttrs
+          if let accent = inputController.specialCommentIndices[.commentHighlight], accent.contains(i) {
+            newCommentAttrs[.foregroundColor] = theme.accentCommentTextColor
+          } else if let warning = inputController.specialCommentIndices[.commentWarning], warning.contains(i) {
+            newCommentAttrs[.foregroundColor] = theme.warningCommentTextColor
+          }
+          line.addAttributes(newCommentAttrs, range: convertedRange)
+        } else {
+          line.addAttributes(commentAttrs, range: convertedRange)
+        }
       }
       line.mutableString.replaceOccurrences(of: "[label]", with: label, range: NSRange(location: 0, length: line.length))
       let labeledLine = line.copy() as! NSAttributedString
