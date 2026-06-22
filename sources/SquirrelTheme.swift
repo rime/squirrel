@@ -249,9 +249,7 @@ final class SquirrelTheme {
         accentCommentTextColor = config.getColor("\(prefix)/accent_text_color", inSpace: colorSpace)
         warningCommentTextColor = config.getColor("\(prefix)/warning_text_color", inSpace: colorSpace)
 
-        // the following per-color-scheme configurations, if exist, will
-        // override configurations with the same name under the global 'style'
-        // section
+        // Per-color-scheme settings override global style settings.
         linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
         vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
         inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")

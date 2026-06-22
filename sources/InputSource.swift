@@ -21,7 +21,6 @@ final class SquirrelInstaller {
     for inputSource in sourceList {
       let sourceIDRef = TISGetInputSourceProperty(inputSource, kTISPropertyInputSourceID)
       guard let sourceID = unsafeBitCast(sourceIDRef, to: CFString?.self) as String? else { continue }
-      // print("[DEBUG] Examining input source: \(sourceID)")
       inputSources[sourceID] = inputSource
     }
     return inputSources
@@ -44,7 +43,6 @@ final class SquirrelInstaller {
     let enabledInputModes = enabledModes()
     if !enabledInputModes.isEmpty {
       print("User already registered Squirrel method(s): \(enabledInputModes.map { $0.rawValue })")
-      // Already registered.
       return
     }
     TISRegisterInputSource(SquirrelApp.appDir as CFURL)
@@ -55,7 +53,7 @@ final class SquirrelInstaller {
     let enabledInputModes = enabledModes()
     if !enabledInputModes.isEmpty && modes.isEmpty {
       print("User already enabled Squirrel method(s): \(enabledInputModes.map { $0.rawValue })")
-      // keep user's manually enabled input modes.
+      // Preserve manually enabled input modes.
       return
     }
     let modesToEnable = modes.isEmpty ? [.primary] : modes

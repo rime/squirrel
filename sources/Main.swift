@@ -68,9 +68,7 @@ struct SquirrelApp {
           }
           return true
         case "--build":
-          // Notification
           SquirrelApplicationDelegate.showMessage(msgText: NSLocalizedString("deploy_update", comment: ""))
-          // Build all schemas in current directory
           var builderTraits = RimeTraits.rimeStructInit()
           builderTraits.setCString("rime.squirrel-builder", to: \.app_name)
           rimeAPI.setup(&builderTraits)
@@ -125,18 +123,15 @@ struct SquirrelApp {
     }
 
     autoreleasepool {
-      // find the bundle identifier and then initialize the input method server
       let main = Bundle.main
       let connectionName = main.object(forInfoDictionaryKey: "InputMethodConnectionName") as! String
       _ = IMKServer(name: connectionName, bundleIdentifier: main.bundleIdentifier!)
-      // load the bundle explicitly because in this case the input method is a
-      // background only application
       let app = NSApplication.shared
       let delegate = SquirrelApplicationDelegate()
       app.delegate = delegate
       app.setActivationPolicy(.accessory)
 
-      // opencc will be configured with relative dictionary paths
+      // OpenCC uses relative dictionary paths from SharedSupport.
       FileManager.default.changeCurrentDirectoryPath(main.sharedSupportPath!)
 
       if NSApp.squirrelAppDelegate.problematicLaunchDetected() {
@@ -155,7 +150,6 @@ struct SquirrelApp {
         print("Squirrel reporting!")
       }
 
-      // finally run everything
       app.run()
       print("Squirrel is quitting...")
       rimeAPI.finalize()

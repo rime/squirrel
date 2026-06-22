@@ -82,7 +82,6 @@ final class SquirrelView: NSView {
     return NSTextRange(location: startLocation, end: endLocation)
   }
 
-  // Get the rectangle containing entire contents, expensive to calculate
   var contentRect: NSRect {
     var ranges = candidateRanges
     if preeditRange.length > 0 {
@@ -102,7 +101,7 @@ final class SquirrelView: NSView {
     if x1 == -CGFloat.infinity { return .zero }
     return NSRect(x: min(0, x0), y: min(0, y0), width: x1 - min(0, x0), height: y1 - min(0, y0))
   }
-  // Get the rectangle containing the range of text, will first convert to glyph range, expensive to calculate
+
   func contentRect(range: NSTextRange) -> NSRect {
     // swiftlint:disable:next identifier_name
     var x0 = CGFloat.infinity, x1 = -CGFloat.infinity, y0 = CGFloat.infinity, y1 = -CGFloat.infinity
@@ -116,7 +115,6 @@ final class SquirrelView: NSView {
     return NSRect(x: x0, y: y0, width: x1-x0, height: y1-y0)
   }
 
-  // Will triger - (void)drawRect:(NSRect)dirtyRect
   // swiftlint:disable:next function_parameter_count
   func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
     self.candidateRanges = candidateRanges
@@ -128,7 +126,6 @@ final class SquirrelView: NSView {
     self.needsDisplay = true
   }
 
-  // All draws happen here
   // swiftlint:disable:next cyclomatic_complexity
   override func draw(_ dirtyRect: NSRect) {
     var backgroundPath: CGPath?
@@ -142,7 +139,6 @@ final class SquirrelView: NSView {
     containingRect.size.width -= theme.pagingOffset
     let backgroundRect = containingRect
 
-    // Draw preedit Rect
     var preeditRect = NSRect.zero
     if preeditRange.length > 0, let preeditTextRange = convert(range: preeditRange) {
       preeditRect = contentRect(range: preeditTextRange)
@@ -160,16 +156,13 @@ final class SquirrelView: NSView {
     }
 
     containingRect = carveInset(rect: containingRect)
-    // Draw candidate Rects
     for i in 0..<candidateRanges.count {
       let candidate = candidateRanges[i]
       if i == hilightedIndex {
-        // Draw highlighted Rect
         if candidate.length > 0 && theme.highlightedBackColor != nil {
           highlightedPath = drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect, containingRect: containingRect, extraExpansion: 0)?.mutableCopy()
         }
       } else {
-        // Draw other highlighted Rect
         if candidate.length > 0 && theme.candidateBackColor != nil {
           let candidatePath = drawPath(highlightedRange: candidate, backgroundRect: backgroundRect, preeditRect: preeditRect,
                                        containingRect: containingRect, extraExpansion: theme.surroundingExtraExpansion)
@@ -183,7 +176,6 @@ final class SquirrelView: NSView {
       }
     }
 
-    // Draw highlighted part of preedit text
     if (highlightedPreeditRange.length > 0) && (theme.highlightedPreeditColor != nil), let highlightedPreeditTextRange = convert(range: highlightedPreeditRange) {
       var innerBox = preeditRect
       innerBox.size.width -= (theme.edgeInset.width + 1) * 2
@@ -239,7 +231,6 @@ final class SquirrelView: NSView {
     panelLayer.mask = panelLayerMask
     self.layer?.addSublayer(panelLayer)
 
-    // Fill in colors
     if let color = theme.preeditBackgroundColor, let path = preeditPath {
       let layer = shapeFromPath(path: path)
       layer.fillColor = color.cgColor
@@ -351,7 +342,7 @@ final class SquirrelView: NSView {
 }
 
 private extension SquirrelView {
-  // A tweaked sign function, to winddown corner radius when the size is small
+  // Soften corner radius when adjacent points are very close.
   func sign(_ number: NSPoint) -> NSPoint {
     if number.length >= 2 {
       return number / number.length
@@ -360,7 +351,7 @@ private extension SquirrelView {
     }
   }
 
-  // Bezier cubic curve, which has continuous roundness
+  // Use cubic Bezier corners for continuous rounded paths.
   func drawSmoothLines(_ vertex: [NSPoint], straightCorner: Set<Int>, alpha: CGFloat, beta rawBeta: CGFloat) -> CGPath? {
     guard vertex.count >= 3 else {
       return nil
@@ -418,8 +409,7 @@ private extension SquirrelView {
     return rect.size.height * rect.size.width < 1
   }
 
-  // Calculate 3 boxes containing the text in range. leadingRect and trailingRect are incomplete line rectangle
-  // bodyRect is complete lines in the middle
+  // Split a multiline range into leading, complete-body, and trailing boxes.
   func multilineRects(forRange range: NSTextRange, extraSurounding: Double, bounds: NSRect) -> (NSRect, NSRect, NSRect) {
     let edgeInset = currentTheme.edgeInset
     var lineRects = [NSRect]()
@@ -489,7 +479,7 @@ private extension SquirrelView {
     return (leadingRect, bodyRect, trailingRect)
   }
 
-  // Based on the 3 boxes from multilineRectForRange, calculate the vertex of the polygon containing the text in range
+  // Build the highlight polygon from the multiline text boxes.
   func multilineVertex(leadingRect: NSRect, bodyRect: NSRect, trailingRect: NSRect) -> [NSPoint] {
     if nearEmpty(bodyRect) && !nearEmpty(leadingRect) && nearEmpty(trailingRect) {
       return rectVertex(of: leadingRect)
@@ -519,7 +509,7 @@ private extension SquirrelView {
     }
   }
 
-  // If the point is outside the innerBox, will extend to reach the outerBox
+  // Clamp points outside the inner border to the outer border.
   func expand(vertex: [NSPoint], innerBorder: NSRect, outerBorder: NSRect) -> [NSPoint] {
     var newVertex = [NSPoint]()
     for i in 0..<vertex.count {
@@ -588,7 +578,6 @@ private extension SquirrelView {
     }
   }
 
-  // Add gap between horizontal candidates
   func expandHighlightWidth(rect: NSRect, extraSurrounding: CGFloat) -> NSRect {
     var newRect = rect
     if !nearEmpty(newRect) {
@@ -618,7 +607,6 @@ private extension SquirrelView {
   func linearMultilineFor(body: NSRect, leading: NSRect, trailing: NSRect) -> (Array<NSPoint>, Array<NSPoint>, Set<Int>, Set<Int>) {
     let highlightedPoints, highlightedPoints2: [NSPoint]
     let rightCorners, rightCorners2: Set<Int>
-    // Handles the special case where containing boxes are separated
     if nearEmpty(body) && !nearEmpty(leading) && !nearEmpty(trailing) && trailing.maxX < leading.minX {
       highlightedPoints = rectVertex(of: leading)
       highlightedPoints2 = rectVertex(of: trailing)
@@ -671,7 +659,6 @@ private extension SquirrelView {
       let (leadingRect, bodyRect, trailingRect) = multilineRects(forRange: highlightedTextRange, extraSurounding: separatorWidth, bounds: outerBox)
       var (highlightedPoints, highlightedPoints2, rightCorners, rightCorners2) = linearMultilineFor(body: bodyRect, leading: leadingRect, trailing: trailingRect)
 
-      // Expand the boxes to reach proper border
       highlightedPoints = enlarge(vertex: highlightedPoints, by: extraExpansion)
       highlightedPoints = expand(vertex: highlightedPoints, innerBorder: innerBox, outerBorder: outerBox)
       rightCorners = removeCorner(highlightedPoints: highlightedPoints, rightCorners: rightCorners, containingRect: currentContainingRect)

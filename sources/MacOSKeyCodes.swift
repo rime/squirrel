@@ -36,7 +36,7 @@ struct SquirrelKeycode {
     }
 
     if let keychar = keychar, keychar.isASCII, let codeValue = keychar.unicodeScalars.first?.value {
-      // NOTE: IBus/Rime use different keycodes for uppercase/lowercase letters.
+      // IBus/Rime use different keycodes for uppercase and lowercase letters.
       if keychar.isLowercase && (shift != caps) {
         // lowercase -> Uppercase
         return keychar.uppercased().unicodeScalars.first!.value

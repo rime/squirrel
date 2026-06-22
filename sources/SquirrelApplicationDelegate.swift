@@ -139,7 +139,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   func setupRime() {
     createDirIfNotExist(path: SquirrelApp.userDir)
     createDirIfNotExist(path: SquirrelApp.logDir)
-    // expose log file location to librime for librime plugins to write into
+    // Expose the log directory to librime plugins.
     setenv("RIME_LOG_DIR", SquirrelApp.logDir.path(), 1)
     // swiftlint:disable identifier_name
     let notification_handler: @convention(c) (UnsafeMutableRawPointer?, RimeSessionId, UnsafePointer<CChar>?, UnsafePointer<CChar>?) -> Void = notificationHandler
@@ -161,13 +161,8 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   func startRime(fullCheck: Bool) {
     print("Initializing la rime...")
     rimeAPI.initialize(nil)
-    // check for configuration updates
     if rimeAPI.start_maintenance(fullCheck) {
-      // update squirrel config
-      // print("[DEBUG] maintenance suceeds")
       _ = rimeAPI.deploy_config_file("squirrel.yaml", "config_version")
-    } else {
-      // print("[DEBUG] maintenance fails")
     }
   }
 
@@ -203,11 +198,10 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     schema.close()
   }
 
-  // prevent freezing the system
+  // Detect repeated launches that may indicate a bad configuration loop.
   func problematicLaunchDetected() -> Bool {
     var detected = false
     let logFile = FileManager.default.temporaryDirectory.appendingPathComponent("squirrel_launch.json", conformingTo: .json)
-    // print("[DEBUG] archive: \(logFile)")
     do {
       let archive = try Data(contentsOf: logFile, options: [.uncached])
       let decoder = JSONDecoder()
@@ -233,9 +227,6 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     return detected
   }
 
-  // add an awakeFromNib item so that we can set the action method.  Note that
-  // any menuItems without an action will be disabled when displayed in the Text
-  // Input Menu.
   func addObservers() {
     let center = NSWorkspace.shared.notificationCenter
     center.addObserver(forName: NSWorkspace.willPowerOffNotification, object: nil, queue: nil, using: workspaceWillPowerOff)
