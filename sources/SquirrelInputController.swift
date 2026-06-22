@@ -21,7 +21,6 @@ final class SquirrelInputController: IMKInputController {
   private var schemaId: String = ""
   private var inlinePreedit = false
   private var inlineCandidate = false
-  // for chord-typing
   private var chordKeyCodes: [UInt32] = .init(repeating: 0, count: SquirrelInputController.keyRollOver)
   private var chordModifiers: [UInt32] = .init(repeating: 0, count: SquirrelInputController.keyRollOver)
   private var chordKeyCount: Int = 0
@@ -35,10 +34,7 @@ final class SquirrelInputController: IMKInputController {
     let modifiers = event.modifierFlags
     let changes = lastModifiers.symmetricDifference(modifiers)
 
-    // Return true to indicate the the key input was received and dealt with.
-    // Key processing will not continue in that case.  In other words the
-    // system will not deliver a key down event to the application.
-    // Returning false means the original key down will be passed on to the client.
+    // Return true to consume the key event; return false to pass it to the client app.
     var handled = false
 
     if session == 0 || !rimeAPI.find_session(session) {
@@ -60,13 +56,8 @@ final class SquirrelInputController: IMKInputController {
         handled = true
         break
       }
-      // print("[DEBUG] FLAGSCHANGED client: \(sender ?? "nil"), modifiers: \(modifiers)")
       var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
-      // For flags-changed event, keyCode is available since macOS 10.15 (#715)
-      // Some remote desktop software (e.g. Parsec) sends flagsChanged events with
-      // keyCode defaulting to 0 (kVK_ANSI_A) instead of the actual modifier keycode,
-      // causing a ghost 'a' keypress. Validate and infer the correct keycode from
-      // the changed modifier flags when necessary. (#825)
+      // Some remote desktop tools send flagsChanged with keyCode 0; infer the real modifier key when needed.
       var keyCode = event.keyCode
       if !SquirrelKeycode.modifierKeycodes.contains(keyCode) {
         guard let inferred = SquirrelKeycode.inferModifierKeycode(from: changes) else {
@@ -80,20 +71,17 @@ final class SquirrelInputController: IMKInputController {
       let rimeKeycode: UInt32 = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: nil, shift: false, caps: false)
 
       if changes.contains(.capsLock) {
-        // NOTE: rime assumes XK_Caps_Lock to be sent before modifier changes,
-        // while NSFlagsChanged event has the flag changed already.
-        // so it is necessary to revert kLockMask.
+        // Rime expects XK_Caps_Lock before the lock mask changes; NSFlagsChanged has already applied it.
         rimeModifiers ^= kLockMask.rawValue
         _ = processKey(rimeKeycode, modifiers: rimeModifiers)
       }
 
-      // Need to process release before modifier down. Because
-      // sometimes release event is delayed to next modifier keydown.
+      // Process releases first because some modifier releases arrive with the next keydown.
       var buffer = [(keycode: UInt32, modifier: UInt32)]()
       for flag in [NSEvent.ModifierFlags.shift, .control, .option, .command] where changes.contains(flag) {
-        if modifiers.contains(flag) { // New modifier
+        if modifiers.contains(flag) {
           buffer.append((keycode: rimeKeycode, modifier: rimeModifiers))
-        } else { // Release
+        } else {
           buffer.insert((keycode: rimeKeycode, modifier: rimeModifiers | kReleaseMask.rawValue), at: 0)
         }
       }
@@ -105,7 +93,7 @@ final class SquirrelInputController: IMKInputController {
       rimeUpdate()
 
     case .keyDown:
-      // ignore Command+X hotkeys.
+      // Let client apps handle Command shortcuts.
       if modifiers.contains(.command) {
         break
       }
@@ -117,9 +105,6 @@ final class SquirrelInputController: IMKInputController {
          (capitalModifiers && !code.isLetter) || (!capitalModifiers && !code.isASCII) {
         keyChars = event.characters
       }
-      // print("[DEBUG] KEYDOWN client: \(sender ?? "nil"), modifiers: \(modifiers), keyCode: \(keyCode), keyChars: [\(keyChars ?? "empty")]")
-
-      // translate osx keyevents to rime keyevents
       if let char = keyChars?.first {
         let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
                                                            shift: modifiers.contains(.shift),
@@ -176,13 +161,11 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func recognizedEvents(_ sender: Any!) -> Int {
-    // print("[DEBUG] recognizedEvents:")
     return Int(NSEvent.EventTypeMask.Element(arrayLiteral: .keyDown, .flagsChanged).rawValue)
   }
 
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
-    // print("[DEBUG] activateServer:")
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
       keyboardLayout = ""
@@ -195,7 +178,6 @@ final class SquirrelInputController: IMKInputController {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
     preedit = ""
-    // Update menu bar icon
     if session != 0 {
       let state = rimeAPI.get_option(session, "ascii_mode")
       let label = rimeAPI.get_state_label_abbreviated(session, "ascii_mode", state, true).asString
@@ -205,11 +187,9 @@ final class SquirrelInputController: IMKInputController {
 
   override init!(server: IMKServer!, delegate: Any!, client: Any!) {
     self.client = client as? IMKTextInput
-    // print("[DEBUG] initWithServer: \(server ?? .init()) delegate: \(delegate ?? "nil") client:\(client ?? "nil")")
     super.init(server: server, delegate: delegate, client: client)
     createSession()
 
-    // Listen for ASCII mode toggle notifications
     NotificationCenter.default.addObserver(
       forName: .init("SquirrelSetASCIIModeNotification"),
       object: nil,
@@ -218,7 +198,6 @@ final class SquirrelInputController: IMKInputController {
       self?.handleASCIIModeToggle(notification)
     }
 
-    // Listen for ASCII mode status requests
     NotificationCenter.default.addObserver(
       forName: .init("SquirrelReportASCIIModeNotification"),
       object: nil,
@@ -229,7 +208,6 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func deactivateServer(_ sender: Any!) {
-    // print("[DEBUG] deactivateServer: \(sender ?? "nil")")
     hidePalettes()
     commitComposition(sender)
     client = nil
@@ -240,20 +218,8 @@ final class SquirrelInputController: IMKInputController {
     super.hidePalettes()
   }
 
-  /*!
-   @method
-   @abstract   Called when a user action was taken that ends an input session.
-   Typically triggered by the user selecting a new input method
-   or keyboard layout.
-   @discussion When this method is called your controller should send the
-   current input buffer to the client via a call to
-   insertText:replacementRange:.  Additionally, this is the time
-   to clean up if that is necessary.
-   */
   override func commitComposition(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
-    // print("[DEBUG] commitComposition: \(sender ?? "nil")")
-    //  commit raw input
     if session != 0 {
       if let input = rimeAPI.get_input(session) {
         commit(string: String(cString: input))
@@ -312,7 +278,6 @@ final class SquirrelInputController: IMKInputController {
     NSApp.squirrelAppDelegate.openWiki()
   }
 
-  // Added for special properties reserved for librime plugins
   private(set) var specialCommentIndices: [ReservedPropertyKey: Set<Int>] = [:]
 
   func handleReservedProperty(key rawKey: String, value rawValue: String, for sessionId: RimeSessionId) throws(ReservedPropertyError) {
@@ -337,10 +302,9 @@ final class SquirrelInputController: IMKInputController {
 private extension SquirrelInputController {
 
   func onChordTimer(_: Timer) {
-    // chord release triggered by timer
     var processedKeys = false
     if chordKeyCount > 0 && session != 0 {
-      // simulate key-ups
+      // Chord typing releases are synthesized after the configured timeout.
       for i in 0..<chordKeyCount {
         let handled = rimeAPI.process_key(session, Int32(chordKeyCodes[i]), Int32(chordModifiers[i] | kReleaseMask.rawValue))
         if handled {
@@ -355,18 +319,15 @@ private extension SquirrelInputController {
   }
 
   func updateChord(keycode: UInt32, modifiers: UInt32) {
-    // print("[DEBUG] update chord: {\(chordKeyCodes)} << \(keycode)")
     for i in 0..<chordKeyCount where chordKeyCodes[i] == keycode {
       return
     }
     if chordKeyCount >= Self.keyRollOver {
-      // you are cheating. only one human typist (fingers <= 10) is supported.
       return
     }
     chordKeyCodes[chordKeyCount] = keycode
     chordModifiers[chordKeyCount] = modifiers
     chordKeyCount += 1
-    // reset timer
     if let timer = chordTimer, timer.isValid {
       timer.invalidate()
     }
@@ -420,7 +381,6 @@ private extension SquirrelInputController {
   }
 
   func destroySession() {
-    // print("[DEBUG] destroySession:")
     if session != 0 {
       _ = rimeAPI.destroy_session(session)
       session = 0
@@ -429,30 +389,22 @@ private extension SquirrelInputController {
   }
 
   func processKey(_ rimeKeycode: UInt32, modifiers rimeModifiers: UInt32) -> Bool {
-    // TODO add special key event preprocessing here
-
-    // with linear candidate list, arrow keys may behave differently.
     if let panel = NSApp.squirrelAppDelegate.panel {
       if panel.linear != rimeAPI.get_option(session, "_linear") {
         rimeAPI.set_option(session, "_linear", panel.linear)
       }
-      // with vertical text, arrow keys may behave differently.
       if panel.vertical != rimeAPI.get_option(session, "_vertical") {
         rimeAPI.set_option(session, "_vertical", panel.vertical)
       }
     }
 
     let handled = rimeAPI.process_key(session, Int32(rimeKeycode), Int32(rimeModifiers))
-    // print("[DEBUG] rime_keycode: \(rimeKeycode), rime_modifiers: \(rimeModifiers), handled = \(handled)")
-
-    // TODO add special key event postprocessing here
 
     if !handled {
       let isVimBackInCommandMode = rimeKeycode == XK_Escape || ((rimeModifiers & kControlMask.rawValue != 0) && (rimeKeycode == XK_c || rimeKeycode == XK_C || rimeKeycode == XK_bracketleft))
       if isVimBackInCommandMode && rimeAPI.get_option(session, "vim_mode") &&
           !rimeAPI.get_option(session, "ascii_mode") {
         rimeAPI.set_option(session, "ascii_mode", true)
-        // print("[DEBUG] turned Chinese mode off in vim-like editor's command mode")
       }
     } else {
       let isChordingKey = switch Int32(rimeKeycode) {
@@ -464,7 +416,6 @@ private extension SquirrelInputController {
       if isChordingKey && rimeAPI.get_option(session, "_chord_typing") {
         updateChord(keycode: rimeKeycode, modifiers: rimeModifiers)
       } else if (rimeModifiers & kReleaseMask.rawValue) == 0 {
-        // non-chording key pressed
         clearChord()
       }
     }
@@ -482,10 +433,8 @@ private extension SquirrelInputController {
     }
   }
 
-  // `clearReservedComments` defaults to true to preserve previous behavior
-  // false is used when `refresh_ui` message is sent from librime
+  // Preserve reserved comment marks when librime requests a UI-only refresh.
   func rimeUpdate(clearReservedComments: Bool = true) {
-    // print("[DEBUG] rimeUpdate")
     if clearReservedComments {
       specialCommentIndices = [:]
     }
@@ -493,16 +442,13 @@ private extension SquirrelInputController {
 
     var status = RimeStatus_stdbool.rimeStructInit()
     if rimeAPI.get_status(session, &status) {
-      // enable schema specific ui style
       // swiftlint:disable:next identifier_name
       if let schema_id = status.schema_id, schemaId == "" || schemaId != String(cString: schema_id) {
         schemaId = String(cString: schema_id)
         NSApp.squirrelAppDelegate.loadSettings(for: schemaId)
-        // inline preedit
         if let panel = NSApp.squirrelAppDelegate.panel {
           inlinePreedit = (panel.inlinePreedit && !rimeAPI.get_option(session, "no_inline")) || rimeAPI.get_option(session, "inline")
           inlineCandidate = panel.inlineCandidate && !rimeAPI.get_option(session, "no_inline")
-          // if not inline, embed soft cursor in preedit string
           rimeAPI.set_option(session, "soft_cursor", !inlinePreedit)
         }
       }
@@ -511,7 +457,6 @@ private extension SquirrelInputController {
 
     var ctx = RimeContext_stdbool.rimeStructInit()
     if rimeAPI.get_context(session, &ctx) {
-      // update preedit text
       let preedit = ctx.composition.preedit.map({ String(cString: $0) }) ?? ""
 
       let start = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_start)), within: preedit) ?? preedit.startIndex
@@ -556,7 +501,6 @@ private extension SquirrelInputController {
         // preedit can contain additional prompt text before start:
         // ^(prompt)[selection]$
         let start = min(start, candidatePreview.endIndex)
-        // caret can be either before or after the selected range.
         let caretPos = caretPos <= start ? caretPos : endOfCandidatePreview
         show(preedit: candidatePreview,
              selRange: NSRange(location: start.utf16Offset(in: candidatePreview),
@@ -566,15 +510,12 @@ private extension SquirrelInputController {
         if inlinePreedit {
           show(preedit: preedit, selRange: NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end)), caretPos: caretPos.utf16Offset(in: preedit))
         } else {
-          // TRICKY: display a non-empty string to prevent iTerm2 from echoing
-          // each character in preedit. note this is a full-shape space U+3000;
-          // using half shape characters like "..." will result in an unstable
-          // baseline when composing Chinese characters.
+          // Use a full-width space placeholder to prevent iTerm2 from echoing raw preedit;
+          // half-width placeholders make the Chinese composition baseline unstable.
           show(preedit: preedit.isEmpty ? "" : "　", selRange: NSRange(location: 0, length: 0), caretPos: 0)
         }
       }
 
-      // update candidates
       let numCandidates = Int(ctx.menu.num_candidates)
       var candidates = [String]()
       var comments = [String]()
@@ -609,7 +550,6 @@ private extension SquirrelInputController {
 
   func commit(string: String) {
     guard let client = client else { return }
-    // print("[DEBUG] commitString: \(string)")
     client.insertText(string, replacementRange: .empty)
     preedit = ""
     hidePalettes()
@@ -617,7 +557,6 @@ private extension SquirrelInputController {
 
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
     guard let client = client else { return }
-    // print("[DEBUG] showPreeditString: '\(preedit)'")
     if self.preedit == preedit && self.caretPos == caretPos && self.selRange == selRange {
       return
     }
@@ -626,7 +565,6 @@ private extension SquirrelInputController {
     self.caretPos = caretPos
     self.selRange = selRange
 
-    // print("[DEBUG] selRange.location = \(selRange.location), selRange.length = \(selRange.length); caretPos = \(caretPos)")
     let start = selRange.location
     let attrString = NSMutableAttributedString(string: preedit)
     if start > 0 {
@@ -641,7 +579,6 @@ private extension SquirrelInputController {
 
   // swiftlint:disable:next function_parameter_count
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int, page: Int, lastPage: Bool) {
-    // print("[DEBUG] showPanelWithPreedit:...:")
     guard let client = client else { return }
     var inputPos = NSRect()
     client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
@@ -658,20 +595,16 @@ private extension SquirrelInputController {
     guard session != 0 && rimeAPI.find_session(session) else { return }
 
     rimeAPI.set_option(session, "ascii_mode", enableASCII)
-
-    // Force update the UI to reflect the mode change
     rimeUpdate()
   }
 
   private func reportASCIIMode(_: Notification) {
-    // Only active input controller should respond
     guard client != nil else { return }
     guard session != 0 && rimeAPI.find_session(session) else { return }
 
     let isASCIIMode = rimeAPI.get_option(session, "ascii_mode")
     let status = isASCIIMode ? "ascii" : "nascii"
 
-    // Directly respond with the status
     DistributedNotificationCenter.default().postNotificationName(
       .init("SquirrelASCIIModeResponse"),
       object: status
