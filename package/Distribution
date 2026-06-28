@@ -3,7 +3,7 @@
     <title>Squirrel-@VERSION@</title>
     <conclusion file="conclusion.html" mime-type="text/html"/>
     <pkg-ref id="im.rime.inputmethod.Squirrel"/>
-    <options customize="never" require-scripts="false" rootVolumeOnly="true"/>
+    <options customize="never" hostArchitectures="arm64,x86_64" require-scripts="false" rootVolumeOnly="true"/>
     <choices-outline>
         <line choice="default">
             <line choice="im.rime.inputmethod.Squirrel"/>
