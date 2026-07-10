@@ -27,6 +27,8 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  private var panelUpdateGeneration: UInt = 0
+  private var reuseChromePanelPosition = false
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -214,6 +216,8 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func hidePalettes() {
+    panelUpdateGeneration &+= 1
+    reuseChromePanelPosition = false
     NSApp.squirrelAppDelegate.panel?.hide()
     super.hidePalettes()
   }
@@ -539,9 +543,16 @@ private extension SquirrelInputController {
       let lastPage = ctx.menu.is_last_page
 
       let selRange = NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end))
-      showPanel(preedit: inlinePreedit ? "" : preedit, selRange: selRange, caretPos: caretPos.utf16Offset(in: preedit),
-                candidates: candidates, comments: comments, labels: labels, highlighted: Int(ctx.menu.highlighted_candidate_index),
-                page: page, lastPage: lastPage)
+      let panelPreedit = inlinePreedit ? "" : preedit
+      let panelCaretPos = caretPos.utf16Offset(in: preedit)
+      let highlighted = Int(ctx.menu.highlighted_candidate_index)
+      panelUpdateGeneration &+= 1
+      let generation = panelUpdateGeneration
+      DispatchQueue.main.async { [weak self] in
+        self?.showPanel(generation: generation, preedit: panelPreedit, selRange: selRange, caretPos: panelCaretPos,
+                        candidates: candidates, comments: comments, labels: labels, highlighted: highlighted,
+                        page: page, lastPage: lastPage)
+      }
       _ = rimeAPI.free_context(&ctx)
     } else {
       hidePalettes()
@@ -578,15 +589,27 @@ private extension SquirrelInputController {
   }
 
   // swiftlint:disable:next function_parameter_count
-  func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int, page: Int, lastPage: Bool) {
-    guard let client = client else { return }
-    var inputPos = NSRect()
-    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
-    if let panel = NSApp.squirrelAppDelegate.panel {
-      panel.position = inputPos
-      panel.inputController = self
-      panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
-                   highlighted: highlighted, page: page, lastPage: lastPage, update: true)
+  func showPanel(generation: UInt, preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int, page: Int, lastPage: Bool) {
+    guard generation == panelUpdateGeneration, let client = client, let panel = NSApp.squirrelAppDelegate.panel else { return }
+    let isChrome = currentApp == "com.google.Chrome"
+    if !isChrome || !reuseChromePanelPosition {
+      var inputPos = NSRect()
+      client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
+      let validPosition = inputPos.height > 0 && inputPos.origin.x.isFinite && inputPos.origin.y.isFinite &&
+        (abs(inputPos.origin.x) > 1 || abs(inputPos.origin.y) > 1)
+      if !isChrome || validPosition {
+        panel.position = inputPos
+        reuseChromePanelPosition = isChrome
+      } else if panel.position.height <= 0 {
+        let mouse = NSEvent.mouseLocation
+        panel.position = NSRect(x: mouse.x, y: mouse.y, width: 0, height: 20)
+      }
+    }
+    panel.inputController = self
+    panel.update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments, labels: labels,
+                 highlighted: highlighted, page: page, lastPage: lastPage, update: true)
+    if preedit.isEmpty && candidates.isEmpty {
+      reuseChromePanelPosition = false
     }
   }
 
