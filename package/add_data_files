@@ -35,7 +35,19 @@ copy_files_entry() {
 }
 
 file_ref_entry() {
-    echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
+    # Pick lastKnownFileType by extension;
+    # non-text assets (e.g. .gram) use the generic file type with quoted name/path
+    case "$3" in
+        *.yaml)
+            echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
+            ;;
+        *.txt)
+            echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
+            ;;
+        *)
+            echo "$2 /* $3 */ = {isa = PBXFileReference; lastKnownFileType = file; name = \"$3\"; path = \"data/plum/$3\"; sourceTree = \"<group>\"; };"
+            ;;
+    esac
 }
 
 group_entry() {
