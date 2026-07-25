@@ -35,7 +35,7 @@ copy_files_entry() {
 }
 
 file_ref_entry() {
-    echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
+    echo "$2 /* $3 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.yaml; name = $3; path = data/plum/$3; sourceTree = \"<group>\"; };"
 }
 
 group_entry() {
