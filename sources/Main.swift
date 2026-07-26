@@ -35,7 +35,9 @@ struct SquirrelApp {
           runningSquirrels.forEach { $0.terminate() }
           return true
         case "--reload":
-          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelReloadNotification"), object: nil)
+          // Squirrel is a background app, and AppKit suspends distributed-notification delivery to inactive apps;
+          // deliverImmediately is required for these notifications to reach Squirrel while it stays in the background
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelReloadNotification"), object: nil, userInfo: nil, deliverImmediately: true)
           return true
         case "--register-input-source", "--install":
           installer.register()
@@ -76,13 +78,13 @@ struct SquirrelApp {
           _ = rimeAPI.deploy()
           return true
         case "--sync":
-          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil)
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelSyncNotification"), object: nil, userInfo: nil, deliverImmediately: true)
           return true
         case "--ascii":
-          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "ascii")
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "ascii", userInfo: nil, deliverImmediately: true)
           return true
         case "--nascii":
-          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "nascii")
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelToggleASCIIModeNotification"), object: "nascii", userInfo: nil, deliverImmediately: true)
           return true
         case "--getascii":
           var responseReceived = false
@@ -97,7 +99,7 @@ struct SquirrelApp {
               responseReceived = true
             }
           }
-          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelGetASCIIModeNotification"), object: nil)
+          DistributedNotificationCenter.default().postNotificationName(.init("SquirrelGetASCIIModeNotification"), object: nil, userInfo: nil, deliverImmediately: true)
           let timeout = Date().addingTimeInterval(2.0)
           while !responseReceived && Date() < timeout {
             RunLoop.current.run(until: Date().addingTimeInterval(0.01))
