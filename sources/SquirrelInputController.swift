@@ -177,6 +177,17 @@ final class SquirrelInputController: IMKInputController {
     if keyboardLayout != "" {
       client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
     }
+    // Activation delivers no flagsChanged event, and NSEvent.modifierFlags
+    // only reflects this process's own event stream, so lastModifiers may
+    // disagree with the actual Caps Lock state by now. Seed it from the
+    // session-wide hardware state; otherwise the next Caps Lock press can
+    // compare equal to the stale lastModifiers and be dropped by the
+    // early-return in handle().
+    if CGEventSource.flagsState(.combinedSessionState).contains(.maskAlphaShift) {
+      lastModifiers.insert(.capsLock)
+    } else {
+      lastModifiers.remove(.capsLock)
+    }
     preedit = ""
     if session != 0 {
       let state = rimeAPI.get_option(session, "ascii_mode")
