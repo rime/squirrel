@@ -236,10 +236,13 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
     notifCenter.addObserver(forName: .init("SquirrelSyncNotification"), object: nil, queue: nil, using: rimeNeedsSync)
     notifCenter.addObserver(forName: .init("SquirrelToggleASCIIModeNotification"), object: nil, queue: nil, using: rimeToggleASCIIMode)
     notifCenter.addObserver(forName: .init("SquirrelGetASCIIModeNotification"), object: nil, queue: nil, using: rimeGetASCIIMode)
-    notifCenter.addObserver(forName: .init(kTISNotifySelectedKeyboardInputSourceChanged as String), object: nil, queue: .main) { [weak self] _ in
-      self?.updateStatusItemVisibility()
-      self?.finalizeStrandedComposition()
-    }
+    // Suspension behavior matters: the default coalescing holds notifications
+    // back while the process is inactive, which is exactly the state Squirrel
+    // enters when the user switches away — the icon would fail to hide until
+    // the next activation. Deliver immediately instead.
+    notifCenter.addObserver(self, selector: #selector(inputSourceChanged(_:)),
+                            name: .init(kTISNotifySelectedKeyboardInputSourceChanged as String),
+                            object: nil, suspensionBehavior: .deliverImmediately)
   }
 
   func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
@@ -359,6 +362,13 @@ private extension SquirrelApplicationDelegate {
     statusItem = item
     applyStatusIcon(asciiMode: false, schemaLabel: nil)
     updateStatusItemVisibility()
+  }
+
+  @objc func inputSourceChanged(_: Notification) {
+    DispatchQueue.main.async { [weak self] in
+      self?.updateStatusItemVisibility()
+      self?.finalizeStrandedComposition()
+    }
   }
 
   func updateStatusItemVisibility() {
