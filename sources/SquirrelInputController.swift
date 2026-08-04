@@ -561,6 +561,23 @@ private extension SquirrelInputController {
 
   func commit(string: String) {
     guard let client = client else { return }
+
+    let forceMarkedText =
+      session != 0 &&
+      rimeAPI.get_option(session, "force_marked_text_for_direct_commit")
+
+    // Direct commits such as full-width punctuation do not necessarily have an
+    // active marked-text phase. Some NSTextInputClient implementations require
+    // one before accepting insertText.
+    if forceMarkedText && preedit.isEmpty && !string.isEmpty {
+      let markedText = NSMutableAttributedString(string: string)
+      client.setMarkedText(
+        markedText,
+        selectionRange: NSRange(location: markedText.length, length: 0),
+        replacementRange: .empty
+      )
+    }
+
     client.insertText(string, replacementRange: .empty)
     preedit = ""
     hidePalettes()
