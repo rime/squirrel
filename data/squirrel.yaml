@@ -400,6 +400,9 @@ app_options:
   com.apple.Terminal:
     ascii_mode: true
     no_inline: true
+  org.alacritty:
+    # Work around https://github.com/rime/squirrel/issues/741
+    force_marked_text_for_direct_commit: true
   com.googlecode.iterm2:
     ascii_mode: true
     no_inline: true
