@@ -124,11 +124,11 @@ add_lib() {
 }
 
 data_files=(
-    $(ls data/plum/* | xargs basename)
+    $(for file in data/plum/*; do basename "$file"; done)
 )
 
 lib_files=(
-    $(ls lib/rime-plugins/* | xargs basename)
+    $(for file in lib/rime-plugins/*; do basename "$file"; done)
 )
 
 for file in "${data_files[@]}"
