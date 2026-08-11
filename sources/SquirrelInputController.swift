@@ -562,14 +562,24 @@ private extension SquirrelInputController {
   func commit(string: String) {
     guard let client = client else { return }
 
+    // Only panelless commits (e.g. full-width punctuation) lack a preedit phase.
+    // Normal Chinese confirmation already has active marked text and must stay
+    // synchronous so later setMarkedText cleanup cannot race the insert.
+    let isDirectCommit = preedit.isEmpty && !string.isEmpty
     let forceMarkedText =
+      isDirectCommit &&
       session != 0 &&
       rimeAPI.get_option(session, "force_marked_text_for_direct_commit")
+    // Some clients (e.g. VS Code terminal / xterm.js) drop insertText delivered
+    // synchronously inside keyDown. Defer only those bare direct commits.
+    let deferDirectCommit =
+      isDirectCommit &&
+      session != 0 &&
+      rimeAPI.get_option(session, "defer_direct_commit")
 
-    // Direct commits such as full-width punctuation do not necessarily have an
-    // active marked-text phase. Some NSTextInputClient implementations require
-    // one before accepting insertText.
-    if forceMarkedText && preedit.isEmpty && !string.isEmpty {
+    // Some NSTextInputClient implementations require an active marked-text
+    // phase before accepting insertText for panelless commits.
+    if forceMarkedText {
       let markedText = NSMutableAttributedString(string: string)
       client.setMarkedText(
         markedText,
@@ -578,7 +588,13 @@ private extension SquirrelInputController {
       )
     }
 
-    client.insertText(string, replacementRange: .empty)
+    if deferDirectCommit {
+      DispatchQueue.main.async { [weak client] in
+        client?.insertText(string, replacementRange: .empty)
+      }
+    } else {
+      client.insertText(string, replacementRange: .empty)
+    }
     preedit = ""
     hidePalettes()
   }
