@@ -27,6 +27,7 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  private var lastDirectPunctuationKeyText: String?
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -111,8 +112,34 @@ final class SquirrelInputController: IMKInputController {
                                                            caps: modifiers.contains(.capsLock))
         if rimeKeycode != 0 {
           let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
-          handled = processKey(rimeKeycode, modifiers: rimeModifiers)
-          rimeUpdate()
+          let directPunctuationKeyText =
+            shouldPreMarkDirectPunctuationKey(String(char)) ? String(char) : nil
+          if let directPunctuationKeyText {
+            lastDirectPunctuationKeyText = directPunctuationKeyText
+            show(
+              preedit: directPunctuationKeyText,
+              selRange: NSRange(location: 0, length: directPunctuationKeyText.utf16.count),
+              caretPos: directPunctuationKeyText.utf16.count
+            )
+            handled = true
+            // Some clients ignore direct punctuation commits unless the input
+            // method first exposes a marked-text phase. Let the key event finish
+            // after pre-marking, then ask Rime to commit on the next run loop.
+            DispatchQueue.main.async { [weak self] in
+              guard let self = self else { return }
+              let delayedHandled = self.processKey(rimeKeycode, modifiers: rimeModifiers)
+              self.rimeUpdate()
+              if !delayedHandled {
+                self.lastDirectPunctuationKeyText = nil
+                self.preedit = ""
+                self.hidePalettes()
+              }
+            }
+          } else {
+            lastDirectPunctuationKeyText = nil
+            handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+            rimeUpdate()
+          }
         }
       }
 
@@ -565,11 +592,16 @@ private extension SquirrelInputController {
     let forceMarkedText =
       session != 0 &&
       rimeAPI.get_option(session, "force_marked_text_for_direct_commit")
+    let commitDirectPunctAsMarkedText =
+      NSApp.squirrelAppDelegate.config?.getBool("compatibility/commit_direct_punct_as_marked_text") ?? false
 
     // Direct commits such as full-width punctuation do not necessarily have an
     // active marked-text phase. Some NSTextInputClient implementations require
     // one before accepting insertText.
-    if forceMarkedText && preedit.isEmpty && !string.isEmpty {
+    if forceMarkedText &&
+        preedit.isEmpty &&
+        !string.isEmpty &&
+        !(commitDirectPunctAsMarkedText && isPunctuationOrSymbolCommit(string)) {
       let markedText = NSMutableAttributedString(string: string)
       client.setMarkedText(
         markedText,
@@ -578,9 +610,59 @@ private extension SquirrelInputController {
       )
     }
 
+    if commitDirectPunctAsMarkedText && isPunctuationOrSymbolCommit(string),
+       let sourceText = lastDirectPunctuationKeyText {
+      if preedit != sourceText {
+        show(
+          preedit: sourceText,
+          selRange: NSRange(location: 0, length: sourceText.utf16.count),
+          caretPos: sourceText.utf16.count
+        )
+      }
+      client.insertText(string, replacementRange: .empty)
+      lastDirectPunctuationKeyText = nil
+      preedit = ""
+      hidePalettes()
+      return
+    }
+
     client.insertText(string, replacementRange: .empty)
     preedit = ""
     hidePalettes()
+  }
+
+  func isPunctuationOrSymbolCommit(_ string: String) -> Bool {
+    guard !string.isEmpty else { return false }
+    return string.unicodeScalars.allSatisfy { scalar in
+      switch scalar.properties.generalCategory {
+      case .connectorPunctuation, .dashPunctuation, .openPunctuation, .closePunctuation,
+           .initialPunctuation, .finalPunctuation, .otherPunctuation,
+           .mathSymbol, .currencySymbol, .modifierSymbol, .otherSymbol,
+           .spaceSeparator:
+        return true
+      default:
+        return false
+      }
+    }
+  }
+
+  func shouldPreMarkDirectPunctuationKey(_ string: String) -> Bool {
+    guard preedit.isEmpty,
+          !string.isEmpty,
+          !(session != 0 && rimeAPI.get_option(session, "ascii_mode")),
+          NSApp.squirrelAppDelegate.config?.getBool("compatibility/commit_direct_punct_as_marked_text") == true else {
+      return false
+    }
+    return string.unicodeScalars.allSatisfy { scalar in
+      switch scalar.properties.generalCategory {
+      case .connectorPunctuation, .dashPunctuation, .openPunctuation, .closePunctuation,
+           .initialPunctuation, .finalPunctuation, .otherPunctuation,
+           .mathSymbol, .currencySymbol, .modifierSymbol, .otherSymbol:
+        return true
+      default:
+        return false
+      }
+    }
   }
 
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
