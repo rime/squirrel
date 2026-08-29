@@ -420,8 +420,13 @@ app_options:
     ascii_mode: true
   com.github.atom:
     ascii_mode: true
-  com.microsoft.VSCode:
-    ascii_mode: true
+  # 不再爲 VSCode 預設 ascii_mode（規避 https://github.com/rime/squirrel/issues/987）：
+  # VSCode 早已不只是代碼編輯器，擴充套件的 webview 對話框、註釋、提交訊息等
+  # 都是常見的中文輸入場景；而 IMK 僅按 bundle id 分配 controller，
+  # 編輯器與 webview 共用同一個 session，無法只對代碼區域生效。
+  # 仍需此行爲者，可於 squirrel.custom.yaml 中補回：
+  #   patch:
+  #     app_options/com.microsoft.VSCode/ascii_mode: true
   com.sublimetext.2:
     ascii_mode: true
   org.gnu.Aquamacs:
