@@ -10,6 +10,17 @@ import AppKit
 
 struct SquirrelKeycode {
 
+  static func reverseCandidateNavigation(_ keycode: UInt32, modifiers: UInt32) -> UInt32 {
+    guard modifiers & ~kLockMask.rawValue == 0 else { return keycode }
+    switch Int32(keycode) {
+    case XK_Up: return UInt32(XK_Down)
+    case XK_Down: return UInt32(XK_Up)
+    case XK_KP_Up: return UInt32(XK_KP_Down)
+    case XK_KP_Down: return UInt32(XK_KP_Up)
+    default: return keycode
+    }
+  }
+
   static func osxModifiersToRime(modifiers: NSEvent.ModifierFlags) -> UInt32 {
     var ret: UInt32 = 0
     if modifiers.contains(.capsLock) {

@@ -15,6 +15,8 @@ final class SquirrelPanel: NSPanel {
   var position: NSRect
   private var screenRect: NSRect = .zero
   private var maxHeight: CGFloat = 0
+  private(set) var isReversed = false
+  private var isReversing = false
 
   private var statusMessage: String = ""
   private var statusTimer: Timer?
@@ -147,6 +149,7 @@ final class SquirrelPanel: NSPanel {
     statusTimer = nil
     orderOut(nil)
     maxHeight = 0
+    isReversed = false
   }
 
   // swiftlint:disable:next cyclomatic_complexity function_parameter_count
@@ -203,8 +206,10 @@ final class SquirrelPanel: NSPanel {
       highlightedPreeditRange = .empty
     }
 
-    var candidateRanges = [NSRange]()
-    for i in 0..<candidates.count {
+    // Keep ranges indexed by the original candidate, independently of visual order.
+    var candidateRanges = [NSRange](repeating: .empty, count: candidates.count)
+    let candidateIndices = isReversed ? Array(candidates.indices.reversed()) : Array(candidates.indices)
+    for (offset, i) in candidateIndices.enumerated() {
       let attrs = i == index ? theme.highlightedAttrs : theme.attrs
       let labelAttrs = i == index ? theme.labelHighlightedAttrs : theme.labelAttrs
       let commentAttrs = i == index ? theme.commentHighlightedAttrs : theme.commentAttrs
@@ -257,7 +262,7 @@ final class SquirrelPanel: NSPanel {
       }
 
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
-      if i > 0 {
+      if offset > 0 {
         text.append(lineSeparator)
       }
       let str = lineSeparator.mutableCopy() as! NSMutableAttributedString
@@ -266,7 +271,7 @@ final class SquirrelPanel: NSPanel {
       }
       view.separatorWidth = str.boundingRect(with: .zero).width
 
-      let paragraphStyleCandidate = (i == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
+      let paragraphStyleCandidate = (offset == 0 ? theme.firstParagraphStyle : theme.paragraphStyle).mutableCopy() as! NSMutableParagraphStyle
       if linear {
         paragraphStyleCandidate.paragraphSpacingBefore -= theme.linespace
         paragraphStyleCandidate.lineSpacing = theme.linespace
@@ -278,7 +283,7 @@ final class SquirrelPanel: NSPanel {
       }
       line.addAttribute(.paragraphStyle, value: paragraphStyleCandidate, range: NSRange(location: 0, length: line.length))
 
-      candidateRanges.append(NSRange(location: text.length, length: line.length))
+      candidateRanges[i] = NSRange(location: text.length, length: line.length)
       text.append(line)
     }
 
@@ -295,7 +300,7 @@ final class SquirrelPanel: NSPanel {
     view.textView.scrollToBeginningOfDocument(nil)
 
     view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
-    show()
+    show(updatingCandidates: true)
   }
 
   func updateStatus(long longMessage: String, short shortMessage: String) {
@@ -358,7 +363,7 @@ private extension SquirrelPanel {
   }
 
   // swiftlint:disable:next cyclomatic_complexity
-  func show() {
+  func show(updatingCandidates: Bool = false) {
     currentScreen()
     let theme = view.currentTheme
     if theme.native || view.darkTheme.available {
@@ -486,6 +491,18 @@ private extension SquirrelPanel {
       if panelRect.minY < screenRect.minY { panelRect.origin.y = screenRect.minY }
     }
 
+    let shouldReverse = theme.verticalAutoReverse && !linear && !vertical && !requiresFullScreen &&
+      !candidates.isEmpty && panelRect.minY >= position.maxY
+    if updatingCandidates && !isReversing && isReversed != shouldReverse {
+      isReversed = shouldReverse
+      // Rebuild once after measuring placement, before displaying either layout.
+      isReversing = true
+      defer { isReversing = false }
+      update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates, comments: comments,
+             labels: labels, highlighted: cursorIndex, page: page, lastPage: lastPage, update: false)
+      return
+    }
+
     self.setFrame(panelRect, display: true)
 
     // Keep the window frame at the scaled physical size while drawing in natural coordinates through bounds.
@@ -529,6 +546,7 @@ private extension SquirrelPanel {
   }
 
   func show(status message: String) {
+    isReversed = false
     let theme = view.currentTheme
     let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
     text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: text.length))
