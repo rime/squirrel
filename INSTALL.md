@@ -6,7 +6,7 @@
 
 ### Prerequisites
 
-Install **Xcode 14.0** or above from App Store, to build Squirrel as a Universal
+Install **Xcode 16.0** or above from App Store, to build Squirrel as a Universal
 app.
 
 Install **cmake**.
