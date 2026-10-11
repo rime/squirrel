@@ -27,6 +27,10 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  // Tracks a synthetic marked range created for panelless direct commits.
+  // Some clients (Alacritty) keep it active after insertText; the next key
+  // would otherwise only cancel composition instead of performing its action.
+  private var hasSyntheticMarkedText = false
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -112,6 +116,11 @@ final class SquirrelInputController: IMKInputController {
         if rimeKeycode != 0 {
           let rimeModifiers = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
           handled = processKey(rimeKeycode, modifiers: rimeModifiers)
+          if !handled && hasSyntheticMarkedText {
+            // Clear residual composition so the client can handle this key
+            // (e.g. first Backspace after a full-width punctuation commit).
+            clearSyntheticMarkedText()
+          }
           rimeUpdate()
         }
       }
@@ -166,6 +175,7 @@ final class SquirrelInputController: IMKInputController {
 
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
+    hasSyntheticMarkedText = false
     var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
     if keyboardLayout == "last" || keyboardLayout == "" {
       keyboardLayout = ""
@@ -562,25 +572,61 @@ private extension SquirrelInputController {
   func commit(string: String) {
     guard let client = client else { return }
 
+    // Only panelless commits (e.g. full-width punctuation) lack a preedit phase.
+    // Normal Chinese confirmation already has active marked text and must stay
+    // synchronous so later setMarkedText cleanup cannot race the insert.
+    let isDirectCommit = preedit.isEmpty && !string.isEmpty
     let forceMarkedText =
+      isDirectCommit &&
       session != 0 &&
       rimeAPI.get_option(session, "force_marked_text_for_direct_commit")
+    // Some clients (e.g. VS Code terminal / xterm.js) drop insertText delivered
+    // synchronously inside keyDown. Defer only those bare direct commits.
+    let deferDirectCommit =
+      isDirectCommit &&
+      session != 0 &&
+      rimeAPI.get_option(session, "defer_direct_commit")
 
-    // Direct commits such as full-width punctuation do not necessarily have an
-    // active marked-text phase. Some NSTextInputClient implementations require
-    // one before accepting insertText.
-    if forceMarkedText && preedit.isEmpty && !string.isEmpty {
+    // Some NSTextInputClient implementations require an active marked-text
+    // phase before accepting insertText for panelless commits.
+    if forceMarkedText {
       let markedText = NSMutableAttributedString(string: string)
       client.setMarkedText(
         markedText,
         selectionRange: NSRange(location: markedText.length, length: 0),
         replacementRange: .empty
       )
+      hasSyntheticMarkedText = true
     }
 
-    client.insertText(string, replacementRange: .empty)
+    if deferDirectCommit {
+      DispatchQueue.main.async { [weak self, weak client] in
+        client?.insertText(string, replacementRange: .empty)
+        self?.clearSyntheticMarkedText()
+      }
+    } else {
+      client.insertText(string, replacementRange: .empty)
+      // Alacritty often ignores a same-turn empty setMarkedText after insertText.
+      // Clear on the next runloop turn; unhandled keys also clear as a fallback.
+      if forceMarkedText {
+        DispatchQueue.main.async { [weak self] in
+          self?.clearSyntheticMarkedText()
+        }
+      }
+    }
     preedit = ""
     hidePalettes()
+  }
+
+  func clearSyntheticMarkedText() {
+    guard hasSyntheticMarkedText else { return }
+    hasSyntheticMarkedText = false
+    guard let client = client else { return }
+    client.setMarkedText(
+      NSMutableAttributedString(string: ""),
+      selectionRange: .empty,
+      replacementRange: NSRange(location: NSNotFound, length: NSNotFound)
+    )
   }
 
   func show(preedit: String, selRange: NSRange, caretPos: Int) {
@@ -592,6 +638,11 @@ private extension SquirrelInputController {
     self.preedit = preedit
     self.caretPos = caretPos
     self.selRange = selRange
+    // A real preedit replaces any synthetic marker we may have left. An empty
+    // context refresh must keep it so the deferred cleanup can still run.
+    if !preedit.isEmpty {
+      hasSyntheticMarkedText = false
+    }
 
     let start = selRange.location
     let attrString = NSMutableAttributedString(string: preedit)
