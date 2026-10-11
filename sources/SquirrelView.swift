@@ -287,14 +287,14 @@ final class SquirrelView: NSView {
     if let sublayers = pagingLayer.sublayers, !sublayers.isEmpty {
       self.layer?.addSublayer(pagingLayer)
     }
+    self.downPath = downPath?.copy()
+    self.upPath = upPath?.copy()
     let flipTransform = CGAffineTransform(scaleX: 1, y: -1).translatedBy(x: 0, y: -self.bounds.height)
     if let downPath {
       panelPath.addPath(downPath, transform: flipTransform)
-      self.downPath = downPath.copy()
     }
     if let upPath {
       panelPath.addPath(upPath, transform: flipTransform)
-      self.upPath = upPath.copy()
     }
 
     shape.path = panelPath
