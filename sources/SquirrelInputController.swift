@@ -27,10 +27,12 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  private var inputHints: SquirrelInputHints?
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
     guard let event = event else { return false }
+    if let hints = inputHints, event.type == .keyDown { hints.dismissFocus() }
     let modifiers = event.modifierFlags
     let changes = lastModifiers.symmetricDifference(modifiers)
 
@@ -49,6 +51,7 @@ final class SquirrelInputController: IMKInputController {
       currentApp = app
       updateAppOptions()
     }
+    defer { inputHints?.update(modifiers: modifiers) }
 
     switch event.type {
     case .flagsChanged:
@@ -183,13 +186,23 @@ final class SquirrelInputController: IMKInputController {
     // session-wide hardware state; otherwise the next Caps Lock press can
     // compare equal to the stale lastModifiers and be dropped by the
     // early-return in handle().
-    if CGEventSource.flagsState(.combinedSessionState).contains(.maskAlphaShift) {
+    let hardwareFlags = CGEventSource.flagsState(.combinedSessionState)
+    if hardwareFlags.contains(.maskAlphaShift) {
       lastModifiers.insert(.capsLock)
     } else {
       lastModifiers.remove(.capsLock)
     }
     preedit = ""
-    if session != 0 {
+    if NSApp.squirrelAppDelegate.inputHintOptions != nil {
+      let modifiers = hardwareModifiers(from: hardwareFlags)
+      if !reloadInputHintOptions(modifiers: modifiers) {
+        NSApp.squirrelAppDelegate.panel?.inputController = self
+        inputHints?.activate(modifiers: modifiers)
+      }
+    } else if inputHints != nil {
+      reloadInputHintOptions()
+    }
+    if session != 0, NSApp.squirrelAppDelegate.showStatusIcon {
       let state = rimeAPI.get_option(session, "ascii_mode")
       let label = rimeAPI.get_state_label_abbreviated(session, "ascii_mode", state, true).asString
       NSApp.squirrelAppDelegate.updateStatusIcon(asciiMode: state, schemaLabel: label)
@@ -219,6 +232,14 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func deactivateServer(_ sender: Any!) {
+    if let hints = inputHints {
+      hints.deactivate()
+      inputHints = nil
+      if let panel = NSApp.squirrelAppDelegate.panel, panel.inputController === self {
+        panel.setInputHintsEnabled(false)
+        panel.inputController = nil
+      }
+    }
     hidePalettes()
     commitComposition(sender)
     client = nil
@@ -305,12 +326,70 @@ final class SquirrelInputController: IMKInputController {
     }
   }
 
+  @discardableResult
+  func reloadInputHintOptions(modifiers: NSEvent.ModifierFlags? = nil) -> Bool {
+    let delegate = NSApp.squirrelAppDelegate
+    let options = delegate.inputHintOptions
+    guard options != inputHints?.options else { return false }
+    inputHints?.deactivate()
+    inputHints = nil
+    delegate.panel?.setInputHintsEnabled(false)
+    guard client != nil else { return true }
+    inputHints = SquirrelInputHints.create(options: options) { [weak self] in
+      .init(readFocusName: { [weak self] in self?.focusHintName() },
+            present: { [weak self] text in self?.presentInputHint(text) })
+    }
+    if let hints = inputHints {
+      delegate.panel?.inputController = self
+      delegate.panel?.setInputHintsEnabled(true)
+      hints.activate(modifiers: modifiers ?? lastModifiers)
+    }
+    return true
+  }
+
   deinit {
     destroySession()
   }
 }
 
 private extension SquirrelInputController {
+
+  func hardwareModifiers(from flags: CGEventFlags) -> NSEvent.ModifierFlags {
+    var modifiers: NSEvent.ModifierFlags = []
+    if flags.contains(.maskControl) { modifiers.insert(.control) }
+    if flags.contains(.maskAlternate) { modifiers.insert(.option) }
+    if flags.contains(.maskShift) { modifiers.insert(.shift) }
+    if flags.contains(.maskCommand) { modifiers.insert(.command) }
+    return modifiers
+  }
+
+  func focusHintName() -> String? {
+    guard session != 0, rimeAPI.find_session(session) else { return nil }
+    var status = RimeStatus_stdbool.rimeStructInit()
+    guard rimeAPI.get_status(session, &status) else { return nil }
+    defer { _ = rimeAPI.free_status(&status) }
+    guard !status.is_ascii_mode else { return nil }
+    if let identifier = status.schema_id {
+      NSApp.squirrelAppDelegate.loadSettings(for: String(cString: identifier))
+    }
+    return status.schema_name.map { String(cString: $0) } ?? "鼠鬚管"
+  }
+
+  func presentInputHint(_ text: String) {
+    guard let client, let panel = NSApp.squirrelAppDelegate.panel, panel.inputController === self else { return }
+    if text.isEmpty {
+      panel.updateInputHint(text: "", position: panel.position)
+      return
+    }
+    var caret = NSRect.zero
+    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &caret)
+    guard caret.height > 0, caret.origin.x.isFinite, caret.origin.y.isFinite,
+          caret.width.isFinite, caret.height.isFinite else {
+      panel.updateInputHint(text: "", position: panel.position)
+      return
+    }
+    panel.updateInputHint(text: text, position: caret)
+  }
 
   func onChordTimer(_: Timer) {
     var processedKeys = false
@@ -453,6 +532,7 @@ private extension SquirrelInputController {
 
     var status = RimeStatus_stdbool.rimeStructInit()
     if rimeAPI.get_status(session, &status) {
+      inputHints?.setAsciiMode(status.is_ascii_mode)
       // swiftlint:disable:next identifier_name
       if let schema_id = status.schema_id, schemaId == "" || schemaId != String(cString: schema_id) {
         schemaId = String(cString: schema_id)
