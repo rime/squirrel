@@ -2,7 +2,7 @@ name: commit ci
 on:
   push:
     branches:
-      - '*'
+      - '**'
 jobs:
   build:
     runs-on: macos-26
@@ -19,6 +19,9 @@ jobs:
 
       - name: Install SwiftLint
         run: brew install swiftlint
+
+      - name: Test input hints
+        run: bash tests/run-input-hint-tests.sh
 
       - name: Lint
         run: swiftlint
