@@ -16,7 +16,8 @@ final class SquirrelPanel: NSPanel {
   private var screenRect: NSRect = .zero
   private var maxHeight: CGFloat = 0
 
-  private var statusMessage: String = ""
+  private var statusMessage = SquirrelStatusMessageState()
+  private var inputHintText: String = ""
   private var statusTimer: Timer?
 
   private var preedit: String = ""
@@ -145,6 +146,10 @@ final class SquirrelPanel: NSPanel {
   func hide() {
     statusTimer?.invalidate()
     statusTimer = nil
+    statusMessage.expire()
+    inputHintText = ""
+    preedit = ""
+    candidates = []
     orderOut(nil)
     maxHeight = 0
   }
@@ -165,15 +170,26 @@ final class SquirrelPanel: NSPanel {
     cursorIndex = index
 
     if !candidates.isEmpty || !preedit.isEmpty {
-      statusMessage = ""
+      statusMessage.clear()
       statusTimer?.invalidate()
       statusTimer = nil
-    } else {
-      if !statusMessage.isEmpty {
-        show(status: statusMessage)
-        statusMessage = ""
-      } else if statusTimer == nil {
-        hide()
+    } else if statusMessage.consume() {
+      statusTimer?.invalidate()
+      statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { [weak self] _ in
+        guard let self else { return }
+        self.statusTimer = nil
+        self.statusMessage.expire()
+        self.refresh()
+      }
+    }
+
+    if candidates.isEmpty && preedit.isEmpty {
+      let message = statusMessage.text(with: inputHintText)
+      if message.isEmpty {
+        orderOut(nil)
+        maxHeight = 0
+      } else {
+        showStatusText(message)
       }
       return
     }
@@ -282,6 +298,15 @@ final class SquirrelPanel: NSPanel {
       text.append(line)
     }
 
+    var statusRange: NSRange = .empty
+    if !inputHintText.isEmpty {
+      text.append(NSAttributedString(string: "\n", attributes: theme.attrs))
+      statusRange = NSRange(location: text.length, length: inputHintText.utf16.count)
+      let hint = NSMutableAttributedString(string: inputHintText, attributes: theme.attrs)
+      hint.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: hint.length))
+      text.append(hint)
+    }
+
     view.textView.textContentStorage?.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
 
@@ -294,26 +319,35 @@ final class SquirrelPanel: NSPanel {
     // Keep very tall wrapped text from auto-scrolling past the first line.
     view.textView.scrollToBeginningOfDocument(nil)
 
-    view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange, highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage)
+    view.drawView(candidateRanges: candidateRanges, hilightedIndex: index, preeditRange: preeditRange,
+                  highlightedPreeditRange: highlightedPreeditRange, canPageUp: page > 0, canPageDown: !lastPage, statusRange: statusRange)
     show()
   }
 
+}
+
+extension SquirrelPanel {
   func updateStatus(long longMessage: String, short shortMessage: String) {
-    let theme = view.currentTheme
-    switch theme.statusMessageType {
+    let message: String
+    switch view.currentTheme.statusMessageType {
     case .mix:
-      statusMessage = shortMessage.isEmpty ? longMessage : shortMessage
+      message = shortMessage.isEmpty ? longMessage : shortMessage
     case .long:
-      statusMessage = longMessage
+      message = longMessage
     case .short:
-      if !shortMessage.isEmpty {
-        statusMessage = shortMessage
-      } else if let initial = longMessage.first {
-        statusMessage = String(initial)
-      } else {
-        statusMessage = ""
-      }
+      message = shortMessage.isEmpty ? longMessage.first.map(String.init) ?? "" : shortMessage
     }
+    statusMessage.queue(message)
+  }
+
+  func updateInputHint(text: String, position: NSRect) {
+    guard inputHintText != text || self.position != position else { return }
+    if inputHintText.isEmpty != text.isEmpty {
+      maxHeight = 0
+    }
+    inputHintText = text
+    self.position = position
+    refresh()
   }
 
   func load(config: SquirrelConfig, forDarkMode isDark: Bool) {
@@ -528,20 +562,21 @@ private extension SquirrelPanel {
     // voila!
   }
 
-  func show(status message: String) {
+  func refresh() {
+    update(preedit: preedit, selRange: selRange, caretPos: caretPos, candidates: candidates,
+           comments: comments, labels: labels, highlighted: cursorIndex, page: page, lastPage: lastPage, update: false)
+  }
+
+  func showStatusText(_ message: String) {
     let theme = view.currentTheme
     let text = NSMutableAttributedString(string: message, attributes: theme.attrs)
     text.addAttribute(.paragraphStyle, value: theme.paragraphStyle, range: NSRange(location: 0, length: text.length))
     view.textContentStorage.attributedString = text
     view.textView.setLayoutOrientation(vertical ? .vertical : .horizontal)
-    view.drawView(candidateRanges: [NSRange(location: 0, length: text.length)], hilightedIndex: -1,
-                  preeditRange: .empty, highlightedPreeditRange: .empty, canPageUp: false, canPageDown: false)
+    view.drawView(candidateRanges: [], hilightedIndex: -1,
+                  preeditRange: .empty, highlightedPreeditRange: .empty, canPageUp: false, canPageDown: false,
+                  statusRange: NSRange(location: 0, length: text.length))
     show()
-
-    statusTimer?.invalidate()
-    statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { _ in
-      self.hide()
-    }
   }
 
   func convert(range: Range<String.Index>, in string: String) -> NSRange {

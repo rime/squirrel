@@ -308,7 +308,19 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
           delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel())
         }
         if delegate.enableNotifications {
-          delegate.showStatusMessage(msgTextLong: longLabel(), msgTextShort: shortLabel())
+          var longMessage = longLabel()
+          var shortMessage = shortLabel()
+          if optionName == "ascii_mode", !state, delegate.config?.getBool("focus_hint/show") ?? false {
+            var status = RimeStatus_stdbool.rimeStructInit()
+            if delegate.rimeAPI.get_status(sessionId, &status) {
+              defer { _ = delegate.rimeAPI.free_status(&status) }
+              if let schemaName = status.schema_name.map({ String(cString: $0) }), !schemaName.isEmpty {
+                longMessage = schemaName
+                shortMessage = schemaName
+              }
+            }
+          }
+          delegate.showStatusMessage(msgTextLong: longMessage, msgTextShort: shortMessage)
         }
       }
     }
