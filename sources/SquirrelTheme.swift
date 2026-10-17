@@ -32,12 +32,12 @@ final class SquirrelTheme {
   private(set) var memorizeSize = true
   private var colorSpace: RimeColorSpace = .sRGB
 
-  var backgroundColor: NSColor = .windowBackgroundColor
-  var highlightedPreeditColor: NSColor?
-  var highlightedBackColor: NSColor? = .selectedTextBackgroundColor
-  var preeditBackgroundColor: NSColor?
-  var candidateBackColor: NSColor?
-  var borderColor: NSColor?
+  var backgroundColor: ThemeFill = .solid(.windowBackgroundColor)
+  var highlightedPreeditColor: ThemeFill?
+  var highlightedBackColor: ThemeFill? = .solid(.selectedTextBackgroundColor)
+  var preeditBackgroundColor: ThemeFill?
+  var candidateBackColor: ThemeFill?
+  var borderColor: ThemeFill?
 
   private var textColor: NSColor = .secondaryLabelColor
   private var highlightedTextColor: NSColor = .labelColor
@@ -129,12 +129,12 @@ final class SquirrelTheme {
     .baselineOffset: baseOffset
   ]
   private(set) lazy var labelAttrs: [NSAttributedString.Key: Any] = [
-    .foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor),
+    .foregroundColor: candidateLabelColor ?? blendColor(foregroundColor: self.candidateTextColor, backgroundColor: self.backgroundColor.representativeColor),
     .font: labelFont,
     .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2.5 : 0)
   ]
   private(set) lazy var labelHighlightedAttrs: [NSAttributedString.Key: Any] = [
-    .foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor),
+    .foregroundColor: highlightedCandidateLabelColor ?? blendColor(foregroundColor: highlightedCandidateTextColor, backgroundColor: highlightedBackColor?.representativeColor),
     .font: labelFont,
     .baselineOffset: baseOffset + (!vertical ? (font.pointSize - labelFont.pointSize) / 2.5 : 0)
   ]
@@ -244,12 +244,12 @@ final class SquirrelTheme {
         native = false
         let prefix = "preset_color_schemes/\(colorScheme)"
         colorSpace = .from(name: config.getString("\(prefix)/color_space") ?? "")
-        backgroundColor ?= config.getColor("\(prefix)/back_color", inSpace: colorSpace)
-        highlightedPreeditColor = config.getColor("\(prefix)/hilited_back_color", inSpace: colorSpace)
-        highlightedBackColor = config.getColor("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
-        preeditBackgroundColor = config.getColor("\(prefix)/preedit_back_color", inSpace: colorSpace)
-        candidateBackColor = config.getColor("\(prefix)/candidate_back_color", inSpace: colorSpace)
-        borderColor = config.getColor("\(prefix)/border_color", inSpace: colorSpace)
+        backgroundColor ?= config.getFill("\(prefix)/back_color", inSpace: colorSpace)
+        highlightedPreeditColor = config.getFill("\(prefix)/hilited_back_color", inSpace: colorSpace)
+        highlightedBackColor = config.getFill("\(prefix)/hilited_candidate_back_color", inSpace: colorSpace) ?? highlightedPreeditColor
+        preeditBackgroundColor = config.getFill("\(prefix)/preedit_back_color", inSpace: colorSpace)
+        candidateBackColor = config.getFill("\(prefix)/candidate_back_color", inSpace: colorSpace)
+        borderColor = config.getFill("\(prefix)/border_color", inSpace: colorSpace)
 
         textColor ?= config.getColor("\(prefix)/text_color", inSpace: colorSpace)
         highlightedTextColor = config.getColor("\(prefix)/hilited_text_color", inSpace: colorSpace) ?? textColor
