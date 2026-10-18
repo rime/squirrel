@@ -32,7 +32,7 @@ jobs:
         run: ./action-build.sh archive
 
       - name: Install periphery
-        run: brew install peripheryapp/periphery/periphery
+        run: brew install periphery
 
       - name: Check Unused Code
         run: periphery scan --relative-results --skip-build --index-store-path build/Index.noindex/DataStore
