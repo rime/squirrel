@@ -75,6 +75,14 @@ style:
   #preedit_font_face: 'Avenir'
   #preedit_font_point: 16
 
+# A color scheme may draw an image behind the candidate panel (a relative path is in ~/Library/Rime):
+#   back_image: skins/panel.png
+#   # nine-slice in image points: the corners keep their size, the edges and the center stretch
+#   back_image_slice: { left: 40, right: 40, top: 20, bottom: 20 }
+#   # room between the window edge and the panel, where only the image shows
+#   back_image_padding: { left: 30, right: 60, top: 20, bottom: 20 }
+# Give back_color a zero alpha (e.g. 0x00ffffff) to see the image under the candidates as well.
+
 preset_color_schemes:
   native:
     name: 系統配色

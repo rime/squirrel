@@ -70,6 +70,14 @@ final class SquirrelTheme {
   private(set) var inlineCandidate = false
   private(set) var showPaging = false
 
+  // Skin image drawn behind the panel: a nine-slice grid whose corners keep their size, while the
+  // edges and center stretch. back_image_padding is extra room between the window edge and the panel.
+  private(set) var backImage: CGImage?
+  private(set) var backImageScale: CGFloat = 1
+  private(set) var backImageCenter = CGRect(x: 0, y: 0, width: 1, height: 1)
+  private(set) var backImageSlice = NSEdgeInsetsZero
+  private(set) var backImagePadding = NSEdgeInsetsZero
+
   private var fonts = [NSFont]()
   private var labelFonts = [NSFont]()
   private var commentFonts = [NSFont]()
@@ -290,6 +298,11 @@ final class SquirrelTheme {
         preeditLinespace ?= config.getDouble("\(prefix)/spacing")
         baseOffset ?= config.getDouble("\(prefix)/base_offset")
         shadowSize ?= config.getDouble("\(prefix)/shadow_size").map { max(0, $0) }
+
+        if let path = config.getString("\(prefix)/back_image") {
+          loadBackImage(path: path, slice: insets(config, "\(prefix)/back_image_slice"))
+          backImagePadding = insets(config, "\(prefix)/back_image_padding")
+        }
       }
     } else {
       available = false
@@ -307,6 +320,30 @@ final class SquirrelTheme {
 }
 
 private extension SquirrelTheme {
+  func insets(_ config: SquirrelConfig, _ option: String) -> NSEdgeInsets {
+    func value(_ side: String) -> CGFloat { max(0, config.getDouble("\(option)/\(side)") ?? 0) }
+    return NSEdgeInsets(top: value("top"), left: value("left"), bottom: value("bottom"), right: value("right"))
+  }
+
+  // A relative path is in the Rime user directory, like the rest of the user's configuration.
+  func loadBackImage(path: String, slice: NSEdgeInsets) {
+    let expanded = (path as NSString).expandingTildeInPath
+    let url = expanded.hasPrefix("/") ? URL(fileURLWithPath: expanded) : SquirrelApp.userDir.appending(path: expanded)
+    guard let image = NSImage(contentsOf: url), image.size.width > 0, image.size.height > 0,
+          let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil) else { return }
+    let size = image.size
+    backImage = cgImage
+    backImageScale = CGFloat(cgImage.width) / size.width
+    // The slice is in points of the image; corners that would overlap are reduced to meet halfway.
+    let left = min(slice.left, size.width / 2), right = min(slice.right, size.width - left)
+    let top = min(slice.top, size.height / 2), bottom = min(slice.bottom, size.height - top)
+    backImageSlice = NSEdgeInsets(top: top, left: left, bottom: bottom, right: right)
+    // Unit rectangle of the stretchable center; layer contents have their origin at the bottom left.
+    backImageCenter = CGRect(x: left / size.width, y: bottom / size.height,
+                             width: max(0, size.width - left - right) / size.width,
+                             height: max(0, size.height - top - bottom) / size.height)
+  }
+
   func combineFonts(_ fonts: [NSFont], size: CGFloat?) -> NSFont? {
     if fonts.count == 0 { return nil }
     if fonts.count == 1 {
