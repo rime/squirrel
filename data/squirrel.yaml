@@ -7,6 +7,8 @@ config_version: '1.0'
 # last: the last used latin keyboard layout
 # default: US (ABC) keyboard layout
 # _custom_: keyboard layout of your choice, e.g. 'com.apple.keylayout.USExtended' or simply 'USExtended'
+# While Chinese punctuation is on, the client switches to the Pinyin layout as macOS Pinyin does,
+# provided that layout keeps letters and digits where this layout puts them.
 keyboard_layout: last
 
 # for veteran chord-typist
