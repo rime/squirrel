@@ -10,6 +10,9 @@ import AppKit
 final class SquirrelPanel: NSPanel {
   private let view: SquirrelView
   private let back: NSView
+  // The panel's own drawing; inside the window, inset by the theme's back_image_padding.
+  private let panelView = NSView()
+  private let skin = NSView()
   var inputController: SquirrelInputController?
 
   var position: NSRect
@@ -44,10 +47,14 @@ final class SquirrelPanel: NSPanel {
     self.backgroundColor = .clear
     back.wantsLayer = true
     back.layer?.mask = view.shape
+    panelView.addSubview(back)
+    panelView.addSubview(view)
+    panelView.addSubview(view.textView)
+    skin.wantsLayer = true
+    skin.isHidden = true
     let contentView = NSView()
-    contentView.addSubview(back)
-    contentView.addSubview(view)
-    contentView.addSubview(view.textView)
+    contentView.addSubview(skin)
+    contentView.addSubview(panelView)
     self.contentView = contentView
   }
 
@@ -430,6 +437,7 @@ private extension SquirrelPanel {
     }
 
     var panelRect = NSRect.zero
+    let padding = backImagePadding(theme: theme, panelSize: naturalPanelSize, fullScreen: requiresFullScreen)
 
     if requiresFullScreen {
       let scaleX = maxAllowedWidth / naturalPanelSize.width
@@ -460,6 +468,8 @@ private extension SquirrelPanel {
       }
 
       panelRect.size = naturalPanelSize
+      panelRect.size.width += padding.left + padding.right
+      panelRect.size.height += padding.top + padding.bottom
 
       if vertical {
         // Anchor vertical panels on one side of the cursor to avoid jumping while typing.
@@ -474,7 +484,7 @@ private extension SquirrelPanel {
           panelRect.origin.x += preeditRect.height + theme.edgeInset.width
         }
       } else {
-        panelRect.origin = NSPoint(x: position.minX - theme.pagingOffset, y: position.minY - SquirrelTheme.offsetHeight - panelRect.height)
+        panelRect.origin = NSPoint(x: position.minX - theme.pagingOffset - padding.left, y: position.minY - SquirrelTheme.offsetHeight - panelRect.height)
       }
 
       if panelRect.maxX > screenRect.maxX { panelRect.origin.x = screenRect.maxX - panelRect.width }
@@ -489,22 +499,24 @@ private extension SquirrelPanel {
     self.setFrame(panelRect, display: true)
 
     // Keep the window frame at the scaled physical size while drawing in natural coordinates through bounds.
-    contentView!.frame = NSRect(origin: .zero, size: panelRect.size)
-    contentView!.bounds = NSRect(origin: .zero, size: naturalPanelSize)
+    panelView.frame = NSRect(x: padding.left, y: padding.bottom, width: panelRect.width - padding.left - padding.right,
+                             height: panelRect.height - padding.top - padding.bottom)
+    panelView.bounds = NSRect(origin: .zero, size: naturalPanelSize)
 
     if vertical {
-      contentView!.boundsRotation = -90
-      contentView!.setBoundsOrigin(NSPoint(x: 0, y: naturalPanelSize.width))
+      panelView.boundsRotation = -90
+      panelView.setBoundsOrigin(NSPoint(x: 0, y: naturalPanelSize.width))
     } else {
-      contentView!.boundsRotation = 0
-      contentView!.setBoundsOrigin(.zero)
+      panelView.boundsRotation = 0
+      panelView.setBoundsOrigin(.zero)
     }
+    showBackImage(theme: theme, size: panelRect.size, fullScreen: requiresFullScreen)
 
     view.textView.boundsRotation = 0
     view.textView.setBoundsOrigin(.zero)
 
     // Subviews must read the post-rotation bounds; Cocoa adjusts the origin and swaps dimensions in vertical mode.
-    let subviewFrame = contentView!.bounds
+    let subviewFrame = panelView.bounds
     view.frame = subviewFrame
 
     var textFrame = subviewFrame
@@ -548,6 +560,31 @@ private extension SquirrelPanel {
     let startPos = range.lowerBound.utf16Offset(in: string)
     let endPos = range.upperBound.utf16Offset(in: string)
     return NSRange(location: startPos, length: endPos - startPos)
+  }
+
+  // The window must be large enough for the image's fixed corners; the extra room goes to the
+  // right and bottom so the panel stays next to the cursor.
+  func backImagePadding(theme: SquirrelTheme, panelSize: NSSize, fullScreen: Bool) -> NSEdgeInsets {
+    guard theme.backImage != nil, !fullScreen else { return NSEdgeInsetsZero }
+    var padding = theme.backImagePadding
+    let slice = theme.backImageSlice
+    padding.right += max(0, slice.left + slice.right - (panelSize.width + padding.left + padding.right))
+    padding.bottom += max(0, slice.top + slice.bottom - (panelSize.height + padding.top + padding.bottom))
+    return padding
+  }
+
+  func showBackImage(theme: SquirrelTheme, size: NSSize, fullScreen: Bool) {
+    guard let image = theme.backImage, !fullScreen, let layer = skin.layer else {
+      skin.isHidden = true
+      skin.layer?.contents = nil
+      return
+    }
+    skin.frame = NSRect(origin: .zero, size: size)
+    layer.contents = image
+    layer.contentsScale = theme.backImageScale
+    layer.contentsGravity = .resize
+    layer.contentsCenter = theme.backImageCenter
+    skin.isHidden = false
   }
 
   static func makeBackgroundView() -> NSView {
