@@ -137,7 +137,7 @@ clean-sparkle:
 
 .PHONY: package archive
 
-$(PACKAGE):
+$(PACKAGE): release
 ifdef DEV_ID
 	bash package/sign_app "$(DEV_ID)" "$(DERIVED_DATA_PATH)"
 endif
