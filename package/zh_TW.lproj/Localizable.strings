@@ -1,0 +1,5 @@
+"METHOD_TITLE" = "安裝方式";
+"HOT_UPDATE_TITLE" = "熱更新（無需重新登入）";
+"HOT_UPDATE_DESCRIPTION" = "保留目前登入，重新啟動鼠鬚管並恢復原有輸入模式。更新前請先上屏文字。";
+"LOGIN_TITLE" = "重新登入後生效";
+"LOGIN_DESCRIPTION" = "先完成安裝，稍後登出並重新登入以啟用更新。";

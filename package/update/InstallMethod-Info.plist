@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>en</string>
+	<key>CFBundleExecutable</key>
+	<string>InstallMethod</string>
+	<key>CFBundleIdentifier</key>
+	<string>im.rime.inputmethod.Squirrel.install-method</string>
+	<key>CFBundlePackageType</key>
+	<string>BNDL</string>
+	<key>CFBundleVersion</key>
+	<string>1</string>
+	<key>InstallerSectionTitle</key>
+	<string>METHOD_TITLE</string>
+	<key>NSPrincipalClass</key>
+	<string>SquirrelInstallSection</string>
+</dict>
+</plist>
