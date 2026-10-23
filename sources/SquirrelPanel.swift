@@ -95,6 +95,11 @@ final class SquirrelPanel: NSPanel {
       if let index, index == self.index && index >= 0 && index < candidates.count {
         _ = inputController?.selectCandidate(index)
       }
+    case .rightMouseDown:
+      let (index, _, _) = view.click(at: mousePosition())
+      if let index, index >= 0 && index < candidates.count {
+        showCandidateMenu(for: index, at: mousePosition())
+      }
     case .mouseEntered:
       acceptsMouseMovedEvents = true
     case .mouseExited:
@@ -328,6 +333,28 @@ final class SquirrelPanel: NSPanel {
 }
 
 private extension SquirrelPanel {
+  func showCandidateMenu(for index: Int, at point: NSPoint) {
+    let title = String(format: NSLocalizedString("Delete “%@”", comment: "Candidate context menu item"), candidates[index])
+    let delete = NSMenuItem(title: title, action: #selector(deleteCandidate(_:)), keyEquivalent: "")
+    delete.target = self
+    delete.tag = index
+    let menu = NSMenu()
+    menu.addItem(delete)
+
+    // The panel sits at the shielding window level, well above the level AppKit
+    // gives pop-up menus, so drop it for the duration or the menu opens behind it.
+    let panelLevel = self.level
+    self.level = .init(NSWindow.Level.popUpMenu.rawValue - 1)
+    menu.popUp(positioning: nil, at: point, in: view)
+    self.level = panelLevel
+  }
+
+  @objc func deleteCandidate(_ sender: NSMenuItem) {
+    let index = sender.tag
+    guard index >= 0 && index < candidates.count else { return }
+    _ = inputController?.deleteCandidate(index)
+  }
+
   func mousePosition() -> NSPoint {
     var point = NSEvent.mouseLocation
     point = self.convertPoint(fromScreen: point)
