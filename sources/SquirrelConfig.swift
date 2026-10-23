@@ -92,11 +92,23 @@ final class SquirrelConfig {
     if let cachedValue = cachedValue(of: NSColor.self, forKey: option) {
       return cachedValue
     }
-    if let colorStr = getString(option), let color = color(from: colorStr, inSpace: colorSpace) {
+    if let colorStr = getString(option), let color = RimeColorParser.color(from: colorStr, inSpace: colorSpace) {
       cache[option] = color
       return color
     }
     return baseConfig?.getColor(option, inSpace: colorSpace)
+  }
+
+  func getFill(_ option: String, inSpace colorSpace: SquirrelTheme.RimeColorSpace) -> ThemeFill? {
+    let cacheKey = option + "#fill"
+    if let cachedValue = cachedValue(of: ThemeFill.self, forKey: cacheKey) {
+      return cachedValue
+    }
+    if let colorStr = getString(option), let fill = ThemeFill.parse(colorStr, inSpace: colorSpace) {
+      cache[cacheKey] = fill
+      return fill
+    }
+    return baseConfig?.getFill(option, inSpace: colorSpace)
   }
 
   func getAppOptions(_ appName: String) -> [String: Bool] {
@@ -117,32 +129,5 @@ final class SquirrelConfig {
 private extension SquirrelConfig {
   func cachedValue<T>(of: T.Type, forKey key: String) -> T? {
     return cache[key] as? T
-  }
-
-  func color(from colorStr: String, inSpace colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor? {
-    if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
-      let (_, alpha, blue, green, red) = matched.output
-      return color(alpha: Int(alpha, radix: 16)!, red: Int(red, radix: 16)!, green: Int(green, radix: 16)!, blue: Int(blue, radix: 16)!, colorSpace: colorSpace)
-    } else if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
-      let (_, blue, green, red) = matched.output
-      return color(alpha: 255, red: Int(red, radix: 16)!, green: Int(green, radix: 16)!, blue: Int(blue, radix: 16)!, colorSpace: colorSpace)
-    } else {
-      return nil
-    }
-  }
-
-  func color(alpha: Int, red: Int, green: Int, blue: Int, colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor {
-    switch colorSpace {
-    case .displayP3:
-      return NSColor(displayP3Red: CGFloat(red) / 255,
-                     green: CGFloat(green) / 255,
-                     blue: CGFloat(blue) / 255,
-                     alpha: CGFloat(alpha) / 255)
-    case .sRGB:
-      return NSColor(srgbRed: CGFloat(red) / 255,
-                     green: CGFloat(green) / 255,
-                     blue: CGFloat(blue) / 255,
-                     alpha: CGFloat(alpha) / 255)
-    }
   }
 }

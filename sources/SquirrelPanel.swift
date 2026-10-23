@@ -518,6 +518,10 @@ private extension SquirrelPanel {
       back.frame = backFrame
       back.appearance = NSApp.effectiveAppearance
       back.isHidden = false
+      if #available(macOS 26.0, *), let glassView = back as? NSGlassEffectView {
+        glassView.cornerRadius = theme.cornerRadius
+        glassView.tintColor = theme.backgroundColor.representativeColor.withAlphaComponent(0.1)
+      }
     } else {
       back.isHidden = true
     }
@@ -553,7 +557,7 @@ private extension SquirrelPanel {
   static func makeBackgroundView() -> NSView {
     if #available(macOS 26.0, *) {
       let glassView = NSGlassEffectView()
-      glassView.style = .clear
+      glassView.style = .regular
       return glassView
     } else {
       let visualEffectView = NSVisualEffectView()
