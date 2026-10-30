@@ -207,7 +207,7 @@ final class SquirrelPanel: NSPanel {
     for i in 0..<candidates.count {
       let attrs = i == index ? theme.highlightedAttrs : theme.attrs
       let labelAttrs = i == index ? theme.labelHighlightedAttrs : theme.labelAttrs
-      let commentAttrs = i == index ? theme.commentHighlightedAttrs : theme.commentAttrs
+      var commentAttrs = i == index ? theme.commentHighlightedAttrs : theme.commentAttrs
 
       let label = if theme.candidateFormat.contains(/\[label\]/) {
         if labels.count > 1 && i < labels.count {
@@ -225,35 +225,27 @@ final class SquirrelPanel: NSPanel {
       let comment = comments[i].precomposedStringWithCanonicalMapping
 
       let line = NSMutableAttributedString(string: theme.candidateFormat, attributes: labelAttrs)
-      for range in line.string.ranges(of: /\[candidate\]/) {
-        let convertedRange = convert(range: range, in: line.string)
-        line.addAttributes(attrs, range: convertedRange)
-        if candidate.count <= 5 {
-          line.addAttribute(.noBreak, value: true, range: NSRange(location: convertedRange.location+1, length: convertedRange.length-1))
+      let candidateText = NSMutableAttributedString(string: candidate, attributes: attrs)
+      if candidate.count <= 5 {
+        preventLineBreaks(in: candidateText)
+      }
+      // Apply semantic accent/warning colors only for non-highlighted rows
+      if let inputController, !inputController.specialCommentIndices.isEmpty && i != index {
+        if let accent = inputController.specialCommentIndices[.commentHighlight], accent.contains(i) {
+          commentAttrs[.foregroundColor] = theme.accentCommentTextColor
+        } else if let warning = inputController.specialCommentIndices[.commentWarning], warning.contains(i) {
+          commentAttrs[.foregroundColor] = theme.warningCommentTextColor
         }
       }
-      for range in line.string.ranges(of: /\[comment\]/) {
-        let convertedRange = convert(range: range, in: line.string)
-        // Apply semantic accent/warning colors only for non-highlighted rows
-        if let inputController, !inputController.specialCommentIndices.isEmpty && i != index {
-          var newCommentAttrs = commentAttrs
-          if let accent = inputController.specialCommentIndices[.commentHighlight], accent.contains(i) {
-            newCommentAttrs[.foregroundColor] = theme.accentCommentTextColor
-          } else if let warning = inputController.specialCommentIndices[.commentWarning], warning.contains(i) {
-            newCommentAttrs[.foregroundColor] = theme.warningCommentTextColor
-          }
-          line.addAttributes(newCommentAttrs, range: convertedRange)
-        } else {
-          line.addAttributes(commentAttrs, range: convertedRange)
-        }
-      }
-      line.mutableString.replaceOccurrences(of: "[label]", with: label, range: NSRange(location: 0, length: line.length))
+      let labelText = NSAttributedString(string: label, attributes: labelAttrs)
+      let commentText = NSAttributedString(string: comment, attributes: commentAttrs)
+      replace(placeholder: "[label]", in: line, with: labelText)
       let labeledLine = line.copy() as! NSAttributedString
-      line.mutableString.replaceOccurrences(of: "[candidate]", with: candidate, range: NSRange(location: 0, length: line.length))
-      line.mutableString.replaceOccurrences(of: "[comment]", with: comment, range: NSRange(location: 0, length: line.length))
+      replace(placeholder: "[candidate]", in: line, with: candidateText)
+      replace(placeholder: "[comment]", in: line, with: commentText)
 
       if line.length <= 10 {
-        line.addAttribute(.noBreak, value: true, range: NSRange(location: 1, length: line.length-1))
+        preventLineBreaks(in: line)
       }
 
       let lineSeparator = NSAttributedString(string: linear ? "  " : "\n", attributes: attrs)
@@ -542,6 +534,19 @@ private extension SquirrelPanel {
     statusTimer = Timer.scheduledTimer(withTimeInterval: SquirrelTheme.showStatusDuration, repeats: false) { _ in
       self.hide()
     }
+  }
+
+  func replace(placeholder: String, in text: NSMutableAttributedString, with replacement: NSAttributedString) {
+    let string = text.string
+    for range in string.ranges(of: placeholder).reversed() {
+      text.replaceCharacters(in: convert(range: range, in: string), with: replacement)
+    }
+  }
+
+  func preventLineBreaks(in text: NSMutableAttributedString) {
+    let string = text.string
+    let range = convert(range: string.dropFirst().startIndex..<string.endIndex, in: string)
+    text.addAttribute(.noBreak, value: true, range: range)
   }
 
   func convert(range: Range<String.Index>, in string: String) -> NSRange {
