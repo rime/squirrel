@@ -24,6 +24,15 @@ show_notifications_when: appropriate
 status_icon:
   show: true
 
+# Show held Control, Option, Shift and Command keys beside the text caret.
+modifier_hint:
+  show: false
+
+# Show the active schema name on focus in non-ASCII mode; duration is in seconds.
+focus_hint:
+  show: false
+  duration: 2
+
 style:
   color_scheme: native
   # Optional: define both light and dark color schemes to match system appearance

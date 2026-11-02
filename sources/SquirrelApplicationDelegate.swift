@@ -18,6 +18,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   var config: SquirrelConfig?
   var panel: SquirrelPanel?
+  private(set) var inputHintOptions: SquirrelInputHintOptions?
   var enableNotifications = false
   var showStatusIcon: Bool = true
   var statusItem: NSStatusItem?
@@ -73,6 +74,7 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
   }
 
   func updateStatusIcon(asciiMode: Bool, schemaLabel: String?) {
+    guard showStatusIcon else { return }
     DispatchQueue.main.async { [weak self] in
       self?.applyStatusIcon(asciiMode: asciiMode, schemaLabel: schemaLabel)
     }
@@ -174,11 +176,20 @@ final class SquirrelApplicationDelegate: NSObject, NSApplicationDelegate, SPUSta
 
     enableNotifications = config!.getString("show_notifications_when") != "never"
     showStatusIcon = config!.getBool("status_icon/show") ?? true
+    let showModifiers = config!.getBool("modifier_hint/show") ?? false
+    let showFocus = config!.getBool("focus_hint/show") ?? false
+    if showModifiers || showFocus {
+      inputHintOptions = .init(showModifiers: showModifiers, showFocus: showFocus,
+                               focusDuration: Double(config!.getDouble("focus_hint/duration") ?? 2))
+    } else {
+      inputHintOptions = nil
+    }
     refreshStatusItem()
     if let panel = panel, let config = self.config {
       panel.load(config: config, forDarkMode: false)
       panel.load(config: config, forDarkMode: true)
     }
+    panel?.inputController?.reloadInputHintOptions()
   }
 
   func loadSettings(for schemaID: String) {
@@ -304,11 +315,23 @@ private func notificationHandler(contextObject: UnsafeMutableRawPointer?, sessio
           let stateLabelLong = delegate.rimeAPI.get_state_label_abbreviated(sessionId, name, state, false)
           return stateLabelLong.asString
         }
-        if optionName == "ascii_mode" {
+        if optionName == "ascii_mode", delegate.showStatusIcon {
           delegate.updateStatusIcon(asciiMode: state, schemaLabel: shortLabel())
         }
         if delegate.enableNotifications {
-          delegate.showStatusMessage(msgTextLong: longLabel(), msgTextShort: shortLabel())
+          var longMessage = longLabel()
+          var shortMessage = shortLabel()
+          if optionName == "ascii_mode", !state, delegate.inputHintOptions?.showFocus == true {
+            var status = RimeStatus_stdbool.rimeStructInit()
+            if delegate.rimeAPI.get_status(sessionId, &status) {
+              defer { _ = delegate.rimeAPI.free_status(&status) }
+              if let schemaName = status.schema_name.map({ String(cString: $0) }), !schemaName.isEmpty {
+                longMessage = schemaName
+                shortMessage = schemaName
+              }
+            }
+          }
+          delegate.showStatusMessage(msgTextLong: longMessage, msgTextShort: shortMessage)
         }
       }
     }

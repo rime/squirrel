@@ -29,6 +29,7 @@ final class SquirrelView: NSView {
   var candidateRanges: [NSRange] = []
   var hilightedIndex = 0
   var preeditRange: NSRange = .empty
+  private var statusRange: NSRange = .empty
   var canPageUp: Bool = false
   var canPageDown: Bool = false
   var highlightedPreeditRange: NSRange = .empty
@@ -84,6 +85,9 @@ final class SquirrelView: NSView {
 
   var contentRect: NSRect {
     var ranges = candidateRanges
+    if statusRange.length > 0 {
+      ranges.append(statusRange)
+    }
     if preeditRange.length > 0 {
       ranges.append(preeditRange)
     }
@@ -116,8 +120,9 @@ final class SquirrelView: NSView {
   }
 
   // swiftlint:disable:next function_parameter_count
-  func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
+  func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool, statusRange: NSRange = .empty) {
     self.candidateRanges = candidateRanges
+    self.statusRange = statusRange
     self.hilightedIndex = hilightedIndex
     self.preeditRange = preeditRange
     self.highlightedPreeditRange = highlightedPreeditRange
