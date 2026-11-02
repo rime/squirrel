@@ -1,0 +1,46 @@
+#!/bin/bash
+set -eu
+
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+login_user="$(/usr/bin/stat -f%Su /dev/console)"
+# Without a GUI session, leave installation to the original postinstall script.
+case "$login_user" in root|loginwindow|_mbsetupuser|'')
+    if [ "$(basename "$0")" = postinstall ]; then
+        exec "$script_dir/standard-postinstall" "$@"
+    fi
+    exit 0
+esac
+if [ "${3:-/}" != / ]; then
+    echo 'This package supports the current startup volume only.' >&2
+    exit 1
+fi
+login_uid="$(/usr/bin/id -u "$login_user")"
+helper="$script_dir/input-source-update"
+state="$script_dir/input-source-state.json"
+as_user() {
+    # TIS needs the user's GUI bootstrap context as well as their UID and home directory.
+    /bin/launchctl asuser "$login_uid" /usr/bin/sudo -H -u "$login_user" -- "$@"
+}
+
+if [ "$(basename "$0")" = preinstall ]; then
+    if ! as_user "$helper" prepare > "$state"; then
+        # Preparation may have switched keyboards before failing to stop the old process.
+        if [ -s "$state" ]; then
+            /bin/chmod 644 "$state"
+            as_user "$helper" restore "$state" || true
+        fi
+        exit 1
+    fi
+    /bin/chmod 644 "$state"
+elif [ "$(/usr/bin/plutil -extract hotUpdate raw -o - "$state")" = false ]; then
+    exec "$script_dir/standard-postinstall" "$@"
+else
+    app_root='/Library/Input Methods/Squirrel.app'
+    if [ -z "${RIME_NO_PREBUILD:-}" ]; then
+        if ! (cd "$app_root/Contents/SharedSupport" && "$app_root/Contents/MacOS/Squirrel" --build); then
+            as_user "$helper" restore "$state" || true
+            exit 1
+        fi
+    fi
+    as_user "$helper" restore "$state"
+fi

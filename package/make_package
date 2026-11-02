@@ -6,8 +6,44 @@ DERIVED_DATA_PATH=$1
 BUNDLE_IDENTIFIER='im.rime.inputmethod.Squirrel'
 INSTALL_LOCATION='/Library/Input Methods'
 
-cd "$(dirname $0)"
+cd "$(dirname "$0")"
 source common.sh
+
+update_dir="$(mktemp -d)"
+trap 'rm -rf "$update_dir"; rm -f Distribution-versioned.xml Squirrel-component.pkg' EXIT
+mkdir "${update_dir}/scripts"
+# Both phases share one dispatcher; first installs and explicit login choices use the original script.
+cp update/install "${update_dir}/scripts/preinstall"
+cp update/install "${update_dir}/scripts/postinstall"
+cp "${PROJECT_ROOT}/scripts/postinstall" "${update_dir}/scripts/standard-postinstall"
+for arch in arm64 x86_64; do
+    xcrun swiftc -O -target "${arch}-apple-macosx13.0" \
+        update/InputSourceUpdate.swift -o "${update_dir}/helper-${arch}"
+done
+lipo -create "${update_dir}/helper-arm64" "${update_dir}/helper-x86_64" \
+    -output "${update_dir}/scripts/input-source-update"
+sign_installer_code() {
+    if [ -n "${DEV_ID:-}" ]; then
+        codesign --force --options runtime --timestamp \
+            --sign "Developer ID Application: ${DEV_ID}" "$1"
+    else
+        codesign --force --sign - "$1"
+    fi
+}
+sign_installer_code "${update_dir}/scripts/input-source-update"
+
+plugin="${update_dir}/plugins/InstallMethod.bundle/Contents"
+# InstallerPlugins is unavailable to Swift; its pane stays in this installer-only bundle.
+mkdir -p "${plugin}/MacOS" "${plugin}/Resources"
+xcrun clang -fobjc-arc -bundle -arch arm64 -arch x86_64 -mmacosx-version-min=13.0 \
+    -framework Cocoa -framework InstallerPlugins update/InstallMethod.m -o "${plugin}/MacOS/InstallMethod"
+cp update/InstallMethod-Info.plist "${plugin}/Info.plist"
+cp update/InstallerSections.plist "${update_dir}/plugins/"
+for locale in en:en zh_CN:zh-Hans zh_TW:zh-Hant; do
+    mkdir "${plugin}/Resources/${locale#*:}.lproj"
+    cp "${locale%:*}.lproj/Localizable.strings" "${plugin}/Resources/${locale#*:}.lproj/"
+done
+sign_installer_code "${update_dir}/plugins/InstallMethod.bundle"
 
 pkgbuild \
     --root "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" \
@@ -16,7 +52,7 @@ pkgbuild \
     --identifier "${BUNDLE_IDENTIFIER}" \
     --version "$(get_app_version)" \
     --install-location "${INSTALL_LOCATION}" \
-    --scripts "${PROJECT_ROOT}/scripts" \
+    --scripts "${update_dir}/scripts" \
     Squirrel-component.pkg
 
 sed "s/@VERSION@/$(get_app_version)/" Distribution > Distribution-versioned.xml
@@ -25,8 +61,5 @@ productbuild \
     --distribution Distribution-versioned.xml \
     --package-path . \
     --resources . \
+    --plugins "${update_dir}/plugins" \
     Squirrel.pkg
-
-rm Distribution-versioned.xml
-
-rm Squirrel-component.pkg

@@ -1,0 +1,5 @@
+"METHOD_TITLE" = "Installation method";
+"HOT_UPDATE_TITLE" = "Hot update (no logout)";
+"HOT_UPDATE_DESCRIPTION" = "Restart Squirrel and restore the existing input modes while keeping this login session. Commit any text before updating.";
+"LOGIN_TITLE" = "Log in again to apply the update";
+"LOGIN_DESCRIPTION" = "Install the update now and log out and back in later to activate it.";
