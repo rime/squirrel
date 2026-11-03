@@ -723,7 +723,8 @@ private extension SquirrelView {
   func pagingLayer(theme: SquirrelTheme, preeditRect: CGRect) -> (CAShapeLayer, CGPath?, CGPath?) {
     let layer = CAShapeLayer()
     guard theme.showPaging && (canPageUp || canPageDown) else { return (layer, nil, nil) }
-    guard let firstCandidate = candidateRanges.first, let range = convert(range: firstCandidate) else { return (layer, nil, nil) }
+    guard let firstCandidate = candidateRanges.min(by: { $0.location < $1.location }),
+          let range = convert(range: firstCandidate) else { return (layer, nil, nil) }
     var height = contentRect(range: range).height
     let preeditHeight = max(0, preeditRect.height + theme.preeditLinespace / 2 + theme.hilitedCornerRadius / 2 - theme.edgeInset.height) + theme.edgeInset.height - theme.linespace / 2
     height += theme.linespace

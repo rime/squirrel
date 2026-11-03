@@ -66,6 +66,7 @@ final class SquirrelTheme {
   private(set) var mutualExclusive = false
   private(set) var linear = false
   private(set) var vertical = false
+  private(set) var verticalAutoReverse = false
   private(set) var inlinePreedit = false
   private(set) var inlineCandidate = false
   private(set) var showPaging = false
@@ -208,6 +209,7 @@ final class SquirrelTheme {
   func load(config: SquirrelConfig, dark: Bool) {
     linear ?= config.getString("style/candidate_list_layout").map { $0 == "linear" }
     vertical ?= config.getString("style/text_orientation").map { $0 == "vertical" }
+    verticalAutoReverse ?= config.getBool("style/vertical_auto_reverse")
     inlinePreedit ?= config.getBool("style/inline_preedit")
     inlineCandidate ?= config.getBool("style/inline_candidate")
     translucency ?= config.getBool("style/translucency")
@@ -265,6 +267,7 @@ final class SquirrelTheme {
         // Per-color-scheme settings override global style settings.
         linear ?= config.getString("\(prefix)/candidate_list_layout").map { $0 == "linear" }
         vertical ?= config.getString("\(prefix)/text_orientation").map { $0 == "vertical" }
+        verticalAutoReverse ?= config.getBool("\(prefix)/vertical_auto_reverse")
         inlinePreedit ?= config.getBool("\(prefix)/inline_preedit")
         inlineCandidate ?= config.getBool("\(prefix)/inline_candidate")
         translucency ?= config.getBool("\(prefix)/translucency")

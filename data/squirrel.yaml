@@ -33,6 +33,9 @@ style:
   # horizontal is Deprecated since 0.36, Squirrel 0.15, removed since 1.0.1
   candidate_list_layout: stacked  # stacked | linear
   text_orientation: horizontal  # horizontal | vertical
+  # Reverse stacked, horizontal-text candidates when the panel is above the caret.
+  # Candidate labels stay unchanged; unmodified Up/Down follow visual order.
+  vertical_auto_reverse: false
   inline_preedit: true
   # Whether to embed selected candidate as text in input field
   inline_candidate: false
