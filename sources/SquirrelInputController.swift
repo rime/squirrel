@@ -27,6 +27,8 @@ final class SquirrelInputController: IMKInputController {
   private var chordTimer: Timer?
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
+  private var baseKeyboardLayout: KeyboardLayout?
+  private var punctuationKeyboardLayout: KeyboardLayout?
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -105,6 +107,12 @@ final class SquirrelInputController: IMKInputController {
          (capitalModifiers && !code.isLetter) || (!capitalModifiers && !code.isASCII) {
         keyChars = event.characters
       }
+      // The punctuation layout only changes what the client sees; Rime keeps reading keys through the base layout.
+      if let char = keyChars?.first, !char.isASCII,
+         punctuationKeyboardLayout?.character(keyCode: keyCode, shift: modifiers.contains(.shift)) == char,
+         let baseChar = baseKeyboardLayout?.character(keyCode: keyCode, shift: modifiers.contains(.shift)) {
+        keyChars = String(baseChar)
+      }
       if let char = keyChars?.first {
         let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: keyCode, keychar: char,
                                                            shift: modifiers.contains(.shift),
@@ -166,17 +174,21 @@ final class SquirrelInputController: IMKInputController {
 
   override func activateServer(_ sender: Any!) {
     self.client ?= sender as? IMKTextInput
-    var keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
-    if keyboardLayout == "last" || keyboardLayout == "" {
-      keyboardLayout = ""
-    } else if keyboardLayout == "default" {
-      keyboardLayout = "com.apple.keylayout.ABC"
-    } else if !keyboardLayout.hasPrefix("com.apple.keylayout.") {
-      keyboardLayout = "com.apple.keylayout.\(keyboardLayout)"
+    let keyboardLayout = NSApp.squirrelAppDelegate.config?.getString("keyboard_layout") ?? ""
+    switch keyboardLayout {
+    case "", "last":
+      baseKeyboardLayout = .currentASCIICapable()
+    case "default":
+      baseKeyboardLayout = KeyboardLayout(id: "com.apple.keylayout.ABC")
+    default:
+      baseKeyboardLayout = KeyboardLayout(id: keyboardLayout.hasPrefix("com.apple.keylayout.") ? keyboardLayout : "com.apple.keylayout.\(keyboardLayout)")
     }
-    if keyboardLayout != "" {
-      client?.overrideKeyboard(withKeyboardNamed: keyboardLayout)
+    if let base = baseKeyboardLayout, let punctuation = KeyboardLayout.chinesePunctuation, punctuation.sharesAlphanumerics(with: base) {
+      punctuationKeyboardLayout = punctuation
+    } else {
+      punctuationKeyboardLayout = nil
     }
+    syncKeyboardLayout()
     // Activation delivers no flagsChanged event, and NSEvent.modifierFlags
     // only reflects this process's own event stream, so lastModifiers may
     // disagree with the actual Caps Lock state by now. Seed it from the
@@ -450,6 +462,7 @@ private extension SquirrelInputController {
       specialCommentIndices = [:]
     }
     rimeConsumeCommittedText()
+    syncKeyboardLayout()
 
     var status = RimeStatus_stdbool.rimeStructInit()
     if rimeAPI.get_status(session, &status) {
@@ -556,6 +569,18 @@ private extension SquirrelInputController {
       _ = rimeAPI.free_context(&ctx)
     } else {
       hidePalettes()
+    }
+  }
+
+  // Like macOS Pinyin, switch the client to a layout whose key events already carry Chinese punctuation,
+  // because some clients (e.g. xterm.js in Chromium) insert the key event's character instead of the committed text.
+  func syncKeyboardLayout() {
+    guard let client, session != 0, let base = baseKeyboardLayout else { return }
+    let chinesePunctuation = !rimeAPI.get_option(session, "ascii_mode") && !rimeAPI.get_option(session, "ascii_punct")
+    let target = chinesePunctuation ? punctuationKeyboardLayout ?? base : base
+    // Compare against the system rather than remembering our last request: switching input sources may reset it.
+    if target.id != KeyboardLayout.currentID() {
+      client.overrideKeyboard(withKeyboardNamed: target.id)
     }
   }
 
