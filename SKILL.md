@@ -200,7 +200,7 @@ When changing panel layout, preserve the order: set attributed text, set layout 
 
 - `openBaseConfig()` opens `squirrel` config.
 - `open(schemaID:baseConfig:)` opens schema config and falls back to base config for missing values.
-- `getBool`, `getDouble`, `getString`, and `getColor` cache successful reads.
+- `getBool`, `getDouble`, `getString`, `getColor`, and `getFill` cache successful reads.
 - `getAppOptions(_:)` reads boolean options under `app_options/<bundle-id>`.
 
 `SquirrelTheme.load(config:dark:)` reads global `style/*`, then optional preset color scheme settings. Per-color-scheme values can override style values for layout, color, fonts, alpha, spacing, and candidate formatting.
@@ -212,6 +212,8 @@ Important theme flags:
 - `inline_preedit`, `inline_candidate`: marked text vs panel display strategy.
 - `translucency`, `mutual_exclusive`, `memorize_size`, `show_paging`.
 - `candidate_format`: template using `[label]`, `[candidate]`, `[comment]`; legacy `%c` and `%@` are normalized.
+
+Background, border, candidate, and preedit color keys accept either a plain Rime color (`0xAABBGGRR` / `0xBBGGRR`, ABGR byte order) or a CSS-like gradient (parsed in `SquirrelColor.swift`): `linear-gradient(<angle>, <stop>[ <pos>%], ...)`, `radial-gradient(circle at X% Y%, ...)`, `conic-gradient(from <angle>, ...)`. Angles are CSS-style (`0deg` up, clockwise; `deg`/`turn`/`rad`, or `to top|right|bottom|left`). Stops accept `0xAABBGGRR`, `#RGB`/`#RGBA`/`#RRGGBB`/`#RRGGBBAA` (RGBA order), or `transparent`; a single stop degrades to a solid color. `ThemeFill` replaces the old `NSColor` fields and is consumed by `ThemeFillRenderer` in `SquirrelView.draw` (gradients use `CAGradientLayer` masked by the shape, sharing one panel-wide canvas box). Text colors remain solid `NSColor`.
 
 ## Notifications and External Commands
 

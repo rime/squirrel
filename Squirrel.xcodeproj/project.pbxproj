@@ -90,6 +90,7 @@
 		B39771272BED9B250093A49B /* SquirrelTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39771262BED9B250093A49B /* SquirrelTheme.swift */; };
 		B39771292BEDAF4A0093A49B /* SquirrelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39771282BEDAF4A0093A49B /* SquirrelView.swift */; };
 		B397712B2BEE4C160093A49B /* SquirrelPanel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712A2BEE4C160093A49B /* SquirrelPanel.swift */; };
+		B39771352BEF00010093A49B /* SquirrelColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39771342BEF00010093A49B /* SquirrelColor.swift */; };
 		B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712C2BEEB39D0093A49B /* InputSource.swift */; };
 		B397712F2BEECBED0093A49B /* Main.swift in Sources */ = {isa = PBXBuildFile; fileRef = B397712E2BEECBED0093A49B /* Main.swift */; };
 		B39771312BEEE4540093A49B /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = B39771302BEEE4540093A49B /* InfoPlist.xcstrings */; };
@@ -309,6 +310,7 @@
 		B39771262BED9B250093A49B /* SquirrelTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelTheme.swift; path = sources/SquirrelTheme.swift; sourceTree = "<group>"; };
 		B39771282BEDAF4A0093A49B /* SquirrelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelView.swift; path = sources/SquirrelView.swift; sourceTree = "<group>"; };
 		B397712A2BEE4C160093A49B /* SquirrelPanel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelPanel.swift; path = sources/SquirrelPanel.swift; sourceTree = "<group>"; };
+		B39771342BEF00010093A49B /* SquirrelColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelColor.swift; path = sources/SquirrelColor.swift; sourceTree = "<group>"; };
 		B397712C2BEEB39D0093A49B /* InputSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = InputSource.swift; path = sources/InputSource.swift; sourceTree = "<group>"; };
 		B397712E2BEECBED0093A49B /* Main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Main.swift; path = sources/Main.swift; sourceTree = "<group>"; };
 		B39771302BEEE4540093A49B /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; name = InfoPlist.xcstrings; path = resources/InfoPlist.xcstrings; sourceTree = "<group>"; };
@@ -344,6 +346,7 @@
 				B397712E2BEECBED0093A49B /* Main.swift */,
 				B39771262BED9B250093A49B /* SquirrelTheme.swift */,
 				B397712A2BEE4C160093A49B /* SquirrelPanel.swift */,
+				B39771342BEF00010093A49B /* SquirrelColor.swift */,
 				B39771282BEDAF4A0093A49B /* SquirrelView.swift */,
 				B39771242BED899F0093A49B /* SquirrelConfig.swift */,
 				B35D2FE72BF00839009D156B /* BridgingFunctions.swift */,
@@ -614,6 +617,7 @@
 				B397712F2BEECBED0093A49B /* Main.swift in Sources */,
 				B397712D2BEEB39D0093A49B /* InputSource.swift in Sources */,
 				B397712B2BEE4C160093A49B /* SquirrelPanel.swift in Sources */,
+				B39771352BEF00010093A49B /* SquirrelColor.swift in Sources */,
 				B38E9B912BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift in Sources */,
 				B39771272BED9B250093A49B /* SquirrelTheme.swift in Sources */,
 				B35D2FE82BF00839009D156B /* BridgingFunctions.swift in Sources */,

@@ -211,6 +211,7 @@ final class SquirrelView: NSView {
 
     NSBezierPath.defaultLineWidth = 0
     backgroundPath = drawSmoothLines(rectVertex(of: backgroundRect), straightCorner: Set(), alpha: 0.3 * theme.cornerRadius, beta: 1.4 * theme.cornerRadius)
+    let backgroundBox = backgroundPath?.boundingBoxOfPath
 
     self.layer?.sublayers = nil
     let backPath = backgroundPath?.mutableCopy()
@@ -225,44 +226,46 @@ final class SquirrelView: NSView {
         backPath?.addPath(path)
       }
     }
-    let panelLayer = shapeFromPath(path: backPath)
-    panelLayer.fillColor = theme.backgroundColor.cgColor
-    let panelLayerMask = shapeFromPath(path: backgroundPath)
-    panelLayer.mask = panelLayerMask
+    let panelLayer = CALayer()
+    panelLayer.frame = self.bounds
+    if let fillLayer = ThemeFillRenderer.fillLayer(path: backPath, fill: theme.backgroundColor, box: backgroundBox) {
+      panelLayer.addSublayer(fillLayer)
+    }
+    panelLayer.mask = shapeFromPath(path: backgroundPath)
     self.layer?.addSublayer(panelLayer)
 
-    if let color = theme.preeditBackgroundColor, let path = preeditPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      let maskPath = backgroundPath?.mutableCopy()
+    if let fill = theme.preeditBackgroundColor, let path = preeditPath,
+       let preeditLayer = ThemeFillRenderer.fillLayer(path: path, fill: fill) {
+      var maskPath: CGPath?
       if theme.mutualExclusive, let hilitedPath = highlightedPreeditPath {
-        maskPath?.addPath(hilitedPath)
+        let combined = backgroundPath?.mutableCopy() ?? CGMutablePath()
+        combined.addPath(hilitedPath)
+        maskPath = combined
       }
-      let mask = shapeFromPath(path: maskPath)
-      layer.mask = mask
+      panelLayer.addSublayer(ThemeFillRenderer.masked(preeditLayer, with: maskPath, frame: self.bounds))
+    }
+    if theme.borderLineWidth > 0, let fill = theme.borderColor {
+      let lineWidth = theme.borderLineWidth * 2
+      let strokeBox = backgroundBox?.insetBy(dx: -lineWidth, dy: -lineWidth)
+      if let borderLayer = ThemeFillRenderer.strokeLayer(path: backgroundPath, fill: fill, lineWidth: lineWidth, box: strokeBox) {
+        panelLayer.addSublayer(borderLayer)
+      }
+    }
+    if let fill = theme.highlightedPreeditColor, let path = highlightedPreeditPath,
+       let layer = ThemeFillRenderer.fillLayer(path: path, fill: fill) {
       panelLayer.addSublayer(layer)
     }
-    if theme.borderLineWidth > 0, let color = theme.borderColor {
-      let borderLayer = shapeFromPath(path: backgroundPath)
-      borderLayer.lineWidth = theme.borderLineWidth * 2
-      borderLayer.strokeColor = color.cgColor
-      borderLayer.fillColor = nil
-      panelLayer.addSublayer(borderLayer)
-    }
-    if let color = theme.highlightedPreeditColor, let path = highlightedPreeditPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
+    if let fill = theme.candidateBackColor, let path = candidatePaths,
+       let layer = ThemeFillRenderer.fillLayer(path: path, fill: fill) {
       panelLayer.addSublayer(layer)
     }
-    if let color = theme.candidateBackColor, let path = candidatePaths {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
-      panelLayer.addSublayer(layer)
-    }
-    if let color = theme.highlightedBackColor, let path = highlightedPath {
-      let layer = shapeFromPath(path: path)
-      layer.fillColor = color.cgColor
+    if let fill = theme.highlightedBackColor, let path = highlightedPath,
+       let layer = ThemeFillRenderer.fillLayer(path: path, fill: fill) {
       if theme.shadowSize > 0 {
+        let container = CALayer()
+        container.frame = self.bounds
+        container.addSublayer(layer)
+
         let shadowLayer = CAShapeLayer()
         shadowLayer.shadowColor = NSColor.black.cgColor
         shadowLayer.shadowOffset = NSSize(width: theme.shadowSize/2, height: (theme.vertical ? -1 : 1) * theme.shadowSize/2)
@@ -271,13 +274,21 @@ final class SquirrelView: NSView {
         shadowLayer.shadowOpacity = 0.2
         let outerPath = backgroundPath?.mutableCopy()
         outerPath?.addPath(path)
-        let shadowLayerMask = shapeFromPath(path: outerPath)
-        shadowLayer.mask = shadowLayerMask
-        layer.strokeColor = NSColor.black.withAlphaComponent(0.15).cgColor
-        layer.lineWidth = 0.5
-        layer.addSublayer(shadowLayer)
+        shadowLayer.mask = shapeFromPath(path: outerPath)
+        container.addSublayer(shadowLayer)
+
+        let hairline = CAShapeLayer()
+        hairline.path = path
+        hairline.fillRule = .evenOdd
+        hairline.fillColor = nil
+        hairline.strokeColor = NSColor.black.withAlphaComponent(0.15).cgColor
+        hairline.lineWidth = 0.5
+        container.addSublayer(hairline)
+
+        panelLayer.addSublayer(container)
+      } else {
+        panelLayer.addSublayer(layer)
       }
-      panelLayer.addSublayer(layer)
     }
     panelLayer.setAffineTransform(CGAffineTransform(translationX: theme.pagingOffset, y: 0))
     let panelPath = CGMutablePath()
@@ -740,14 +751,14 @@ private extension SquirrelView {
     if canPageDown {
       var downTransform = CGAffineTransform(translationX: 0.5 * theme.pagingOffset, y: 2 * height / 3 + preeditHeight)
       let downLayer = shapeFromPath(path: trianglePath.copy(using: &downTransform))
-      downLayer.fillColor = theme.backgroundColor.cgColor
+      downLayer.fillColor = theme.backgroundColor.representativeColor.cgColor
       downPath = trianglePath.copy(using: &downTransform)
       layer.addSublayer(downLayer)
     }
     if canPageUp {
       var upTransform = CGAffineTransform(rotationAngle: .pi).translatedBy(x: -0.5 * theme.pagingOffset, y: -height / 3 - preeditHeight)
       let upLayer = shapeFromPath(path: trianglePath.copy(using: &upTransform))
-      upLayer.fillColor = theme.backgroundColor.cgColor
+      upLayer.fillColor = theme.backgroundColor.representativeColor.cgColor
       upPath = trianglePath.copy(using: &upTransform)
       layer.addSublayer(upLayer)
     }
