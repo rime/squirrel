@@ -558,7 +558,7 @@ private extension SquirrelPanel {
   static func makeBackgroundView() -> NSView {
     if #available(macOS 26.0, *) {
       let glassView = NSGlassEffectView()
-      glassView.style = .clear
+      glassView.style = .regular
       return glassView
     } else {
       let visualEffectView = NSVisualEffectView()
