@@ -9,6 +9,12 @@ INSTALL_LOCATION='/Library/Input Methods'
 cd "$(dirname $0)"
 source common.sh
 
+# Fix .strings encoding declarations (Xcode 26.5 bug)
+echo "Fixing .strings encoding declarations..."
+python3 fix_strings_encoding.py "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" || {
+    echo "Warning: fix_strings_encoding.py failed, continuing anyway" >&2
+}
+
 pkgbuild \
     --root "${PROJECT_ROOT}/${DERIVED_DATA_PATH}/Build/Products/Release" \
     --filter '.*\.swiftmodule$' \
