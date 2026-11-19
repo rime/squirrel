@@ -131,6 +131,16 @@ final class SquirrelInputController: IMKInputController {
     return success
   }
 
+  // Forgets the candidate: drops the matching entry from the user dictionary so
+  // it stops being suggested (and stops outranking others) for this input.
+  func deleteCandidate(_ index: Int) -> Bool {
+    let success = rimeAPI.delete_candidate_on_current_page(session, index)
+    if success {
+      rimeUpdate()
+    }
+    return success
+  }
+
   // swiftlint:disable:next identifier_name
   func page(up: Bool) -> Bool {
     var handled = false
