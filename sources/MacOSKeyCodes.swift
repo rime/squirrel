@@ -230,3 +230,63 @@ struct SquirrelKeycode {
     kVK_ANSI_Z: XK_z
   ]
 }
+
+struct KeyboardLayout {
+  static let chinesePunctuation = KeyboardLayout(id: "com.apple.keylayout.PinyinKeyboard")
+
+  let id: String
+  private let layoutData: CFData
+
+  init?(id: String) {
+    let filter = [kTISPropertyInputSourceID as String: id] as CFDictionary
+    guard let sources = TISCreateInputSourceList(filter, true)?.takeRetainedValue() as? [TISInputSource],
+          let source = sources.first else { return nil }
+    self.init(source: source)
+  }
+
+  init?(source: TISInputSource) {
+    guard let idPointer = TISGetInputSourceProperty(source, kTISPropertyInputSourceID),
+          let dataPointer = TISGetInputSourceProperty(source, kTISPropertyUnicodeKeyLayoutData) else { return nil }
+    id = Unmanaged<CFString>.fromOpaque(idPointer).takeUnretainedValue() as String
+    layoutData = Unmanaged<CFData>.fromOpaque(dataPointer).takeUnretainedValue()
+  }
+
+  static func currentID() -> String? {
+    guard let source = TISCopyCurrentKeyboardLayoutInputSource()?.takeRetainedValue(),
+          let idPointer = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else { return nil }
+    return Unmanaged<CFString>.fromOpaque(idPointer).takeUnretainedValue() as String
+  }
+
+  static func currentASCIICapable() -> KeyboardLayout? {
+    guard let source = TISCopyCurrentASCIICapableKeyboardLayoutInputSource()?.takeRetainedValue() else { return nil }
+    return KeyboardLayout(source: source)
+  }
+
+  func character(keyCode: UInt16, shift: Bool) -> Character? {
+    guard let bytes = CFDataGetBytePtr(layoutData) else { return nil }
+    var deadKeyState: UInt32 = 0
+    var length = 0
+    var chars = [UniChar](repeating: 0, count: 4)
+    let status = bytes.withMemoryRebound(to: UCKeyboardLayout.self, capacity: 1) { layout in
+      UCKeyTranslate(layout, keyCode, UInt16(kUCKeyActionDown), shift ? UInt32(shiftKey >> 8) : 0, UInt32(LMGetKbdType()),
+                     OptionBits(kUCKeyTranslateNoDeadKeysBit), &deadKeyState, chars.count, &length, &chars)
+    }
+    guard status == noErr, length > 0 else { return nil }
+    return String(utf16CodeUnits: chars, count: length).first
+  }
+
+  // Overriding the client layout must not move letters or digits away from where the user's own layout puts them.
+  func sharesAlphanumerics(with other: KeyboardLayout) -> Bool {
+    for keyCode in UInt16(0)...UInt16(kVK_ANSI_Grave) {
+      for shift in [false, true] {
+        let mine = character(keyCode: keyCode, shift: shift)
+        let theirs = other.character(keyCode: keyCode, shift: shift)
+        let isAlphanumeric = { (char: Character?) in char.map { $0.isLetter || $0.isNumber } ?? false }
+        if (isAlphanumeric(mine) || isAlphanumeric(theirs)) && mine != theirs {
+          return false
+        }
+      }
+    }
+    return true
+  }
+}
