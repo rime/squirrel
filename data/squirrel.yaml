@@ -79,6 +79,56 @@ preset_color_schemes:
   native:
     name: 系統配色
 
+  # ── 漸變配色語法 ────────────────────────────────────────────
+  # 除純色外，顏色字段還支持 CSS 風格漸變表達式：
+  #   linear-gradient(角度, 色標 [位置%], ...)
+  #   radial-gradient(circle at X% Y%, 色標 ...)
+  #   conic-gradient(from 角度, 色標 ...)
+  # 角度：0deg 指向正上、順時針；支持 deg / turn / rad 與 to top|right|bottom|left。
+  # 色值：0xAABBGGRR（沿用 Rime 的 ABGR 字節序）
+  #       或 #RRGGBB / #RRGGBBAA / #RGB / #RGBA（標準 RGBA 順序）
+  #       或關鍵字 transparent。
+  # 透明：直接寫在色標 alpha 裡；全透明區域在關閉 translucency 時呈鏤空。
+  # 注意：YAML 中 # 是註釋符，含 # 的色值必須加引號！
+  # 只有單個色標時自動退化為純色，所有既有配置完全不受影響。
+
+  jade_gold:
+    name: 碧玉鎏金／Jade & Gold
+    author: Squirrel
+    back_color: "linear-gradient(135deg, #07271C 0%, #14523C 45%, #D4AF37 100%)"
+    border_color: "linear-gradient(135deg, #D4AF37 0%, #1A6B4A 100%)"
+    border_width: 2
+    border_height: 2
+    corner_radius: 8
+    hilited_corner_radius: 6
+    text_color: "#D9A441"
+    candidate_text_color: "#E8DCB5"
+    hilited_text_color: "#FFF3C4"
+    hilited_candidate_back_color: "linear-gradient(90deg, #D4AF37 0%, #FFF3C4 100%)"
+    hilited_candidate_text_color: "#07271C"
+    hilited_candidate_label_color: "#14523C"
+    label_color: "#9FB8A8"
+    comment_text_color: "#8FA99A"
+    hilited_comment_text_color: "#3F6B58"
+
+  aurora:
+    name: 極光／Aurora
+    author: Squirrel
+    back_color: "linear-gradient(160deg, #1B1035 0%, #2E1A64 40%, #0B6E6E 100%)"
+    border_color: "conic-gradient(from 0deg, #7CE7FF, #B388FF, #7CE7FF)"
+    border_width: 1
+    border_height: 1
+    corner_radius: 10
+    preedit_back_color: "linear-gradient(90deg, #6A3DE800 0%, #6A3DE855 100%)"
+    hilited_candidate_back_color: "radial-gradient(circle at 30% 30%, #7CE7FF 0%, #3A2E8F80 60%, #1B103500 100%)"
+    hilited_candidate_text_color: "#F2F8FF"
+    candidate_text_color: "#D8E8FF"
+    text_color: "#A9D6FF"
+    label_color: "#7FB3D5"
+    comment_text_color: "#8FA8C8"
+    hilited_comment_text_color: "#B6E3FF"
+    translucency: true
+
   aqua:
     name: 碧水／Aqua
     author: 佛振 <chen.sst@gmail.com>
