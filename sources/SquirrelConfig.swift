@@ -65,6 +65,19 @@ final class SquirrelConfig {
     return baseConfig?.getBool(option)
   }
 
+  func getInt(_ option: String) -> Int? {
+    if let cachedValue = cachedValue(of: Int.self, forKey: option) {
+      return cachedValue
+    }
+    var value: Int32 = 0
+    if isOpen && rimeAPI.config_get_int(&config, option, &value) {
+      let intValue = Int(value)
+      cache[option] = intValue
+      return intValue
+    }
+    return baseConfig?.getInt(option)
+  }
+
   func getDouble(_ option: String) -> CGFloat? {
     if let cachedValue = cachedValue(of: Double.self, forKey: option) {
       return cachedValue
