@@ -5,6 +5,7 @@
 //  Created by Leo Liu on 5/7/24.
 //
 
+import Carbon
 import InputMethodKit
 
 final class SquirrelInputController: IMKInputController {
@@ -53,7 +54,10 @@ final class SquirrelInputController: IMKInputController {
     switch event.type {
     case .flagsChanged:
       if lastModifiers == modifiers {
-        handled = true
+        // Consuming repeated Command events breaks shortcuts in iPhone Mirroring.
+        let isMirroringCommand = currentApp == "com.apple.ScreenContinuity" &&
+          (Int(event.keyCode) == kVK_Command || Int(event.keyCode) == kVK_RightCommand)
+        handled = !isMirroringCommand
         break
       }
       var rimeModifiers: UInt32 = SquirrelKeycode.osxModifiersToRime(modifiers: modifiers)
