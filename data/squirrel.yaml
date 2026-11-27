@@ -404,6 +404,7 @@ app_options:
     no_inline: true
   org.alacritty:
     # Work around https://github.com/rime/squirrel/issues/741
+    # Needs a marked-text phase before panelless insertText (e.g. full-width punct).
     force_marked_text_for_direct_commit: true
   com.googlecode.iterm2:
     ascii_mode: true
@@ -422,6 +423,10 @@ app_options:
     ascii_mode: true
   com.microsoft.VSCode:
     ascii_mode: true
+    # Integrated terminal (xterm.js) drops panelless insertText during keyDown.
+    # Mark first, then insert on the next runloop turn.
+    force_marked_text_for_direct_commit: true
+    defer_direct_commit: true
   com.sublimetext.2:
     ascii_mode: true
   org.gnu.Aquamacs:
