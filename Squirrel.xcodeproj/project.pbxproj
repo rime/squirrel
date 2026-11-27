@@ -82,6 +82,24 @@
 		7B5488C91D2DACDF0056A1BE /* symbols.yaml in Copy Shared Support Files */ = {isa = PBXBuildFile; fileRef = 7B54883B1D2DAAD10056A1BE /* symbols.yaml */; };
 		B3216E5C2BF438F800E292D2 /* rime.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B3216E5B2BF438F800E292D2 /* rime.pdf */; };
 		B35D2FE82BF00839009D156B /* BridgingFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = B35D2FE72BF00839009D156B /* BridgingFunctions.swift */; };
+		A10000000000000000000011 /* SquirrelHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* SquirrelHelpers.swift */; };
+		A10000000000000000000012 /* SquirrelColorParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* SquirrelColorParser.swift */; };
+		A10000000000000000000013 /* SquirrelGridModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* SquirrelGridModels.swift */; };
+		A10000000000000000000014 /* SquirrelGridLayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* SquirrelGridLayoutEngine.swift */; };
+		A10000000000000000000015 /* SquirrelGridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* SquirrelGridState.swift */; };
+		A10000000000000000000016 /* SquirrelGridViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000006 /* SquirrelGridViews.swift */; };
+		A10000000000000000000017 /* SquirrelPanel+Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000007 /* SquirrelPanel+Grid.swift */; };
+		A10000000000000000000018 /* SquirrelInputController+Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000008 /* SquirrelInputController+Grid.swift */; };
+		A10000000000000000000021 /* SquirrelHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000001 /* SquirrelHelpers.swift */; };
+		A10000000000000000000022 /* SquirrelColorParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000002 /* SquirrelColorParser.swift */; };
+		A10000000000000000000023 /* SquirrelTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = B39771262BED9B250093A49B /* SquirrelTheme.swift */; };
+		A10000000000000000000024 /* ReservedProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A001012F260100009D156B /* ReservedProperty.swift */; };
+		A10000000000000000000025 /* SquirrelGridModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000003 /* SquirrelGridModels.swift */; };
+		A10000000000000000000026 /* SquirrelGridLayoutEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000004 /* SquirrelGridLayoutEngine.swift */; };
+		A10000000000000000000027 /* SquirrelGridState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000005 /* SquirrelGridState.swift */; };
+		A10000000000000000000028 /* SquirrelGridLayoutEngineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000009 /* SquirrelGridLayoutEngineTests.swift */; };
+		A10000000000000000000029 /* SquirrelGridStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000A /* SquirrelGridStateTests.swift */; };
+		A1000000000000000000002A /* SquirrelConfigAndThemeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000000000B /* SquirrelConfigAndThemeTests.swift */; };
 		B3A001022F260100009D156B /* ReservedProperty.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3A001012F260100009D156B /* ReservedProperty.swift */; };
 		B38E9B912BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38E9B902BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift */; };
 		B38E9B952BEAFEFD0036ABEF /* SquirrelInputController.swift in Sources */ = {isa = PBXBuildFile; fileRef = B38E9B942BEAFEFD0036ABEF /* SquirrelInputController.swift */; };
@@ -300,6 +318,18 @@
 		B3216E5B2BF438F800E292D2 /* rime.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; name = rime.pdf; path = resources/rime.pdf; sourceTree = "<group>"; };
 		B32B80772BE7FAA200FCF3BC /* Squirrel.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; name = Squirrel.entitlements; path = resources/Squirrel.entitlements; sourceTree = "<group>"; };
 		B35D2FE72BF00839009D156B /* BridgingFunctions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = BridgingFunctions.swift; path = sources/BridgingFunctions.swift; sourceTree = "<group>"; };
+		A10000000000000000000001 /* SquirrelHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelHelpers.swift; path = sources/SquirrelHelpers.swift; sourceTree = "<group>"; };
+		A10000000000000000000002 /* SquirrelColorParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelColorParser.swift; path = sources/SquirrelColorParser.swift; sourceTree = "<group>"; };
+		A10000000000000000000003 /* SquirrelGridModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridModels.swift; path = sources/SquirrelGridModels.swift; sourceTree = "<group>"; };
+		A10000000000000000000004 /* SquirrelGridLayoutEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridLayoutEngine.swift; path = sources/SquirrelGridLayoutEngine.swift; sourceTree = "<group>"; };
+		A10000000000000000000005 /* SquirrelGridState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridState.swift; path = sources/SquirrelGridState.swift; sourceTree = "<group>"; };
+		A10000000000000000000006 /* SquirrelGridViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridViews.swift; path = sources/SquirrelGridViews.swift; sourceTree = "<group>"; };
+		A10000000000000000000007 /* SquirrelPanel+Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SquirrelPanel+Grid.swift"; path = "sources/SquirrelPanel+Grid.swift"; sourceTree = "<group>"; };
+		A10000000000000000000008 /* SquirrelInputController+Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "SquirrelInputController+Grid.swift"; path = "sources/SquirrelInputController+Grid.swift"; sourceTree = "<group>"; };
+		A10000000000000000000009 /* SquirrelGridLayoutEngineTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridLayoutEngineTests.swift; path = tests/SquirrelGridLayoutEngineTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000000A /* SquirrelGridStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelGridStateTests.swift; path = tests/SquirrelGridStateTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000000B /* SquirrelConfigAndThemeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelConfigAndThemeTests.swift; path = tests/SquirrelConfigAndThemeTests.swift; sourceTree = "<group>"; };
+		A1000000000000000000000C /* SquirrelTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SquirrelTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3A001012F260100009D156B /* ReservedProperty.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = ReservedProperty.swift; path = sources/ReservedProperty.swift; sourceTree = "<group>"; };
 		B38E9B8F2BE9AE1E0036ABEF /* Squirrel-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Squirrel-Bridging-Header.h"; path = "sources/Squirrel-Bridging-Header.h"; sourceTree = "<group>"; };
 		B38E9B902BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SquirrelApplicationDelegate.swift; path = sources/SquirrelApplicationDelegate.swift; sourceTree = "<group>"; };
@@ -331,6 +361,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A10000000000000000000052 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -347,6 +384,14 @@
 				B39771282BEDAF4A0093A49B /* SquirrelView.swift */,
 				B39771242BED899F0093A49B /* SquirrelConfig.swift */,
 				B35D2FE72BF00839009D156B /* BridgingFunctions.swift */,
+				A10000000000000000000001 /* SquirrelHelpers.swift */,
+				A10000000000000000000002 /* SquirrelColorParser.swift */,
+				A10000000000000000000003 /* SquirrelGridModels.swift */,
+				A10000000000000000000004 /* SquirrelGridLayoutEngine.swift */,
+				A10000000000000000000005 /* SquirrelGridState.swift */,
+				A10000000000000000000006 /* SquirrelGridViews.swift */,
+				A10000000000000000000007 /* SquirrelPanel+Grid.swift */,
+				A10000000000000000000008 /* SquirrelInputController+Grid.swift */,
 				B3A001012F260100009D156B /* ReservedProperty.swift */,
 				B38E9B8F2BE9AE1E0036ABEF /* Squirrel-Bridging-Header.h */,
 			);
@@ -378,8 +423,19 @@
 			isa = PBXGroup;
 			children = (
 				44F1EB381431F8270015FD04 /* Squirrel.app */,
+				A1000000000000000000000C /* SquirrelTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A10000000000000000000030 /* Tests */ = {
+			isa = PBXGroup;
+			children = (
+				A10000000000000000000009 /* SquirrelGridLayoutEngineTests.swift */,
+				A1000000000000000000000A /* SquirrelGridStateTests.swift */,
+				A1000000000000000000000B /* SquirrelConfigAndThemeTests.swift */,
+			);
+			name = Tests;
 			sourceTree = "<group>";
 		};
 		29B97314FDCFA39411CA2CEA /* Squirrel */ = {
@@ -391,6 +447,7 @@
 				442C648F1F7A40180027EFBE /* bin */,
 				44DA7A4214DD598900C1ED3B /* SharedSupport */,
 				080E96DDFE201D6D7F000001 /* Sources */,
+				A10000000000000000000030 /* Tests */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
@@ -550,6 +607,25 @@
 			productReference = 44F1EB381431F8270015FD04 /* Squirrel.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A10000000000000000000050 /* SquirrelTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A10000000000000000000060 /* Build configuration list for PBXNativeTarget "SquirrelTests" */;
+			buildPhases = (
+				A10000000000000000000051 /* Sources */,
+				A10000000000000000000052 /* Frameworks */,
+				A10000000000000000000053 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SquirrelTests;
+			packageProductDependencies = (
+			);
+			productName = SquirrelTests;
+			productReference = A1000000000000000000000C /* SquirrelTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -581,6 +657,7 @@
 			projectRoot = "";
 			targets = (
 				8D1107260486CEB800E47090 /* Squirrel */,
+				A10000000000000000000050 /* SquirrelTests */,
 			);
 		};
 /* End PBXProject section */
@@ -597,6 +674,13 @@
 				B39771332BEEE4540093A49B /* Localizable.xcstrings in Resources */,
 				44986A96184B421700B3278D /* README.md in Resources */,
 				B3216E5C2BF438F800E292D2 /* rime.pdf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000053 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,7 +701,32 @@
 				B38E9B912BE9AE1E0036ABEF /* SquirrelApplicationDelegate.swift in Sources */,
 				B39771272BED9B250093A49B /* SquirrelTheme.swift in Sources */,
 				B35D2FE82BF00839009D156B /* BridgingFunctions.swift in Sources */,
+				A10000000000000000000011 /* SquirrelHelpers.swift in Sources */,
+				A10000000000000000000012 /* SquirrelColorParser.swift in Sources */,
+				A10000000000000000000013 /* SquirrelGridModels.swift in Sources */,
+				A10000000000000000000014 /* SquirrelGridLayoutEngine.swift in Sources */,
+				A10000000000000000000015 /* SquirrelGridState.swift in Sources */,
+				A10000000000000000000016 /* SquirrelGridViews.swift in Sources */,
+				A10000000000000000000017 /* SquirrelPanel+Grid.swift in Sources */,
+				A10000000000000000000018 /* SquirrelInputController+Grid.swift in Sources */,
 				B3A001022F260100009D156B /* ReservedProperty.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A10000000000000000000051 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A10000000000000000000021 /* SquirrelHelpers.swift in Sources */,
+				A10000000000000000000022 /* SquirrelColorParser.swift in Sources */,
+				A10000000000000000000023 /* SquirrelTheme.swift in Sources */,
+				A10000000000000000000024 /* ReservedProperty.swift in Sources */,
+				A10000000000000000000025 /* SquirrelGridModels.swift in Sources */,
+				A10000000000000000000026 /* SquirrelGridLayoutEngine.swift in Sources */,
+				A10000000000000000000027 /* SquirrelGridState.swift in Sources */,
+				A10000000000000000000028 /* SquirrelGridLayoutEngineTests.swift in Sources */,
+				A10000000000000000000029 /* SquirrelGridStateTests.swift in Sources */,
+				A1000000000000000000002A /* SquirrelConfigAndThemeTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -851,6 +960,39 @@
 			};
 			name = Release;
 		};
+		A10000000000000000000061 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.1.2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.SquirrelTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		A10000000000000000000062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1.1.2;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = im.rime.inputmethod.SquirrelTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_STRICT_CONCURRENCY = targeted;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -862,6 +1004,15 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		A10000000000000000000060 /* Build configuration list for PBXNativeTarget "SquirrelTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A10000000000000000000061 /* Debug */,
+				A10000000000000000000062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
 		};
 		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Squirrel" */ = {
 			isa = XCConfigurationList;

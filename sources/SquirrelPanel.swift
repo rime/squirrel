@@ -8,35 +8,63 @@
 import AppKit
 
 final class SquirrelPanel: NSPanel {
-  private let view: SquirrelView
-  private let back: NSView
+  let view: SquirrelView
+  let back: NSView
+  let gridGlassBack: NSView?
+  let gridBlurBack: NSVisualEffectView
   var inputController: SquirrelInputController?
 
   var position: NSRect
-  private var screenRect: NSRect = .zero
+  var screenRect: NSRect = .zero
+  var visibleScreenRect: NSRect = .zero
   private var maxHeight: CGFloat = 0
 
-  private var statusMessage: String = ""
-  private var statusTimer: Timer?
+  var statusMessage: String = ""
+  var statusTimer: Timer?
 
-  private var preedit: String = ""
-  private var selRange: NSRange = .empty
-  private var caretPos: Int = 0
+  var preedit: String = ""
+  var selRange: NSRange = .empty
+  var caretPos: Int = 0
   private var candidates: [String] = .init()
   private var comments: [String] = .init()
   private var labels: [String] = .init()
   private var index: Int = 0
   private var cursorIndex: Int = 0
-  private var scrollDirection: CGVector = .zero
-  private var scrollTime: Date = .distantPast
+  var scrollDirection: CGVector = .zero
+  var scrollTime: Date = .distantPast
   private var page: Int = 0
   private var lastPage: Bool = true
   private var pagingUp: Bool?
+  var gridPressedHit: SquirrelGridHitResult = .none
+  var lastGridCardScreenRect: NSRect = .zero
+  var lastGridWasAboveCursor = false
+  var lastGridCompositionID: Int?
+  var gridCollapseResizeWorkItem: DispatchWorkItem?
+  var gridActiveShrinkTargetSize: NSSize?
 
   init(position: NSRect) {
     self.position = position
     self.view = SquirrelView(frame: position)
     self.back = Self.makeBackgroundView()
+    if #available(macOS 26.0, *) {
+      let glass = NSGlassEffectView()
+      glass.style = .regular
+      glass.tintColor = nil
+      glass.wantsLayer = true
+      glass.isHidden = true
+      self.gridGlassBack = glass
+    } else {
+      self.gridGlassBack = nil
+    }
+    let blur = NSVisualEffectView()
+    blur.blendingMode = .behindWindow
+    blur.material = .hudWindow
+    blur.state = .active
+    blur.wantsLayer = true
+    blur.layer?.cornerCurve = .continuous
+    blur.layer?.masksToBounds = true
+    blur.isHidden = true
+    self.gridBlurBack = blur
     super.init(contentRect: position, styleMask: .nonactivatingPanel, backing: .buffered, defer: true)
     self.level = .init(Int(CGShieldingWindowLevel()))
     self.hasShadow = true
@@ -46,8 +74,15 @@ final class SquirrelPanel: NSPanel {
     back.layer?.mask = view.shape
     let contentView = NSView()
     contentView.addSubview(back)
+    if let gridGlassBack {
+      contentView.addSubview(gridGlassBack)
+    }
+    contentView.addSubview(gridBlurBack)
     contentView.addSubview(view)
     contentView.addSubview(view.textView)
+    contentView.addSubview(view.gridOverlayView)
+    contentView.addSubview(view.gridActivePillView)
+    contentView.addSubview(view.gridHighlightOverlayView)
     self.contentView = contentView
   }
 
@@ -63,9 +98,35 @@ final class SquirrelPanel: NSPanel {
   var inlineCandidate: Bool {
     view.currentTheme.inlineCandidate
   }
+  var isExpandableGridEnabled: Bool {
+    view.currentTheme.expandableGrid && view.currentTheme.linear && !view.currentTheme.vertical
+  }
+  var gridMaxColumnsConfig: Int {
+    view.currentTheme.gridMaxColumns
+  }
+  var gridExpandedColumnsConfig: Int {
+    view.currentTheme.gridExpandedColumns
+  }
+  var gridVisibleRowsConfig: Int {
+    view.currentTheme.gridVisibleRows
+  }
+  var gridTopMarginConfig: Int {
+    view.currentTheme.gridTopMarginRows
+  }
+  var gridBottomMarginConfig: Int {
+    view.currentTheme.gridBottomMarginRows
+  }
+  var gridPagingModeConfig: SquirrelTheme.GridPagingMode {
+    view.currentTheme.gridPagingMode
+  }
 
   // swiftlint:disable:next cyclomatic_complexity
   override func sendEvent(_ event: NSEvent) {
+    if view.gridLayout != nil {
+      handleGridEvent(event)
+      super.sendEvent(event)
+      return
+    }
     switch event.type {
     case .leftMouseDown:
       let (index, _, pagingUp) =  view.click(at: mousePosition())
@@ -145,6 +206,13 @@ final class SquirrelPanel: NSPanel {
   func hide() {
     statusTimer?.invalidate()
     statusTimer = nil
+    gridCollapseResizeWorkItem?.cancel()
+    gridCollapseResizeWorkItem = nil
+    gridActiveShrinkTargetSize = nil
+    lastGridCardScreenRect = .zero
+    lastGridWasAboveCursor = false
+    lastGridCompositionID = nil
+    view.resetGridAnimationState()
     orderOut(nil)
     maxHeight = 0
   }
@@ -319,7 +387,7 @@ final class SquirrelPanel: NSPanel {
   }
 }
 
-private extension SquirrelPanel {
+extension SquirrelPanel {
   func mousePosition() -> NSPoint {
     var point = NSEvent.mouseLocation
     point = self.convertPoint(fromScreen: point)
@@ -329,13 +397,17 @@ private extension SquirrelPanel {
   func currentScreen() {
     if let screen = NSScreen.main {
       screenRect = screen.frame
+      visibleScreenRect = screen.visibleFrame
     }
     for screen in NSScreen.screens where screen.frame.contains(position.origin) {
       screenRect = screen.frame
+      visibleScreenRect = screen.visibleFrame
       break
     }
   }
+}
 
+private extension SquirrelPanel {
   func maxTextWidth() -> CGFloat {
     let theme = view.currentTheme
     let font: NSFont = theme.font
@@ -351,6 +423,15 @@ private extension SquirrelPanel {
 
   // swiftlint:disable:next cyclomatic_complexity
   func show() {
+    gridCollapseResizeWorkItem?.cancel()
+    gridCollapseResizeWorkItem = nil
+    gridActiveShrinkTargetSize = nil
+    gridGlassBack?.isHidden = true
+    gridBlurBack.isHidden = true
+    view.gridActivePillView.isHidden = true
+    view.gridHighlightOverlayView.isHidden = true
+    self.hasShadow = true
+    back.layer?.mask = view.shape
     currentScreen()
     let theme = view.currentTheme
     if theme.native || view.darkTheme.available {

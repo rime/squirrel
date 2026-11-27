@@ -23,7 +23,31 @@ extension NSAttributedString.Key {
 }
 
 final class SquirrelView: NSView {
+  static let gridShadowPadding: CGFloat = 16
+
   let textView: NSTextView
+  let gridOverlayView: SquirrelGridOverlayView
+  let gridActivePillView: SquirrelGridPillView
+  let gridHighlightOverlayView: SquirrelGridOverlayView
+  var gridLayout: SquirrelGridLayout?
+  var gridContentOrigin = NSPoint(x: SquirrelView.gridShadowPadding, y: SquirrelView.gridShadowPadding)
+
+  var gridRootLayer: CALayer?
+  lazy var gridShadowLayer = CALayer()
+  lazy var gridCardClipLayer = CALayer()
+  lazy var gridPreeditBgLayer = CALayer()
+  lazy var gridPreeditHighlightLayer = CALayer()
+  lazy var gridHoverLayer = CALayer()
+  lazy var gridActiveCellLayer = CALayer()
+  lazy var gridFallbackActiveCellLayer = CALayer()
+  lazy var gridActiveRowBorderLayer = CALayer()
+  lazy var gridDividerLayer = CALayer()
+  lazy var gridChevronLayer = CAShapeLayer()
+  var lastGridCompositionID: Int?
+  var lastGridExpanded = false
+  var lastGridViewportTopRow = 0
+  var lastGridCardSize: NSSize = .zero
+  var lastGridRow0Cells: [SquirrelGridCell] = []
 
   private let squirrelLayoutDelegate: SquirrelLayoutDelegate
   var candidateRanges: [NSRange] = []
@@ -59,6 +83,18 @@ final class SquirrelView: NSView {
     textView.isEditable = false
     textView.isSelectable = false
     textView.textLayoutManager?.delegate = squirrelLayoutDelegate
+    gridOverlayView = SquirrelGridOverlayView(frame: frameRect)
+    gridOverlayView.wantsLayer = true
+    gridOverlayView.layerContentsRedrawPolicy = .onSetNeedsDisplay
+    gridOverlayView.isHidden = true
+    gridActivePillView = SquirrelGridPillView(frame: frameRect)
+    gridActivePillView.wantsLayer = true
+    gridActivePillView.isHidden = true
+    gridHighlightOverlayView = SquirrelGridOverlayView(frame: frameRect)
+    gridHighlightOverlayView.drawsHighlightedText = true
+    gridHighlightOverlayView.wantsLayer = true
+    gridHighlightOverlayView.layerContentsRedrawPolicy = .onSetNeedsDisplay
+    gridHighlightOverlayView.isHidden = true
     super.init(frame: frameRect)
     textContainer.lineFragmentPadding = 0
     self.wantsLayer = true
@@ -117,6 +153,19 @@ final class SquirrelView: NSView {
 
   // swiftlint:disable:next function_parameter_count
   func drawView(candidateRanges: [NSRange], hilightedIndex: Int, preeditRange: NSRange, highlightedPreeditRange: NSRange, canPageUp: Bool, canPageDown: Bool) {
+    self.gridLayout = nil
+    self.gridOverlayView.gridLayout = nil
+    self.gridOverlayView.layer?.mask = nil
+    self.gridHighlightOverlayView.gridLayout = nil
+    self.gridHighlightOverlayView.layer?.mask = nil
+    self.gridRootLayer?.removeFromSuperlayer()
+    self.gridRootLayer = nil
+    self.lastGridCompositionID = nil
+    self.lastGridCardSize = .zero
+    self.textView.isHidden = false
+    self.gridOverlayView.isHidden = true
+    self.gridActivePillView.isHidden = true
+    self.gridHighlightOverlayView.isHidden = true
     self.candidateRanges = candidateRanges
     self.hilightedIndex = hilightedIndex
     self.preeditRange = preeditRange
@@ -128,6 +177,9 @@ final class SquirrelView: NSView {
 
   // swiftlint:disable:next cyclomatic_complexity
   override func draw(_ dirtyRect: NSRect) {
+    if gridLayout != nil {
+      return
+    }
     var backgroundPath: CGPath?
     var preeditPath: CGPath?
     var candidatePaths: CGMutablePath?

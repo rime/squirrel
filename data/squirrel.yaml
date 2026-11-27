@@ -44,6 +44,18 @@ style:
   translucency: false
   # Enable to show small arrows that indicates if paging up/down is possible
   show_paging: false
+  # Expandable multi-row candidate grid (linear + horizontal layout only)
+  #expandable_grid: false
+  #grid_animation: true
+  #grid_width: 0                   # 0 = auto (width of 9 single-char CJK candidates), or fixed width in pt
+  #grid_max_columns: 0             # 0 = follow Rime page_size
+  #grid_expanded_columns: 0        # 0 = auto equal-slot columns
+  #grid_visible_rows: 5
+  #grid_top_margin_rows: 1
+  #grid_bottom_margin_rows: 1
+  #grid_row_style: native          # native | border
+  #grid_background_style: auto     # auto | glass | blur | solid
+  #grid_paging_mode: row           # row | page
 
   corner_radius: 7
   hilited_corner_radius: 0
