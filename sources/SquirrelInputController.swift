@@ -93,8 +93,23 @@ final class SquirrelInputController: IMKInputController {
       rimeUpdate()
 
     case .keyDown:
-      // Let client apps handle Command shortcuts.
+      // Command-Backspace cancels the whole composition; other Command shortcuts belong to the client.
       if modifiers.contains(.command) {
+        let shortcutModifiers = modifiers.intersection([.command, .control, .option, .shift, .function])
+        let rimeKeycode = SquirrelKeycode.osxKeycodeToRime(keycode: event.keyCode, keychar: nil, shift: false, caps: false)
+        if shortcutModifiers == .command && rimeKeycode == XK_BackSpace {
+          var status = RimeStatus_stdbool.rimeStructInit()
+          if rimeAPI.get_status(session, &status) {
+            let isComposing = status.is_composing
+            _ = rimeAPI.free_status(&status)
+            if isComposing {
+              clearChord()
+              rimeAPI.clear_composition(session)
+              rimeUpdate()
+              handled = true
+            }
+          }
+        }
         break
       }
 
