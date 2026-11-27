@@ -55,6 +55,7 @@ style:
   #grid_bottom_margin_rows: 1
   #grid_row_style: native          # native | border
   #grid_background_style: auto     # auto | glass | blur | solid
+  #grid_paging_mode: row           # row | page
 
   corner_radius: 7
   hilited_corner_radius: 0

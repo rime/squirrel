@@ -11,16 +11,16 @@ final class SquirrelInputController: IMKInputController {
   private static let keyRollOver = 50
   private static var unknownAppCnt: UInt = 0
 
-  private weak var client: IMKTextInput?
-  private let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
+  weak var client: IMKTextInput?
+  let rimeAPI: RimeApi_stdbool = rime_get_api_stdbool().pointee
   private var preedit: String = ""
   private var selRange: NSRange = .empty
   private var caretPos: Int = 0
   private var lastModifiers: NSEvent.ModifierFlags = .init()
-  private var session: RimeSessionId = 0
-  private var schemaId: String = ""
-  private var inlinePreedit = false
-  private var inlineCandidate = false
+  var session: RimeSessionId = 0
+  var schemaId: String = ""
+  var inlinePreedit = false
+  var inlineCandidate = false
   private var chordKeyCodes: [UInt32] = .init(repeating: 0, count: SquirrelInputController.keyRollOver)
   private var chordModifiers: [UInt32] = .init(repeating: 0, count: SquirrelInputController.keyRollOver)
   private var chordKeyCount: Int = 0
@@ -28,22 +28,8 @@ final class SquirrelInputController: IMKInputController {
   private var chordDuration: TimeInterval = 0
   private var currentApp: String = ""
 
-  private var isGridExpanded = false
-  private var gridActiveRow = 0
-  private var gridActiveCellIndex = 0
-  private var gridPreferredCenterX: CGFloat?
-  private var gridViewportTopRow = 0
-  private var gridHoveredGlobalIndex: Int?
-  private var gridCompositionKey = ""
-  private var gridCompositionID = 0
-  private var gridCandidates: [SquirrelGridCandidate] = []
-  private var gridHasMore = false
-  private var gridSelectLabels: [String] = []
-  private var gridRimePageSize = 5
-  private var gridCurrentLayout: SquirrelGridLayout?
-  private var gridPanelPreedit = ""
-  private var gridPanelSelRange: NSRange = .empty
-  private var gridPanelCaretPos = 0
+  var gridState = SquirrelGridState()
+  var inputPositionTracker = SquirrelInputPositionTracker()
 
   // swiftlint:disable:next cyclomatic_complexity
   override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
@@ -210,6 +196,7 @@ final class SquirrelInputController: IMKInputController {
       lastModifiers.remove(.capsLock)
     }
     preedit = ""
+    inputPositionTracker.reset()
     if session != 0 {
       let state = rimeAPI.get_option(session, "ascii_mode")
       let label = rimeAPI.get_state_label_abbreviated(session, "ascii_mode", state, true).asString
@@ -240,21 +227,24 @@ final class SquirrelInputController: IMKInputController {
   }
 
   override func deactivateServer(_ sender: Any!) {
+    inputPositionTracker.reset()
     hidePalettes()
     commitComposition(sender)
     client = nil
   }
 
   override func hidePalettes() {
-    resetGridState()
-    gridCompositionKey = ""
+    gridState.reset()
+    gridState.compositionKey = ""
+    inputPositionTracker.reset()
     NSApp.squirrelAppDelegate.panel?.hide()
     super.hidePalettes()
   }
 
   override func commitComposition(_ sender: Any!) {
-    resetGridState()
-    gridCompositionKey = ""
+    gridState.reset()
+    gridState.compositionKey = ""
+    inputPositionTracker.reset()
     self.client ?= sender as? IMKTextInput
     if session != 0 {
       if let input = rimeAPI.get_input(session) {
@@ -276,6 +266,7 @@ final class SquirrelInputController: IMKInputController {
     setting.target = self
     let wiki = NSMenuItem(title: NSLocalizedString("Rime Wiki...", comment: "Menu item"), action: #selector(openWiki), keyEquivalent: "")
     wiki.target = self
+
     let update = NSMenuItem(title: NSLocalizedString("Check for updates...", comment: "Menu item"), action: #selector(checkForUpdates), keyEquivalent: "")
     update.target = self
 
@@ -330,86 +321,12 @@ final class SquirrelInputController: IMKInputController {
     }
   }
 
-  func selectGridCandidate(globalIndex: Int) -> Bool {
-    guard session != 0 else { return false }
-    let success = rimeAPI.select_candidate(session, globalIndex)
-    if success {
-      resetGridState()
-      gridCompositionKey = ""
-      rimeUpdate()
-    }
-    return success
-  }
-
-  func toggleGridExpanded() {
-    guard let panel = NSApp.squirrelAppDelegate.panel, panel.isExpandableGridEnabled, !gridCandidates.isEmpty else { return }
-    let currentGlobalIndex = gridCurrentLayout.map { $0.allRows[$0.activeRow].cells[$0.activeCellIndexInRow].globalIndex }
-    if isGridExpanded {
-      isGridExpanded = false
-      gridActiveRow = 0
-      gridViewportTopRow = 0
-      gridPreferredCenterX = nil
-      if let layout = rebuildGridLayout(panel: panel),
-         let target = currentGlobalIndex,
-         let pos = locateGridCandidate(target, in: layout),
-         pos.row == 0 {
-        gridActiveCellIndex = pos.cell
-      } else {
-        gridActiveCellIndex = 0
-      }
-      syncGridHighlightAndRefresh()
-    } else {
-      isGridExpanded = true
-      let targetCount = max(gridCandidates.count, (panel.gridVisibleRowsConfig + 4) * effectiveGridMaxColumns(panel))
-      fetchGridCandidates(minCount: targetCount)
-      if let layout = rebuildGridLayout(panel: panel),
-         let target = currentGlobalIndex,
-         let pos = locateGridCandidate(target, in: layout) {
-        gridActiveRow = pos.row
-        gridActiveCellIndex = pos.cell
-        let cell = layout.allRows[pos.row].cells[pos.cell]
-        gridPreferredCenterX = cell.xOffset + cell.width / 2
-        updateGridViewport(totalRows: layout.allRows.count, panel: panel)
-      }
-      syncGridHighlightAndRefresh()
-    }
-  }
-
-  func scrollGrid(rows delta: Int) {
-    guard let panel = NSApp.squirrelAppDelegate.panel, panel.isExpandableGridEnabled, !gridCandidates.isEmpty, delta != 0 else { return }
-    let maxCols = effectiveGridMaxColumns(panel)
-    if !isGridExpanded {
-      guard delta > 0, (gridHasMore || (gridCurrentLayout?.allRows.count ?? 1) > 1) else { return }
-      isGridExpanded = true
-      fetchGridCandidates(minCount: max(gridCandidates.count, (panel.gridVisibleRowsConfig + 4) * maxCols))
-    }
-    if delta > 0 {
-      ensureRowsLoaded(throughRow: gridActiveRow + panel.gridVisibleRowsConfig + 3, maxCols: maxCols)
-    }
-    guard let layout = rebuildGridLayout(panel: panel) else { return }
-    if gridPreferredCenterX == nil {
-      let curCell = layout.allRows[layout.activeRow].cells[layout.activeCellIndexInRow]
-      gridPreferredCenterX = curCell.xOffset + curCell.width / 2
-    }
-    let newRow = max(0, min(layout.allRows.count - 1, gridActiveRow + delta))
-    gridActiveRow = newRow
-    gridActiveCellIndex = cellIndexInRow(layout.allRows[newRow], matchingCenterX: gridPreferredCenterX)
-    updateGridViewport(totalRows: layout.allRows.count, panel: panel)
-    syncGridHighlightAndRefresh()
-  }
-
-  func setGridHover(globalIndex: Int?) {
-    guard gridHoveredGlobalIndex != globalIndex else { return }
-    gridHoveredGlobalIndex = globalIndex
-    refreshGridPanelOnly()
-  }
-
   deinit {
     destroySession()
   }
 }
 
-private extension SquirrelInputController {
+extension SquirrelInputController {
 
   func onChordTimer(_: Timer) {
     var processedKeys = false
@@ -650,35 +567,27 @@ private extension SquirrelInputController {
 
       let selRange = NSRange(location: start.utf16Offset(in: preedit), length: preedit.utf16.distance(from: start, to: end))
       if let panel = NSApp.squirrelAppDelegate.panel, panel.isExpandableGridEnabled, numCandidates > 0 {
-        let rawInput = rimeAPI.get_input(session).map { String(cString: $0) } ?? ""
-        let compositionKey = "\(rawInput)\u{0}\(ctx.composition.cursor_pos)\u{0}\(preedit)"
-        if compositionKey != gridCompositionKey {
-          resetGridState()
-          gridCompositionKey = compositionKey
-        }
-        gridRimePageSize = max(1, Int(ctx.menu.page_size))
-        gridSelectLabels = labels
-        gridPanelPreedit = inlinePreedit ? "" : preedit
-        gridPanelSelRange = selRange
-        gridPanelCaretPos = caretPos.utf16Offset(in: preedit)
-
-        let maxCols = effectiveGridMaxColumns(panel)
-        let targetCount = isGridExpanded
-          ? max(gridCandidates.count, (gridViewportTopRow + panel.gridVisibleRowsConfig + 4) * maxCols)
-          : max(gridCandidates.count, maxCols + 2)
-        fetchGridCandidates(minCount: targetCount)
-        refreshGridPanelOnly()
+        syncGridFromRimeContext(
+          panel: panel,
+          ctx: ctx,
+          preedit: preedit,
+          selRange: selRange,
+          caretPos: caretPos.utf16Offset(in: preedit),
+          candidates: candidates,
+          comments: comments,
+          labels: labels
+        )
       } else {
-        resetGridState()
-        gridCompositionKey = ""
+        gridState.reset()
+        gridState.compositionKey = ""
         showPanel(preedit: inlinePreedit ? "" : preedit, selRange: selRange, caretPos: caretPos.utf16Offset(in: preedit),
                   candidates: candidates, comments: comments, labels: labels, highlighted: Int(ctx.menu.highlighted_candidate_index),
                   page: page, lastPage: lastPage)
       }
       _ = rimeAPI.free_context(&ctx)
     } else {
-      resetGridState()
-      gridCompositionKey = ""
+      gridState.reset()
+      gridState.compositionKey = ""
       hidePalettes()
     }
   }
@@ -704,6 +613,7 @@ private extension SquirrelInputController {
 
     client.insertText(string, replacementRange: .empty)
     preedit = ""
+    inputPositionTracker.reset()
     hidePalettes()
   }
 
@@ -729,11 +639,94 @@ private extension SquirrelInputController {
     client.setMarkedText(attrString, selectionRange: NSRange(location: caretPos, length: 0), replacementRange: .empty)
   }
 
+  func currentInputPosition(for client: IMKTextInput, hasActiveComposition: Bool) -> NSRect {
+    var rawAttr0 = NSRect.zero
+    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &rawAttr0)
+    let bundleID = client.bundleIdentifier() ?? ""
+    return inputPositionTracker.resolve(
+      rawAttr0: rawAttr0,
+      bundleID: bundleID,
+      hasActiveComposition: hasActiveComposition,
+      findWindowAtAttr0: {
+        Self.findHostWindow(containingAppKitRect: rawAttr0, bundleID: bundleID)
+      },
+      lookupWindowTopLeft: { windowID in
+        Self.windowQuartzTopLeft(windowID: windowID)
+      }
+    )
+  }
+
+  private static func findHostWindow(
+    containingAppKitRect rect: NSRect,
+    bundleID: String
+  ) -> (windowID: CGWindowID, quartzTopLeft: CGPoint)? {
+    guard let windowList = CGWindowListCopyWindowInfo(
+      [.optionOnScreenOnly, .excludeDesktopElements],
+      kCGNullWindowID
+    ) as? [[String: Any]] else {
+      return nil
+    }
+
+    let selfPID = ProcessInfo.processInfo.processIdentifier
+    var targetPIDs = Set<pid_t>()
+    if let frontApp = NSWorkspace.shared.frontmostApplication,
+       frontApp.processIdentifier != selfPID,
+       bundleID.isEmpty || frontApp.bundleIdentifier == bundleID {
+      targetPIDs.insert(frontApp.processIdentifier)
+    }
+    if !bundleID.isEmpty {
+      for app in NSRunningApplication.runningApplications(withBundleIdentifier: bundleID)
+      where app.processIdentifier != selfPID {
+        targetPIDs.insert(app.processIdentifier)
+      }
+    }
+    guard !targetPIDs.isEmpty else { return nil }
+
+    let primaryHeight = (NSScreen.screens.first(where: { $0.frame.origin == .zero }) ?? NSScreen.screens.first)?.frame.height ?? 0
+    guard primaryHeight > 0 else { return nil }
+    let caretQuartzPoint = CGPoint(x: rect.midX, y: primaryHeight - rect.midY)
+
+    let entries: [SquirrelInputPositionTracker.WindowEntry] = windowList.compactMap { info in
+      guard let ownerPID = info[kCGWindowOwnerPID as String] as? pid_t,
+            let winNum = info[kCGWindowNumber as String] as? UInt32,
+            let boundsDict = info[kCGWindowBounds as String] as? NSDictionary,
+            let qRect = CGRect(dictionaryRepresentation: boundsDict) else {
+        return nil
+      }
+      let layer = (info[kCGWindowLayer as String] as? Int) ?? 0
+      let alpha = (info[kCGWindowAlpha as String] as? Double) ?? 1.0
+      return SquirrelInputPositionTracker.WindowEntry(
+        windowID: CGWindowID(winNum),
+        ownerPID: ownerPID,
+        bounds: qRect,
+        layer: layer,
+        alpha: alpha
+      )
+    }
+    return SquirrelInputPositionTracker.selectHostWindow(
+      from: entries,
+      targetPIDs: targetPIDs,
+      caretQuartzPoint: caretQuartzPoint
+    )
+  }
+
+  private static func windowQuartzTopLeft(windowID: CGWindowID) -> CGPoint? {
+    guard let windowList = CGWindowListCopyWindowInfo(
+      [.optionIncludingWindow],
+      windowID
+    ) as? [[String: Any]],
+          let info = windowList.first,
+          let boundsDict = info[kCGWindowBounds as String] as? NSDictionary,
+          let qRect = CGRect(dictionaryRepresentation: boundsDict) else {
+      return nil
+    }
+    return qRect.origin
+  }
+
   // swiftlint:disable:next function_parameter_count
   func showPanel(preedit: String, selRange: NSRange, caretPos: Int, candidates: [String], comments: [String], labels: [String], highlighted: Int, page: Int, lastPage: Bool) {
     guard let client = client else { return }
-    var inputPos = NSRect()
-    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
+    let inputPos = currentInputPosition(for: client, hasActiveComposition: !preedit.isEmpty || !candidates.isEmpty)
     if let panel = NSApp.squirrelAppDelegate.panel {
       panel.position = inputPos
       panel.inputController = self
@@ -762,331 +755,4 @@ private extension SquirrelInputController {
       object: status
     )
   }
-
-  func resetGridState() {
-    isGridExpanded = false
-    gridActiveRow = 0
-    gridActiveCellIndex = 0
-    gridPreferredCenterX = nil
-    gridViewportTopRow = 0
-    gridHoveredGlobalIndex = nil
-    gridCandidates = []
-    gridHasMore = false
-    gridCurrentLayout = nil
-    gridPanelPreedit = ""
-    gridPanelSelRange = .empty
-    gridPanelCaretPos = 0
-    gridCompositionID &+= 1
-  }
-
-  func effectiveGridMaxColumns(_ panel: SquirrelPanel) -> Int {
-    panel.gridMaxColumnsConfig > 0 ? panel.gridMaxColumnsConfig : max(1, gridRimePageSize)
-  }
-
-  func fetchGridCandidates(minCount: Int) {
-    guard session != 0 else { return }
-    if gridCandidates.count >= minCount {
-      return
-    }
-    var iterator = RimeCandidateListIterator()
-    guard rimeAPI.candidate_list_from_index(session, &iterator, Int32(gridCandidates.count)) else {
-      gridHasMore = false
-      return
-    }
-    defer { rimeAPI.candidate_list_end(&iterator) }
-
-    var more = false
-    while rimeAPI.candidate_list_next(&iterator) {
-      let text = iterator.candidate.text.map { String(cString: $0) } ?? ""
-      let comment = iterator.candidate.comment.map { String(cString: $0) } ?? ""
-      gridCandidates.append(SquirrelGridCandidate(
-        globalIndex: Int(iterator.index),
-        text: text,
-        comment: comment
-      ))
-      if gridCandidates.count >= minCount {
-        more = rimeAPI.candidate_list_next(&iterator)
-        break
-      }
-    }
-    gridHasMore = more
-  }
-
-  func ensureRowsLoaded(throughRow targetRow: Int, maxCols: Int) {
-    guard gridHasMore else { return }
-    var safety = 0
-    while gridHasMore && safety < 8 {
-      let currentRowCount = gridCurrentLayout?.allRows.count ?? 0
-      if currentRowCount > targetRow {
-        break
-      }
-      let nextBatch = max(gridCandidates.count + maxCols * 4, (targetRow + 4) * maxCols)
-      fetchGridCandidates(minCount: nextBatch)
-      if let panel = NSApp.squirrelAppDelegate.panel {
-        gridCurrentLayout = rebuildGridLayout(panel: panel)
-      }
-      safety += 1
-    }
-  }
-
-  func locateGridCandidate(_ globalIndex: Int, in layout: SquirrelGridLayout) -> (row: Int, cell: Int)? {
-    for row in layout.allRows {
-      if let cellIdx = row.cells.firstIndex(where: { $0.globalIndex == globalIndex }) {
-        return (row.rowIndex, cellIdx)
-      }
-    }
-    return nil
-  }
-
-  func cellIndexInRow(_ row: SquirrelGridRow, matchingCenterX targetX: CGFloat?) -> Int {
-    guard let targetX, !row.cells.isEmpty else { return 0 }
-    var bestIdx = 0
-    var bestDist = CGFloat.greatestFiniteMagnitude
-    for (idx, cell) in row.cells.enumerated() {
-      let centerX = cell.xOffset + cell.width / 2
-      let dist = abs(centerX - targetX)
-      if dist < bestDist {
-        bestDist = dist
-        bestIdx = idx
-      }
-    }
-    return bestIdx
-  }
-
-  func updateGridViewport(totalRows: Int, panel: SquirrelPanel) {
-    let visibleRows = max(1, panel.gridVisibleRowsConfig)
-    let bottomMargin = min(max(0, panel.gridBottomMarginConfig), max(0, visibleRows - 1))
-    let maxVisualRow = max(0, visibleRows - 1 - bottomMargin)
-    let topMargin = min(max(0, panel.gridTopMarginConfig), maxVisualRow)
-    if gridActiveRow - gridViewportTopRow > maxVisualRow {
-      gridViewportTopRow = gridActiveRow - maxVisualRow
-    }
-    if gridActiveRow - gridViewportTopRow < topMargin {
-      gridViewportTopRow = gridActiveRow - topMargin
-    }
-    let maxTopRow = max(0, totalRows - visibleRows)
-    gridViewportTopRow = max(0, min(gridViewportTopRow, maxTopRow))
-  }
-
-  func rebuildGridLayout(panel: SquirrelPanel) -> SquirrelGridLayout? {
-    guard !gridCandidates.isEmpty else { return nil }
-    let layout = panel.buildGridLayout(
-      compositionID: gridCompositionID,
-      preedit: gridPanelPreedit,
-      selRange: gridPanelSelRange,
-      candidates: gridCandidates,
-      selectLabels: gridSelectLabels,
-      maxColumns: effectiveGridMaxColumns(panel),
-      isExpanded: isGridExpanded,
-      activeRow: gridActiveRow,
-      activeCellIndexInRow: gridActiveCellIndex,
-      viewportTopRow: gridViewportTopRow,
-      hoveredGlobalIndex: gridHoveredGlobalIndex,
-      hasMore: gridHasMore,
-      specialCommentIndices: specialCommentIndices
-    )
-    gridCurrentLayout = layout
-    return layout
-  }
-
-  func refreshGridPanelOnly() {
-    guard let client = client, let panel = NSApp.squirrelAppDelegate.panel else { return }
-    var inputPos = NSRect()
-    client.attributes(forCharacterIndex: 0, lineHeightRectangle: &inputPos)
-    panel.position = inputPos
-    panel.inputController = self
-    guard let layout = rebuildGridLayout(panel: panel) else { return }
-    panel.updateGrid(layout, preedit: gridPanelPreedit, selRange: gridPanelSelRange, caretPos: gridPanelCaretPos)
-  }
-
-  func syncGridHighlightAndRefresh() {
-    if let panel = NSApp.squirrelAppDelegate.panel, let layout = rebuildGridLayout(panel: panel) {
-      let row = layout.allRows[layout.activeRow]
-      let cell = row.cells[layout.activeCellIndexInRow]
-      gridActiveRow = layout.activeRow
-      gridActiveCellIndex = layout.activeCellIndexInRow
-      _ = rimeAPI.highlight_candidate(session, cell.globalIndex)
-      if inlineCandidate {
-        updateInlineCandidatePreview()
-      }
-      refreshGridPanelOnly()
-    }
-  }
-
-  func updateInlineCandidatePreview() {
-    var ctx = RimeContext_stdbool.rimeStructInit()
-    guard rimeAPI.get_context(session, &ctx) else { return }
-    defer { _ = rimeAPI.free_context(&ctx) }
-    let preedit = ctx.composition.preedit.map { String(cString: $0) } ?? ""
-    let start = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_start)), within: preedit) ?? preedit.startIndex
-    let end = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.sel_end)), within: preedit) ?? preedit.startIndex
-    let caretPos = String.Index(preedit.utf8.index(preedit.utf8.startIndex, offsetBy: Int(ctx.composition.cursor_pos)), within: preedit) ?? preedit.startIndex
-    var candidatePreview = ctx.commit_text_preview.map { String(cString: $0) } ?? ""
-    let endOfCandidatePreview = candidatePreview.endIndex
-    if inlinePreedit && caretPos >= end && caretPos < preedit.endIndex {
-      candidatePreview += preedit[caretPos...]
-    }
-    let clampedStart = min(start, candidatePreview.endIndex)
-    let clampedCaret = caretPos <= clampedStart ? caretPos : endOfCandidatePreview
-    show(
-      preedit: candidatePreview,
-      selRange: NSRange(
-        location: clampedStart.utf16Offset(in: candidatePreview),
-        length: candidatePreview.utf16.distance(from: clampedStart, to: candidatePreview.endIndex)
-      ),
-      caretPos: clampedCaret.utf16Offset(in: candidatePreview)
-    )
-  }
-
-  // swiftlint:disable:next cyclomatic_complexity
-  func handleGridKey(_ rimeKeycode: UInt32, modifiers _: UInt32, eventModifiers: NSEvent.ModifierFlags) -> Bool {
-    guard let panel = NSApp.squirrelAppDelegate.panel, panel.isExpandableGridEnabled, !gridCandidates.isEmpty else {
-      return false
-    }
-    guard eventModifiers.intersection([.command, .option, .control, .shift]).isEmpty else {
-      return false
-    }
-    let maxCols = effectiveGridMaxColumns(panel)
-    guard let initialLayout = gridCurrentLayout ?? rebuildGridLayout(panel: panel) else {
-      return false
-    }
-
-    switch Int32(rimeKeycode) {
-    case XK_Down, XK_Page_Down, XK_equal:
-      if gridPreferredCenterX == nil {
-        let curCell = initialLayout.allRows[initialLayout.activeRow].cells[initialLayout.activeCellIndexInRow]
-        gridPreferredCenterX = curCell.xOffset + curCell.width / 2
-      }
-      if !isGridExpanded {
-        guard gridHasMore || initialLayout.allRows.count > 1 else { return true }
-        isGridExpanded = true
-        fetchGridCandidates(minCount: max(gridCandidates.count, (panel.gridVisibleRowsConfig + 4) * maxCols))
-        guard let expandedLayout = rebuildGridLayout(panel: panel) else { return true }
-        if expandedLayout.allRows.count > 1 {
-          gridActiveRow = 1
-          gridActiveCellIndex = cellIndexInRow(expandedLayout.allRows[1], matchingCenterX: gridPreferredCenterX)
-        }
-        updateGridViewport(totalRows: expandedLayout.allRows.count, panel: panel)
-        syncGridHighlightAndRefresh()
-        return true
-      } else {
-        ensureRowsLoaded(throughRow: gridActiveRow + panel.gridVisibleRowsConfig + 2, maxCols: maxCols)
-        guard let layout = rebuildGridLayout(panel: panel) else { return true }
-        if gridActiveRow + 1 < layout.allRows.count {
-          gridActiveRow += 1
-          gridActiveCellIndex = cellIndexInRow(layout.allRows[gridActiveRow], matchingCenterX: gridPreferredCenterX)
-          updateGridViewport(totalRows: layout.allRows.count, panel: panel)
-          syncGridHighlightAndRefresh()
-        }
-        return true
-      }
-
-    case XK_Up, XK_Page_Up, XK_minus:
-      guard isGridExpanded else { return true }
-      if gridPreferredCenterX == nil {
-        let curCell = initialLayout.allRows[initialLayout.activeRow].cells[initialLayout.activeCellIndexInRow]
-        gridPreferredCenterX = curCell.xOffset + curCell.width / 2
-      }
-      if gridActiveRow == 0 {
-        isGridExpanded = false
-        gridViewportTopRow = 0
-        syncGridHighlightAndRefresh()
-      } else {
-        gridActiveRow -= 1
-        gridActiveCellIndex = cellIndexInRow(initialLayout.allRows[gridActiveRow], matchingCenterX: gridPreferredCenterX)
-        updateGridViewport(totalRows: initialLayout.allRows.count, panel: panel)
-        syncGridHighlightAndRefresh()
-      }
-      return true
-
-    case XK_Right:
-      let curRow = initialLayout.allRows[gridActiveRow]
-      if gridActiveCellIndex + 1 < curRow.cells.count {
-        gridActiveCellIndex += 1
-        let nextCell = curRow.cells[gridActiveCellIndex]
-        gridPreferredCenterX = nextCell.xOffset + nextCell.width / 2
-        syncGridHighlightAndRefresh()
-      } else if gridActiveRow + 1 < initialLayout.allRows.count || gridHasMore {
-        let nextGlobalIndex = curRow.cells[gridActiveCellIndex].globalIndex + 1
-        if !isGridExpanded {
-          isGridExpanded = true
-        }
-        ensureRowsLoaded(throughRow: gridActiveRow + panel.gridVisibleRowsConfig + 2, maxCols: maxCols)
-        guard let layout = rebuildGridLayout(panel: panel) else { return true }
-        if let pos = locateGridCandidate(nextGlobalIndex, in: layout) {
-          gridActiveRow = pos.row
-          gridActiveCellIndex = pos.cell
-          let nextCell = layout.allRows[pos.row].cells[pos.cell]
-          gridPreferredCenterX = nextCell.xOffset + nextCell.width / 2
-          updateGridViewport(totalRows: layout.allRows.count, panel: panel)
-          syncGridHighlightAndRefresh()
-        } else if gridActiveRow + 1 < layout.allRows.count {
-          gridActiveRow += 1
-          gridActiveCellIndex = 0
-          let nextCell = layout.allRows[gridActiveRow].cells[0]
-          gridPreferredCenterX = nextCell.xOffset + nextCell.width / 2
-          updateGridViewport(totalRows: layout.allRows.count, panel: panel)
-          syncGridHighlightAndRefresh()
-        }
-      }
-      return true
-
-    case XK_Left:
-      if !isGridExpanded && gridActiveCellIndex == 0 {
-        return false
-      }
-      if gridActiveCellIndex > 0 {
-        gridActiveCellIndex -= 1
-        let prevCell = initialLayout.allRows[gridActiveRow].cells[gridActiveCellIndex]
-        gridPreferredCenterX = prevCell.xOffset + prevCell.width / 2
-        syncGridHighlightAndRefresh()
-      } else if gridActiveRow > 0 {
-        gridActiveRow -= 1
-        let prevRow = initialLayout.allRows[gridActiveRow]
-        gridActiveCellIndex = max(0, prevRow.cells.count - 1)
-        let prevCell = prevRow.cells[gridActiveCellIndex]
-        gridPreferredCenterX = prevCell.xOffset + prevCell.width / 2
-        updateGridViewport(totalRows: initialLayout.allRows.count, panel: panel)
-        syncGridHighlightAndRefresh()
-      } else if isGridExpanded {
-        isGridExpanded = false
-        gridViewportTopRow = 0
-        syncGridHighlightAndRefresh()
-      }
-      return true
-
-    case XK_space:
-      let cell = initialLayout.allRows[initialLayout.activeRow].cells[initialLayout.activeCellIndexInRow]
-      return selectGridCandidate(globalIndex: cell.globalIndex)
-
-    default:
-      if rimeKeycode >= 0x20 && rimeKeycode <= 0x7e, let scalar = UnicodeScalar(rimeKeycode) {
-        let keyChar = String(scalar)
-        let slotIndex: Int?
-        if gridSelectLabels.count > 1 {
-          slotIndex = gridSelectLabels.firstIndex(of: keyChar)
-        } else if gridSelectLabels.count == 1, let first = gridSelectLabels.first {
-          slotIndex = first.firstIndex(of: Character(keyChar)).map { first.distance(from: first.startIndex, to: $0) }
-        } else if keyChar == "0" {
-          slotIndex = 9
-        } else if let digit = Int(keyChar), digit >= 1 && digit <= 9 {
-          slotIndex = digit - 1
-        } else {
-          slotIndex = nil
-        }
-
-        if let slot = slotIndex {
-          let activeCells = initialLayout.allRows[initialLayout.activeRow].cells
-          if slot < activeCells.count {
-            return selectGridCandidate(globalIndex: activeCells[slot].globalIndex)
-          }
-          if slot < maxCols {
-            return true
-          }
-        }
-      }
-      return false
-    }
-  }
-
 }
