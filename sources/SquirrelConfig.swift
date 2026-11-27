@@ -120,6 +120,10 @@ private extension SquirrelConfig {
   }
 
   func color(from colorStr: String, inSpace colorSpace: SquirrelTheme.RimeColorSpace) -> NSColor? {
+    let trimmed = colorStr.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+    if trimmed == "accent" || trimmed == "control_accent" {
+      return NSColor.controlAccentColor
+    }
     if let matched = try? /0x([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})([A-Fa-f0-9]{2})/.wholeMatch(in: colorStr) {
       let (_, alpha, blue, green, red) = matched.output
       return color(alpha: Int(alpha, radix: 16)!, red: Int(red, radix: 16)!, green: Int(green, radix: 16)!, blue: Int(blue, radix: 16)!, colorSpace: colorSpace)
